@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 5173",
-    "build": "tsc -b && vite build",
-    "lint": "tsc -b --noEmit",
+    "build": "tsc --noEmit -p tsconfig.typecheck.json && vite build",
+    "lint": "tsc --noEmit -p tsconfig.typecheck.json",
     "preview": "vite preview --host 127.0.0.1 --port 4173"
   },
   "dependencies": {
