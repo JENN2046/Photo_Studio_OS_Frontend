@@ -87,8 +87,8 @@ Current safe queue after the Command Center Alpha local commit.
 
 ```text
 1. Decide whether to push local commits to a remote branch.
-2. If continuing locally, run a richer browser interaction pass for topbar anchors when a browser automation path is available.
-3. Add a focused read-only view model validation path if the project later gains a test script.
+2. Add a focused read-only view model validation path if the project later gains a test script.
+3. Continue viewport QA only if a new breakpoint or state surface exposes a real layout issue.
 ```
 
 ### done
@@ -107,6 +107,10 @@ Current safe queue after the Command Center Alpha local commit.
 11. Fixed desktop and narrow viewport Command Center title wrapping.
 12. Ran lint, build, whitespace checks, secret scan, HTTP check, and headless Chrome screenshot QA.
 13. Created local commit 180a708: feat: refine command center alpha.
+14. Pushed commits 180a708 and 4f4e504 to origin/main after explicit approval.
+15. Ran local QA at 1024px, 780px, and 390px state surfaces.
+16. Fixed narrow viewport ordering so the primary gauge and main status surface appear before secondary rails.
+17. Fixed narrow status message wrapping for long error text.
 ```
 
 ### blocked

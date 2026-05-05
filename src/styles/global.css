@@ -209,8 +209,14 @@ a {
 }
 
 .status-message-bar strong {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
   font-size: 1rem;
   font-weight: 500;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .status-dial-row {
@@ -1043,6 +1049,10 @@ h1 {
     grid-template-columns: 1fr;
   }
 
+  .status-command {
+    order: -1;
+  }
+
   .status-column:last-child {
     grid-column: auto;
     grid-template-columns: 1fr;
@@ -1073,6 +1083,13 @@ h1 {
   .status-command-frame {
     padding: 18px 14px;
     gap: 16px;
+  }
+
+  .status-command,
+  .status-command-frame,
+  .status-message-bar {
+    max-width: 100%;
+    min-width: 0;
   }
 
   .status-command-copy {
@@ -1122,6 +1139,10 @@ h1 {
     grid-template-columns: 1fr;
   }
 
+  .gauge-primary {
+    order: -1;
+  }
+
   .status-chip-stack {
     gap: 8px;
   }
@@ -1147,7 +1168,8 @@ h1 {
   }
 
   .status-message-bar strong {
-    font-size: 0.96rem;
+    font-size: 0.88rem;
+    line-height: 1.45;
   }
 
   .status-note-stack article,
@@ -1166,6 +1188,7 @@ h1 {
   }
 
   .cluster-header,
+  .status-command-header,
   .panel-heading {
     align-items: flex-start;
     flex-direction: column;
@@ -1178,6 +1201,11 @@ h1 {
 
   .cluster-header h1 {
     font-size: 3rem;
+  }
+
+  .status-command h1 {
+    font-size: 2.85rem;
+    overflow-wrap: normal;
   }
 
   .gauge-cluster {

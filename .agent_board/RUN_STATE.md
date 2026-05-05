@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-none
+local viewport QA follow-up
 ```
 
 ---
@@ -58,7 +58,7 @@ none
 ## Last Completed Task
 
 ```text
-180a708 feat: refine command center alpha
+4f4e504 chore: add frontend autopilot rails
 ```
 
 ---
@@ -66,7 +66,7 @@ none
 ## Last Validation
 
 ```text
-npm run lint passed; npm run build passed; git diff --check passed
+npm run lint passed; npm run build passed; scripts/validate-local.ps1 passed outside sandbox
 ```
 
 ---
@@ -75,8 +75,8 @@ npm run lint passed; npm run build passed; git diff --check passed
 
 ```text
 Branch: main
-Worktree: rails pack is the active commit scope
-Changed files: AGENTS.md, .agent_board/*, README_AUTOPILOT_RAILS.md, scripts/*
+Worktree: local QA follow-up edits pending commit
+Changed files: src/styles/global.css, .agent_board/*
 ```
 
 ---
@@ -124,5 +124,5 @@ not blocked
 ## Next Action
 
 ```text
-After the approved local rails commit is created, decide whether to push.
+Review local QA follow-up diff and decide whether to commit responsive polish.
 ```
