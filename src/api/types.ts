@@ -10,6 +10,41 @@ export type RiskLevel = "low" | "medium" | "high";
 
 export type ApprovalState = "waiting" | "blocked" | "cleared";
 
+export type WorkflowStageState = "stable" | "active" | "watch";
+
+export type ApprovalType = "review" | "delivery" | "qc" | "retouch";
+
+export interface StudioSnapshot {
+  name: string;
+  locationLabel: string;
+  modeLabel: string;
+  operator: string;
+  readinessPercent: number;
+  activeProjectCount: number;
+}
+
+export interface CoverageSnapshot {
+  skuCoveragePercent: number;
+  completedSkus: number;
+  totalSkus: number;
+}
+
+export interface QcSnapshot {
+  qcHealthPercent: number;
+  passed: number;
+  flagged: number;
+  pending: number;
+}
+
+export interface WorkflowStageSummary {
+  id: string;
+  label: string;
+  status: WorkflowStatus;
+  state: WorkflowStageState;
+  count: number;
+  detail: string;
+}
+
 export interface ProjectSummary {
   id: string;
   name: string;
@@ -64,6 +99,7 @@ export interface DeliveryPackageSummary {
 
 export interface ApprovalQueueItem {
   id: string;
+  type: ApprovalType;
   title: string;
   projectId: string;
   state: ApprovalState;
@@ -93,6 +129,10 @@ export interface AiInspectionEvent {
 
 export interface CommandCenterSnapshot {
   generatedAt: string;
+  studio: StudioSnapshot;
+  coverage: CoverageSnapshot;
+  qc: QcSnapshot;
+  workflowStages: WorkflowStageSummary[];
   projects: ProjectSummary[];
   skus: SkuSummary[];
   assets: AssetSummary[];

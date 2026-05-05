@@ -2,7 +2,13 @@ import { commandCenterMock } from "../../mocks/commandCenter.mock";
 import { GaugeCluster } from "../../components/gauges/GaugeCluster";
 import { AppShell } from "../../components/layout/AppShell";
 import { MetricPanel } from "../../components/panels/MetricPanel";
-import type { ApprovalState, RiskLevel, WorkflowStatus } from "../../api/types";
+import type {
+  ApprovalState,
+  ApprovalType,
+  RiskLevel,
+  WorkflowStageState,
+  WorkflowStatus
+} from "../../api/types";
 
 const statusLabels: Record<WorkflowStatus, string> = {
   intake: "Intake",
@@ -25,6 +31,35 @@ const approvalLabels: Record<ApprovalState, string> = {
   cleared: "Cleared"
 };
 
+const approvalTypeLabels: Record<ApprovalType, string> = {
+  review: "Review",
+  delivery: "Delivery",
+  qc: "QC",
+  retouch: "Retouch"
+};
+
+const stageStateLabels: Record<WorkflowStageState, string> = {
+  stable: "Stable",
+  active: "Active",
+  watch: "Watch"
+};
+
+function getScoreState(score: number): ApprovalState {
+  if (score >= 90) {
+    return "cleared";
+  }
+
+  if (score >= 82) {
+    return "waiting";
+  }
+
+  return "blocked";
+}
+
+function getDeliveryState(status: string): ApprovalState {
+  return status === "ready" ? "cleared" : "waiting";
+}
+
 export function CommandCenter() {
   const snapshot = commandCenterMock;
   const assetTotal = snapshot.projects.reduce(
@@ -34,18 +69,105 @@ export function CommandCenter() {
   const pendingApprovals = snapshot.approvalQueue.filter(
     (item) => item.state !== "cleared"
   ).length;
+  const activeReviewItems = snapshot.reviews.reduce(
+    (total, review) => total + review.pendingItems,
+    0
+  );
+  const deliveryAssets = snapshot.deliveries.reduce(
+    (total, delivery) => total + delivery.assetCount,
+    0
+  );
+  const riskWatchCount = snapshot.riskPulse.filter(
+    (risk) => risk.level !== "low"
+  ).length;
+  const generatedTime = snapshot.generatedAt.slice(11, 16);
 
   return (
     <AppShell>
       <main className="command-center">
         <section className="hero-band" aria-label="Command center overview">
           <div className="hero-grid">
+            <aside className="context-rail" aria-label="Studio context">
+              <section className="panel context-panel" aria-labelledby="studio-context-title">
+                <div className="panel-heading">
+                  <p className="eyebrow" id="studio-context-title">
+                    Studio Context
+                  </p>
+                  <span>{generatedTime}</span>
+                </div>
+                <div className="studio-stack">
+                  <strong>{snapshot.studio.name}</strong>
+                  <span>{snapshot.studio.locationLabel}</span>
+                </div>
+                <dl className="context-list">
+                  <div>
+                    <dt>Operator</dt>
+                    <dd>{snapshot.studio.operator}</dd>
+                  </div>
+                  <div>
+                    <dt>Mode</dt>
+                    <dd>{snapshot.studio.modeLabel}</dd>
+                  </div>
+                  <div>
+                    <dt>Assets</dt>
+                    <dd>{assetTotal}</dd>
+                  </div>
+                  <div>
+                    <dt>Delivery Set</dt>
+                    <dd>{deliveryAssets}</dd>
+                  </div>
+                </dl>
+              </section>
+
+              <section className="panel context-panel" aria-labelledby="workflow-map-title">
+                <div className="panel-heading">
+                  <p className="eyebrow" id="workflow-map-title">
+                    Golden Path
+                  </p>
+                  <span>{snapshot.workflowStages.length} stages</span>
+                </div>
+                <div className="workflow-map">
+                  {snapshot.workflowStages.map((stage, index) => (
+                    <article
+                      className={`workflow-stage stage-${stage.state}`}
+                      key={stage.id}
+                    >
+                      <span className="stage-index">{index + 1}</span>
+                      <div>
+                        <strong>{stage.label}</strong>
+                        <small>{stage.detail}</small>
+                      </div>
+                      <span className={`state state-${stage.state}`}>
+                        {stageStateLabels[stage.state]} / {stage.count}
+                      </span>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            </aside>
+
             <div className="overview-column">
-              <GaugeCluster projects={snapshot.projects} />
+              <GaugeCluster
+                coverage={snapshot.coverage}
+                qc={snapshot.qc}
+                studio={snapshot.studio}
+              />
               <div className="metric-grid" aria-label="Read-only studio counters">
-                <MetricPanel title="Projects" value={snapshot.projects.length} label="active" />
-                <MetricPanel title="Assets" value={assetTotal} label="tracked" />
-                <MetricPanel title="Approvals" value={pendingApprovals} label="pending" />
+                <MetricPanel
+                  title="Projects"
+                  value={snapshot.projects.length}
+                  label="active live tracks"
+                />
+                <MetricPanel
+                  title="Review Load"
+                  value={activeReviewItems}
+                  label="pending review items"
+                />
+                <MetricPanel
+                  title="Approvals"
+                  value={pendingApprovals}
+                  label="human decisions"
+                />
               </div>
             </div>
 
@@ -55,7 +177,7 @@ export function CommandCenter() {
                   <p className="eyebrow" id="risk-pulse-title">
                     Risk Pulse
                   </p>
-                  <span>{snapshot.generatedAt.slice(11, 16)}</span>
+                  <span>{riskWatchCount} watch signals</span>
                 </div>
                 <div className="signal-list">
                   {snapshot.riskPulse.map((risk) => (
@@ -77,7 +199,8 @@ export function CommandCenter() {
                 </div>
                 <div className="queue-list">
                   {snapshot.approvalQueue.map((item) => (
-                    <article className="queue-item" key={item.id}>
+                    <article className={`queue-item queue-${item.state}`} key={item.id}>
+                      <span className="queue-type">{approvalTypeLabels[item.type]}</span>
                       <div>
                         <strong>{item.title}</strong>
                         <span>{item.projectId}</span>
@@ -94,7 +217,11 @@ export function CommandCenter() {
         </section>
 
         <section className="execution-grid" aria-label="Read-only execution surfaces">
-          <section className="panel execution-panel" id="projects" aria-labelledby="projects-title">
+          <section
+            className="panel project-execution-panel"
+            id="projects"
+            aria-labelledby="projects-title"
+          >
             <div className="panel-heading">
               <p className="eyebrow" id="projects-title">
                 Project Execution
@@ -104,19 +231,34 @@ export function CommandCenter() {
             <div className="project-table" role="table" aria-label="Project read-only list">
               <div className="table-row table-head" role="row">
                 <span role="columnheader">Project</span>
-                <span role="columnheader">Owner</span>
-                <span role="columnheader">Status</span>
+                <span role="columnheader">Flow</span>
+                <span role="columnheader">Progress</span>
+                <span role="columnheader">Volume</span>
                 <span role="columnheader">Due</span>
                 <span role="columnheader">Risk</span>
               </div>
               {snapshot.projects.map((project) => (
                 <div className="table-row" role="row" key={project.id}>
-                  <span role="cell">
+                  <span className="cell-stack" role="cell">
                     <strong>{project.name}</strong>
                     <small>{project.client}</small>
                   </span>
-                  <span role="cell">{project.owner}</span>
-                  <span role="cell">{statusLabels[project.status]}</span>
+                  <span className="cell-stack" role="cell">
+                    <span className={`status-pill status-${project.status}`}>
+                      {statusLabels[project.status]}
+                    </span>
+                    <small>{project.owner}</small>
+                  </span>
+                  <span className="progress-cell" role="cell">
+                    <span>{project.completionPercent}%</span>
+                    <span className="progress-meter" aria-hidden="true">
+                      <i style={{ width: `${project.completionPercent}%` }} />
+                    </span>
+                  </span>
+                  <span className="cell-stack" role="cell">
+                    <span>{project.skuCount} SKUs</span>
+                    <small>{project.assetCount} assets</small>
+                  </span>
                   <span role="cell">{project.dueDate}</span>
                   <span role="cell" className={`state risk-${project.riskLevel}`}>
                     {riskLabels[project.riskLevel]}
@@ -126,83 +268,7 @@ export function CommandCenter() {
             </div>
           </section>
 
-          <section className="panel execution-panel" id="skus" aria-labelledby="skus-title">
-            <div className="panel-heading">
-              <p className="eyebrow" id="skus-title">
-                SKU Matrix
-              </p>
-              <span>{snapshot.skus.length} representative SKUs</span>
-            </div>
-            <div className="compact-list">
-              {snapshot.skus.map((sku) => (
-                <article key={sku.id}>
-                  <strong>{sku.label}</strong>
-                  <span>{sku.id} / {sku.productLine}</span>
-                  <small>{statusLabels[sku.status]} / {sku.assetCount} assets</small>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <section className="panel execution-panel" id="assets" aria-labelledby="assets-title">
-            <div className="panel-heading">
-              <p className="eyebrow" id="assets-title">
-                Asset Watch
-              </p>
-              <span>{snapshot.assets.length} sample assets</span>
-            </div>
-            <div className="compact-list">
-              {snapshot.assets.map((asset) => (
-                <article key={asset.id}>
-                  <strong>{asset.fileName}</strong>
-                  <span>{asset.usage} / {asset.skuId}</span>
-                  <small>Inspection {asset.inspectionScore}</small>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <section className="panel execution-panel" id="reviews" aria-labelledby="reviews-title">
-            <div className="panel-heading">
-              <p className="eyebrow" id="reviews-title">
-                Review Sessions
-              </p>
-              <span>{snapshot.reviews.length} active</span>
-            </div>
-            <div className="compact-list">
-              {snapshot.reviews.map((review) => (
-                <article key={review.id}>
-                  <strong>{review.label}</strong>
-                  <span>{review.reviewer}</span>
-                  <small>{approvalLabels[review.state]} / {review.pendingItems} pending</small>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <section
-            className="panel execution-panel"
-            id="deliveries"
-            aria-labelledby="deliveries-title"
-          >
-            <div className="panel-heading">
-              <p className="eyebrow" id="deliveries-title">
-                Delivery Packages
-              </p>
-              <span>{snapshot.deliveries.length} packages</span>
-            </div>
-            <div className="compact-list">
-              {snapshot.deliveries.map((delivery) => (
-                <article key={delivery.id}>
-                  <strong>{delivery.label}</strong>
-                  <span>{delivery.projectId}</span>
-                  <small>{delivery.status} / {delivery.assetCount} assets</small>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <section className="panel execution-panel" aria-labelledby="activity-title">
+          <section className="panel timeline-panel" id="activity" aria-labelledby="activity-title">
             <div className="panel-heading">
               <p className="eyebrow" id="activity-title">
                 Activity Timeline
@@ -222,12 +288,16 @@ export function CommandCenter() {
             </div>
           </section>
 
-          <section className="panel execution-panel" aria-labelledby="ai-title">
+          <section
+            className="panel inspection-panel"
+            id="inspections"
+            aria-labelledby="ai-title"
+          >
             <div className="panel-heading">
               <p className="eyebrow" id="ai-title">
                 AI Inspection Feed
               </p>
-              <span>read-only</span>
+              <span>mock assist</span>
             </div>
             <div className="inspection-feed">
               {snapshot.aiInspectionFeed.map((event) => (
@@ -237,6 +307,100 @@ export function CommandCenter() {
                     <strong>{event.assetId}</strong>
                     <small>{event.finding}</small>
                   </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        </section>
+
+        <section className="entity-grid" aria-label="Read-only entity surfaces">
+          <section className="panel entity-panel" id="skus" aria-labelledby="skus-title">
+            <div className="panel-heading">
+              <p className="eyebrow" id="skus-title">
+                SKU Matrix
+              </p>
+              <span>{snapshot.skus.length} representative SKUs</span>
+            </div>
+            <div className="compact-list">
+              {snapshot.skus.map((sku) => (
+                <article key={sku.id}>
+                  <div>
+                    <strong>{sku.label}</strong>
+                    <span>{sku.id} / {sku.productLine}</span>
+                  </div>
+                  <small className={`state state-${sku.reviewState}`}>
+                    {statusLabels[sku.status]} / {sku.assetCount} assets
+                  </small>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="panel entity-panel" id="assets" aria-labelledby="assets-title">
+            <div className="panel-heading">
+              <p className="eyebrow" id="assets-title">
+                Asset Watch
+              </p>
+              <span>{snapshot.assets.length} sample assets</span>
+            </div>
+            <div className="compact-list">
+              {snapshot.assets.map((asset) => (
+                <article key={asset.id}>
+                  <div>
+                    <strong>{asset.fileName}</strong>
+                    <span>{asset.usage} / {asset.skuId}</span>
+                  </div>
+                  <small className={`state state-${getScoreState(asset.inspectionScore)}`}>
+                    Inspection {asset.inspectionScore}
+                  </small>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="panel entity-panel" id="reviews" aria-labelledby="reviews-title">
+            <div className="panel-heading">
+              <p className="eyebrow" id="reviews-title">
+                Review Sessions
+              </p>
+              <span>{snapshot.reviews.length} active</span>
+            </div>
+            <div className="compact-list">
+              {snapshot.reviews.map((review) => (
+                <article key={review.id}>
+                  <div>
+                    <strong>{review.label}</strong>
+                    <span>{review.reviewer}</span>
+                  </div>
+                  <small className={`state state-${review.state}`}>
+                    {approvalLabels[review.state]} / {review.pendingItems} pending
+                  </small>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section
+            className="panel entity-panel"
+            id="deliveries"
+            aria-labelledby="deliveries-title"
+          >
+            <div className="panel-heading">
+              <p className="eyebrow" id="deliveries-title">
+                Delivery Packages
+              </p>
+              <span>{snapshot.deliveries.length} packages</span>
+            </div>
+            <div className="compact-list">
+              {snapshot.deliveries.map((delivery) => (
+                <article key={delivery.id}>
+                  <div>
+                    <strong>{delivery.label}</strong>
+                    <span>{delivery.projectId}</span>
+                  </div>
+                  <small className={`state state-${getDeliveryState(delivery.status)}`}>
+                    {delivery.status} / {delivery.assetCount} assets
+                  </small>
                 </article>
               ))}
             </div>

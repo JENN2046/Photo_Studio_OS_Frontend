@@ -8,10 +8,15 @@ interface MetricPanelProps {
 }
 
 export function MetricPanel({ title, value, label, children }: MetricPanelProps) {
+  const titleId = `${title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "")}-title`;
+
   return (
-    <section className="panel metric-panel" aria-labelledby={`${title}-title`}>
+    <section className="panel metric-panel" aria-labelledby={titleId}>
       <div>
-        <p className="eyebrow" id={`${title}-title`}>
+        <p className="eyebrow" id={titleId}>
           {title}
         </p>
         <strong>{value}</strong>

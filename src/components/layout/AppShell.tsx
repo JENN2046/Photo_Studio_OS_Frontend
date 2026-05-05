@@ -10,13 +10,15 @@ export function AppShell({ children }: AppShellProps) {
       <header className="topbar">
         <div>
           <p className="eyebrow">Photo Studio OS</p>
-          <span>Read-only cockpit</span>
+          <span>Command Center Alpha / mock read-only cockpit</span>
         </div>
         <nav aria-label="Command surfaces">
           <a href="#projects">Projects</a>
           <a href="#skus">SKUs</a>
           <a href="#assets">Assets</a>
           <a href="#reviews">Reviews</a>
+          <a href="#activity">Activity</a>
+          <a href="#inspections">AI</a>
           <a href="#deliveries">Deliveries</a>
         </nav>
       </header>

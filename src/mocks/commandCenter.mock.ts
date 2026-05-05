@@ -1,7 +1,68 @@
 import type { CommandCenterSnapshot } from "../api/types";
 
 export const commandCenterMock: CommandCenterSnapshot = {
-  generatedAt: "2026-05-04T09:30:00+08:00",
+  generatedAt: "2026-05-05T09:30:00+08:00",
+  studio: {
+    name: "North Hall Product Studio",
+    locationLabel: "Shanghai / Set A",
+    modeLabel: "Command Center Alpha",
+    operator: "Studio Ops",
+    readinessPercent: 78,
+    activeProjectCount: 3
+  },
+  coverage: {
+    skuCoveragePercent: 62,
+    completedSkus: 24,
+    totalSkus: 39
+  },
+  qc: {
+    qcHealthPercent: 91,
+    passed: 186,
+    flagged: 17,
+    pending: 41
+  },
+  workflowStages: [
+    {
+      id: "PATH-INTAKE",
+      label: "Client Intake",
+      status: "intake",
+      state: "stable",
+      count: 3,
+      detail: "Briefs and SKU manifests mirrored"
+    },
+    {
+      id: "PATH-SHOOT",
+      label: "Shoot Floor",
+      status: "shoot",
+      state: "watch",
+      count: 1,
+      detail: "Continuity watch on Citrine scarf set"
+    },
+    {
+      id: "PATH-RETOUCH",
+      label: "Retouch",
+      status: "retouch",
+      state: "active",
+      count: 2,
+      detail: "Lamp detail pass moving through polish"
+    },
+    {
+      id: "PATH-REVIEW",
+      label: "Review",
+      status: "review",
+      state: "active",
+      count: 2,
+      detail: "Client and producer decisions pending"
+    },
+    {
+      id: "PATH-DELIVERY",
+      label: "Delivery",
+      status: "delivery",
+      state: "stable",
+      count: 2,
+      detail: "Packages visible as read-only sentinels"
+    }
+  ],
   projects: [
     {
       id: "PRJ-128",
@@ -141,6 +202,7 @@ export const commandCenterMock: CommandCenterSnapshot = {
   approvalQueue: [
     {
       id: "APR-801",
+      type: "review",
       title: "Hero crop variance",
       projectId: "PRJ-128",
       state: "waiting",
@@ -148,6 +210,7 @@ export const commandCenterMock: CommandCenterSnapshot = {
     },
     {
       id: "APR-802",
+      type: "qc",
       title: "Styling continuity hold",
       projectId: "PRJ-130",
       state: "blocked",
@@ -155,6 +218,7 @@ export const commandCenterMock: CommandCenterSnapshot = {
     },
     {
       id: "APR-803",
+      type: "delivery",
       title: "Lamp reflection approval",
       projectId: "PRJ-129",
       state: "cleared",
