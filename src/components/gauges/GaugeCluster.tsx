@@ -27,14 +27,25 @@ function Gauge({
 }) {
   const clampedValue = Math.max(0, Math.min(value, 100));
   const rotation = -128 + (clampedValue / 100) * 256;
+  const displayValue = `${clampedValue}%`;
 
   return (
     <article className={`gauge gauge-${emphasis}`}>
       <div className="gauge-dial">
+        <div className="gauge-face-copy">
+          <span>{label}</span>
+          <strong>{displayValue}</strong>
+          {emphasis === "primary" ? (
+            <em>
+              On track
+              <i aria-hidden="true" />
+            </em>
+          ) : null}
+        </div>
         <svg
           viewBox="0 0 180 128"
           role="img"
-          aria-label={`${label}: ${clampedValue}%`}
+          aria-label={`${label}: ${displayValue}`}
         >
           <g className="gauge-ticks">
             {gaugeTicks.map((tick) => {
@@ -77,8 +88,6 @@ function Gauge({
         </svg>
       </div>
       <div className="gauge-readout">
-        <span>{label}</span>
-        <strong>{clampedValue}</strong>
         <small>{caption}</small>
         <em>{meta}</em>
       </div>

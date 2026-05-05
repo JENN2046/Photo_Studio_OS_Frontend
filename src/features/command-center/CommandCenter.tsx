@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { GaugeCluster } from "../../components/gauges/GaugeCluster";
 import { AppShell } from "../../components/layout/AppShell";
 import { MetricPanel } from "../../components/panels/MetricPanel";
@@ -57,6 +58,32 @@ function getDebugClientLabel(debugState: "live" | "loading" | "error") {
   return debugState === "live" ? "Mock adapter" : "Debug override";
 }
 
+function formatCommandDate(value: string) {
+  const [year, month, day] = value.split("-");
+  const monthLabels = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+  ];
+  const monthIndex = Number(month) - 1;
+  const dayNumber = Number(day);
+
+  if (!year || !month || !day || !monthLabels[monthIndex] || !dayNumber) {
+    return value;
+  }
+
+  return `${monthLabels[monthIndex]} ${dayNumber}`;
+}
+
 function getRecoveryStateLabel(
   debugState: "live" | "loading" | "error",
   canRetry: boolean
@@ -66,6 +93,74 @@ function getRecoveryStateLabel(
   }
 
   return debugState === "live" ? "active" : "debug-held";
+}
+
+function getVisualTone(seed: string) {
+  const toneIndex =
+    Array.from(seed).reduce((total, character) => {
+      return total + character.charCodeAt(0);
+    }, 0) % 4;
+
+  return `asset-thumb-${toneIndex + 1}`;
+}
+
+function AssetThumb({
+  seed,
+  label,
+  size = "compact"
+}: {
+  seed: string;
+  label: string;
+  size?: "compact" | "table";
+}) {
+  return (
+    <span
+      aria-label={label}
+      className={`asset-thumb asset-thumb-${size} ${getVisualTone(seed)}`}
+      role="img"
+    >
+      <i />
+      <b />
+    </span>
+  );
+}
+
+function scrollToCurrentHash() {
+  const targetId = window.location.hash.slice(1);
+
+  if (!targetId) {
+    return;
+  }
+
+  const target = document.getElementById(decodeURIComponent(targetId));
+
+  if (!target) {
+    return;
+  }
+
+  window.requestAnimationFrame(() => {
+    const targetTop = target.getBoundingClientRect().top + window.scrollY;
+    const maxScrollTop =
+      document.documentElement.scrollHeight - window.innerHeight;
+    const nextScrollTop = Math.min(Math.max(targetTop - 96, 0), maxScrollTop);
+
+    window.scrollTo({
+      left: 0,
+      top: nextScrollTop,
+      behavior: "auto"
+    });
+  });
+}
+
+function useCommandCenterAnchorScroll(status: "loading" | "ready" | "error") {
+  useEffect(() => {
+    scrollToCurrentHash();
+    window.addEventListener("hashchange", scrollToCurrentHash);
+
+    return () => {
+      window.removeEventListener("hashchange", scrollToCurrentHash);
+    };
+  }, [status]);
 }
 
 function CommandCenterStateSurface({
@@ -280,6 +375,7 @@ function CommandCenterStateSurface({
 export function CommandCenter() {
   const { snapshot, status, errorMessage, debugState, canRetry, retry } =
     useCommandCenterSnapshot();
+  useCommandCenterAnchorScroll(status);
 
   if (status === "loading") {
     return (
@@ -419,6 +515,9 @@ export function CommandCenter() {
                   {snapshot.riskPulse.map((risk) => (
                     <article className={`signal signal-${risk.level}`} key={risk.id}>
                       <strong>{risk.label}</strong>
+                      <small className="risk-count">
+                        {risk.level === "high" ? 3 : risk.level === "medium" ? 2 : 1}
+                      </small>
                       <span>{risk.signal}</span>
                       <small>{riskLabels[risk.level]}</small>
                     </article>
@@ -440,8 +539,12 @@ export function CommandCenter() {
                 <div className="queue-list">
                   {snapshot.approvalQueue.map((item) => (
                     <article className={`queue-item queue-${item.state}`} key={item.id}>
-                      <span className="queue-type">{approvalTypeLabels[item.type]}</span>
+                      <AssetThumb
+                        label={`${item.title} approval marker`}
+                        seed={item.id}
+                      />
                       <div>
+                        <span className="queue-type">{approvalTypeLabels[item.type]}</span>
                         <strong>{item.title}</strong>
                         <span>{item.projectId}</span>
                       </div>
@@ -473,15 +576,20 @@ export function CommandCenter() {
                 <span role="columnheader">Project</span>
                 <span role="columnheader">Flow</span>
                 <span role="columnheader">Progress</span>
-                <span role="columnheader">Volume</span>
                 <span role="columnheader">Due</span>
-                <span role="columnheader">Risk</span>
               </div>
               {snapshot.projects.map((project) => (
                 <div className="table-row" role="row" key={project.id}>
-                  <span className="cell-stack" role="cell">
-                    <strong>{project.name}</strong>
-                    <small>{project.client}</small>
+                  <span className="project-cell" role="cell">
+                    <AssetThumb
+                      label={`${project.name} visual marker`}
+                      seed={project.id}
+                      size="table"
+                    />
+                    <span className="cell-stack">
+                      <strong>{project.name}</strong>
+                      <small>{project.client}</small>
+                    </span>
                   </span>
                   <span className="cell-stack" role="cell">
                     <span className={`status-pill status-${project.status}`}>
@@ -495,14 +603,7 @@ export function CommandCenter() {
                       <i style={{ width: `${project.completionPercent}%` }} />
                     </span>
                   </span>
-                  <span className="cell-stack" role="cell">
-                    <span>{project.skuCount} SKUs</span>
-                    <small>{project.assetCount} assets</small>
-                  </span>
-                  <span role="cell">{project.dueDate}</span>
-                  <span role="cell" className={`state risk-${project.riskLevel}`}>
-                    {riskLabels[project.riskLevel]}
-                  </span>
+                  <span role="cell">{formatCommandDate(project.dueDate)}</span>
                 </div>
               ))}
             </div>
@@ -542,11 +643,15 @@ export function CommandCenter() {
             <div className="inspection-feed">
               {snapshot.aiInspectionFeed.map((event) => (
                 <article key={event.id}>
-                  <span>{event.score}</span>
+                  <AssetThumb
+                    label={`${event.assetId} inspection marker`}
+                    seed={event.assetId}
+                  />
                   <div>
                     <strong>{event.assetId}</strong>
                     <small>{event.finding}</small>
                   </div>
+                  <span className="inspection-score">{event.score}%</span>
                 </article>
               ))}
             </div>
