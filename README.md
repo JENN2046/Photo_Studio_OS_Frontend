@@ -10,7 +10,7 @@ This workspace starts the frontend as a mock-first cockpit. It is independent
 from the backend engine and root control tower, and it must not mutate business
 truth.
 
-Current stack proposal:
+Current stack:
 
 - Vite
 - React
@@ -57,19 +57,33 @@ Preferred frontend dev port:
 
 ## Local Commands
 
-Dependencies have not been installed by this skeleton step.
-
-After stack and dependency installation are explicitly approved:
+Dependencies are tracked with `package-lock.json`. For a clean local setup, use:
 
 ```powershell
-npm install
+npm ci
+```
+
+Common local commands:
+
+```powershell
 npm run dev
-npm run build
 npm run lint
+npm run build
+npm run preview
 ```
 
 The Vite dev server is configured for `127.0.0.1:5173`; preview is configured
 for `127.0.0.1:4173`.
+
+## Validation Status
+
+Recent local validation:
+
+- `npm run lint` passes.
+- `npm run build` passes in a terminal that allows Node `child_process.spawn`.
+- Sandboxed sessions that block Node child process spawning may fail during
+  Vite/esbuild startup with `spawn EPERM`; that is an environment limitation,
+  not a source change requirement.
 
 ## Read-only Contract
 
