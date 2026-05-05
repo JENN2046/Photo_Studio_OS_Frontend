@@ -1,7 +1,7 @@
-import { commandCenterMock } from "../../mocks/commandCenter.mock";
 import { GaugeCluster } from "../../components/gauges/GaugeCluster";
 import { AppShell } from "../../components/layout/AppShell";
 import { MetricPanel } from "../../components/panels/MetricPanel";
+import { useCommandCenterSnapshot } from "./useCommandCenterSnapshot";
 import type {
   ApprovalState,
   ApprovalType,
@@ -61,7 +61,44 @@ function getDeliveryState(status: string): ApprovalState {
 }
 
 export function CommandCenter() {
-  const snapshot = commandCenterMock;
+  const { snapshot, status, errorMessage } = useCommandCenterSnapshot();
+
+  if (status === "loading") {
+    return (
+      <AppShell>
+        <main className="command-center">
+          <section className="hero-band" aria-label="Command center loading">
+            <div className="status-shell">
+              <section className="panel status-panel" aria-live="polite">
+                <p className="eyebrow">Command Center Alpha</p>
+                <strong>Loading read-only telemetry</strong>
+                <span>Mock snapshot boundary active</span>
+              </section>
+            </div>
+          </section>
+        </main>
+      </AppShell>
+    );
+  }
+
+  if (!snapshot) {
+    return (
+      <AppShell>
+        <main className="command-center">
+          <section className="hero-band" aria-label="Command center unavailable">
+            <div className="status-shell">
+              <section className="panel status-panel status-panel-alert" role="alert">
+                <p className="eyebrow">Command Center Alpha</p>
+                <strong>Read-only snapshot unavailable</strong>
+                <span>{errorMessage ?? "No command center snapshot returned"}</span>
+              </section>
+            </div>
+          </section>
+        </main>
+      </AppShell>
+    );
+  }
+
   const assetTotal = snapshot.projects.reduce(
     (total, project) => total + project.assetCount,
     0

@@ -109,6 +109,35 @@ a {
   min-width: 0;
 }
 
+.status-shell {
+  display: grid;
+  min-height: 52vh;
+  place-items: center;
+  max-width: 1520px;
+  margin: 0 auto;
+}
+
+.status-panel {
+  display: grid;
+  gap: 10px;
+  width: min(100%, 460px);
+  padding: 22px;
+}
+
+.status-panel strong {
+  color: var(--color-text);
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.status-panel span {
+  color: var(--color-muted);
+}
+
+.status-panel-alert {
+  border-color: rgba(220, 142, 142, 0.38);
+}
+
 .context-rail {
   display: grid;
   align-content: start;

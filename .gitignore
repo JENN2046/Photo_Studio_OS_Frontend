@@ -3,6 +3,7 @@ dist/
 build/
 coverage/
 logs/
+.playwright-cli/
 .env
 .env.*
 !.env.example
