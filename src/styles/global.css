@@ -109,33 +109,307 @@ a {
   min-width: 0;
 }
 
-.status-shell {
+.status-hero-band {
+  min-height: 66vh;
+}
+
+.status-grid {
   display: grid;
-  min-height: 52vh;
-  place-items: center;
+  grid-template-columns: minmax(210px, 280px) minmax(0, 1fr) minmax(250px, 320px);
+  gap: 18px;
   max-width: 1520px;
   margin: 0 auto;
 }
 
-.status-panel {
+.status-column {
   display: grid;
-  gap: 10px;
-  width: min(100%, 460px);
-  padding: 22px;
+  gap: 18px;
+  align-content: start;
+  min-width: 0;
 }
 
-.status-panel strong {
-  color: var(--color-text);
-  font-size: 1.2rem;
+.status-side-panel {
+  padding: 16px;
+}
+
+.status-command {
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(242, 247, 255, 0.05), transparent 34%),
+    linear-gradient(145deg, rgba(17, 24, 34, 0.94), rgba(7, 11, 17, 0.92));
+  box-shadow: var(--shadow-panel), var(--shadow-inset);
+}
+
+.status-command::before {
+  position: absolute;
+  inset: 14px;
+  border: 1px solid rgba(242, 247, 255, 0.08);
+  content: "";
+  pointer-events: none;
+}
+
+.status-command::after {
+  position: absolute;
+  inset: auto 7% 14% auto;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(159, 211, 223, 0.12), transparent 68%);
+  filter: blur(12px);
+  content: "";
+  pointer-events: none;
+}
+
+.status-command-error::after {
+  background: radial-gradient(circle, rgba(220, 142, 142, 0.18), transparent 68%);
+}
+
+.status-command-frame {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 22px;
+  min-height: 100%;
+  padding: clamp(22px, 4vw, 40px);
+}
+
+.status-command-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.status-command-copy {
+  max-width: 760px;
+  margin: 0;
+  color: var(--color-soft);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.status-message-bar {
+  display: grid;
+  gap: 6px;
+  padding: 14px 16px;
+  border: 1px solid rgba(242, 247, 255, 0.12);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.status-message-label {
+  color: var(--color-steel);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status-message-bar strong {
+  font-size: 1rem;
   font-weight: 500;
 }
 
-.status-panel span {
+.status-dial-row {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.82fr) minmax(220px, 1.12fr) minmax(150px, 0.82fr);
+  align-items: end;
+  gap: 18px;
+}
+
+.status-dial-card {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  justify-items: center;
+  text-align: center;
+}
+
+.status-dial-card strong,
+.status-lane strong,
+.status-note-stack strong,
+.status-metric-strip strong {
+  color: var(--color-text);
+}
+
+.status-dial-card span,
+.status-lane span,
+.status-note-stack span,
+.status-metric-strip span {
   color: var(--color-muted);
 }
 
-.status-panel-alert {
-  border-color: rgba(220, 142, 142, 0.38);
+.status-dial-card-primary {
+  gap: 12px;
+}
+
+.status-dial {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(100%, 186px);
+  aspect-ratio: 1;
+  border: 1px solid rgba(242, 247, 255, 0.16);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(255, 255, 255, 0.1), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), transparent 46%),
+    rgba(10, 16, 24, 0.7);
+}
+
+.status-dial::before {
+  position: absolute;
+  inset: 12%;
+  border: 1px solid rgba(242, 247, 255, 0.08);
+  border-radius: 50%;
+  content: "";
+}
+
+.status-dial::after {
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  background:
+    conic-gradient(
+      from 216deg,
+      rgba(159, 211, 223, 0.04) 0deg,
+      rgba(159, 211, 223, 0.98) 118deg,
+      rgba(159, 211, 223, 0.12) 150deg,
+      transparent 150deg 360deg
+    );
+  -webkit-mask: radial-gradient(circle, transparent 58%, black 59%);
+  mask: radial-gradient(circle, transparent 58%, black 59%);
+  content: "";
+}
+
+.status-command-loading .status-dial::after {
+  animation: status-sweep 2.8s linear infinite;
+}
+
+.status-command-error .status-dial::after {
+  background:
+    conic-gradient(
+      from 216deg,
+      rgba(220, 142, 142, 0.08) 0deg,
+      rgba(220, 142, 142, 0.98) 96deg,
+      rgba(217, 189, 125, 0.34) 126deg,
+      transparent 126deg 360deg
+    );
+}
+
+.status-dial-core {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--color-text);
+  box-shadow: 0 0 0 10px rgba(242, 247, 255, 0.04);
+}
+
+.status-dial-card-primary .status-dial {
+  width: min(100%, 250px);
+}
+
+.status-dial-card-primary .status-dial-core {
+  width: 18px;
+  height: 18px;
+}
+
+.status-metric-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.status-metric-strip article {
+  display: grid;
+  gap: 6px;
+  min-height: 94px;
+  padding: 14px 16px;
+  border: 1px solid rgba(242, 247, 255, 0.12);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.status-metric-strip article strong {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.status-chip-stack,
+.status-lane-list,
+.status-note-stack {
+  display: grid;
+  gap: 10px;
+}
+
+.status-chip {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 26px;
+  align-items: center;
+  padding: 4px 10px;
+  border: 1px solid rgba(242, 247, 255, 0.14);
+  border-radius: 999px;
+  color: var(--color-soft);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status-lane,
+.status-note-stack article {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid rgba(242, 247, 255, 0.12);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.status-lane small {
+  color: var(--color-cyan);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status-command-error .status-lane small {
+  color: var(--color-amber);
+}
+
+.status-action {
+  min-height: 42px;
+  padding: 10px 14px;
+  border: 1px solid rgba(242, 247, 255, 0.2);
+  border-radius: 6px;
+  color: var(--color-text);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 100%),
+    rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+}
+
+.status-action:hover {
+  border-color: rgba(242, 247, 255, 0.34);
+}
+
+.status-action:focus-visible {
+  outline: 2px solid rgba(159, 211, 223, 0.48);
+  outline-offset: 2px;
+}
+
+@keyframes status-sweep {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .context-rail {
@@ -727,6 +1001,15 @@ h1 {
     font-size: 4.3rem;
   }
 
+  .status-grid {
+    grid-template-columns: minmax(210px, 260px) minmax(0, 1fr);
+  }
+
+  .status-column:last-child {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .hero-grid {
     grid-template-columns: minmax(210px, 260px) minmax(0, 1fr);
   }
@@ -747,10 +1030,16 @@ h1 {
 }
 
 @media (max-width: 1100px) {
+  .status-grid,
   .hero-grid,
   .execution-grid,
   .entity-grid,
   .right-rail {
+    grid-template-columns: 1fr;
+  }
+
+  .status-column:last-child {
+    grid-column: auto;
     grid-template-columns: 1fr;
   }
 
@@ -774,6 +1063,10 @@ h1 {
 @media (max-width: 780px) {
   h1 {
     font-size: 3rem;
+  }
+
+  .status-command-frame {
+    padding: 22px;
   }
 
   .topbar {
@@ -809,6 +1102,8 @@ h1 {
   }
 
   .gauges,
+  .status-dial-row,
+  .status-metric-strip,
   .metric-grid {
     grid-template-columns: 1fr;
   }

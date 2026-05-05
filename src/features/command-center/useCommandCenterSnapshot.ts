@@ -3,25 +3,80 @@ import { commandCenterClient } from "../../api/client";
 import type { CommandCenterSnapshot } from "../../api/types";
 
 type SnapshotStatus = "loading" | "ready" | "error";
+type CommandCenterDebugState = "live" | "loading" | "error";
 
 interface CommandCenterSnapshotState {
   snapshot: CommandCenterSnapshot | null;
   status: SnapshotStatus;
   errorMessage: string | null;
+  debugState: CommandCenterDebugState;
+  retry: () => void;
 }
 
-const initialState: CommandCenterSnapshotState = {
+type CommandCenterSnapshotDataState = Omit<CommandCenterSnapshotState, "retry">;
+
+const baseLoadingState: CommandCenterSnapshotDataState = {
   snapshot: null,
   status: "loading",
-  errorMessage: null
+  errorMessage: null,
+  debugState: "live"
 };
 
+function getDebugState(): CommandCenterDebugState {
+  if (typeof window === "undefined") {
+    return "live";
+  }
+
+  const stateParam = new URLSearchParams(window.location.search).get(
+    "commandCenterState"
+  );
+
+  if (stateParam === "loading" || stateParam === "error") {
+    return stateParam;
+  }
+
+  return "live";
+}
+
 export function useCommandCenterSnapshot(): CommandCenterSnapshotState {
+  const [reloadToken, setReloadToken] = useState(0);
   const [state, setState] =
-    useState<CommandCenterSnapshotState>(initialState);
+    useState<CommandCenterSnapshotDataState>(baseLoadingState);
+
+  const retry = () => {
+    setState(baseLoadingState);
+    setReloadToken((current) => current + 1);
+  };
 
   useEffect(() => {
     let isCurrent = true;
+    const debugState = getDebugState();
+
+    if (debugState === "loading") {
+      setState({
+        snapshot: null,
+        status: "loading",
+        errorMessage: null,
+        debugState
+      });
+
+      return () => {
+        isCurrent = false;
+      };
+    }
+
+    if (debugState === "error") {
+      setState({
+        snapshot: null,
+        status: "error",
+        errorMessage: "Simulated read boundary fault for local QA",
+        debugState
+      });
+
+      return () => {
+        isCurrent = false;
+      };
+    }
 
     commandCenterClient
       .getSnapshot()
@@ -33,7 +88,8 @@ export function useCommandCenterSnapshot(): CommandCenterSnapshotState {
         setState({
           snapshot,
           status: "ready",
-          errorMessage: null
+          errorMessage: null,
+          debugState
         });
       })
       .catch((error: unknown) => {
@@ -47,14 +103,18 @@ export function useCommandCenterSnapshot(): CommandCenterSnapshotState {
           errorMessage:
             error instanceof Error
               ? error.message
-              : "Unable to load command center snapshot"
+              : "Unable to load command center snapshot",
+          debugState
         });
       });
 
     return () => {
       isCurrent = false;
     };
-  }, []);
+  }, [reloadToken]);
 
-  return state;
+  return {
+    ...state,
+    retry
+  };
 }

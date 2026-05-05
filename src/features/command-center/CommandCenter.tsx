@@ -10,6 +10,232 @@ import type {
   WorkflowStatus
 } from "../../api/types";
 
+const loadingStatusLanes = [
+  {
+    label: "Mirror Cache",
+    detail: "Staging snapshot envelope",
+    state: "Buffering"
+  },
+  {
+    label: "Gauge Bus",
+    detail: "Aligning cockpit telemetry",
+    state: "Syncing"
+  },
+  {
+    label: "Ops Rail",
+    detail: "Priming risk and queue surfaces",
+    state: "Queued"
+  }
+] as const;
+
+const errorStatusLanes = [
+  {
+    label: "Read Boundary",
+    detail: "Snapshot stream did not settle",
+    state: "Hold"
+  },
+  {
+    label: "Risk Feed",
+    detail: "Fallback telemetry unavailable",
+    state: "Watch"
+  },
+  {
+    label: "Recovery Path",
+    detail: "Retry or inspect local override",
+    state: "Manual"
+  }
+] as const;
+
+function CommandCenterStateSurface({
+  status,
+  message,
+  onRetry,
+  debugState
+}: {
+  status: "loading" | "error";
+  message: string;
+  onRetry: () => void;
+  debugState: "live" | "loading" | "error";
+}) {
+  const isLoading = status === "loading";
+  const eyebrow = isLoading ? "Telemetry Handshake" : "Snapshot Boundary Alert";
+  const heading = isLoading ? "Calibrating Studio Telemetry" : "Telemetry Hold";
+  const summary = isLoading
+    ? "Command Center Alpha is aligning the read-only snapshot before the gauges open."
+    : "Command Center Alpha could not settle the read-only snapshot and is holding the cockpit in operator-safe mode.";
+  const lanes = isLoading ? loadingStatusLanes : errorStatusLanes;
+  const modeLabel =
+    debugState === "live"
+      ? "Live mock adapter"
+      : `Local QA override / ${debugState}`;
+  const actionLabel = isLoading ? "Awaiting snapshot" : "Retry read client";
+
+  return (
+    <AppShell>
+      <main className="command-center">
+        <section
+          className="hero-band status-hero-band"
+          aria-label={`Command center ${status}`}
+        >
+          <div className="status-grid">
+            <aside className="status-column" aria-label="Read-only staging">
+              <section className="panel status-side-panel">
+                <div className="panel-heading">
+                  <p className="eyebrow">Read Boundary</p>
+                  <span>{isLoading ? "arming" : "hold"}</span>
+                </div>
+                <div className="status-chip-stack">
+                  <span className="status-chip">Mode / {modeLabel}</span>
+                  <span className="status-chip">
+                    Surface / {isLoading ? "buffered" : "degraded"}
+                  </span>
+                </div>
+                <div className="status-lane-list">
+                  {lanes.map((lane) => (
+                    <article className="status-lane" key={lane.label}>
+                      <strong>{lane.label}</strong>
+                      <span>{lane.detail}</span>
+                      <small>{lane.state}</small>
+                    </article>
+                  ))}
+                </div>
+              </section>
+
+              <section className="panel status-side-panel">
+                <div className="panel-heading">
+                  <p className="eyebrow">Operator Impact</p>
+                  <span>read-only</span>
+                </div>
+                <div className="status-note-stack">
+                  <article>
+                    <strong>Projects and gauges stay sealed</strong>
+                    <span>No workflow truth is mutated in this state.</span>
+                  </article>
+                  <article>
+                    <strong>Mock-first boundary remains intact</strong>
+                    <span>The cockpit waits for the snapshot instead of guessing.</span>
+                  </article>
+                </div>
+              </section>
+            </aside>
+
+            <section className={`status-command status-command-${status}`}>
+              <div className="status-command-frame">
+                <div className="status-command-header">
+                  <div>
+                    <p className="eyebrow">{eyebrow}</p>
+                    <h1>{heading}</h1>
+                  </div>
+                  <div className="read-only-badge" aria-label="Read-only mode">
+                    <span>{isLoading ? "Buffering" : "Hold"}</span>
+                    <strong>{modeLabel}</strong>
+                  </div>
+                </div>
+
+                <p className="status-command-copy">{summary}</p>
+                <div className="status-message-bar" role={isLoading ? "status" : "alert"}>
+                  <span className="status-message-label">Telemetry note</span>
+                  <strong>{message}</strong>
+                </div>
+
+                <div className="status-dial-row" aria-label="Status alignment">
+                  <article className="status-dial-card">
+                    <div className="status-dial status-dial-left">
+                      <span className="status-dial-core" />
+                    </div>
+                    <strong>Snapshot envelope</strong>
+                    <span>{isLoading ? "Negotiating payload edges" : "Envelope lost continuity"}</span>
+                  </article>
+                  <article className="status-dial-card status-dial-card-primary">
+                    <div className="status-dial status-dial-primary">
+                      <span className="status-dial-core" />
+                    </div>
+                    <strong>{isLoading ? "Cockpit sync" : "Operator-safe fallback"}</strong>
+                    <span>
+                      {isLoading
+                        ? "Gauges remain dark until read model aligns"
+                        : "Surface is held in a non-destructive read-only posture"}
+                    </span>
+                  </article>
+                  <article className="status-dial-card">
+                    <div className="status-dial status-dial-right">
+                      <span className="status-dial-core" />
+                    </div>
+                    <strong>Ops rail feed</strong>
+                    <span>{isLoading ? "Priming queue and risk rails" : "Waiting for manual recovery path"}</span>
+                  </article>
+                </div>
+
+                <div className="status-metric-strip">
+                  <article>
+                    <span>Boundary</span>
+                    <strong>{isLoading ? "Sealed" : "Tripped"}</strong>
+                  </article>
+                  <article>
+                    <span>Client</span>
+                    <strong>{debugState === "live" ? "Mock adapter" : "QA override"}</strong>
+                  </article>
+                  <article>
+                    <span>Action</span>
+                    <strong>{actionLabel}</strong>
+                  </article>
+                </div>
+              </div>
+            </section>
+
+            <aside className="status-column" aria-label="Recovery and notes">
+              <section className="panel status-side-panel">
+                <div className="panel-heading">
+                  <p className="eyebrow">Recovery Path</p>
+                  <span>{debugState === "live" ? "active" : "overridden"}</span>
+                </div>
+                <div className="status-note-stack">
+                  <article>
+                    <strong>{isLoading ? "Read client is in-flight" : "Surface can retry locally"}</strong>
+                    <span>
+                      {isLoading
+                        ? "The read-only client is still resolving the snapshot request."
+                        : "Retry will re-arm the read client unless the query override keeps the surface in QA mode."}
+                    </span>
+                  </article>
+                  <article>
+                    <strong>QA query switch</strong>
+                    <span>`?commandCenterState=loading` or `?commandCenterState=error`</span>
+                  </article>
+                </div>
+                <button
+                  className="status-action"
+                  onClick={onRetry}
+                  type="button"
+                >
+                  {isLoading ? "Re-arm read client" : "Retry snapshot handshake"}
+                </button>
+              </section>
+
+              <section className="panel status-side-panel">
+                <div className="panel-heading">
+                  <p className="eyebrow">Safeguards</p>
+                  <span>alpha</span>
+                </div>
+                <div className="status-note-stack">
+                  <article>
+                    <strong>No backend writes</strong>
+                    <span>All state handling stays inside the frontend mock boundary.</span>
+                  </article>
+                  <article>
+                    <strong>Visual anchor preserved</strong>
+                    <span>The status scene still centers the three-gauge command language.</span>
+                  </article>
+                </div>
+              </section>
+            </aside>
+          </div>
+        </section>
+      </main>
+    </AppShell>
+  );
+}
+
 const statusLabels: Record<WorkflowStatus, string> = {
   intake: "Intake",
   shoot: "Shoot",
@@ -61,41 +287,28 @@ function getDeliveryState(status: string): ApprovalState {
 }
 
 export function CommandCenter() {
-  const { snapshot, status, errorMessage } = useCommandCenterSnapshot();
+  const { snapshot, status, errorMessage, debugState, retry } =
+    useCommandCenterSnapshot();
 
   if (status === "loading") {
     return (
-      <AppShell>
-        <main className="command-center">
-          <section className="hero-band" aria-label="Command center loading">
-            <div className="status-shell">
-              <section className="panel status-panel" aria-live="polite">
-                <p className="eyebrow">Command Center Alpha</p>
-                <strong>Loading read-only telemetry</strong>
-                <span>Mock snapshot boundary active</span>
-              </section>
-            </div>
-          </section>
-        </main>
-      </AppShell>
+      <CommandCenterStateSurface
+        debugState={debugState}
+        message="Read-only telemetry gate is still calibrating the command center."
+        onRetry={retry}
+        status="loading"
+      />
     );
   }
 
   if (!snapshot) {
     return (
-      <AppShell>
-        <main className="command-center">
-          <section className="hero-band" aria-label="Command center unavailable">
-            <div className="status-shell">
-              <section className="panel status-panel status-panel-alert" role="alert">
-                <p className="eyebrow">Command Center Alpha</p>
-                <strong>Read-only snapshot unavailable</strong>
-                <span>{errorMessage ?? "No command center snapshot returned"}</span>
-              </section>
-            </div>
-          </section>
-        </main>
-      </AppShell>
+      <CommandCenterStateSurface
+        debugState={debugState}
+        message={errorMessage ?? "No command center snapshot returned"}
+        onRetry={retry}
+        status="error"
+      />
     );
   }
 
