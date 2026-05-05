@@ -13,6 +13,8 @@ export function AppShell({ children }: AppShellProps) {
           <span>Command Center Alpha / mock read-only cockpit</span>
         </div>
         <nav aria-label="Command surfaces">
+          <a href="#risk">Risk</a>
+          <a href="#approvals">Approvals</a>
           <a href="#projects">Projects</a>
           <a href="#skus">SKUs</a>
           <a href="#assets">Assets</a>

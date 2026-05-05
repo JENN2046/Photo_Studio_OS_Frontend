@@ -484,6 +484,11 @@ h1 {
   gap: 18px;
 }
 
+.cluster-header h1 {
+  font-size: 4rem;
+  overflow-wrap: normal;
+}
+
 .read-only-badge {
   display: grid;
   gap: 4px;
@@ -1098,7 +1103,10 @@ h1 {
 
   .topbar span {
     display: block;
+    width: 100%;
     max-width: 100%;
+    font-size: 0.95rem;
+    line-height: 1.4;
     overflow-wrap: anywhere;
     white-space: normal;
   }
@@ -1166,6 +1174,10 @@ h1 {
   .read-only-badge {
     width: 100%;
     text-align: left;
+  }
+
+  .cluster-header h1 {
+    font-size: 3rem;
   }
 
   .gauge-cluster {

@@ -5,9 +5,15 @@ export interface CommandCenterReadClient {
   getSnapshot(): Promise<CommandCenterSnapshot>;
 }
 
+function cloneCommandCenterSnapshot(
+  snapshot: CommandCenterSnapshot
+): CommandCenterSnapshot {
+  return structuredClone(snapshot);
+}
+
 export class MockCommandCenterClient implements CommandCenterReadClient {
   async getSnapshot(): Promise<CommandCenterSnapshot> {
-    return commandCenterMock;
+    return cloneCommandCenterSnapshot(commandCenterMock);
   }
 }
 

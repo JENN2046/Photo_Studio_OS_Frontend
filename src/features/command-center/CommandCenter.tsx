@@ -1,14 +1,17 @@
 import { GaugeCluster } from "../../components/gauges/GaugeCluster";
 import { AppShell } from "../../components/layout/AppShell";
 import { MetricPanel } from "../../components/panels/MetricPanel";
+import {
+  approvalLabels,
+  approvalTypeLabels,
+  createCommandCenterViewModel,
+  getDeliveryState,
+  getScoreState,
+  riskLabels,
+  stageStateLabels,
+  statusLabels
+} from "./commandCenterViewModel";
 import { useCommandCenterSnapshot } from "./useCommandCenterSnapshot";
-import type {
-  ApprovalState,
-  ApprovalType,
-  RiskLevel,
-  WorkflowStageState,
-  WorkflowStatus
-} from "../../api/types";
 
 const loadingStatusLanes = [
   {
@@ -274,56 +277,6 @@ function CommandCenterStateSurface({
   );
 }
 
-const statusLabels: Record<WorkflowStatus, string> = {
-  intake: "Intake",
-  shoot: "Shoot",
-  retouch: "Retouch",
-  review: "Review",
-  delivery: "Delivery",
-  complete: "Complete"
-};
-
-const riskLabels: Record<RiskLevel, string> = {
-  low: "Low",
-  medium: "Medium",
-  high: "High"
-};
-
-const approvalLabels: Record<ApprovalState, string> = {
-  waiting: "Waiting",
-  blocked: "Blocked",
-  cleared: "Cleared"
-};
-
-const approvalTypeLabels: Record<ApprovalType, string> = {
-  review: "Review",
-  delivery: "Delivery",
-  qc: "QC",
-  retouch: "Retouch"
-};
-
-const stageStateLabels: Record<WorkflowStageState, string> = {
-  stable: "Stable",
-  active: "Active",
-  watch: "Watch"
-};
-
-function getScoreState(score: number): ApprovalState {
-  if (score >= 90) {
-    return "cleared";
-  }
-
-  if (score >= 82) {
-    return "waiting";
-  }
-
-  return "blocked";
-}
-
-function getDeliveryState(status: string): ApprovalState {
-  return status === "ready" ? "cleared" : "waiting";
-}
-
 export function CommandCenter() {
   const { snapshot, status, errorMessage, debugState, canRetry, retry } =
     useCommandCenterSnapshot();
@@ -352,25 +305,14 @@ export function CommandCenter() {
     );
   }
 
-  const assetTotal = snapshot.projects.reduce(
-    (total, project) => total + project.assetCount,
-    0
-  );
-  const pendingApprovals = snapshot.approvalQueue.filter(
-    (item) => item.state !== "cleared"
-  ).length;
-  const activeReviewItems = snapshot.reviews.reduce(
-    (total, review) => total + review.pendingItems,
-    0
-  );
-  const deliveryAssets = snapshot.deliveries.reduce(
-    (total, delivery) => total + delivery.assetCount,
-    0
-  );
-  const riskWatchCount = snapshot.riskPulse.filter(
-    (risk) => risk.level !== "low"
-  ).length;
-  const generatedTime = snapshot.generatedAt.slice(11, 16);
+  const {
+    assetTotal,
+    pendingApprovals,
+    activeReviewItems,
+    deliveryAssets,
+    riskWatchCount,
+    generatedTime
+  } = createCommandCenterViewModel(snapshot);
 
   return (
     <AppShell>
@@ -462,7 +404,11 @@ export function CommandCenter() {
             </div>
 
             <aside className="right-rail" aria-label="Risk and approval queue">
-              <section className="panel" aria-labelledby="risk-pulse-title">
+              <section
+                className="panel"
+                id="risk"
+                aria-labelledby="risk-pulse-title"
+              >
                 <div className="panel-heading">
                   <p className="eyebrow" id="risk-pulse-title">
                     Risk Pulse
@@ -480,7 +426,11 @@ export function CommandCenter() {
                 </div>
               </section>
 
-              <section className="panel" aria-labelledby="approval-queue-title">
+              <section
+                className="panel"
+                id="approvals"
+                aria-labelledby="approval-queue-title"
+              >
                 <div className="panel-heading">
                   <p className="eyebrow" id="approval-queue-title">
                     Approval Queue
