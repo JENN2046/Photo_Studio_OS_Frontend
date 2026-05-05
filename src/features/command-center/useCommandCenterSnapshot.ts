@@ -72,7 +72,7 @@ export function useCommandCenterSnapshot(): CommandCenterSnapshotState {
       setState({
         snapshot: null,
         status: "error",
-        errorMessage: "Simulated read boundary fault for local QA",
+        errorMessage: "Simulated read boundary fault for internal debug",
         debugState,
         canRetry: true
       });

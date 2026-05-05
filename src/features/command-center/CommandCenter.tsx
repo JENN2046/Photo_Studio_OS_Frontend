@@ -46,6 +46,25 @@ const errorStatusLanes = [
   }
 ] as const;
 
+function getDebugModeLabel(debugState: "live" | "loading" | "error") {
+  return debugState === "live" ? "Mock adapter" : `Internal debug / ${debugState}`;
+}
+
+function getDebugClientLabel(debugState: "live" | "loading" | "error") {
+  return debugState === "live" ? "Mock adapter" : "Debug override";
+}
+
+function getRecoveryStateLabel(
+  debugState: "live" | "loading" | "error",
+  canRetry: boolean
+) {
+  if (!canRetry) {
+    return "sealed";
+  }
+
+  return debugState === "live" ? "active" : "debug-held";
+}
+
 function CommandCenterStateSurface({
   status,
   message,
@@ -66,14 +85,11 @@ function CommandCenterStateSurface({
     ? "Read-only snapshot is aligning before the cockpit opens."
     : "Snapshot did not settle. Cockpit remains in a safe read hold.";
   const lanes = isLoading ? loadingStatusLanes : errorStatusLanes;
-  const modeLabel =
-    debugState === "live"
-      ? "Mock adapter"
-      : `QA / ${debugState}`;
+  const modeLabel = getDebugModeLabel(debugState);
   const actionLabel = canRetry
     ? isLoading
       ? "Stand by"
-      : "Retry ready"
+      : "Debug ready"
     : "Passive";
   const messageLabel = isLoading ? "Sync note" : "Fault note";
   const buttonLabel = isLoading ? "Re-arm" : "Retry";
@@ -85,18 +101,14 @@ function CommandCenterStateSurface({
   const recoveryDetail = canRetry
     ? isLoading
       ? "Read client is still resolving the snapshot."
-      : "Retry re-arms the read client unless QA override is still active."
+      : "Retry re-arms the read client unless the internal debug override is still active."
     : "This surface reports state only in standard runtime.";
-  const overrideTitle = debugState === "live" ? "Client path" : "Override latch";
+  const overrideTitle = debugState === "live" ? "Client path" : "Debug latch";
   const overrideDetail =
     debugState === "live"
       ? "Mock adapter online."
-      : `Local state override / ${debugState}`;
-  const recoveryState = canRetry
-    ? debugState === "live"
-      ? "active"
-      : "overridden"
-    : "sealed";
+      : `Internal debug override / ${debugState}`;
+  const recoveryState = getRecoveryStateLabel(debugState, canRetry);
 
   return (
     <AppShell>
@@ -201,7 +213,7 @@ function CommandCenterStateSurface({
                   </article>
                   <article>
                     <span>Client</span>
-                    <strong>{debugState === "live" ? "Mock adapter" : "QA override"}</strong>
+                    <strong>{getDebugClientLabel(debugState)}</strong>
                   </article>
                   <article>
                     <span>Action</span>
