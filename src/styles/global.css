@@ -1066,7 +1066,13 @@ h1 {
   }
 
   .status-command-frame {
-    padding: 22px;
+    padding: 18px 14px;
+    gap: 16px;
+  }
+
+  .status-command-copy {
+    font-size: 0.94rem;
+    line-height: 1.5;
   }
 
   .topbar {
@@ -1106,6 +1112,49 @@ h1 {
   .status-metric-strip,
   .metric-grid {
     grid-template-columns: 1fr;
+  }
+
+  .status-chip-stack {
+    gap: 8px;
+  }
+
+  .status-chip {
+    font-size: 0.68rem;
+  }
+
+  .status-dial-card {
+    gap: 8px;
+  }
+
+  .status-dial {
+    max-width: 160px;
+  }
+
+  .status-dial-card-primary .status-dial {
+    width: min(100%, 180px);
+  }
+
+  .status-message-bar {
+    padding: 10px 12px;
+  }
+
+  .status-message-bar strong {
+    font-size: 0.96rem;
+  }
+
+  .status-note-stack article,
+  .status-lane,
+  .status-metric-strip article {
+    padding: 12px;
+  }
+
+  .status-side-panel {
+    padding: 14px;
+  }
+
+  .status-action {
+    width: 100%;
+    min-height: 40px;
   }
 
   .cluster-header,

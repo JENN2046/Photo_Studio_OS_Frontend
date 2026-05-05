@@ -41,7 +41,7 @@ const errorStatusLanes = [
   },
   {
     label: "Recovery Path",
-    detail: "Retry or inspect local override",
+    detail: "Retry or inspect internal debug override",
     state: "Manual"
   }
 ] as const;
