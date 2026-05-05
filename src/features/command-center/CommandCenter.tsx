@@ -58,17 +58,29 @@ function CommandCenterStateSurface({
   debugState: "live" | "loading" | "error";
 }) {
   const isLoading = status === "loading";
-  const eyebrow = isLoading ? "Telemetry Handshake" : "Snapshot Boundary Alert";
-  const heading = isLoading ? "Calibrating Studio Telemetry" : "Telemetry Hold";
+  const eyebrow = isLoading ? "Telemetry Sync" : "Snapshot Hold";
+  const heading = isLoading ? "Telemetry Aligning" : "Read Hold";
   const summary = isLoading
-    ? "Command Center Alpha is aligning the read-only snapshot before the gauges open."
-    : "Command Center Alpha could not settle the read-only snapshot and is holding the cockpit in operator-safe mode.";
+    ? "Read-only snapshot is aligning before the cockpit opens."
+    : "Snapshot did not settle. Cockpit remains in a safe read hold.";
   const lanes = isLoading ? loadingStatusLanes : errorStatusLanes;
   const modeLabel =
     debugState === "live"
-      ? "Live mock adapter"
-      : `Local QA override / ${debugState}`;
-  const actionLabel = isLoading ? "Awaiting snapshot" : "Retry read client";
+      ? "Mock adapter"
+      : `QA / ${debugState}`;
+  const actionLabel = isLoading ? "Stand by" : "Retry ready";
+  const messageLabel = isLoading ? "Sync note" : "Fault note";
+  const buttonLabel = isLoading ? "Re-arm" : "Retry";
+  const recoveryTitle = isLoading ? "Handshake active" : "Manual re-arm";
+  const recoveryDetail = isLoading
+    ? "Read client is still resolving the snapshot."
+    : "Retry re-arms the read client unless QA override is still active.";
+  const overrideTitle =
+    debugState === "live" ? "Client path" : "Override latch";
+  const overrideDetail =
+    debugState === "live"
+      ? "Mock adapter online."
+      : `Local state override / ${debugState}`;
 
   return (
     <AppShell>
@@ -108,12 +120,12 @@ function CommandCenterStateSurface({
                 </div>
                 <div className="status-note-stack">
                   <article>
-                    <strong>Projects and gauges stay sealed</strong>
-                    <span>No workflow truth is mutated in this state.</span>
+                    <strong>Surfaces sealed</strong>
+                    <span>Write path stays disabled.</span>
                   </article>
                   <article>
-                    <strong>Mock-first boundary remains intact</strong>
-                    <span>The cockpit waits for the snapshot instead of guessing.</span>
+                    <strong>No inferred fill</strong>
+                    <span>Snapshot is required before render.</span>
                   </article>
                 </div>
               </section>
@@ -134,7 +146,7 @@ function CommandCenterStateSurface({
 
                 <p className="status-command-copy">{summary}</p>
                 <div className="status-message-bar" role={isLoading ? "status" : "alert"}>
-                  <span className="status-message-label">Telemetry note</span>
+                  <span className="status-message-label">{messageLabel}</span>
                   <strong>{message}</strong>
                 </div>
 
@@ -186,21 +198,17 @@ function CommandCenterStateSurface({
             <aside className="status-column" aria-label="Recovery and notes">
               <section className="panel status-side-panel">
                 <div className="panel-heading">
-                  <p className="eyebrow">Recovery Path</p>
+                  <p className="eyebrow">Recovery</p>
                   <span>{debugState === "live" ? "active" : "overridden"}</span>
                 </div>
                 <div className="status-note-stack">
                   <article>
-                    <strong>{isLoading ? "Read client is in-flight" : "Surface can retry locally"}</strong>
-                    <span>
-                      {isLoading
-                        ? "The read-only client is still resolving the snapshot request."
-                        : "Retry will re-arm the read client unless the query override keeps the surface in QA mode."}
-                    </span>
+                    <strong>{recoveryTitle}</strong>
+                    <span>{recoveryDetail}</span>
                   </article>
                   <article>
-                    <strong>QA query switch</strong>
-                    <span>`?commandCenterState=loading` or `?commandCenterState=error`</span>
+                    <strong>{overrideTitle}</strong>
+                    <span>{overrideDetail}</span>
                   </article>
                 </div>
                 <button
@@ -208,7 +216,7 @@ function CommandCenterStateSurface({
                   onClick={onRetry}
                   type="button"
                 >
-                  {isLoading ? "Re-arm read client" : "Retry snapshot handshake"}
+                  {buttonLabel}
                 </button>
               </section>
 
@@ -219,12 +227,12 @@ function CommandCenterStateSurface({
                 </div>
                 <div className="status-note-stack">
                   <article>
-                    <strong>No backend writes</strong>
-                    <span>All state handling stays inside the frontend mock boundary.</span>
+                    <strong>Write path locked</strong>
+                    <span>State remains inside the frontend boundary.</span>
                   </article>
                   <article>
-                    <strong>Visual anchor preserved</strong>
-                    <span>The status scene still centers the three-gauge command language.</span>
+                    <strong>Gauge anchor retained</strong>
+                    <span>Three-dial hierarchy stays intact.</span>
                   </article>
                 </div>
               </section>
@@ -294,7 +302,7 @@ export function CommandCenter() {
     return (
       <CommandCenterStateSurface
         debugState={debugState}
-        message="Read-only telemetry gate is still calibrating the command center."
+        message="Snapshot gate aligning."
         onRetry={retry}
         status="loading"
       />
