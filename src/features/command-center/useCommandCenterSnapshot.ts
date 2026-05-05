@@ -10,6 +10,7 @@ interface CommandCenterSnapshotState {
   status: SnapshotStatus;
   errorMessage: string | null;
   debugState: CommandCenterDebugState;
+  canRetry: boolean;
   retry: () => void;
 }
 
@@ -19,7 +20,8 @@ const baseLoadingState: CommandCenterSnapshotDataState = {
   snapshot: null,
   status: "loading",
   errorMessage: null,
-  debugState: "live"
+  debugState: "live",
+  canRetry: import.meta.env.DEV
 };
 
 function getDebugState(): CommandCenterDebugState {
@@ -57,7 +59,8 @@ export function useCommandCenterSnapshot(): CommandCenterSnapshotState {
         snapshot: null,
         status: "loading",
         errorMessage: null,
-        debugState
+        debugState,
+        canRetry: true
       });
 
       return () => {
@@ -70,7 +73,8 @@ export function useCommandCenterSnapshot(): CommandCenterSnapshotState {
         snapshot: null,
         status: "error",
         errorMessage: "Simulated read boundary fault for local QA",
-        debugState
+        debugState,
+        canRetry: true
       });
 
       return () => {
@@ -89,7 +93,8 @@ export function useCommandCenterSnapshot(): CommandCenterSnapshotState {
           snapshot,
           status: "ready",
           errorMessage: null,
-          debugState
+          debugState,
+          canRetry: import.meta.env.DEV
         });
       })
       .catch((error: unknown) => {
@@ -104,7 +109,8 @@ export function useCommandCenterSnapshot(): CommandCenterSnapshotState {
             error instanceof Error
               ? error.message
               : "Unable to load command center snapshot",
-          debugState
+          debugState,
+          canRetry: import.meta.env.DEV
         });
       });
 

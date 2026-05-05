@@ -50,12 +50,14 @@ function CommandCenterStateSurface({
   status,
   message,
   onRetry,
-  debugState
+  debugState,
+  canRetry
 }: {
   status: "loading" | "error";
   message: string;
   onRetry: () => void;
   debugState: "live" | "loading" | "error";
+  canRetry: boolean;
 }) {
   const isLoading = status === "loading";
   const eyebrow = isLoading ? "Telemetry Sync" : "Snapshot Hold";
@@ -68,19 +70,33 @@ function CommandCenterStateSurface({
     debugState === "live"
       ? "Mock adapter"
       : `QA / ${debugState}`;
-  const actionLabel = isLoading ? "Stand by" : "Retry ready";
+  const actionLabel = canRetry
+    ? isLoading
+      ? "Stand by"
+      : "Retry ready"
+    : "Passive";
   const messageLabel = isLoading ? "Sync note" : "Fault note";
   const buttonLabel = isLoading ? "Re-arm" : "Retry";
-  const recoveryTitle = isLoading ? "Handshake active" : "Manual re-arm";
-  const recoveryDetail = isLoading
-    ? "Read client is still resolving the snapshot."
-    : "Retry re-arms the read client unless QA override is still active.";
-  const overrideTitle =
-    debugState === "live" ? "Client path" : "Override latch";
+  const recoveryTitle = canRetry
+    ? isLoading
+      ? "Handshake active"
+      : "Manual re-arm"
+    : "Recovery sealed";
+  const recoveryDetail = canRetry
+    ? isLoading
+      ? "Read client is still resolving the snapshot."
+      : "Retry re-arms the read client unless QA override is still active."
+    : "This surface reports state only in standard runtime.";
+  const overrideTitle = debugState === "live" ? "Client path" : "Override latch";
   const overrideDetail =
     debugState === "live"
       ? "Mock adapter online."
       : `Local state override / ${debugState}`;
+  const recoveryState = canRetry
+    ? debugState === "live"
+      ? "active"
+      : "overridden"
+    : "sealed";
 
   return (
     <AppShell>
@@ -199,7 +215,7 @@ function CommandCenterStateSurface({
               <section className="panel status-side-panel">
                 <div className="panel-heading">
                   <p className="eyebrow">Recovery</p>
-                  <span>{debugState === "live" ? "active" : "overridden"}</span>
+                  <span>{recoveryState}</span>
                 </div>
                 <div className="status-note-stack">
                   <article>
@@ -211,13 +227,15 @@ function CommandCenterStateSurface({
                     <span>{overrideDetail}</span>
                   </article>
                 </div>
-                <button
-                  className="status-action"
-                  onClick={onRetry}
-                  type="button"
-                >
-                  {buttonLabel}
-                </button>
+                {canRetry ? (
+                  <button
+                    className="status-action"
+                    onClick={onRetry}
+                    type="button"
+                  >
+                    {buttonLabel}
+                  </button>
+                ) : null}
               </section>
 
               <section className="panel status-side-panel">
@@ -295,13 +313,14 @@ function getDeliveryState(status: string): ApprovalState {
 }
 
 export function CommandCenter() {
-  const { snapshot, status, errorMessage, debugState, retry } =
+  const { snapshot, status, errorMessage, debugState, canRetry, retry } =
     useCommandCenterSnapshot();
 
   if (status === "loading") {
     return (
       <CommandCenterStateSurface
         debugState={debugState}
+        canRetry={canRetry}
         message="Snapshot gate aligning."
         onRetry={retry}
         status="loading"
@@ -313,6 +332,7 @@ export function CommandCenter() {
     return (
       <CommandCenterStateSurface
         debugState={debugState}
+        canRetry={canRetry}
         message={errorMessage ?? "No command center snapshot returned"}
         onRetry={retry}
         status="error"
