@@ -9,37 +9,37 @@ import type {
 } from "../../api/types";
 
 export const statusLabels: Record<WorkflowStatus, string> = {
-  intake: "Intake",
-  shoot: "Shoot",
-  retouch: "Retouch",
-  review: "Review",
-  delivery: "Delivery",
-  complete: "Complete"
+  intake: "接入",
+  shoot: "拍摄",
+  retouch: "精修",
+  review: "审核",
+  delivery: "交付",
+  complete: "完成"
 };
 
 export const riskLabels: Record<RiskLevel, string> = {
-  low: "Low",
-  medium: "Medium",
-  high: "High"
+  low: "低风险",
+  medium: "需关注",
+  high: "高风险"
 };
 
 export const approvalLabels: Record<ApprovalState, string> = {
-  waiting: "Waiting",
-  blocked: "Blocked",
-  cleared: "Cleared"
+  waiting: "待处理",
+  blocked: "阻塞",
+  cleared: "已清除"
 };
 
 export const approvalTypeLabels: Record<ApprovalType, string> = {
-  review: "Review",
-  delivery: "Delivery",
-  qc: "QC",
-  retouch: "Retouch"
+  review: "审核",
+  delivery: "交付",
+  qc: "质检",
+  retouch: "精修"
 };
 
 export const stageStateLabels: Record<WorkflowStageState, string> = {
-  stable: "Stable",
-  active: "Active",
-  watch: "Watch"
+  stable: "稳定",
+  active: "进行中",
+  watch: "观察"
 };
 
 export interface CommandCenterViewModel {

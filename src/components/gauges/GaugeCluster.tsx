@@ -86,7 +86,7 @@ function getGaugeReferenceImage(label: string, emphasis: "primary" | "secondary"
     return "/reference/gauge-center.png";
   }
 
-  return label === "QC Health"
+  return label === "质检健康度"
     ? "/reference/gauge-right.png"
     : "/reference/gauge-left.png";
 }
@@ -151,7 +151,7 @@ function Gauge({
           <strong>{displayValue}</strong>
           {emphasis === "primary" ? (
             <em>
-              On track
+              正常
               <i aria-hidden="true" />
             </em>
           ) : null}
@@ -315,27 +315,27 @@ export function GaugeCluster({ studio, coverage, qc }: GaugeClusterProps) {
   return (
     <section className="gauge-cluster" aria-labelledby="gauge-cluster-title">
       <h1 className="sr-only" id="gauge-cluster-title">
-        Studio Operations
+        工作室运营
       </h1>
-      <div className="gauges" aria-label="Studio operation gauges">
+      <div className="gauges" aria-label="工作室运营仪表">
         <Gauge
-          label="SKU Coverage"
+          label="SKU 覆盖率"
           value={coverage.skuCoveragePercent}
           caption={`${coverage.completedSkus} / ${coverage.totalSkus}`}
-          meta="SKU mapped"
+          meta="已映射 SKU"
         />
         <Gauge
-          caption="Project Progress"
+          caption="项目进度"
           emphasis="primary"
-          label="Studio Readiness"
-          meta={`Phase ${studio.activeProjectCount} of 5`}
+          label="工作室就绪度"
+          meta={`进行到第 ${studio.activeProjectCount} / 5 阶段`}
           value={studio.readinessPercent}
         />
         <Gauge
-          label="QC Health"
+          label="质检健康度"
           value={qc.qcHealthPercent}
           caption={`${qc.passed} / ${qc.passed + qc.flagged}`}
-          meta="Images passed"
+          meta="通过图片"
         />
       </div>
     </section>

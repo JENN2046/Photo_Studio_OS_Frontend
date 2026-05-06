@@ -26,6 +26,7 @@ interface UseBackendReadModelOptions<T> {
   enabled?: boolean;
   idleMessage: string;
   load: (runtime: BackendReadModelRuntime) => Promise<T>;
+  mockData?: T;
   deps: DependencyList;
 }
 
@@ -52,7 +53,7 @@ function getBaseState<T>(): BackendReadModelState<T> {
   return {
     data: null,
     status: "loading",
-    message: "Read model request is loading.",
+    message: "只读模型请求加载中。",
     errorMessage: null,
     canRetry: false,
     retry: () => undefined
@@ -63,6 +64,7 @@ export function useBackendReadModel<T>({
   enabled = true,
   idleMessage,
   load,
+  mockData,
   deps
 }: UseBackendReadModelOptions<T>): BackendReadModelState<T> {
   const [reloadToken, setReloadToken] = useState(0);
@@ -93,10 +95,25 @@ export function useBackendReadModel<T>({
     const runtime = getBackendReadModelRuntime();
 
     if (!runtime) {
+      if (mockData) {
+        setState({
+          data: mockData,
+          status: "ready",
+          message: "正在显示本地只读模拟数据。",
+          errorMessage: null,
+          canRetry: false,
+          retry
+        });
+
+        return () => {
+          isCurrent = false;
+        };
+      }
+
       setState({
         data: null,
         status: "missing-config",
-        message: "VITE_BACKEND_API_BASE_URL is not configured.",
+        message: "未配置 VITE_BACKEND_API_BASE_URL。",
         errorMessage: null,
         canRetry: false,
         retry
@@ -110,7 +127,7 @@ export function useBackendReadModel<T>({
     setState({
       data: null,
       status: "loading",
-      message: "Read model request is loading.",
+      message: "只读模型请求加载中。",
       errorMessage: null,
       canRetry: false,
       retry
@@ -125,7 +142,7 @@ export function useBackendReadModel<T>({
         setState({
           data,
           status: "ready",
-          message: "Read model loaded.",
+          message: "只读模型已加载。",
           errorMessage: null,
           canRetry: true,
           retry
@@ -139,9 +156,11 @@ export function useBackendReadModel<T>({
         setState({
           data: null,
           status: "error",
-          message: "Read model request failed.",
+          message: "只读模型请求失败。",
           errorMessage:
-            error instanceof Error ? error.message : "Unknown read model error",
+            error instanceof Error
+              ? error.message
+              : "未知的只读模型错误",
           canRetry: true,
           retry
         });

@@ -5,85 +5,85 @@ import { useCommandCenterSnapshot } from "./useCommandCenterSnapshot";
 
 const loadingStatusLanes = [
   {
-    label: "Mirror Cache",
-    detail: "Staging snapshot envelope",
-    state: "Buffering"
+    label: "镜像缓存",
+    detail: "快照胶囊准备中",
+    state: "排队"
   },
   {
-    label: "Gauge Bus",
-    detail: "Aligning cockpit telemetry",
-    state: "Syncing"
+    label: "仪表总线",
+    detail: "命令舱遥测对齐中",
+    state: "同步中"
   },
   {
-    label: "Ops Rail",
-    detail: "Priming risk and queue surfaces",
-    state: "Queued"
+    label: "运维通道",
+    detail: "风险与队列面准备中",
+    state: "待命"
   }
 ] as const;
 
 const errorStatusLanes = [
   {
-    label: "Read Boundary",
-    detail: "Snapshot stream did not settle",
-    state: "Hold"
+    label: "读取边界",
+    detail: "快照流未稳定",
+    state: "停滞"
   },
   {
-    label: "Risk Feed",
-    detail: "Fallback telemetry unavailable",
-    state: "Watch"
+    label: "风险流",
+    detail: "备用遥测不可用",
+    state: "观察"
   },
   {
-    label: "Recovery Path",
-    detail: "Retry or inspect internal debug override",
-    state: "Manual"
+    label: "恢复路径",
+    detail: "可重试或检查内部调试覆盖",
+    state: "手动"
   }
 ] as const;
 
+function getDebugStateLabel(debugState: "live" | "loading" | "error") {
+  const labels = {
+    live: "实时态",
+    loading: "加载态",
+    error: "错误态"
+  } satisfies Record<typeof debugState, string>;
+
+  return labels[debugState];
+}
+
 function getDebugModeLabel(debugState: "live" | "loading" | "error") {
-  return debugState === "live" ? "Mock adapter" : `Internal debug / ${debugState}`;
+  return debugState === "live"
+    ? "模拟适配器"
+    : `内部调试 / ${getDebugStateLabel(debugState)}`;
 }
 
 function getDebugClientLabel(debugState: "live" | "loading" | "error") {
-  return debugState === "live" ? "Mock adapter" : "Debug override";
+  return debugState === "live" ? "模拟适配器" : "调试覆盖";
 }
 
 function formatCommandDate(value: string) {
   const [year, month, day] = value.split("-");
-  const monthLabels = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec"
-  ];
-  const monthIndex = Number(month) - 1;
+  const monthNumber = Number(month);
   const dayNumber = Number(day);
 
-  if (!year || !month || !day || !monthLabels[monthIndex] || !dayNumber) {
+  if (!year || !monthNumber || !dayNumber) {
     return value;
   }
 
-  return `${monthLabels[monthIndex].toUpperCase()} ${dayNumber}`;
+  return `${monthNumber}月${dayNumber}日`;
 }
 
 function formatQueueDue(ageHours: number) {
   const totalMinutes = Math.round(ageHours * 60);
 
   if (totalMinutes < 60) {
-    return `Due · ${totalMinutes}m`;
+    return `预计 · ${totalMinutes}分钟`;
   }
 
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
 
-  return minutes > 0 ? `Due · ${hours}h ${minutes}m` : `Due · ${hours}h`;
+  return minutes > 0
+    ? `预计 · ${hours}小时 ${minutes}分钟`
+    : `预计 · ${hours}小时`;
 }
 
 function getProjectPhaseLabel(projectId: string) {
@@ -115,10 +115,10 @@ function createReadModelHref(
 
 function getApprovalSeverity(state: "waiting" | "blocked" | "cleared") {
   if (state === "blocked") {
-    return "High";
+    return "高";
   }
 
-  return state === "waiting" ? "Med" : "Low";
+  return state === "waiting" ? "中" : "低";
 }
 
 function getRecoveryStateLabel(
@@ -126,10 +126,10 @@ function getRecoveryStateLabel(
   canRetry: boolean
 ) {
   if (!canRetry) {
-    return "sealed";
+    return "已封闭";
   }
 
-  return debugState === "live" ? "active" : "debug-held";
+  return debugState === "live" ? "激活" : "调试保持";
 }
 
 function getVisualTone(seed: string) {
@@ -165,6 +165,22 @@ function getVisualKind(seed: string) {
   }
 
   if (normalizedSeed.includes("fragrance") || normalizedSeed.includes("npr")) {
+    return "asset-thumb-bottle";
+  }
+
+  if (seed.includes("极光") || seed.includes("椅")) {
+    return "asset-thumb-chair";
+  }
+
+  if (seed.includes("三件套") || seed.includes("沙发")) {
+    return "asset-thumb-sofa";
+  }
+
+  if (seed.includes("台灯") || seed.includes("灯具") || seed.includes("流明")) {
+    return "asset-thumb-lamp";
+  }
+
+  if (seed.includes("香氛") || seed.includes("瓶")) {
     return "asset-thumb-bottle";
   }
 
@@ -244,35 +260,35 @@ function CommandCenterStateSurface({
   canRetry: boolean;
 }) {
   const isLoading = status === "loading";
-  const eyebrow = isLoading ? "Telemetry Sync" : "Snapshot Hold";
-  const heading = isLoading ? "Telemetry Aligning" : "Read Hold";
+  const eyebrow = isLoading ? "遥测同步" : "快照停机";
+  const heading = isLoading ? "遥测对齐中" : "只读保留态";
   const summary = isLoading
-    ? "Read-only snapshot is aligning before the cockpit opens."
-    : "Snapshot did not settle. Cockpit remains in a safe read hold.";
+    ? "命令舱启动前正在对齐只读快照。"
+    : "快照尚未稳定。命令舱保持只读安全状态。";
   const lanes = isLoading ? loadingStatusLanes : errorStatusLanes;
   const modeLabel = getDebugModeLabel(debugState);
   const actionLabel = canRetry
     ? isLoading
-      ? "Stand by"
-      : "Debug ready"
-    : "Passive";
-  const messageLabel = isLoading ? "Sync note" : "Fault note";
-  const buttonLabel = isLoading ? "Re-arm" : "Retry";
+      ? "待机"
+      : "调试就绪"
+    : "仅观察";
+  const messageLabel = isLoading ? "同步提示" : "异常说明";
+  const buttonLabel = isLoading ? "重新准备" : "重试";
   const recoveryTitle = canRetry
     ? isLoading
-      ? "Handshake active"
-      : "Manual re-arm"
-    : "Recovery sealed";
+      ? "握手激活"
+      : "手动重新准备"
+    : "恢复已封存";
   const recoveryDetail = canRetry
     ? isLoading
-      ? "Read client is still resolving the snapshot."
-      : "Retry re-arms the read client unless the internal debug override is still active."
-    : "This surface reports state only in standard runtime.";
-  const overrideTitle = debugState === "live" ? "Client path" : "Debug latch";
+      ? "只读客户端仍在解析快照。"
+      : "当内部调试覆盖未激活时，重试将重启只读客户端。"
+    : "该面板在标准运行时仅报告状态。";
+  const overrideTitle = debugState === "live" ? "客户端路径" : "调试闩锁";
   const overrideDetail =
     debugState === "live"
-      ? "Mock adapter online."
-      : `Internal debug override / ${debugState}`;
+      ? "模拟适配器在线。"
+      : `内部调试覆盖 / ${getDebugStateLabel(debugState)}`;
   const recoveryState = getRecoveryStateLabel(debugState, canRetry);
 
   return (
@@ -280,19 +296,19 @@ function CommandCenterStateSurface({
       <main className="command-center">
         <section
           className="hero-band status-hero-band"
-          aria-label={`Command center ${status}`}
+          aria-label={`命令中心${isLoading ? "加载态" : "异常态"}`}
         >
           <div className="status-grid">
-            <aside className="status-column" aria-label="Read-only staging">
+            <aside className="status-column" aria-label="只读准备状态">
               <section className="panel status-side-panel">
                 <div className="panel-heading">
-                  <p className="eyebrow">Read Boundary</p>
-                  <span>{isLoading ? "arming" : "hold"}</span>
+                  <p className="eyebrow">读取边界</p>
+                  <span>{isLoading ? "准备中" : "停留中"}</span>
                 </div>
                 <div className="status-chip-stack">
-                  <span className="status-chip">Mode / {modeLabel}</span>
+                  <span className="status-chip">模式 / {modeLabel}</span>
                   <span className="status-chip">
-                    Surface / {isLoading ? "buffered" : "degraded"}
+                    面板 / {isLoading ? "已缓冲" : "降级"}
                   </span>
                 </div>
                 <div className="status-lane-list">
@@ -308,17 +324,17 @@ function CommandCenterStateSurface({
 
               <section className="panel status-side-panel">
                 <div className="panel-heading">
-                  <p className="eyebrow">Operator Impact</p>
-                  <span>read-only</span>
+                  <p className="eyebrow">运营影响</p>
+                  <span>只读</span>
                 </div>
                 <div className="status-note-stack">
                   <article>
-                    <strong>Surfaces sealed</strong>
-                    <span>Write path stays disabled.</span>
+                    <strong>只读封存</strong>
+                    <span>写入路径保持禁用。</span>
                   </article>
                   <article>
-                    <strong>No inferred fill</strong>
-                    <span>Snapshot is required before render.</span>
+                    <strong>无推断补齐</strong>
+                    <span>渲染前必须获得快照。</span>
                   </article>
                 </div>
               </section>
@@ -331,67 +347,70 @@ function CommandCenterStateSurface({
                     <p className="eyebrow">{eyebrow}</p>
                     <h1>{heading}</h1>
                   </div>
-                  <div className="read-only-badge" aria-label="Read-only mode">
-                    <span>{isLoading ? "Buffering" : "Hold"}</span>
+                  <div className="read-only-badge" aria-label="只读模式">
+                    <span>{isLoading ? "缓冲" : "保持"}</span>
                     <strong>{modeLabel}</strong>
                   </div>
                 </div>
 
                 <p className="status-command-copy">{summary}</p>
-                <div className="status-message-bar" role={isLoading ? "status" : "alert"}>
+                <div
+                  className="status-message-bar"
+                  role={isLoading ? "status" : "alert"}
+                >
                   <span className="status-message-label">{messageLabel}</span>
                   <strong>{message}</strong>
                 </div>
 
-                <div className="status-dial-row" aria-label="Status alignment">
+                <div className="status-dial-row" aria-label="状态对齐">
                   <article className="status-dial-card">
                     <div className="status-dial status-dial-left">
                       <span className="status-dial-core" />
                     </div>
-                    <strong>Snapshot envelope</strong>
-                    <span>{isLoading ? "Negotiating payload edges" : "Envelope lost continuity"}</span>
+                    <strong>快照封套</strong>
+                    <span>{isLoading ? "正在协商数据边界" : "封套连续性已失效"}</span>
                   </article>
                   <article className="status-dial-card status-dial-card-primary">
                     <div className="status-dial status-dial-primary">
                       <span className="status-dial-core" />
                     </div>
-                    <strong>{isLoading ? "Cockpit sync" : "Operator-safe fallback"}</strong>
+                    <strong>{isLoading ? "舱体同步" : "安全只读降级"}</strong>
                     <span>
                       {isLoading
-                        ? "Gauges remain dark until read model aligns"
-                        : "Surface is held in a non-destructive read-only posture"}
+                        ? "仅当只读模型稳定，仪表才会亮起"
+                        : "当前面板维持非破坏性只读姿态"}
                     </span>
                   </article>
                   <article className="status-dial-card">
                     <div className="status-dial status-dial-right">
                       <span className="status-dial-core" />
                     </div>
-                    <strong>Ops rail feed</strong>
-                    <span>{isLoading ? "Priming queue and risk rails" : "Waiting for manual recovery path"}</span>
+                    <strong>运维通道</strong>
+                    <span>{isLoading ? "预热队列与风险轨迹" : "等待手动恢复路径"}</span>
                   </article>
                 </div>
 
                 <div className="status-metric-strip">
                   <article>
-                    <span>Boundary</span>
-                    <strong>{isLoading ? "Sealed" : "Tripped"}</strong>
+                    <span>边界</span>
+                    <strong>{isLoading ? "封存" : "已触发"}</strong>
                   </article>
                   <article>
-                    <span>Client</span>
+                    <span>客户端</span>
                     <strong>{getDebugClientLabel(debugState)}</strong>
                   </article>
                   <article>
-                    <span>Action</span>
+                    <span>动作</span>
                     <strong>{actionLabel}</strong>
                   </article>
                 </div>
               </div>
             </section>
 
-            <aside className="status-column" aria-label="Recovery and notes">
+            <aside className="status-column" aria-label="恢复与防护说明">
               <section className="panel status-side-panel">
                 <div className="panel-heading">
-                  <p className="eyebrow">Recovery</p>
+                  <p className="eyebrow">恢复</p>
                   <span>{recoveryState}</span>
                 </div>
                 <div className="status-note-stack">
@@ -417,17 +436,17 @@ function CommandCenterStateSurface({
 
               <section className="panel status-side-panel">
                 <div className="panel-heading">
-                  <p className="eyebrow">Safeguards</p>
-                  <span>alpha</span>
+                  <p className="eyebrow">防护</p>
+                  <span>内测</span>
                 </div>
                 <div className="status-note-stack">
                   <article>
-                    <strong>Write path locked</strong>
-                    <span>State remains inside the frontend boundary.</span>
+                    <strong>写入已锁</strong>
+                    <span>状态仅保留在前端边界。</span>
                   </article>
                   <article>
-                    <strong>Gauge anchor retained</strong>
-                    <span>Three-dial hierarchy stays intact.</span>
+                    <strong>保留仪表锚点</strong>
+                    <span>三仪表层级保持不变。</span>
                   </article>
                 </div>
               </section>
@@ -449,7 +468,7 @@ export function CommandCenter() {
       <CommandCenterStateSurface
         debugState={debugState}
         canRetry={canRetry}
-        message="Snapshot gate aligning."
+        message="快照闸门对齐中。"
         onRetry={retry}
         status="loading"
       />
@@ -461,7 +480,7 @@ export function CommandCenter() {
       <CommandCenterStateSurface
         debugState={debugState}
         canRetry={canRetry}
-        message={errorMessage ?? "No command center snapshot returned"}
+        message={errorMessage ?? "未返回命令中心快照"}
         onRetry={retry}
         status="error"
       />
@@ -472,14 +491,19 @@ export function CommandCenter() {
   const primaryReviewSessionId = snapshot.reviews[0]?.id;
   const primaryDeliveryId = snapshot.deliveries[0]?.id;
   const assetInboxHref = createReadModelHref("asset-inbox", {
-    projectId: primaryProjectId
+    projectId: primaryProjectId,
+    reviewSessionId: primaryReviewSessionId,
+    deliveryId: primaryDeliveryId
   });
   const qcRetouchHref = createReadModelHref("qc-retouch", {
-    projectId: primaryProjectId
+    projectId: primaryProjectId,
+    reviewSessionId: primaryReviewSessionId,
+    deliveryId: primaryDeliveryId
   });
   const reviewGalleryHref = createReadModelHref("review-gallery", {
     reviewSessionId: primaryReviewSessionId,
-    projectId: primaryProjectId
+    projectId: primaryProjectId,
+    deliveryId: primaryDeliveryId
   });
   const deliveryReadinessHref = createReadModelHref("delivery-readiness", {
     deliveryId: primaryDeliveryId,
@@ -490,7 +514,7 @@ export function CommandCenter() {
   return (
     <AppShell>
       <main className="command-center cockpit-command-center">
-        <section className="cockpit-frame" aria-label="Command center overview">
+        <section className="cockpit-frame" aria-label="命令中心总览">
           <div className="cockpit-main">
             <GaugeCluster
               coverage={snapshot.coverage}
@@ -498,7 +522,7 @@ export function CommandCenter() {
               studio={snapshot.studio}
             />
 
-            <section className="execution-grid" aria-label="Read-only execution surfaces">
+            <section className="execution-grid" aria-label="只读执行面板">
               <section
                 className="panel project-execution-panel"
                 id="projects"
@@ -506,22 +530,26 @@ export function CommandCenter() {
               >
                 <div className="panel-heading">
                   <p className="eyebrow" id="projects-title">
-                    Project Execution
+                    项目执行
                   </p>
-                  <a href={assetInboxHref}>Asset Inbox</a>
+                  <a href={assetInboxHref}>素材收件箱</a>
                 </div>
-                <div className="project-table" role="table" aria-label="Project read-only list">
+                <div
+                  className="project-table"
+                  role="table"
+                  aria-label="项目只读列表"
+                >
                   <div className="table-row table-head" role="row">
-                    <span role="columnheader">Project</span>
-                    <span role="columnheader">Progress</span>
-                    <span role="columnheader">Phase</span>
-                    <span role="columnheader">Due</span>
+                    <span role="columnheader">项目</span>
+                    <span role="columnheader">进度</span>
+                    <span role="columnheader">阶段</span>
+                    <span role="columnheader">截止</span>
                   </div>
                   {snapshot.projects.map((project) => (
                     <div className="table-row" role="row" key={project.id}>
                       <span className="project-cell" role="cell">
                         <AssetThumb
-                          label={`${project.name} visual marker`}
+                          label={`${project.name} 视觉标记`}
                           seed={`${project.id}-${project.name}`}
                           size="table"
                         />
@@ -543,15 +571,22 @@ export function CommandCenter() {
                 </div>
               </section>
 
-              <section className="panel timeline-panel" id="activity" aria-labelledby="activity-title">
+              <section
+                className="panel timeline-panel"
+                id="activity"
+                aria-labelledby="activity-title"
+              >
                 <div className="panel-heading">
                   <p className="eyebrow" id="activity-title">
-                    Activity Timeline
+                    活动时间线
                   </p>
                 </div>
                 <div className="timeline">
                   {snapshot.activityTimeline.map((event, index) => (
-                    <article className={`timeline-event timeline-event-${index % 3}`} key={event.id}>
+                    <article
+                      className={`timeline-event timeline-event-${index % 3}`}
+                      key={event.id}
+                    >
                       <time>{event.at}</time>
                       <div>
                         <strong>{event.actor}</strong>
@@ -569,15 +604,15 @@ export function CommandCenter() {
               >
                 <div className="panel-heading">
                   <p className="eyebrow" id="ai-title">
-                    AI Inspection Feed
+                    Agent 巡检
                   </p>
-                  <span>View All</span>
+                  <span>查看全部</span>
                 </div>
                 <div className="inspection-feed">
                   {snapshot.aiInspectionFeed.map((event) => (
                     <article key={event.id}>
                       <AssetThumb
-                        label={`${event.assetId} inspection marker`}
+                        label={`${event.assetId} 巡检标记`}
                         seed={`${event.assetId}-${event.finding}`}
                       />
                       <div>
@@ -592,7 +627,7 @@ export function CommandCenter() {
             </section>
           </div>
 
-          <aside className="right-rail cockpit-side" aria-label="Risk and approval queue">
+          <aside className="right-rail cockpit-side" aria-label="风险与审批队列">
             <section
               className="panel"
               id="risk"
@@ -600,7 +635,7 @@ export function CommandCenter() {
             >
               <div className="panel-heading">
                 <p className="eyebrow" id="risk-pulse-title">
-                  Risk Pulse
+                  风险雷达
                 </p>
                 <span>•••</span>
               </div>
@@ -613,7 +648,7 @@ export function CommandCenter() {
                 ))}
               </div>
               <a className="panel-link" href={qcRetouchHref}>
-                Open QC / Retouch
+                打开质检 / 精修
               </a>
             </section>
 
@@ -624,15 +659,17 @@ export function CommandCenter() {
             >
               <div className="panel-heading">
                 <p className="eyebrow" id="approval-queue-title">
-                  Approval Queue
+                  审批队列
                 </p>
-                <span className="queue-count">{snapshot.approvalQueue.length}</span>
+                <span className="queue-count">
+                  {snapshot.approvalQueue.length}
+                </span>
               </div>
               <div className="queue-list">
                 {snapshot.approvalQueue.map((item) => (
                   <article className={`queue-item queue-${item.state}`} key={item.id}>
                     <AssetThumb
-                      label={`${item.title} approval marker`}
+                      label={`${item.title} 审批标记`}
                       seed={`${item.id}-${item.title}`}
                     />
                     <div>
@@ -649,18 +686,18 @@ export function CommandCenter() {
                 ))}
               </div>
               <a className="panel-link" href={reviewGalleryHref}>
-                Open Review Gallery
+                打开审核画廊
               </a>
             </section>
 
-            <div className="side-status-grid" aria-label="Read-only side status">
+            <div className="side-status-grid" aria-label="只读侧栏状态">
               <a className="side-status-card side-status-alert" href={qcRetouchHref}>
-                <strong>AI Flagged</strong>
-                <span>{snapshot.aiInspectionFeed.length} Items</span>
+                <strong>巡检预警</strong>
+                <span>{snapshot.aiInspectionFeed.length} 项</span>
               </a>
               <a className="side-status-card" href={deliveryReadinessHref}>
-                <strong>Storage</strong>
-                <span>Delivery</span>
+                <strong>交付包</strong>
+                <span>交付准备</span>
               </a>
             </div>
           </aside>

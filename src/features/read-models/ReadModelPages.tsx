@@ -15,6 +15,12 @@ import {
   createReviewGalleryViewModel,
   type ReadModelViewModel
 } from "./readModelViewModels";
+import {
+  createMockAssetInbox,
+  createMockDeliveryReadiness,
+  createMockQcRetouchQueue,
+  createMockReviewGallery
+} from "./readModelMocks";
 import "./readModelPages.css";
 
 export interface ReadModelPageProps {
@@ -37,10 +43,10 @@ interface ReadModelFrameProps {
 }
 
 const routeLabels: Record<ReadModelRoute, string> = {
-  "asset-inbox": "Asset Inbox",
-  "qc-retouch": "QC / Retouch",
-  "review-gallery": "Review Gallery",
-  "delivery-readiness": "Delivery Readiness"
+  "asset-inbox": "素材收件箱",
+  "qc-retouch": "质检 / 精修",
+  "review-gallery": "审核画廊",
+  "delivery-readiness": "交付就绪"
 };
 
 function getParam(params: URLSearchParams, key: string): string {
@@ -88,7 +94,7 @@ function ReadModelFrame({
             <h1>{title}</h1>
             <p>{deck}</p>
           </div>
-          <nav className="read-model-tabs" aria-label="Read model surfaces">
+          <nav className="read-model-tabs" aria-label="只读模型场景">
             {(Object.keys(routeLabels) as ReadModelRoute[]).map((route) => (
               <a
                 aria-current={route === activeRoute ? "page" : undefined}
@@ -118,10 +124,10 @@ function ReadModelStateNotice<T>({
   }
 
   const titleByStatus = {
-    "missing-config": "Backend read model not configured",
+    "missing-config": "后端只读模型未配置",
     idle: idleLabel,
-    loading: "Loading read model",
-    error: "Read model unavailable"
+    loading: "只读模型加载中",
+    error: "只读模型不可用"
   } satisfies Record<Exclude<typeof state.status, "ready">, string>;
 
   return (
@@ -132,7 +138,7 @@ function ReadModelStateNotice<T>({
       </div>
       {state.canRetry ? (
         <button onClick={state.retry} type="button">
-          Retry
+          重试
         </button>
       ) : null}
     </section>
@@ -142,7 +148,10 @@ function ReadModelStateNotice<T>({
 function ReadModelDashboard({ viewModel }: { viewModel: ReadModelViewModel }) {
   return (
     <section className="read-model-grid">
-      <section className="read-model-metrics" aria-label={`${viewModel.title} metrics`}>
+      <section
+        className="read-model-metrics"
+        aria-label={`${viewModel.title} 指标面板`}
+      >
         {viewModel.metrics.map((metric) => (
           <article
             className={`read-model-metric read-model-tone-${metric.tone}`}
@@ -155,13 +164,13 @@ function ReadModelDashboard({ viewModel }: { viewModel: ReadModelViewModel }) {
         ))}
       </section>
 
-      <section className="read-model-table" aria-label={`${viewModel.title} rows`}>
+      <section className="read-model-table" aria-label={`${viewModel.title} 明细`}>
         <div className="read-model-table-head">
           <div>
             <p className="eyebrow">{viewModel.title}</p>
             <strong>{viewModel.subtitle}</strong>
           </div>
-          <span>{viewModel.rows.length} rows</span>
+          <span>{viewModel.rows.length} 条</span>
         </div>
         <div className="read-model-row-list">
           {viewModel.rows.map((row) => (
@@ -178,6 +187,22 @@ function ReadModelDashboard({ viewModel }: { viewModel: ReadModelViewModel }) {
           ))}
         </div>
       </section>
+
+      <section
+        className="read-model-detail-grid"
+        aria-label={`${viewModel.title} 只读详情`}
+      >
+        {viewModel.details.map((detail) => (
+          <article
+            className={`read-model-detail read-model-tone-${detail.tone}`}
+            key={detail.label}
+          >
+            <span>{detail.label}</span>
+            <strong>{detail.title}</strong>
+            <small>{detail.detail}</small>
+          </article>
+        ))}
+      </section>
     </section>
   );
 }
@@ -186,21 +211,25 @@ export function AssetInboxPage({ params }: ReadModelPageProps) {
   const projectId = getParam(params, "projectId");
   const state = useBackendReadModel({
     enabled: Boolean(projectId),
-    idleMessage: "Select a projectId to load Asset Inbox.",
+    idleMessage: "请先选择 projectId 加载素材收件箱。",
     load: ({ baseUrl, options }) =>
       fetchAssetInboxReadModel(baseUrl, projectId, { limit: 24 }, options),
+    mockData: projectId ? createMockAssetInbox(projectId) : undefined,
     deps: [projectId]
   });
 
   return (
     <ReadModelFrame
       activeRoute="asset-inbox"
-      deck="Read-only intake, binding, file metadata, and latest QC state."
-      eyebrow="Backend v2 Read Model"
+      deck="只读场景：入库、绑定、文件元数据与最新质检状态。"
+      eyebrow="v2 只读模型"
       params={params}
-      title="Asset Inbox"
+      title="素材收件箱"
     >
-      <ReadModelStateNotice state={state} idleLabel="Project not selected" />
+      <ReadModelStateNotice
+        state={state}
+        idleLabel="请先选择 projectId"
+      />
       {state.data ? (
         <ReadModelDashboard
           viewModel={createAssetInboxViewModel(state.data)}
@@ -214,21 +243,22 @@ export function QcRetouchQueuePage({ params }: ReadModelPageProps) {
   const projectId = getParam(params, "projectId");
   const state = useBackendReadModel({
     enabled: Boolean(projectId),
-    idleMessage: "Select a projectId to load QC / Retouch Queue.",
+    idleMessage: "请先选择 projectId 加载质检 / 精修队列。",
     load: ({ baseUrl, options }) =>
       fetchQcRetouchQueueReadModel(baseUrl, projectId, { limit: 24 }, options),
+    mockData: projectId ? createMockQcRetouchQueue(projectId) : undefined,
     deps: [projectId]
   });
 
   return (
     <ReadModelFrame
       activeRoute="qc-retouch"
-      deck="Read-only QC findings, retouch task posture, assignment, and blocker context."
-      eyebrow="Backend v2 Read Model"
+      deck="只读场景：质检告警、精修状态、负责人与阻塞说明。"
+      eyebrow="v2 只读模型"
       params={params}
-      title="QC / Retouch Queue"
+      title="质检 / 精修队列"
     >
-      <ReadModelStateNotice state={state} idleLabel="Project not selected" />
+      <ReadModelStateNotice state={state} idleLabel="请先选择 projectId" />
       {state.data ? (
         <ReadModelDashboard
           viewModel={createQcRetouchQueueViewModel(state.data)}
@@ -242,23 +272,26 @@ export function ReviewGalleryPage({ params }: ReadModelPageProps) {
   const reviewSessionId = getParam(params, "reviewSessionId");
   const state = useBackendReadModel({
     enabled: Boolean(reviewSessionId),
-    idleMessage: "Select a reviewSessionId to load Review Gallery.",
+    idleMessage: "请先选择 reviewSessionId 加载审核画廊。",
     load: ({ baseUrl, options }) =>
       fetchReviewGalleryReadModel(baseUrl, reviewSessionId, options),
+    mockData: reviewSessionId
+      ? createMockReviewGallery(reviewSessionId)
+      : undefined,
     deps: [reviewSessionId]
   });
 
   return (
     <ReadModelFrame
       activeRoute="review-gallery"
-      deck="Read-only client review gallery state with public access still disabled."
-      eyebrow="Backend v2 Read Model"
+      deck="只读场景：客户审核素材、评论与修订状态（外部访问仍禁用）。"
+      eyebrow="v2 只读模型"
       params={params}
-      title="Review Gallery"
+      title="审核画廊"
     >
       <ReadModelStateNotice
         state={state}
-        idleLabel="Review session not selected"
+        idleLabel="请先选择 reviewSessionId"
       />
       {state.data ? (
         <ReadModelDashboard
@@ -273,21 +306,24 @@ export function DeliveryReadinessPage({ params }: ReadModelPageProps) {
   const deliveryId = getParam(params, "deliveryId");
   const state = useBackendReadModel({
     enabled: Boolean(deliveryId),
-    idleMessage: "Select a deliveryId to load Delivery Readiness.",
+    idleMessage: "请先选择 deliveryId 加载交付就绪。",
     load: ({ baseUrl, options }) =>
       fetchDeliveryReadinessReadModel(baseUrl, deliveryId, options),
+    mockData: deliveryId
+      ? createMockDeliveryReadiness(deliveryId)
+      : undefined,
     deps: [deliveryId]
   });
 
   return (
     <ReadModelFrame
       activeRoute="delivery-readiness"
-      deck="Read-only delivery checklist, package state, blockers, and external access boundary."
-      eyebrow="Backend v2 Read Model"
+      deck="只读场景：交付清单、就绪检查、阻断与外部访问边界。"
+      eyebrow="v2 只读模型"
       params={params}
-      title="Delivery Readiness"
+      title="交付就绪"
     >
-      <ReadModelStateNotice state={state} idleLabel="Delivery not selected" />
+      <ReadModelStateNotice state={state} idleLabel="请先选择 deliveryId" />
       {state.data ? (
         <ReadModelDashboard
           viewModel={createDeliveryReadinessViewModel(state.data)}
