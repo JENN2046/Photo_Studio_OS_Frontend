@@ -89,6 +89,7 @@ Current safe queue after the Command Center Alpha local commit.
 1. Decide whether to push local commits to a remote branch.
 2. Add a focused read-only view model validation path if the project later gains a test script.
 3. Continue viewport QA only if a new breakpoint or state surface exposes a real layout issue.
+4. Wire Asset Inbox / QC / Review / Delivery read-only API fetchers into owned pages or view models after ownership with the active frontend thread is clear.
 ```
 
 ### done
@@ -111,6 +112,9 @@ Current safe queue after the Command Center Alpha local commit.
 15. Ran local QA at 1024px, 780px, and 390px state surfaces.
 16. Fixed narrow viewport ordering so the primary gauge and main status surface appear before secondary rails.
 17. Fixed narrow status message wrapping for long error text.
+18. Added optional Command Center backend v2 read-model bridge in src/api while preserving mock-first default behavior.
+19. Added typed read-only API fetchers for Asset Inbox, QC / Retouch Queue, Review Gallery, and Delivery Readiness.
+20. Validated the five-endpoint API bridge with npm run lint, npm run build, and an HTTP 200 check against the existing local Vite server.
 ```
 
 ### blocked

@@ -85,6 +85,33 @@ Not validated:
 - No commit or push was performed for this follow-up.
 Notes:
 - The reused local dev server at 127.0.0.1:5173 was not stopped.
+
+## VALIDATION-20260506-1505
+
+Task: Optional frontend v2 backend read-model API bridge.
+Commands run:
+- npm run lint
+- npm run build
+- Invoke-WebRequest http://127.0.0.1:5173
+- git diff --check
+Result: passed
+Failures:
+- Initial typecheck rejected passing specific query interfaces into a Record<string, string | number | undefined> helper.
+Fix attempted:
+- Narrowed query serialization to accept object input and serialize only string/number values.
+Re-run result:
+- npm run lint passed.
+- npm run build passed.
+- HTTP check returned 200.
+- git diff --check passed.
+Not validated:
+- No npm test script is defined.
+- No backend live integration request was run from the frontend in this slice.
+- No screenshot QA was run because this was an API boundary change.
+Notes:
+- Existing Vite dev server at 127.0.0.1:5173 was reused and not stopped.
+- Frontend remains mock-first unless VITE_BACKEND_API_BASE_URL is configured.
+- API bridge covers Command Center, Asset Inbox, QC / Retouch Queue, Review Gallery, and Delivery Readiness.
 ```
 
 ---

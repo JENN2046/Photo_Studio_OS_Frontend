@@ -10,10 +10,10 @@ Codex should update this after each meaningful batch of local frontend work.
 
 ```text
 Status: complete-candidate
-Updated: 2026-05-05 20:45 +0800
+Updated: 2026-05-06 15:05 +0800
 Repo: Photo_Studio_OS_Frontend
 Mode: A4-Sustained Local Frontend Autopilot
-Mission: T128-001 Command Center Read-only Frontend Skeleton
+Mission: Frontend v2 backend read-model API bridge
 ```
 
 ---
@@ -25,8 +25,8 @@ Fill from actual command output.
 ```text
 Workspace: A:\Photo_Studio_OS_Frontend
 Branch: main
-Worktree: local QA follow-up edits pending commit
-Diff stat: src/styles/global.css plus .agent_board updates
+Worktree: dirty; existing frontend-thread edits plus local API bridge and board updates
+Diff stat: existing UI/style/mock/docs/public changes; local API changes under src/api plus .agent_board updates
 Package manager: npm with package-lock.json
 Available scripts: dev, build, lint, preview
 ```
@@ -45,11 +45,11 @@ npm run
 ## Completed Since Last Checkpoint
 
 ```text
-Created local commit 180a708: feat: refine command center alpha.
-Pushed local commits 180a708 and 4f4e504 to origin/main after explicit approval.
-Ran local frontend QA at 1024x768, 780x844, 390x844 loading, and 390x844 error.
-Fixed responsive ordering so the primary gauge and main status surface lead on narrow viewports.
-Fixed status message wrapping for long error text on narrow viewports.
+Added src/api/backendReadModels.ts to map GET /api/v1/command-center/v2 into the existing CommandCenterSnapshot UI contract.
+Added typed read-only fetchers for Asset Inbox, QC / Retouch Queue, Review Gallery, and Delivery Readiness.
+Updated src/api/client.ts so the frontend remains mock-first by default and switches to backend only when VITE_BACKEND_API_BASE_URL is configured.
+Added Vite env type declarations for VITE_BACKEND_API_BASE_URL, VITE_BACKEND_USER_ROLE, and VITE_BACKEND_USER_NAME.
+Did not touch CommandCenter components, styles, mock data, backend repo, dependencies, or .env.
 ```
 
 ---
@@ -57,12 +57,14 @@ Fixed status message wrapping for long error text on narrow viewports.
 ## Changed Files
 
 ```text
-src/styles/global.css
-.agent_board/TASK_QUEUE.md
+src/api/backendReadModels.ts
+src/api/client.ts
+src/vite-env.d.ts
 .agent_board/CHECKPOINT.md
 .agent_board/RUN_STATE.md
 .agent_board/HANDOFF.md
 .agent_board/VALIDATION_LOG.md
+.agent_board/TASK_QUEUE.md
 ```
 
 ---
@@ -72,8 +74,8 @@ src/styles/global.css
 ```text
 npm run lint: passed
 npm run build: passed
-scripts/validate-local.ps1: passed outside sandbox
-Headless Chrome screenshot QA passed for 1024x768, 780x844, 390x844 loading, and 390x844 error after fixes.
+HTTP check: http://127.0.0.1:5173 returned 200 from the existing local Vite server.
+git diff --check: passed
 ```
 
 ---
@@ -82,7 +84,9 @@ Headless Chrome screenshot QA passed for 1024x768, 780x844, 390x844 loading, and
 
 ```text
 No npm test script is defined.
-No push or remote verification was performed.
+No backend live integration request was run from the frontend because backend services were not started for this slice.
+No browser screenshot QA was run for this API-only bridge.
+No commit, push, deploy, or remote verification was performed.
 ```
 
 ---
@@ -114,8 +118,9 @@ none
 ## Remaining Risks
 
 ```text
-origin/main is synchronized through 4f4e504.
-The current QA follow-up edits are local only and not committed yet.
+The frontend workspace has existing uncommitted UI/style/mock/docs/public changes from another active thread.
+The new five-endpoint API bridge is local only and not committed.
+Live backend toggle still requires configuring VITE_BACKEND_API_BASE_URL and running the backend stack.
 ```
 
 ---
@@ -123,7 +128,7 @@ The current QA follow-up edits are local only and not committed yet.
 ## Next Safe Task
 
 ```text
-Review the local QA follow-up diff and decide whether to commit it as a small responsive polish commit.
+Coordinate ownership with the active frontend thread before touching shared components/styles. Next safe implementation slice is wiring the API fetchers into owned view models/pages once file ownership is clear.
 ```
 
 ---

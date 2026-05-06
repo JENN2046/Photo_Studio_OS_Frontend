@@ -25,7 +25,7 @@ T128-001 Command Center Read-only Frontend Skeleton
 ## Current Phase
 
 ```text
-complete-candidate
+api-boundary
 ```
 
 Suggested phases:
@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-local viewport QA follow-up
+Frontend v2 read-model API bridge complete
 ```
 
 ---
@@ -58,7 +58,7 @@ local viewport QA follow-up
 ## Last Completed Task
 
 ```text
-4f4e504 chore: add frontend autopilot rails
+Added optional Command Center backend v2 client plus Asset Inbox/QC/Review/Delivery read-model fetchers
 ```
 
 ---
@@ -66,7 +66,7 @@ local viewport QA follow-up
 ## Last Validation
 
 ```text
-npm run lint passed; npm run build passed; scripts/validate-local.ps1 passed outside sandbox
+npm run lint passed; npm run build passed; local HTTP check at 127.0.0.1:5173 returned 200 after five-endpoint API bridge
 ```
 
 ---
@@ -75,8 +75,8 @@ npm run lint passed; npm run build passed; scripts/validate-local.ps1 passed out
 
 ```text
 Branch: main
-Worktree: local QA follow-up edits pending commit
-Changed files: src/styles/global.css, .agent_board/*
+Worktree: dirty; existing frontend-thread edits plus local API bridge and board updates
+Changed files include existing UI/style/mock edits, docs/design/FRONTEND_V2_GAP_MAP.md, public/, src/api/client.ts, src/api/backendReadModels.ts, src/vite-env.d.ts, .agent_board/*
 ```
 
 ---
@@ -124,5 +124,5 @@ not blocked
 ## Next Action
 
 ```text
-Review local QA follow-up diff and decide whether to commit responsive polish.
+Coordinate with the active frontend thread before touching shared components/styles; next safe slice is wiring these API fetchers into owned pages or view models.
 ```
