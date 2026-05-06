@@ -817,11 +817,51 @@ h1 {
   text-align: center;
 }
 
-.gauge-face-copy span {
+.gauge-label {
   color: var(--color-soft);
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
+}
+
+.gauge-badge {
+  display: grid;
+  position: relative;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border: 1px solid rgba(242, 247, 255, 0.64);
+  border-radius: 7px 7px 9px 9px;
+  background:
+    linear-gradient(180deg, rgba(242, 247, 255, 0.14), rgba(242, 247, 255, 0.02)),
+    rgba(3, 7, 11, 0.56);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.68),
+    0 0 12px rgba(242, 247, 255, 0.18);
+}
+
+.gauge-badge::before {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  width: 10px;
+  height: 7px;
+  border-top: 1px solid rgba(242, 247, 255, 0.74);
+  border-bottom: 1px solid rgba(242, 247, 255, 0.74);
+  content: "";
+}
+
+.gauge-badge::after {
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  width: 9px;
+  height: 9px;
+  border-right: 1px solid rgba(242, 247, 255, 0.64);
+  border-bottom: 1px solid rgba(242, 247, 255, 0.64);
+  background: rgba(3, 7, 11, 0.62);
+  transform: translateX(-50%) rotate(45deg);
+  content: "";
 }
 
 .gauge-face-copy strong {
@@ -1117,6 +1157,13 @@ h1 {
   box-shadow: inset 0 0 22px rgba(0, 0, 0, 0.55);
 }
 
+.asset-thumb::before,
+.asset-thumb::after {
+  position: absolute;
+  display: block;
+  content: "";
+}
+
 .asset-thumb-compact {
   width: 46px;
   height: 46px;
@@ -1165,6 +1212,178 @@ h1 {
 
 .asset-thumb-4 {
   background-color: rgba(77, 66, 58, 0.34);
+}
+
+.asset-thumb-product {
+  background:
+    radial-gradient(circle at 62% 26%, rgba(255, 210, 145, 0.18), transparent 27%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.16), transparent 36%),
+    rgba(29, 25, 21, 0.78);
+}
+
+.asset-thumb-chair i {
+  inset: 11px 9px auto;
+  height: 15px;
+  border-radius: 12px 12px 4px 4px;
+  transform: rotate(-5deg);
+}
+
+.asset-thumb-chair b {
+  right: 10px;
+  bottom: 10px;
+  left: 9px;
+  height: 9px;
+  border-radius: 2px 2px 6px 6px;
+}
+
+.asset-thumb-chair::before,
+.asset-thumb-chair::after {
+  bottom: 6px;
+  width: 2px;
+  height: 12px;
+  background: rgba(198, 168, 128, 0.5);
+}
+
+.asset-thumb-chair::before {
+  left: 13px;
+  transform: rotate(8deg);
+}
+
+.asset-thumb-chair::after {
+  right: 11px;
+  transform: rotate(-8deg);
+}
+
+.asset-thumb-sofa i {
+  inset: 15px 7px auto;
+  height: 12px;
+  border-radius: 13px 13px 4px 4px;
+}
+
+.asset-thumb-sofa b {
+  right: 7px;
+  bottom: 10px;
+  left: 7px;
+  height: 9px;
+  border-radius: 4px 4px 7px 7px;
+}
+
+.asset-thumb-sofa::before,
+.asset-thumb-sofa::after {
+  top: 18px;
+  width: 7px;
+  height: 11px;
+  border-radius: 4px;
+  background: rgba(20, 18, 17, 0.58);
+}
+
+.asset-thumb-sofa::before {
+  left: 6px;
+}
+
+.asset-thumb-sofa::after {
+  right: 6px;
+}
+
+.asset-thumb-tabletop i {
+  inset: 13px 12px auto;
+  height: 9px;
+  border-radius: 50%;
+  border-bottom: 1px solid rgba(242, 247, 255, 0.24);
+  background: rgba(190, 135, 74, 0.32);
+}
+
+.asset-thumb-tabletop b {
+  right: 19px;
+  bottom: 8px;
+  left: 19px;
+  height: 15px;
+  border-radius: 1px;
+}
+
+.asset-thumb-tabletop::before {
+  right: 9px;
+  bottom: 8px;
+  left: 9px;
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(210, 162, 96, 0.5);
+}
+
+.asset-thumb-lamp i {
+  inset: 8px 14px auto;
+  height: 15px;
+  border-radius: 3px 3px 9px 9px;
+  background: rgba(230, 186, 119, 0.18);
+}
+
+.asset-thumb-lamp b {
+  right: 13px;
+  bottom: 8px;
+  left: 13px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+.asset-thumb-lamp::before {
+  top: 21px;
+  left: calc(50% - 1px);
+  width: 2px;
+  height: 14px;
+  background: rgba(231, 207, 166, 0.44);
+}
+
+.asset-thumb-watch i {
+  inset: 10px 14px auto;
+  height: 22px;
+  border: 1px solid rgba(224, 184, 96, 0.42);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(16, 12, 8, 0.88), rgba(213, 163, 74, 0.12));
+}
+
+.asset-thumb-watch b {
+  top: 19px;
+  right: 17px;
+  bottom: auto;
+  left: 17px;
+  height: 1px;
+  background: rgba(239, 212, 159, 0.62);
+  transform: rotate(40deg);
+}
+
+.asset-thumb-watch::before,
+.asset-thumb-watch::after {
+  left: calc(50% - 4px);
+  width: 8px;
+  height: 6px;
+  border-radius: 2px;
+  background: rgba(82, 67, 42, 0.6);
+}
+
+.asset-thumb-watch::before {
+  top: 4px;
+}
+
+.asset-thumb-watch::after {
+  bottom: 4px;
+}
+
+.asset-thumb-bottle i {
+  inset: 8px 17px auto;
+  height: 7px;
+  border-radius: 2px 2px 1px 1px;
+}
+
+.asset-thumb-bottle b {
+  right: 13px;
+  bottom: 9px;
+  left: 13px;
+  height: 20px;
+  border: 1px solid rgba(223, 186, 122, 0.32);
+  border-radius: 8px 8px 4px 4px;
+  background:
+    linear-gradient(180deg, rgba(243, 195, 118, 0.12), transparent 50%),
+    rgba(18, 14, 10, 0.72);
 }
 
 .queue-item > div,
@@ -1649,6 +1868,1382 @@ h1 {
   }
 
   .stage-index {
+    display: none;
+  }
+}
+
+/* Reference cockpit replica pass */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+  margin: -1px;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+body {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px) 0 0 / 64px 64px,
+    linear-gradient(180deg, rgba(255, 255, 255, 0.012) 1px, transparent 1px) 0 0 / 64px 64px,
+    radial-gradient(circle at 52% 26%, rgba(58, 71, 86, 0.14), transparent 38%),
+    linear-gradient(135deg, #04070b 0%, #071019 48%, #020409 100%);
+}
+
+.app-shell {
+  display: block;
+}
+
+.command-workspace {
+  min-height: 100vh;
+  margin-left: 72px;
+  border-left: 0;
+}
+
+.command-rail {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: 72px;
+  min-height: 100vh;
+  gap: 28px;
+  padding: 20px 14px 22px;
+  border-right: 1px solid rgba(242, 247, 255, 0.14);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 26%),
+    rgba(3, 6, 10, 0.92);
+}
+
+.command-rail nav {
+  gap: 18px;
+}
+
+.command-rail a {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+}
+
+.rail-brand {
+  border-color: transparent;
+  background: transparent;
+}
+
+.brand-mark {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  border: 2px solid rgba(210, 224, 235, 0.72);
+  border-left-color: transparent;
+  border-radius: 50%;
+  box-shadow: 0 0 18px rgba(159, 211, 223, 0.18);
+}
+
+.brand-mark::before,
+.brand-mark::after {
+  position: absolute;
+  left: -6px;
+  width: 22px;
+  height: 2px;
+  background: rgba(210, 224, 235, 0.84);
+  content: "";
+}
+
+.brand-mark::before {
+  top: 10px;
+}
+
+.brand-mark::after {
+  top: 18px;
+  width: 28px;
+}
+
+.rail-brand::after {
+  display: none;
+}
+
+.rail-icon {
+  position: relative;
+  display: block;
+  width: 22px;
+  height: 22px;
+  color: rgba(209, 221, 232, 0.82);
+}
+
+.rail-icon-grid {
+  background:
+    radial-gradient(circle, currentColor 2px, transparent 3px) 2px 2px / 10px 10px;
+}
+
+.rail-icon-target {
+  border: 1px solid currentColor;
+  border-radius: 50%;
+}
+
+.rail-icon-target::before,
+.rail-icon-target::after {
+  position: absolute;
+  inset: 5px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  content: "";
+}
+
+.rail-icon-target::after {
+  inset: 9px;
+  background: currentColor;
+}
+
+.rail-icon-brief {
+  border: 1px solid currentColor;
+  border-radius: 3px;
+}
+
+.rail-icon-brief::before {
+  position: absolute;
+  top: -4px;
+  left: 6px;
+  width: 10px;
+  height: 5px;
+  border: 1px solid currentColor;
+  border-bottom: 0;
+  border-radius: 3px 3px 0 0;
+  content: "";
+}
+
+.rail-icon-calendar {
+  border: 1px solid currentColor;
+  border-radius: 3px;
+}
+
+.rail-icon-calendar::before {
+  position: absolute;
+  top: 5px;
+  left: 3px;
+  right: 3px;
+  height: 1px;
+  background: currentColor;
+  content: "";
+}
+
+.rail-icon-team::before,
+.rail-icon-team::after {
+  position: absolute;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  content: "";
+}
+
+.rail-icon-team::before {
+  top: 3px;
+  left: 7px;
+  width: 7px;
+  height: 7px;
+}
+
+.rail-icon-team::after {
+  left: 3px;
+  right: 3px;
+  bottom: 3px;
+  height: 8px;
+  border-radius: 9px 9px 2px 2px;
+}
+
+.rail-icon-chart {
+  border-left: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+}
+
+.rail-icon-chart::before {
+  position: absolute;
+  inset: 5px 2px 4px 4px;
+  border-top: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  transform: skew(-20deg);
+  content: "";
+}
+
+.rail-icon-gear {
+  border: 2px solid currentColor;
+  border-radius: 50%;
+}
+
+.rail-icon-gear::before {
+  position: absolute;
+  inset: 6px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  content: "";
+}
+
+.rail-alert {
+  border-color: transparent;
+}
+
+.rail-alert::before {
+  display: none;
+}
+
+.rail-icon-bell {
+  border: 1px solid currentColor;
+  border-radius: 12px 12px 5px 5px;
+}
+
+.rail-alert strong {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  display: grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  border: 1px solid rgba(255, 72, 48, 0.7);
+  border-radius: 50%;
+  color: #ff4d36;
+  font-size: 0.68rem;
+  background: rgba(35, 4, 3, 0.86);
+}
+
+.topbar {
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: 56px;
+  padding: 0 30px;
+  border-bottom-color: rgba(242, 247, 255, 0.1);
+  background: rgba(3, 6, 10, 0.66);
+}
+
+.topbar-status {
+  justify-content: center;
+  gap: 20px;
+  font-size: 0.78rem;
+  letter-spacing: 0;
+}
+
+.topbar > .topbar-status {
+  display: flex;
+  width: auto;
+  max-width: none;
+}
+
+.topbar-status span {
+  color: rgba(224, 232, 240, 0.82);
+}
+
+.topbar-status i {
+  width: 6px;
+  height: 6px;
+  background: #ff4e34;
+}
+
+.cockpit-command-center {
+  min-height: 0;
+  padding: 0;
+}
+
+.cockpit-frame {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  height: calc(100vh - 56px);
+  min-height: calc(100vh - 56px);
+  overflow: hidden;
+  padding-top: 0;
+}
+
+.cockpit-main {
+  min-width: 0;
+  height: 100%;
+  padding: 12px 22px 22px;
+  border-right: 1px solid rgba(242, 247, 255, 0.1);
+}
+
+.cockpit-side {
+  display: grid;
+  min-width: 0;
+  height: 100%;
+  align-content: start;
+  gap: 12px;
+  padding: 12px 12px 22px;
+}
+
+.gauge-cluster {
+  min-height: 402px;
+  padding: 8px 24px 12px;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(126, 147, 164, 0.1), transparent 42%),
+    linear-gradient(180deg, rgba(242, 247, 255, 0.032), transparent 60%);
+  box-shadow: none;
+}
+
+.gauge-cluster::before {
+  inset: 0;
+  border-color: rgba(242, 247, 255, 0.055);
+}
+
+.gauges {
+  grid-template-columns: minmax(220px, 0.82fr) minmax(310px, 1.1fr) minmax(220px, 0.82fr);
+  align-items: center;
+  justify-items: center;
+  gap: clamp(18px, 4vw, 54px);
+  height: 100%;
+  margin-top: 0;
+}
+
+.gauge {
+  justify-items: center;
+  gap: 0;
+}
+
+.gauge-primary {
+  transform: translateY(-14px);
+}
+
+.gauge-dial {
+  width: clamp(240px, 21.5vw, 326px);
+  max-width: none;
+  padding: 34px;
+  border-color: rgba(242, 247, 255, 0.42);
+  background:
+    radial-gradient(circle at 50% 44%, rgba(37, 49, 60, 0.98), rgba(5, 9, 14, 0.92) 58%, rgba(0, 0, 0, 0.98) 74%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.22), rgba(0, 0, 0, 0.4));
+  box-shadow:
+    inset 0 0 0 5px rgba(255, 255, 255, 0.08),
+    inset 0 0 0 10px rgba(0, 0, 0, 0.7),
+    inset 0 0 0 14px rgba(255, 255, 255, 0.055),
+    inset 0 32px 44px rgba(255, 255, 255, 0.08),
+    0 22px 46px rgba(0, 0, 0, 0.72);
+}
+
+.gauge-primary .gauge-dial {
+  width: clamp(350px, 31vw, 438px);
+  max-width: none;
+  padding: 44px;
+}
+
+.gauge-dial::before {
+  inset: 10px;
+  border-color: rgba(242, 247, 255, 0.44);
+}
+
+.gauge-dial::after {
+  inset: 20px 36px 54%;
+  opacity: 0.8;
+}
+
+.gauge svg {
+  min-height: auto;
+  transform: translateY(42px);
+}
+
+.gauge-ticks line {
+  stroke: rgba(236, 244, 250, 0.48);
+}
+
+.gauge-track,
+.gauge-line {
+  stroke-width: 2.7;
+}
+
+.gauge-line {
+  stroke: #f04b36;
+  filter: drop-shadow(0 0 6px rgba(240, 75, 54, 0.55));
+}
+
+.gauge-needle {
+  stroke-width: 2;
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.46));
+}
+
+.gauge-face-copy {
+  inset: 36% 13% auto;
+}
+
+.gauge-label {
+  font-size: 0.72rem;
+}
+
+.gauge-face-copy strong {
+  font-size: clamp(2.05rem, 3vw, 2.65rem);
+}
+
+.gauge-primary .gauge-face-copy strong {
+  font-size: clamp(3.85rem, 5.4vw, 4.7rem);
+}
+
+.gauge-face-copy em {
+  margin-top: 8px;
+  min-height: 30px;
+  padding: 6px 18px;
+}
+
+.gauge-readout {
+  position: absolute;
+  right: 0;
+  bottom: 13.5%;
+  left: 0;
+  z-index: 2;
+  margin-top: -2px;
+  gap: 4px;
+  text-align: center;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.gauge-readout small {
+  color: rgba(233, 241, 248, 0.82);
+  font-size: 0.78rem;
+}
+
+.gauge-readout em {
+  color: rgba(170, 182, 194, 0.86);
+  font-size: 0.7rem;
+}
+
+.gauge:not(.gauge-primary) .gauge-readout::before {
+  display: block;
+  width: 94px;
+  height: 1px;
+  margin: 0 auto 7px;
+  background: rgba(242, 247, 255, 0.72);
+  content: "";
+}
+
+.gauge-numbers {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  color: rgba(242, 247, 255, 0.9);
+  font-size: clamp(0.86rem, 1.2vw, 1rem);
+  pointer-events: none;
+}
+
+.gauge-number {
+  position: absolute;
+}
+
+.gauge-number-0 {
+  left: 16%;
+  top: 53%;
+}
+
+.gauge-number-25 {
+  left: 22%;
+  top: 30%;
+}
+
+.gauge-number-50 {
+  left: 48%;
+  top: 18%;
+}
+
+.gauge-number-75 {
+  right: 22%;
+  top: 30%;
+}
+
+.gauge-number-100 {
+  right: 12%;
+  top: 53%;
+}
+
+.panel {
+  border-color: rgba(242, 247, 255, 0.14);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 46%),
+    rgba(5, 10, 16, 0.72);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.055);
+}
+
+.panel-heading {
+  min-height: 28px;
+  margin-bottom: 10px;
+}
+
+.panel-heading span {
+  color: rgba(187, 200, 213, 0.88);
+}
+
+.eyebrow {
+  color: rgba(213, 224, 233, 0.82);
+  font-size: 0.74rem;
+}
+
+.execution-grid {
+  grid-template-columns: minmax(330px, 1.25fr) minmax(270px, 0.96fr) minmax(320px, 1.08fr);
+  gap: 10px;
+  max-width: none;
+  padding: 0;
+}
+
+.project-execution-panel,
+.timeline-panel,
+.inspection-panel {
+  min-height: 278px;
+  padding: 14px 16px;
+}
+
+.project-table {
+  gap: 0;
+}
+
+.table-row {
+  grid-template-columns: minmax(160px, 1.25fr) minmax(90px, 0.7fr) 54px 62px;
+  min-height: 46px;
+  padding: 8px 4px;
+}
+
+.table-head {
+  min-height: 24px;
+  padding-top: 0;
+  padding-bottom: 5px;
+  font-size: 0.66rem;
+}
+
+.project-cell {
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 10px;
+}
+
+.asset-thumb {
+  border-color: rgba(242, 247, 255, 0.22);
+  background:
+    radial-gradient(circle at 62% 28%, rgba(255, 210, 145, 0.18), transparent 28%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.16), transparent 36%),
+    rgba(29, 25, 21, 0.78);
+}
+
+.asset-thumb-compact,
+.asset-thumb-table {
+  width: 42px;
+  height: 42px;
+}
+
+.asset-thumb i {
+  inset: 12px 8px auto;
+  height: 12px;
+}
+
+.asset-thumb b {
+  right: 7px;
+  bottom: 7px;
+  left: 7px;
+  height: 9px;
+}
+
+.cell-stack strong,
+.timeline strong,
+.inspection-feed strong,
+.queue-item strong {
+  color: rgba(245, 249, 253, 0.94);
+  font-size: 0.84rem;
+  text-transform: uppercase;
+}
+
+.cell-stack small,
+.timeline span,
+.inspection-feed small,
+.queue-item span {
+  color: rgba(164, 177, 190, 0.86);
+  font-size: 0.72rem;
+}
+
+.progress-cell {
+  gap: 5px;
+}
+
+.progress-meter {
+  height: 3px;
+  background: rgba(242, 247, 255, 0.12);
+}
+
+.progress-meter i {
+  background: linear-gradient(90deg, rgba(242, 247, 255, 0.92), rgba(180, 197, 208, 0.72));
+}
+
+.timeline {
+  position: relative;
+  gap: 0;
+}
+
+.timeline::before {
+  position: absolute;
+  top: 4px;
+  bottom: 8px;
+  left: 69px;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(255, 80, 54, 0.55), transparent);
+  content: "";
+}
+
+.timeline article {
+  position: relative;
+  grid-template-columns: 72px minmax(0, 1fr);
+  min-height: 45px;
+  padding: 6px 0 8px;
+  border: 0;
+  border-bottom: 1px solid rgba(242, 247, 255, 0.08);
+  background: transparent;
+}
+
+.timeline article::before {
+  position: absolute;
+  top: 12px;
+  left: 65px;
+  width: 9px;
+  height: 9px;
+  border: 2px solid rgba(5, 10, 16, 0.96);
+  border-radius: 50%;
+  background: #00c18f;
+  box-shadow: 0 0 0 1px rgba(0, 193, 143, 0.75);
+  content: "";
+}
+
+.timeline-event-2::before {
+  background: #ff4e34;
+  box-shadow: 0 0 0 1px rgba(255, 78, 52, 0.72);
+}
+
+.timeline time {
+  color: rgba(184, 197, 207, 0.78);
+  font-size: 0.68rem;
+}
+
+.inspection-feed {
+  gap: 0;
+}
+
+.inspection-feed article {
+  grid-template-columns: 52px minmax(0, 1fr) 58px;
+  min-height: 58px;
+  padding: 8px 0;
+  border: 0;
+  border-bottom: 1px solid rgba(242, 247, 255, 0.08);
+  background: transparent;
+}
+
+.inspection-score {
+  color: #ff4e34;
+  font-size: 1.38rem;
+}
+
+.inspection-feed article:nth-child(2) .inspection-score,
+.inspection-feed article:nth-child(3) .inspection-score {
+  color: #ff9c24;
+}
+
+.cockpit-side .panel {
+  padding: 13px 12px;
+}
+
+.cockpit-side .panel-heading {
+  border-bottom: 1px solid rgba(242, 247, 255, 0.1);
+  padding-bottom: 10px;
+}
+
+.signal-list {
+  gap: 0;
+}
+
+.signal {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  min-height: 46px;
+  padding: 0 8px 0 22px;
+  border: 0;
+  border-bottom: 1px solid rgba(242, 247, 255, 0.08);
+  background: transparent;
+}
+
+.signal::before {
+  top: 20px;
+  left: 7px;
+}
+
+.risk-count {
+  color: #ff4e34;
+  font-size: 1.12rem;
+}
+
+.panel-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 42px;
+  color: rgba(215, 225, 234, 0.78);
+  font-size: 0.78rem;
+}
+
+.panel-link::after,
+.side-status-card::after {
+  content: "›";
+  color: rgba(215, 225, 234, 0.76);
+  font-size: 1.25rem;
+}
+
+.queue-count {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid rgba(255, 78, 52, 0.56);
+  border-radius: 50%;
+  color: #ff4e34;
+  background: rgba(55, 8, 5, 0.72);
+}
+
+.queue-list {
+  gap: 0;
+}
+
+.queue-item {
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  min-height: 69px;
+  padding: 8px 0;
+  border: 0;
+  border-bottom: 1px solid rgba(242, 247, 255, 0.08);
+  background: transparent;
+}
+
+.queue-severity {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 19px;
+  align-items: center;
+  padding: 1px 7px;
+  border: 1px solid rgba(242, 247, 255, 0.16);
+  border-radius: 5px;
+  color: rgba(242, 247, 255, 0.7);
+}
+
+.queue-severity-blocked {
+  border-color: rgba(255, 78, 52, 0.42);
+  color: #ff4e34;
+}
+
+.queue-severity-waiting {
+  border-color: rgba(255, 156, 36, 0.38);
+  color: #ff9c24;
+}
+
+.state {
+  font-size: 0.68rem;
+}
+
+.side-status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 78px;
+}
+
+.side-status-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px;
+  min-height: 60px;
+  padding: 12px;
+  border: 1px solid rgba(242, 247, 255, 0.12);
+  border-radius: 8px;
+  background: rgba(8, 14, 21, 0.72);
+}
+
+.side-status-card strong,
+.side-status-card span {
+  grid-column: 1;
+}
+
+.side-status-card strong {
+  color: rgba(242, 247, 255, 0.86);
+  font-size: 0.78rem;
+}
+
+.side-status-card span {
+  color: rgba(174, 187, 199, 0.86);
+  font-size: 0.74rem;
+}
+
+.side-status-alert {
+  border-color: rgba(255, 78, 52, 0.22);
+}
+
+.cockpit-command-center .gauge-dial {
+  isolation: isolate;
+  padding: 20px;
+  border-color: rgba(238, 246, 255, 0.5);
+  background:
+    radial-gradient(ellipse at 48% 18%, rgba(255, 255, 255, 0.24), transparent 18%),
+    conic-gradient(
+      from 220deg,
+      rgba(255, 255, 255, 0.34),
+      rgba(53, 59, 65, 0.2) 13%,
+      rgba(0, 0, 0, 0.78) 28%,
+      rgba(245, 250, 255, 0.26) 39%,
+      rgba(0, 0, 0, 0.9) 54%,
+      rgba(218, 229, 238, 0.22) 72%,
+      rgba(0, 0, 0, 0.82) 88%,
+      rgba(255, 255, 255, 0.34)
+    ),
+    radial-gradient(circle at 50% 44%, rgba(28, 38, 49, 0.98), rgba(5, 9, 14, 0.97) 58%, rgba(0, 0, 0, 0.99) 76%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.72),
+    inset 0 0 0 3px rgba(0, 0, 0, 0.88),
+    inset 0 0 0 7px rgba(210, 220, 230, 0.3),
+    inset 0 0 0 11px rgba(5, 7, 9, 0.92),
+    inset 0 0 0 16px rgba(238, 247, 255, 0.12),
+    inset 0 0 0 20px rgba(0, 0, 0, 0.78),
+    inset 0 30px 58px rgba(255, 255, 255, 0.13),
+    inset 0 -34px 52px rgba(0, 0, 0, 0.84),
+    0 18px 28px rgba(0, 0, 0, 0.62),
+    0 34px 62px rgba(0, 0, 0, 0.78);
+}
+
+.cockpit-command-center .gauge-dial::before {
+  inset: 6px;
+  border-color: rgba(242, 247, 255, 0.58);
+  background:
+    repeating-conic-gradient(
+      from 0deg,
+      rgba(255, 255, 255, 0.16) 0deg 0.8deg,
+      rgba(0, 0, 0, 0.16) 1deg 1.8deg
+    );
+  opacity: 0.24;
+  -webkit-mask: radial-gradient(circle, transparent 0 78%, #000 79% 100%);
+  mask: radial-gradient(circle, transparent 0 78%, #000 79% 100%);
+  box-shadow:
+    inset 0 0 0 2px rgba(0, 0, 0, 0.88),
+    inset 0 0 0 5px rgba(255, 255, 255, 0.065),
+    inset 0 0 22px rgba(255, 255, 255, 0.1);
+}
+
+.cockpit-command-center .gauge-dial::after {
+  inset: 16px 24px 52%;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.32), transparent 60%),
+    linear-gradient(180deg, rgba(242, 247, 255, 0.16), transparent);
+  filter: blur(0.3px);
+  opacity: 0.78;
+}
+
+.cockpit-command-center .gauge svg {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: visible;
+  transform: none;
+}
+
+.gauge-scale {
+  transform-origin: 110px 110px;
+}
+
+.gauge-material-face {
+  opacity: 0.98;
+}
+
+.gauge-material-cavity {
+  fill: none;
+  opacity: 0.13;
+  stroke: rgba(0, 0, 0, 0.92);
+  stroke-width: 12;
+}
+
+.gauge-rim {
+  fill: none;
+  pointer-events: none;
+}
+
+.gauge-rim-outer {
+  opacity: 0.92;
+  stroke-width: 1.45;
+  filter:
+    drop-shadow(0 0 3px rgba(255, 255, 255, 0.3))
+    drop-shadow(0 5px 7px rgba(0, 0, 0, 0.7));
+}
+
+.gauge-rim-shadow {
+  opacity: 0.42;
+  stroke: rgba(0, 0, 0, 0.86);
+  stroke-width: 2.6;
+}
+
+.gauge-rim-inner {
+  opacity: 0.68;
+  stroke-width: 0.95;
+}
+
+.gauge-glass-sheen,
+.gauge-glass-streak {
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.gauge-glass-sheen {
+  opacity: 0.34;
+}
+
+.gauge-glass-streak {
+  fill: none;
+  opacity: 0.34;
+  stroke: rgba(245, 250, 255, 0.34);
+  stroke-linecap: round;
+  stroke-width: 1.2;
+  filter: blur(0.15px);
+}
+
+.cockpit-command-center .gauge-track {
+  fill: none;
+  stroke: rgba(242, 247, 255, 0.16);
+  stroke-linecap: round;
+  stroke-width: 2.2;
+}
+
+.cockpit-command-center .gauge-warning {
+  fill: none;
+  stroke: #ff4e34;
+  stroke-linecap: round;
+  stroke-width: 3.4;
+  filter: drop-shadow(0 0 6px rgba(255, 78, 52, 0.7));
+}
+
+.gauge-tick {
+  stroke: rgba(242, 247, 255, 0.42);
+  stroke-linecap: round;
+}
+
+.tick-major {
+  stroke-width: 2.2;
+}
+
+.tick-mid {
+  stroke-width: 1.25;
+  opacity: 0.82;
+}
+
+.tick-minor {
+  stroke-width: 0.8;
+  opacity: 0.58;
+}
+
+.tick-danger {
+  stroke: rgba(255, 78, 52, 0.88);
+  opacity: 0.96;
+  filter: drop-shadow(0 0 4px rgba(255, 78, 52, 0.52));
+}
+
+.gauge-needle,
+.gauge-needle-tail {
+  stroke: rgba(250, 253, 255, 0.98);
+  stroke-linecap: round;
+  transform: none;
+  filter:
+    drop-shadow(0 0 2px rgba(255, 255, 255, 0.72))
+    drop-shadow(0 2px 3px rgba(0, 0, 0, 0.86));
+}
+
+.gauge-needle {
+  stroke-width: 2.4;
+}
+
+.gauge-needle-tail {
+  stroke-width: 1.2;
+  opacity: 0.58;
+}
+
+.gauge-hub-ring {
+  fill: rgba(0, 0, 0, 0.34);
+  stroke: rgba(242, 247, 255, 0.46);
+  stroke-width: 1.2;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.75));
+}
+
+.cockpit-command-center .gauge-hub {
+  fill: rgba(246, 250, 255, 0.92);
+  filter: drop-shadow(0 0 5px rgba(242, 247, 255, 0.36));
+}
+
+.cockpit-command-center .gauge-face-copy {
+  inset: 35% 13% auto;
+}
+
+.cockpit-command-center .gauge-label {
+  color: rgba(242, 247, 255, 0.86);
+  font-size: 0.68rem;
+  text-shadow: 0 0 9px rgba(159, 211, 223, 0.36);
+}
+
+.cockpit-command-center .gauge-face-copy strong {
+  letter-spacing: 0;
+  text-shadow:
+    0 0 12px rgba(242, 247, 255, 0.18),
+    0 3px 18px rgba(0, 0, 0, 0.64);
+}
+
+.cockpit-command-center .gauge:not(.gauge-primary) .gauge-face-copy strong {
+  font-size: clamp(2.05rem, 3vw, 2.65rem);
+}
+
+.cockpit-command-center .gauge-primary .gauge-face-copy strong {
+  font-size: clamp(3.85rem, 5.4vw, 4.7rem);
+}
+
+.cockpit-command-center .gauge-primary .gauge-face-copy {
+  inset: 29.5% 13% auto;
+  gap: 4px;
+}
+
+.cockpit-command-center .gauge-face-copy em {
+  margin-top: 4px;
+  background: rgba(2, 6, 10, 0.42);
+}
+
+.cockpit-command-center .gauge-readout {
+  bottom: 13%;
+}
+
+.cockpit-command-center .gauge-primary .gauge-readout {
+  bottom: 12%;
+}
+
+.gauge-reference-texture .gauge-dial {
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: none;
+}
+
+.gauge-reference-texture .gauge-dial::before,
+.gauge-reference-texture .gauge-dial::after {
+  display: none;
+}
+
+.gauge-reference-texture .gauge-dial::before {
+  display: block;
+  inset: 0;
+  z-index: 12;
+  border: 0;
+  background:
+    conic-gradient(
+      from -8deg,
+      transparent 0deg 78deg,
+      rgba(255, 56, 38, 0) 78deg,
+      rgba(255, 67, 42, 0.5) 88deg,
+      rgba(255, 43, 28, 0.78) 102deg,
+      rgba(255, 52, 34, 0.12) 116deg,
+      transparent 126deg 360deg
+    );
+  opacity: 0.68;
+  -webkit-mask: radial-gradient(circle, transparent 0 73%, #000 74% 86%, transparent 87% 100%);
+  mask: radial-gradient(circle, transparent 0 73%, #000 74% 86%, transparent 87% 100%);
+  mix-blend-mode: screen;
+  animation: gaugeRiskArcPulse 2.8s ease-in-out infinite;
+}
+
+.gauge-reference-texture.gauge-primary .gauge-dial::before {
+  -webkit-mask: radial-gradient(circle, transparent 0 76%, #000 77% 88%, transparent 89% 100%);
+  mask: radial-gradient(circle, transparent 0 76%, #000 77% 88%, transparent 89% 100%);
+}
+
+.gauge-reference-texture .gauge-dial::after {
+  display: block;
+  inset: -18%;
+  z-index: 13;
+  border: 0;
+  border-radius: 50%;
+  background:
+    linear-gradient(
+      112deg,
+      transparent 0 42%,
+      rgba(255, 255, 255, 0.04) 46%,
+      rgba(255, 255, 255, 0.24) 50%,
+      rgba(255, 255, 255, 0.05) 55%,
+      transparent 60% 100%
+    );
+  filter: blur(0.6px);
+  opacity: 0;
+  mix-blend-mode: screen;
+  transform: translateX(-72%) rotate(-11deg);
+  animation: gaugeGlassSweep 7.2s ease-in-out infinite;
+}
+
+.gauge-reference-image {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  transform: scale(1.06);
+  user-select: none;
+}
+
+.gauge-reference-texture.gauge-primary .gauge-reference-image {
+  transform: scale(1.02);
+}
+
+.gauge-live-dot {
+  position: absolute;
+  top: 64.8%;
+  left: 59.2%;
+  z-index: 14;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow:
+    inset 0 0 8px rgba(0, 214, 152, 0.22),
+    0 0 10px rgba(0, 214, 152, 0.58),
+    0 0 18px rgba(0, 214, 152, 0.28);
+  pointer-events: none;
+  animation: gaugeLivePulse 2.2s ease-in-out infinite;
+}
+
+.gauge-reference-texture .gauge-numbers,
+.gauge-reference-texture .gauge-face-copy,
+.gauge-reference-texture svg,
+.gauge-reference-texture .gauge-readout {
+  opacity: 0;
+}
+
+@keyframes gaugeRiskArcPulse {
+  0%,
+  100% {
+    opacity: 0.46;
+    filter: drop-shadow(0 0 2px rgba(255, 52, 34, 0.35));
+  }
+
+  50% {
+    opacity: 0.9;
+    filter: drop-shadow(0 0 10px rgba(255, 52, 34, 0.76));
+  }
+}
+
+@keyframes gaugeGlassSweep {
+  0%,
+  64% {
+    opacity: 0;
+    transform: translateX(-78%) rotate(-11deg);
+  }
+
+  72% {
+    opacity: 0.34;
+  }
+
+  88% {
+    opacity: 0.16;
+    transform: translateX(58%) rotate(-11deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(74%) rotate(-11deg);
+  }
+}
+
+@keyframes gaugeLivePulse {
+  0%,
+  100% {
+    opacity: 0.28;
+    transform: scale(0.82);
+  }
+
+  50% {
+    opacity: 0.78;
+    transform: scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gauge-reference-texture .gauge-dial::before,
+  .gauge-reference-texture .gauge-dial::after,
+  .gauge-live-dot {
+    animation: none;
+  }
+}
+
+@media (max-width: 1460px) and (min-width: 1101px) {
+  .cockpit-main {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .execution-grid {
+    grid-template-columns: minmax(0, 0.94fr) minmax(246px, 0.86fr) minmax(300px, 1fr);
+    gap: 8px;
+  }
+
+  .table-row {
+    grid-template-columns: minmax(112px, 1fr) 64px 36px 46px;
+    gap: 6px;
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .project-cell {
+    grid-template-columns: 36px minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .asset-thumb-table {
+    width: 36px;
+    height: 36px;
+  }
+
+  .project-execution-panel .cell-stack strong {
+    font-size: 0.74rem;
+  }
+
+  .table-row > span:nth-child(3) {
+    justify-self: center;
+  }
+
+  .table-row > span:last-child {
+    justify-self: end;
+    font-size: 0.72rem;
+    white-space: nowrap;
+  }
+}
+
+@media (max-height: 820px) and (min-width: 1101px) {
+  .cockpit-frame {
+    height: auto;
+    min-height: calc(100vh - 56px);
+    overflow: visible;
+  }
+
+  .cockpit-main,
+  .cockpit-side {
+    height: auto;
+  }
+}
+
+@media (max-width: 1320px) {
+  .cockpit-frame {
+    grid-template-columns: minmax(0, 1fr) 286px;
+  }
+
+  .gauges {
+    grid-template-columns: minmax(178px, 0.8fr) minmax(270px, 1.05fr) minmax(178px, 0.8fr);
+    gap: 18px;
+  }
+
+  .gauge-dial {
+    width: clamp(178px, 18vw, 230px);
+  }
+
+  .gauge-primary .gauge-dial {
+    width: clamp(270px, 26vw, 340px);
+  }
+
+  .execution-grid {
+    grid-template-columns: minmax(0, 1.18fr) minmax(230px, 0.94fr) minmax(260px, 1fr);
+  }
+}
+
+@media (max-width: 1100px) {
+  .cockpit-frame {
+    grid-template-columns: 1fr;
+    height: auto;
+    overflow: visible;
+  }
+
+  .cockpit-main {
+    height: auto;
+    border-right: 0;
+  }
+
+  .cockpit-side {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    height: auto;
+    padding: 12px 22px 22px;
+  }
+
+  .side-status-grid {
+    grid-column: 1 / -1;
+    margin-top: 0;
+  }
+
+  .execution-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 780px) {
+  .app-shell {
+    display: block;
+  }
+
+  .command-rail {
+    position: static;
+    width: 100%;
+    min-height: auto;
+    padding: 8px 14px;
+  }
+
+  .command-workspace {
+    margin-left: 0;
+  }
+
+  .topbar {
+    left: 0;
+    position: static;
+    min-height: 86px;
+  }
+
+  .topbar-status {
+    justify-content: flex-start;
+  }
+
+  .cockpit-frame {
+    min-height: auto;
+    padding-top: 0;
+  }
+
+  .cockpit-main {
+    padding: 14px 18px;
+  }
+
+  .gauge-cluster {
+    min-height: auto;
+    padding: 18px 0;
+  }
+
+  .gauges {
+    grid-template-columns: 1fr;
+  }
+
+  .gauge-primary {
+    order: -1;
+    transform: none;
+  }
+
+  .gauge-dial,
+  .gauge-primary .gauge-dial {
+    width: min(100%, 300px);
+  }
+
+  .cockpit-side {
+    grid-template-columns: 1fr;
+    padding: 12px 18px 18px;
+  }
+
+  .table-row,
+  .queue-item,
+  .inspection-feed article {
+    grid-template-columns: 1fr;
+  }
+
+  .timeline::before,
+  .timeline article::before {
     display: none;
   }
 }

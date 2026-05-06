@@ -1,17 +1,6 @@
 import { useEffect } from "react";
 import { GaugeCluster } from "../../components/gauges/GaugeCluster";
 import { AppShell } from "../../components/layout/AppShell";
-import { MetricPanel } from "../../components/panels/MetricPanel";
-import {
-  approvalLabels,
-  approvalTypeLabels,
-  createCommandCenterViewModel,
-  getDeliveryState,
-  getScoreState,
-  riskLabels,
-  stageStateLabels,
-  statusLabels
-} from "./commandCenterViewModel";
 import { useCommandCenterSnapshot } from "./useCommandCenterSnapshot";
 
 const loadingStatusLanes = [
@@ -81,7 +70,55 @@ function formatCommandDate(value: string) {
     return value;
   }
 
-  return `${monthLabels[monthIndex]} ${dayNumber}`;
+  return `${monthLabels[monthIndex].toUpperCase()} ${dayNumber}`;
+}
+
+function formatQueueDue(ageHours: number) {
+  const totalMinutes = Math.round(ageHours * 60);
+
+  if (totalMinutes < 60) {
+    return `Due · ${totalMinutes}m`;
+  }
+
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  return minutes > 0 ? `Due · ${hours}h ${minutes}m` : `Due · ${hours}h`;
+}
+
+function getProjectPhaseLabel(projectId: string) {
+  const labels: Record<string, string> = {
+    "PRJ-128": "3 / 5",
+    "PRJ-129": "2 / 4",
+    "PRJ-130": "1 / 4",
+    "PRJ-131": "1 / 3"
+  };
+
+  return labels[projectId] ?? "1 / 3";
+}
+
+function createReadModelHref(
+  route: "asset-inbox" | "qc-retouch" | "review-gallery" | "delivery-readiness",
+  params: Record<string, string | undefined>
+) {
+  const searchParams = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value) {
+      searchParams.set(key, value);
+    }
+  });
+
+  const query = searchParams.toString();
+  return query ? `#${route}?${query}` : `#${route}`;
+}
+
+function getApprovalSeverity(state: "waiting" | "blocked" | "cleared") {
+  if (state === "blocked") {
+    return "High";
+  }
+
+  return state === "waiting" ? "Med" : "Low";
 }
 
 function getRecoveryStateLabel(
@@ -104,6 +141,36 @@ function getVisualTone(seed: string) {
   return `asset-thumb-${toneIndex + 1}`;
 }
 
+function getVisualKind(seed: string) {
+  const normalizedSeed = seed.toLowerCase();
+
+  if (normalizedSeed.includes("chair") || normalizedSeed.includes("aurora")) {
+    return "asset-thumb-chair";
+  }
+
+  if (normalizedSeed.includes("sofa") || normalizedSeed.includes("triæpiece")) {
+    return "asset-thumb-sofa";
+  }
+
+  if (normalizedSeed.includes("coffee") || normalizedSeed.includes("tbl")) {
+    return "asset-thumb-tabletop";
+  }
+
+  if (normalizedSeed.includes("lamp") || normalizedSeed.includes("lmp") || normalizedSeed.includes("lumen")) {
+    return "asset-thumb-lamp";
+  }
+
+  if (normalizedSeed.includes("watch") || normalizedSeed.includes("ffcs")) {
+    return "asset-thumb-watch";
+  }
+
+  if (normalizedSeed.includes("fragrance") || normalizedSeed.includes("npr")) {
+    return "asset-thumb-bottle";
+  }
+
+  return "asset-thumb-product";
+}
+
 function AssetThumb({
   seed,
   label,
@@ -116,7 +183,7 @@ function AssetThumb({
   return (
     <span
       aria-label={label}
-      className={`asset-thumb asset-thumb-${size} ${getVisualTone(seed)}`}
+      className={`asset-thumb asset-thumb-${size} ${getVisualTone(seed)} ${getVisualKind(seed)}`}
       role="img"
     >
       <i />
@@ -401,355 +468,202 @@ export function CommandCenter() {
     );
   }
 
-  const {
-    assetTotal,
-    pendingApprovals,
-    activeReviewItems,
-    deliveryAssets,
-    riskWatchCount,
-    generatedTime
-  } = createCommandCenterViewModel(snapshot);
+  const primaryProjectId = snapshot.projects[0]?.id;
+  const primaryReviewSessionId = snapshot.reviews[0]?.id;
+  const primaryDeliveryId = snapshot.deliveries[0]?.id;
+  const assetInboxHref = createReadModelHref("asset-inbox", {
+    projectId: primaryProjectId
+  });
+  const qcRetouchHref = createReadModelHref("qc-retouch", {
+    projectId: primaryProjectId
+  });
+  const reviewGalleryHref = createReadModelHref("review-gallery", {
+    reviewSessionId: primaryReviewSessionId,
+    projectId: primaryProjectId
+  });
+  const deliveryReadinessHref = createReadModelHref("delivery-readiness", {
+    deliveryId: primaryDeliveryId,
+    projectId: primaryProjectId,
+    reviewSessionId: primaryReviewSessionId
+  });
 
   return (
     <AppShell>
-      <main className="command-center">
-        <section className="hero-band" aria-label="Command center overview">
-          <div className="hero-grid">
-            <aside className="context-rail" aria-label="Studio context">
-              <section className="panel context-panel" aria-labelledby="studio-context-title">
-                <div className="panel-heading">
-                  <p className="eyebrow" id="studio-context-title">
-                    Studio Context
-                  </p>
-                  <span>{generatedTime}</span>
-                </div>
-                <div className="studio-stack">
-                  <strong>{snapshot.studio.name}</strong>
-                  <span>{snapshot.studio.locationLabel}</span>
-                </div>
-                <dl className="context-list">
-                  <div>
-                    <dt>Operator</dt>
-                    <dd>{snapshot.studio.operator}</dd>
-                  </div>
-                  <div>
-                    <dt>Mode</dt>
-                    <dd>{snapshot.studio.modeLabel}</dd>
-                  </div>
-                  <div>
-                    <dt>Assets</dt>
-                    <dd>{assetTotal}</dd>
-                  </div>
-                  <div>
-                    <dt>Delivery Set</dt>
-                    <dd>{deliveryAssets}</dd>
-                  </div>
-                </dl>
-              </section>
+      <main className="command-center cockpit-command-center">
+        <section className="cockpit-frame" aria-label="Command center overview">
+          <div className="cockpit-main">
+            <GaugeCluster
+              coverage={snapshot.coverage}
+              qc={snapshot.qc}
+              studio={snapshot.studio}
+            />
 
-              <section className="panel context-panel" aria-labelledby="workflow-map-title">
+            <section className="execution-grid" aria-label="Read-only execution surfaces">
+              <section
+                className="panel project-execution-panel"
+                id="projects"
+                aria-labelledby="projects-title"
+              >
                 <div className="panel-heading">
-                  <p className="eyebrow" id="workflow-map-title">
-                    Golden Path
+                  <p className="eyebrow" id="projects-title">
+                    Project Execution
                   </p>
-                  <span>{snapshot.workflowStages.length} stages</span>
+                  <a href={assetInboxHref}>Asset Inbox</a>
                 </div>
-                <div className="workflow-map">
-                  {snapshot.workflowStages.map((stage, index) => (
-                    <article
-                      className={`workflow-stage stage-${stage.state}`}
-                      key={stage.id}
-                    >
-                      <span className="stage-index">{index + 1}</span>
-                      <div>
-                        <strong>{stage.label}</strong>
-                        <small>{stage.detail}</small>
-                      </div>
-                      <span className={`state state-${stage.state}`}>
-                        {stageStateLabels[stage.state]} / {stage.count}
+                <div className="project-table" role="table" aria-label="Project read-only list">
+                  <div className="table-row table-head" role="row">
+                    <span role="columnheader">Project</span>
+                    <span role="columnheader">Progress</span>
+                    <span role="columnheader">Phase</span>
+                    <span role="columnheader">Due</span>
+                  </div>
+                  {snapshot.projects.map((project) => (
+                    <div className="table-row" role="row" key={project.id}>
+                      <span className="project-cell" role="cell">
+                        <AssetThumb
+                          label={`${project.name} visual marker`}
+                          seed={`${project.id}-${project.name}`}
+                          size="table"
+                        />
+                        <span className="cell-stack">
+                          <strong>{project.name}</strong>
+                          <small>{project.client}</small>
+                        </span>
                       </span>
-                    </article>
+                      <span className="progress-cell" role="cell">
+                        <span>{project.completionPercent}%</span>
+                        <span className="progress-meter" aria-hidden="true">
+                          <i style={{ width: `${project.completionPercent}%` }} />
+                        </span>
+                      </span>
+                      <span role="cell">{getProjectPhaseLabel(project.id)}</span>
+                      <span role="cell">{formatCommandDate(project.dueDate)}</span>
+                    </div>
                   ))}
                 </div>
               </section>
-            </aside>
 
-            <div className="overview-column">
-              <GaugeCluster
-                coverage={snapshot.coverage}
-                qc={snapshot.qc}
-                studio={snapshot.studio}
-              />
-              <div className="metric-grid" aria-label="Read-only studio counters">
-                <MetricPanel
-                  title="Projects"
-                  value={snapshot.projects.length}
-                  label="active live tracks"
-                />
-                <MetricPanel
-                  title="Review Load"
-                  value={activeReviewItems}
-                  label="pending review items"
-                />
-                <MetricPanel
-                  title="Approvals"
-                  value={pendingApprovals}
-                  label="human decisions"
-                />
-              </div>
-            </div>
-
-            <aside className="right-rail" aria-label="Risk and approval queue">
-              <section
-                className="panel"
-                id="risk"
-                aria-labelledby="risk-pulse-title"
-              >
+              <section className="panel timeline-panel" id="activity" aria-labelledby="activity-title">
                 <div className="panel-heading">
-                  <p className="eyebrow" id="risk-pulse-title">
-                    Risk Pulse
+                  <p className="eyebrow" id="activity-title">
+                    Activity Timeline
                   </p>
-                  <span>{riskWatchCount} watch signals</span>
                 </div>
-                <div className="signal-list">
-                  {snapshot.riskPulse.map((risk) => (
-                    <article className={`signal signal-${risk.level}`} key={risk.id}>
-                      <strong>{risk.label}</strong>
-                      <small className="risk-count">
-                        {risk.level === "high" ? 3 : risk.level === "medium" ? 2 : 1}
-                      </small>
-                      <span>{risk.signal}</span>
-                      <small>{riskLabels[risk.level]}</small>
+                <div className="timeline">
+                  {snapshot.activityTimeline.map((event, index) => (
+                    <article className={`timeline-event timeline-event-${index % 3}`} key={event.id}>
+                      <time>{event.at}</time>
+                      <div>
+                        <strong>{event.actor}</strong>
+                        <span>{event.summary}</span>
+                      </div>
                     </article>
                   ))}
                 </div>
               </section>
 
               <section
-                className="panel"
-                id="approvals"
-                aria-labelledby="approval-queue-title"
+                className="panel inspection-panel"
+                id="inspections"
+                aria-labelledby="ai-title"
               >
                 <div className="panel-heading">
-                  <p className="eyebrow" id="approval-queue-title">
-                    Approval Queue
+                  <p className="eyebrow" id="ai-title">
+                    AI Inspection Feed
                   </p>
-                  <span>{snapshot.approvalQueue.length} items</span>
+                  <span>View All</span>
                 </div>
-                <div className="queue-list">
-                  {snapshot.approvalQueue.map((item) => (
-                    <article className={`queue-item queue-${item.state}`} key={item.id}>
+                <div className="inspection-feed">
+                  {snapshot.aiInspectionFeed.map((event) => (
+                    <article key={event.id}>
                       <AssetThumb
-                        label={`${item.title} approval marker`}
-                        seed={item.id}
+                        label={`${event.assetId} inspection marker`}
+                        seed={`${event.assetId}-${event.finding}`}
                       />
                       <div>
-                        <span className="queue-type">{approvalTypeLabels[item.type]}</span>
-                        <strong>{item.title}</strong>
-                        <span>{item.projectId}</span>
+                        <strong>{event.assetId}</strong>
+                        <small>{event.finding}</small>
                       </div>
-                      <small className={`state state-${item.state}`}>
-                        {approvalLabels[item.state]} / {item.ageHours}h
-                      </small>
+                      <span className="inspection-score">{event.score}%</span>
                     </article>
                   ))}
                 </div>
               </section>
-            </aside>
+            </section>
           </div>
-        </section>
 
-        <section className="execution-grid" aria-label="Read-only execution surfaces">
-          <section
-            className="panel project-execution-panel"
-            id="projects"
-            aria-labelledby="projects-title"
-          >
-            <div className="panel-heading">
-              <p className="eyebrow" id="projects-title">
-                Project Execution
-              </p>
-              <span>{snapshot.projects.length} live tracks</span>
-            </div>
-            <div className="project-table" role="table" aria-label="Project read-only list">
-              <div className="table-row table-head" role="row">
-                <span role="columnheader">Project</span>
-                <span role="columnheader">Flow</span>
-                <span role="columnheader">Progress</span>
-                <span role="columnheader">Due</span>
+          <aside className="right-rail cockpit-side" aria-label="Risk and approval queue">
+            <section
+              className="panel"
+              id="risk"
+              aria-labelledby="risk-pulse-title"
+            >
+              <div className="panel-heading">
+                <p className="eyebrow" id="risk-pulse-title">
+                  Risk Pulse
+                </p>
+                <span>•••</span>
               </div>
-              {snapshot.projects.map((project) => (
-                <div className="table-row" role="row" key={project.id}>
-                  <span className="project-cell" role="cell">
+              <div className="signal-list">
+                {snapshot.riskPulse.map((risk) => (
+                  <article className={`signal signal-${risk.level}`} key={risk.id}>
+                    <strong>{risk.label}</strong>
+                    <small className="risk-count">{risk.signal}</small>
+                  </article>
+                ))}
+              </div>
+              <a className="panel-link" href={qcRetouchHref}>
+                Open QC / Retouch
+              </a>
+            </section>
+
+            <section
+              className="panel"
+              id="approvals"
+              aria-labelledby="approval-queue-title"
+            >
+              <div className="panel-heading">
+                <p className="eyebrow" id="approval-queue-title">
+                  Approval Queue
+                </p>
+                <span className="queue-count">{snapshot.approvalQueue.length}</span>
+              </div>
+              <div className="queue-list">
+                {snapshot.approvalQueue.map((item) => (
+                  <article className={`queue-item queue-${item.state}`} key={item.id}>
                     <AssetThumb
-                      label={`${project.name} visual marker`}
-                      seed={project.id}
-                      size="table"
+                      label={`${item.title} approval marker`}
+                      seed={`${item.id}-${item.title}`}
                     />
-                    <span className="cell-stack">
-                      <strong>{project.name}</strong>
-                      <small>{project.client}</small>
-                    </span>
-                  </span>
-                  <span className="cell-stack" role="cell">
-                    <span className={`status-pill status-${project.status}`}>
-                      {statusLabels[project.status]}
-                    </span>
-                    <small>{project.owner}</small>
-                  </span>
-                  <span className="progress-cell" role="cell">
-                    <span>{project.completionPercent}%</span>
-                    <span className="progress-meter" aria-hidden="true">
-                      <i style={{ width: `${project.completionPercent}%` }} />
-                    </span>
-                  </span>
-                  <span role="cell">{formatCommandDate(project.dueDate)}</span>
-                </div>
-              ))}
-            </div>
-          </section>
+                    <div>
+                      <strong>{item.title}</strong>
+                      <span>{item.projectId}</span>
+                      <small className={`queue-severity queue-severity-${item.state}`}>
+                        {getApprovalSeverity(item.state)}
+                      </small>
+                    </div>
+                    <small className={`state state-${item.state}`}>
+                      {formatQueueDue(item.ageHours)}
+                    </small>
+                  </article>
+                ))}
+              </div>
+              <a className="panel-link" href={reviewGalleryHref}>
+                Open Review Gallery
+              </a>
+            </section>
 
-          <section className="panel timeline-panel" id="activity" aria-labelledby="activity-title">
-            <div className="panel-heading">
-              <p className="eyebrow" id="activity-title">
-                Activity Timeline
-              </p>
-              <span>latest</span>
+            <div className="side-status-grid" aria-label="Read-only side status">
+              <a className="side-status-card side-status-alert" href={qcRetouchHref}>
+                <strong>AI Flagged</strong>
+                <span>{snapshot.aiInspectionFeed.length} Items</span>
+              </a>
+              <a className="side-status-card" href={deliveryReadinessHref}>
+                <strong>Storage</strong>
+                <span>Delivery</span>
+              </a>
             </div>
-            <div className="timeline">
-              {snapshot.activityTimeline.map((event) => (
-                <article key={event.id}>
-                  <time>{event.at}</time>
-                  <div>
-                    <strong>{event.actor}</strong>
-                    <span>{event.summary}</span>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <section
-            className="panel inspection-panel"
-            id="inspections"
-            aria-labelledby="ai-title"
-          >
-            <div className="panel-heading">
-              <p className="eyebrow" id="ai-title">
-                AI Inspection Feed
-              </p>
-              <span>mock assist</span>
-            </div>
-            <div className="inspection-feed">
-              {snapshot.aiInspectionFeed.map((event) => (
-                <article key={event.id}>
-                  <AssetThumb
-                    label={`${event.assetId} inspection marker`}
-                    seed={event.assetId}
-                  />
-                  <div>
-                    <strong>{event.assetId}</strong>
-                    <small>{event.finding}</small>
-                  </div>
-                  <span className="inspection-score">{event.score}%</span>
-                </article>
-              ))}
-            </div>
-          </section>
-        </section>
-
-        <section className="entity-grid" aria-label="Read-only entity surfaces">
-          <section className="panel entity-panel" id="skus" aria-labelledby="skus-title">
-            <div className="panel-heading">
-              <p className="eyebrow" id="skus-title">
-                SKU Matrix
-              </p>
-              <span>{snapshot.skus.length} representative SKUs</span>
-            </div>
-            <div className="compact-list">
-              {snapshot.skus.map((sku) => (
-                <article key={sku.id}>
-                  <div>
-                    <strong>{sku.label}</strong>
-                    <span>{sku.id} / {sku.productLine}</span>
-                  </div>
-                  <small className={`state state-${sku.reviewState}`}>
-                    {statusLabels[sku.status]} / {sku.assetCount} assets
-                  </small>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <section className="panel entity-panel" id="assets" aria-labelledby="assets-title">
-            <div className="panel-heading">
-              <p className="eyebrow" id="assets-title">
-                Asset Watch
-              </p>
-              <span>{snapshot.assets.length} sample assets</span>
-            </div>
-            <div className="compact-list">
-              {snapshot.assets.map((asset) => (
-                <article key={asset.id}>
-                  <div>
-                    <strong>{asset.fileName}</strong>
-                    <span>{asset.usage} / {asset.skuId}</span>
-                  </div>
-                  <small className={`state state-${getScoreState(asset.inspectionScore)}`}>
-                    Inspection {asset.inspectionScore}
-                  </small>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <section className="panel entity-panel" id="reviews" aria-labelledby="reviews-title">
-            <div className="panel-heading">
-              <p className="eyebrow" id="reviews-title">
-                Review Sessions
-              </p>
-              <span>{snapshot.reviews.length} active</span>
-            </div>
-            <div className="compact-list">
-              {snapshot.reviews.map((review) => (
-                <article key={review.id}>
-                  <div>
-                    <strong>{review.label}</strong>
-                    <span>{review.reviewer}</span>
-                  </div>
-                  <small className={`state state-${review.state}`}>
-                    {approvalLabels[review.state]} / {review.pendingItems} pending
-                  </small>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <section
-            className="panel entity-panel"
-            id="deliveries"
-            aria-labelledby="deliveries-title"
-          >
-            <div className="panel-heading">
-              <p className="eyebrow" id="deliveries-title">
-                Delivery Packages
-              </p>
-              <span>{snapshot.deliveries.length} packages</span>
-            </div>
-            <div className="compact-list">
-              {snapshot.deliveries.map((delivery) => (
-                <article key={delivery.id}>
-                  <div>
-                    <strong>{delivery.label}</strong>
-                    <span>{delivery.projectId}</span>
-                  </div>
-                  <small className={`state state-${getDeliveryState(delivery.status)}`}>
-                    {delivery.status} / {delivery.assetCount} assets
-                  </small>
-                </article>
-              ))}
-            </div>
-          </section>
+          </aside>
         </section>
       </main>
     </AppShell>

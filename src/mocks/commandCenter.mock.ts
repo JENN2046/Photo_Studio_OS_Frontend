@@ -3,23 +3,23 @@ import type { CommandCenterSnapshot } from "../api/types";
 export const commandCenterMock: CommandCenterSnapshot = {
   generatedAt: "2026-05-05T09:30:00+08:00",
   studio: {
-    name: "North Hall Product Studio",
-    locationLabel: "Shanghai / Set A",
+    name: "Brooklyn Studio A",
+    locationLabel: "Set 1 / Set 02",
     modeLabel: "Command Center Alpha",
     operator: "Studio Ops",
-    readinessPercent: 78,
+    readinessPercent: 82,
     activeProjectCount: 3
   },
   coverage: {
-    skuCoveragePercent: 62,
-    completedSkus: 24,
-    totalSkus: 39
+    skuCoveragePercent: 92.7,
+    completedSkus: 279,
+    totalSkus: 300
   },
   qc: {
-    qcHealthPercent: 91,
-    passed: 186,
-    flagged: 17,
-    pending: 41
+    qcHealthPercent: 96.4,
+    passed: 1423,
+    flagged: 77,
+    pending: 0
   },
   workflowStages: [
     {
@@ -66,11 +66,11 @@ export const commandCenterMock: CommandCenterSnapshot = {
   projects: [
     {
       id: "PRJ-128",
-      name: "Atelier Noir Spring Capsule",
-      client: "Atelier Noir",
+      name: "Aurora Collection",
+      client: "Luxury Furniture",
       owner: "Studio Ops",
       status: "review",
-      dueDate: "2026-05-12",
+      dueDate: "2026-05-22",
       skuCount: 18,
       assetCount: 236,
       reviewCount: 4,
@@ -80,11 +80,11 @@ export const commandCenterMock: CommandCenterSnapshot = {
     },
     {
       id: "PRJ-129",
-      name: "Lumen Tabletop Refresh",
-      client: "Lumen Home",
+      name: "Triæpiece Series V2",
+      client: "Product Launch",
       owner: "Retouch Lead",
       status: "retouch",
-      dueDate: "2026-05-18",
+      dueDate: "2026-05-27",
       skuCount: 12,
       assetCount: 144,
       reviewCount: 1,
@@ -94,17 +94,31 @@ export const commandCenterMock: CommandCenterSnapshot = {
     },
     {
       id: "PRJ-130",
-      name: "Citrine Editorial Set",
-      client: "Citrine Market",
+      name: "Noir Fragrance",
+      client: "Campaign",
       owner: "Producer Desk",
       status: "shoot",
-      dueDate: "2026-05-23",
+      dueDate: "2026-06-02",
       skuCount: 9,
       assetCount: 64,
       reviewCount: 0,
       deliveryCount: 0,
       riskLevel: "high",
       completionPercent: 31
+    },
+    {
+      id: "PRJ-131",
+      name: "Lumen Lighting",
+      client: "E-Commerce",
+      owner: "Capture Lead",
+      status: "intake",
+      dueDate: "2026-06-05",
+      skuCount: 6,
+      assetCount: 44,
+      reviewCount: 0,
+      deliveryCount: 0,
+      riskLevel: "low",
+      completionPercent: 12
     }
   ],
   skus: [
@@ -203,86 +217,112 @@ export const commandCenterMock: CommandCenterSnapshot = {
     {
       id: "APR-801",
       type: "review",
-      title: "Hero crop variance",
-      projectId: "PRJ-128",
-      state: "waiting",
-      ageHours: 7
+      title: "AUR-CHAIR-0012",
+      projectId: "Set 1 / Set 02",
+      state: "blocked",
+      ageHours: 0.75
     },
     {
       id: "APR-802",
       type: "qc",
-      title: "Styling continuity hold",
-      projectId: "PRJ-130",
+      title: "MOD-SOFA-0045",
+      projectId: "Set 1 / Set 01",
       state: "blocked",
-      ageHours: 19
+      ageHours: 1.3
     },
     {
       id: "APR-803",
       type: "delivery",
-      title: "Lamp reflection approval",
-      projectId: "PRJ-129",
-      state: "cleared",
+      title: "TBL-COFFEE-0031",
+      projectId: "Set 1 / Set 03",
+      state: "waiting",
       ageHours: 2
+    },
+    {
+      id: "APR-804",
+      type: "retouch",
+      title: "LMP-TBL-0022",
+      projectId: "Set 1 / Set 01",
+      state: "cleared",
+      ageHours: 3.1
     }
   ],
   riskPulse: [
     {
       id: "RISK-1",
-      label: "Client review aging",
-      level: "medium",
-      signal: "14 pending items over 6h"
+      label: "High Exposure Clips",
+      level: "high",
+      signal: "3"
     },
     {
       id: "RISK-2",
-      label: "Shoot continuity",
-      level: "high",
-      signal: "Blocked scarf composition pass"
+      label: "Color Deviation",
+      level: "medium",
+      signal: "2"
     },
     {
       id: "RISK-3",
-      label: "Delivery package drift",
+      label: "Focus Anomalies",
       level: "low",
-      signal: "All ready sets remain read-only"
+      signal: "1"
     }
   ],
   activityTimeline: [
     {
       id: "ACT-1",
-      at: "09:16",
-      actor: "AI Inspection",
-      summary: "Flagged scarf lifestyle set for edge shadow variance"
+      at: "10:35 AM",
+      actor: "Capture Complete · Set 03",
+      summary: "Aurora Collection"
     },
     {
       id: "ACT-2",
-      at: "09:04",
-      actor: "Retouch Lead",
-      summary: "Moved Lumen lamp detail set into polish queue"
+      at: "10:22 AM",
+      actor: "QC Pass · 145 Images",
+      summary: "MOD-SOFA-0045"
     },
     {
       id: "ACT-3",
-      at: "08:42",
-      actor: "Studio Ops",
-      summary: "Prepared Atelier marketplace crop package sentinel"
+      at: "10:15 AM",
+      actor: "AI Inspection Flag · Focus",
+      summary: "AUR-CHAIR-0012_0342.CR3"
+    },
+    {
+      id: "ACT-4",
+      at: "09:58 AM",
+      actor: "Retouch Complete · Batch 07",
+      summary: "TRIÆPIECE SERIES V2"
+    },
+    {
+      id: "ACT-5",
+      at: "09:41 AM",
+      actor: "Capture Started · Set 04",
+      summary: "Lumen Lighting"
     }
   ],
   aiInspectionFeed: [
     {
       id: "AI-1",
-      assetId: "AST-9012",
+      assetId: "AUR-CHAIR-0012_0342.CR3",
       score: 94,
-      finding: "Hero tote exposure and contour pass"
+      finding: "Focus Anomaly · Left Edge"
     },
     {
       id: "AI-2",
-      assetId: "AST-9050",
-      score: 89,
-      finding: "Lamp metal reflection needs final review"
+      assetId: "FFCS-V7_1201.CR3",
+      score: 86,
+      finding: "Reflection · Watch Crystal"
     },
     {
       id: "AI-3",
-      assetId: "AST-9091",
-      score: 76,
-      finding: "Lifestyle frame has shadow continuity risk"
+      assetId: "MOD-SOFA-0045_0877.CR3",
+      score: 82,
+      finding: "Exposure Deviation · +1.2 EV"
+    },
+    {
+      id: "AI-4",
+      assetId: "NPR_45ML_2221.CR3",
+      score: 91,
+      finding: "Color Deviation · Label"
     }
   ]
 };
