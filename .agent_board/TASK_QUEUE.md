@@ -10,7 +10,7 @@ It does not authorize remote writes, commits, pushes, deployments, backend chang
 ## Current Mission
 
 ```text
-P2.8 Risk / Approval Scene Depth
+P2.9 Command Center Side-detail View Model
 ```
 
 Mode:
@@ -22,7 +22,7 @@ A4-Sustained Local Frontend Autopilot
 Goal:
 
 ```text
-Deepen the read-only Command Center risk and approval hash scenes while keeping direct hash loads, desktop layout, and 390px layout stable.
+Keep Command Center side-detail copy stable and maintainable by deriving risk and approval details from the view-model layer instead of component-local copy guessing.
 ```
 
 ---
@@ -171,6 +171,11 @@ none
 77. Deepened #risk with read-only detail cards for risk impact, owner, and suggested next action.
 78. Deepened #approvals with read-only detail cards for approval type, state, impact, and next step.
 79. Browser-validated #risk and #approvals in the in-app browser and at 390px with no horizontal overflow or console errors.
+80. Locally committed 96ef6ad: feat: deepen risk approval read-only scenes.
+81. Started P2.9 Command Center Side-detail View Model from clean local commit 96ef6ad.
+82. Moved risk detail and approval detail derivation into src/features/command-center/commandCenterViewModel.ts.
+83. Kept CommandCenter.tsx focused on rendering the read-only detail cards.
+84. Browser-validated #risk and #approvals in the in-app browser and at 390px after the view-model extraction.
 ```
 
 ### blocked

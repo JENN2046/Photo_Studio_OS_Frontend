@@ -10,7 +10,7 @@ Update this whenever work stops, pauses, blocks, or completes a meaningful batch
 
 ```text
 Status: complete-candidate
-Result: P2.8 Risk / Approval Scene Depth is browser-validated. #risk and #approvals now reveal focused read-only detail lists, and direct hash loads are stable after React render.
+Result: P2.9 Command Center Side-detail View Model is browser-validated. Risk and approval detail derivation now lives in the view-model layer while #risk and #approvals keep the same visible read-only behavior.
 ```
 
 ---
@@ -46,7 +46,8 @@ Branch main was clean after local commit 4cc1539.
 Branch main was clean after local commit ea67bc1.
 Branch main was clean after local commit d68fdcf.
 Branch main was clean after local commit ab11292.
-Current batch intentionally edits P2.8 risk / approval source, docs, and .agent_board after local commit ab11292.
+Branch main was clean after local commit 96ef6ad.
+Current batch intentionally edits P2.9 side-detail source, docs, and .agent_board after local commit 96ef6ad.
 ```
 
 ---
@@ -99,6 +100,9 @@ Completed the first P1 frontend v2 realization slice:
 - #risk now shows read-only detail cards for impact, owner, and suggested next action.
 - #approvals now shows read-only detail cards for type, state, impact, and next step.
 - In-app browser and Playwright CLI 390px QA confirmed the matching detail list is visible, the other list is hidden, no horizontal overflow is present, and console error count is 0.
+- 96ef6ad is a local commit for risk / approval read-only scene depth and has not been pushed.
+- P2.9 moved risk and approval detail derivation out of CommandCenter.tsx and into commandCenterViewModel.ts.
+- In-app browser and Playwright CLI 390px QA confirmed #risk and #approvals preserve the expected read-only detail copy after the extraction.
 ```
 
 ---
@@ -107,8 +111,7 @@ Completed the first P1 frontend v2 realization slice:
 
 ```text
 src/features/command-center/CommandCenter.tsx
-src/styles/global.css
-README.md
+src/features/command-center/commandCenterViewModel.ts
 docs/design/FRONTEND_V2_GAP_MAP.md
 .agent_board/CHECKPOINT.md
 .agent_board/RUN_STATE.md
@@ -198,6 +201,11 @@ Current P2.8 risk / approval scene depth:
 - npm run lint passed after source changes.
 - In-app browser verified #risk and #approvals detail visibility and console error count 0.
 - Playwright CLI verified direct #risk and #approvals loads at 390px with matching data-scene, visible details, no horizontal overflow, and console error count 0.
+
+Current P2.9 side-detail view-model cleanup:
+- npm run lint passed after source changes.
+- In-app browser verified #risk and #approvals keep the expected detail copy after the view-model extraction.
+- Playwright CLI verified direct #risk and #approvals loads at 390px with no horizontal overflow and console error count 0.
 ```
 
 ---
@@ -207,7 +215,7 @@ Current P2.8 risk / approval scene depth:
 ```text
 No npm test script is defined.
 No backend live integration request is planned for this mock-first UI batch.
-No push is authorized for local commits 472d848, 078f894, f7b1b8f, 1265584, 27ba2b5, 6f1666b, 4cc1539, ea67bc1, d68fdcf, ab11292, or the current P2.8 risk / approval scene depth pass until the user explicitly asks for push.
+No push is authorized for local commits 472d848, 078f894, f7b1b8f, 1265584, 27ba2b5, 6f1666b, 4cc1539, ea67bc1, d68fdcf, ab11292, 96ef6ad, or the current P2.9 side-detail view-model pass until the user explicitly asks for push.
 ```
 
 ---
@@ -255,7 +263,7 @@ none for the next safe local frontend slice.
 ## Next Safe Action
 
 ```text
-Next safe action: run final guarded validation, commit the P2.8 risk / approval scene depth pass locally, then wait for explicit push approval.
+Next safe action: run final guarded validation, commit the P2.9 side-detail view-model pass locally, then wait for explicit push approval.
 ```
 
 ---
@@ -267,7 +275,7 @@ Next safe action: run final guarded validation, commit the P2.8 risk / approval 
 
 读取 AGENTS.md 和 .agent_board/*。
 继续 A4-Sustained Local Frontend Autopilot。
-先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的 P2.8 risk / approval scene depth 队列继续。
+先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的 P2.9 side-detail view-model 队列继续。
 保持 mock-first/read-only，不碰 backend、root control repo、依赖、.env、deploy、生产服务、上传/下载/auth/storage/write actions。
 按当前持续推进节奏，小批次验证后可以本地 commit；push 只有用户明确说 push 才执行。
 用中文汇报。

@@ -17,7 +17,7 @@ A4-Sustained Local Frontend Autopilot
 ## Current Mission
 
 ```text
-P2.8 Risk / Approval Scene Depth
+P2.9 Command Center Side-detail View Model
 ```
 
 ---
@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-Risk / Approval scene depth complete candidate
+Command Center side-detail view-model cleanup complete candidate
 ```
 
 ---
@@ -58,7 +58,7 @@ Risk / Approval scene depth complete candidate
 ## Last Completed Task
 
 ```text
-Deepened Command Center risk and approval scenes with stable direct hash state
+Moved Command Center risk and approval detail derivation into the view-model layer
 ```
 
 ---
@@ -66,7 +66,7 @@ Deepened Command Center risk and approval scenes with stable direct hash state
 ## Last Validation
 
 ```text
-In-app browser confirmed #risk and #approvals show only their matching read-only detail lists with console error count 0; Playwright CLI confirmed direct #risk and #approvals loads at 390px set the expected data-scene, reveal details, and have no horizontal overflow
+In-app browser confirmed #risk and #approvals still show the expected details after view-model extraction; Playwright CLI confirmed direct #risk and #approvals loads at 390px still reveal the matching detail list with no horizontal overflow and console errors
 ```
 
 ---
@@ -75,7 +75,7 @@ In-app browser confirmed #risk and #approvals show only their matching read-only
 
 ```text
 Branch: main
-Worktree: intentionally editing P2.8 risk / approval source, docs, and .agent_board after local ab11292
+Worktree: intentionally editing P2.9 Command Center side-detail source, docs, and .agent_board after local 96ef6ad
 ```
 
 ---
@@ -115,7 +115,7 @@ no
 ## Current Stop Status
 
 ```text
-stop at remote push boundary after local P2.8 commit
+stop at remote push boundary after local P2.9 commit
 ```
 
 ---
@@ -123,5 +123,5 @@ stop at remote push boundary after local P2.8 commit
 ## Next Action
 
 ```text
-Run final guarded validation, commit the P2.8 risk / approval scene depth pass locally, then wait for explicit push approval.
+Run final guarded validation, commit the P2.9 side-detail view-model pass locally, then wait for explicit push approval.
 ```

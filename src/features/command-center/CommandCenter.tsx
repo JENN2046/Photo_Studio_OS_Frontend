@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { GaugeCluster } from "../../components/gauges/GaugeCluster";
 import { AppShell } from "../../components/layout/AppShell";
+import {
+  getCommandCenterApprovalDetail,
+  getCommandCenterRiskDetail
+} from "./commandCenterViewModel";
 import { useCommandCenterSnapshot } from "./useCommandCenterSnapshot";
 
 const loadingStatusLanes = [
@@ -129,111 +133,6 @@ function getApprovalSeverity(state: "waiting" | "blocked" | "cleared") {
   }
 
   return state === "waiting" ? "中" : "低";
-}
-
-function getApprovalTypeLabel(
-  type: "review" | "delivery" | "qc" | "retouch"
-) {
-  const labels = {
-    review: "客户审核",
-    delivery: "交付确认",
-    qc: "质检复核",
-    retouch: "精修返工"
-  } satisfies Record<typeof type, string>;
-
-  return labels[type];
-}
-
-function getApprovalStateLabel(state: "waiting" | "blocked" | "cleared") {
-  const labels = {
-    waiting: "待处理",
-    blocked: "阻塞",
-    cleared: "已清除"
-  } satisfies Record<typeof state, string>;
-
-  return labels[state];
-}
-
-function getRiskImpact(label: string) {
-  if (label.includes("曝光")) {
-    return "3 张主图需要重新校准高光，可能影响客户二审节奏。";
-  }
-
-  if (label.includes("色彩")) {
-    return "标签与背景色温偏离参考，需要精修复核统一色彩基准。";
-  }
-
-  return "边缘焦点存在波动，需要在进入审核前完成局部检查。";
-}
-
-function getRiskOwner(label: string) {
-  if (label.includes("曝光")) {
-    return "制片台 / Agent 巡检";
-  }
-
-  if (label.includes("色彩")) {
-    return "精修负责人";
-  }
-
-  return "拍摄负责人";
-}
-
-function getRiskAction(label: string) {
-  if (label.includes("曝光")) {
-    return "先打开质检 / 精修确认曝光阈值。";
-  }
-
-  if (label.includes("色彩")) {
-    return "对照参考图复核标签与肤色保护。";
-  }
-
-  return "补查焦点边缘并标记是否需要补拍。";
-}
-
-function getApprovalImpact(
-  type: "review" | "delivery" | "qc" | "retouch",
-  state: "waiting" | "blocked" | "cleared"
-) {
-  if (state === "cleared") {
-    return "当前阻塞已清除，仅保留只读追踪。";
-  }
-
-  if (type === "delivery") {
-    return "交付包仍需人工确认，外部交付保持禁用。";
-  }
-
-  if (type === "qc") {
-    return "质检结果会影响审核入口，返修建议仍只读。";
-  }
-
-  if (type === "retouch") {
-    return "精修排期需要确认，当前不写入任务状态。";
-  }
-
-  return "客户审核仍待确认，反馈写入保持禁用。";
-}
-
-function getApprovalNextStep(
-  type: "review" | "delivery" | "qc" | "retouch",
-  state: "waiting" | "blocked" | "cleared"
-) {
-  if (state === "cleared") {
-    return "保持观察，无业务写入。";
-  }
-
-  if (type === "delivery") {
-    return "打开审核画廊核对交付清单与阻断项。";
-  }
-
-  if (type === "qc") {
-    return "打开质检 / 精修查看失败原因。";
-  }
-
-  if (type === "retouch") {
-    return "确认返修说明与截止时间。";
-  }
-
-  return "打开审核画廊查看待反馈项。";
 }
 
 function getRecoveryStateLabel(
@@ -838,28 +737,32 @@ export function CommandCenter() {
                 ))}
               </div>
               <div className="risk-detail-list" aria-label="风险只读详情">
-                {snapshot.riskPulse.map((risk) => (
-                  <article
-                    className={`risk-detail risk-detail-${risk.level}`}
-                    key={risk.id}
-                  >
-                    <div>
-                      <span>{risk.id}</span>
-                      <strong>{risk.label}</strong>
-                    </div>
-                    <p>{getRiskImpact(risk.label)}</p>
-                    <dl>
+                {snapshot.riskPulse.map((risk) => {
+                  const detail = getCommandCenterRiskDetail(risk);
+
+                  return (
+                    <article
+                      className={`risk-detail risk-detail-${risk.level}`}
+                      key={risk.id}
+                    >
                       <div>
-                        <dt>负责人</dt>
-                        <dd>{getRiskOwner(risk.label)}</dd>
+                        <span>{risk.id}</span>
+                        <strong>{risk.label}</strong>
                       </div>
-                      <div>
-                        <dt>建议</dt>
-                        <dd>{getRiskAction(risk.label)}</dd>
-                      </div>
-                    </dl>
-                  </article>
-                ))}
+                      <p>{detail.impact}</p>
+                      <dl>
+                        <div>
+                          <dt>负责人</dt>
+                          <dd>{detail.owner}</dd>
+                        </div>
+                        <div>
+                          <dt>建议</dt>
+                          <dd>{detail.action}</dd>
+                        </div>
+                      </dl>
+                    </article>
+                  );
+                })}
               </div>
               <a className="panel-link" href={qcRetouchHref}>
                 打开质检 / 精修
@@ -900,23 +803,25 @@ export function CommandCenter() {
                 ))}
               </div>
               <div className="approval-detail-list" aria-label="审批只读详情">
-                {snapshot.approvalQueue.map((item) => (
-                  <article
-                    className={`approval-detail approval-detail-${item.state}`}
-                    key={item.id}
-                  >
-                    <div className="approval-detail-head">
-                      <span>{item.id}</span>
-                      <b>{getApprovalTypeLabel(item.type)}</b>
-                      <strong>{getApprovalStateLabel(item.state)}</strong>
-                    </div>
-                    <h3>{item.title}</h3>
-                    <p>{getApprovalImpact(item.type, item.state)}</p>
-                    <small>
-                      下一步：{getApprovalNextStep(item.type, item.state)}
-                    </small>
-                  </article>
-                ))}
+                {snapshot.approvalQueue.map((item) => {
+                  const detail = getCommandCenterApprovalDetail(item);
+
+                  return (
+                    <article
+                      className={`approval-detail approval-detail-${item.state}`}
+                      key={item.id}
+                    >
+                      <div className="approval-detail-head">
+                        <span>{item.id}</span>
+                        <b>{detail.typeLabel}</b>
+                        <strong>{detail.stateLabel}</strong>
+                      </div>
+                      <h3>{item.title}</h3>
+                      <p>{detail.impact}</p>
+                      <small>下一步：{detail.nextStep}</small>
+                    </article>
+                  );
+                })}
               </div>
               <a className="panel-link" href={reviewGalleryHref}>
                 打开审核画廊

@@ -552,6 +552,32 @@ Notes:
 - Console error count was 0.
 ```
 
+```text
+## VALIDATION-20260507-SIDE-DETAIL-VIEWMODEL
+
+Task: Move Command Center risk / approval detail derivation into the view-model layer.
+Commands run:
+- npm run lint
+- in-app browser direct hash QA for #risk and #approvals
+- Playwright CLI 390px direct hash QA for #risk and #approvals
+- Playwright CLI console error check
+- git diff --check
+- changed-file secret scan on current diff
+- npm run build
+Result: passed
+Failures: none
+Fix attempted: not applicable
+Re-run result: not applicable
+Not validated:
+- No npm test script is defined.
+- No backend live integration was run; frontend remains mock-first.
+Notes:
+- CommandCenter.tsx now renders risk and approval detail cards from view-model helpers.
+- commandCenterViewModel.ts now owns stable risk-ID detail mapping plus approval type/state detail derivation.
+- #risk and #approvals retained expected visible Chinese detail copy after the extraction.
+- 390px direct hash checks reported no horizontal overflow and console error count 0.
+```
+
 ---
 
 ## Entry Template

@@ -35,6 +35,7 @@ As of the current Frontend v2 local state, the read-only production loop has mov
 - P2.6 click affordance pass has converted Command Center fake heading actions into real links, confirmed read-model card selection, and clarified disabled read-only action semantics.
 - P2.7 command rail hygiene has reduced Command Center rail entries to unique hash scenes and added hash-aware `aria-current` active state.
 - P2.8 Risk / Approval scene depth adds read-only detail cards for risk impact, owner, suggested action, approval state, approval impact, and next step; direct `#risk` / `#approvals` hash loads are stabilized with Command Center scene state.
+- P2.9 Command Center side-detail helpers now live in the view-model layer, using stable risk IDs plus approval type/state instead of component-local copy guessing.
 - `--ps-*` token aliases and text-color compatibility aliases exist in `src/styles/tokens.css`.
 - Current long-track focus is post-RC read-only UX tightening and optional backend read-model smoke testing only when a local backend base URL is explicitly configured.
 
@@ -104,6 +105,7 @@ Image references:
 | Click affordance clarity. | Command Center heading actions navigate to target hash scenes; read-model cards select local detail; disabled actions expose read-only disabled posture. | Future visible actions must either navigate, update local read-only UI state, or remain clearly disabled. | P2.6 done |
 | Command rail scene hygiene. | The rail now exposes one entry each for #risk, #projects, #approvals, #activity, and #inspections, with one hash-aware active state. | Keep future rail additions unique and browser-check `aria-current` after click. | P2.7 done |
 | Risk / Approval scene depth. | #risk and #approvals now expose focused read-only detail lists, and direct hash loads are stable after React render. | Keep details derived from read-model/mock state and avoid introducing approval writes. | P2.8 done |
+| Command Center side-detail view model. | Risk detail and approval detail derivation moved out of the component and into `commandCenterViewModel.ts`. | Extend stable mapping in the view-model layer when adding risk IDs or approval types. | P2.9 done |
 | Optional backend read-model smoke. | Still intentionally not run in this frontend-only mock-first batch. | Run only with a deliberately configured local `VITE_BACKEND_API_BASE_URL` outside this repo. | P2 blocked |
 
 ## Command Center Gap Table
@@ -238,8 +240,9 @@ Use this as the first copy alignment pass before creating more pages.
 14. Completed: P2.6 read-only click affordance pass for Command Center heading actions, read-model local selection, and disabled action posture.
 15. Completed: P2.7 command rail scene hygiene for unique rail entries and hash-aware active state.
 16. Completed: P2.8 Risk / Approval scene depth with direct hash stabilization and browser QA.
-17. Next: optional backend read-model smoke remains blocked until a local backend base URL is intentionally configured outside this repo.
-18. Always run `npm run lint` and `npm run build` after code/style changes.
+17. Completed: P2.9 Command Center side-detail view-model consolidation.
+18. Next: optional backend read-model smoke remains blocked until a local backend base URL is intentionally configured outside this repo.
+19. Always run `npm run lint` and `npm run build` after code/style changes.
 
 ## Stop Conditions
 

@@ -10,10 +10,10 @@ Codex should update this after each meaningful batch of local frontend work.
 
 ```text
 Status: complete-candidate
-Updated: 2026-05-07 14:36 +0800
+Updated: 2026-05-07 14:45 +0800
 Repo: Photo_Studio_OS_Frontend
 Mode: A4-Sustained Local Frontend Autopilot
-Mission: P2.8 Risk / Approval Scene Depth
+Mission: P2.9 Command Center Side-detail View Model
 ```
 
 ---
@@ -25,8 +25,8 @@ Fill from actual command output.
 ```text
 Workspace: A:\Photo_Studio_OS_Frontend
 Branch: main
-Worktree: intentionally editing P2.8 risk / approval source, docs, and .agent_board after local ab11292
-Diff stat: CommandCenter.tsx, global.css, docs, README, and .agent_board
+Worktree: intentionally editing P2.9 Command Center side-detail source, docs, and .agent_board after local 96ef6ad
+Diff stat: CommandCenter.tsx, commandCenterViewModel.ts, docs, and .agent_board
 Package manager: npm with package-lock.json
 Available scripts: dev, build, lint, preview
 ```
@@ -103,6 +103,11 @@ Added hash-derived Command Center data-scene state so direct #risk and #approval
 Deepened #risk with read-only detail cards for risk impact, owner, and suggested action.
 Deepened #approvals with read-only detail cards for approval type, state, impact, and next step.
 Browser-validated #risk and #approvals in the in-app browser and at 390px with no horizontal overflow or console errors.
+Locally committed 96ef6ad: deepened risk / approval read-only scenes.
+Started P2.9 Command Center Side-detail View Model from clean local commit 96ef6ad.
+Moved risk and approval detail derivation into commandCenterViewModel.ts.
+Kept CommandCenter.tsx focused on rendering detail cards from view-model helpers.
+Browser-validated #risk and #approvals in the in-app browser and at 390px after the extraction.
 ```
 
 ---
@@ -111,8 +116,7 @@ Browser-validated #risk and #approvals in the in-app browser and at 390px with n
 
 ```text
 src/features/command-center/CommandCenter.tsx
-src/styles/global.css
-README.md
+src/features/command-center/commandCenterViewModel.ts
 docs/design/FRONTEND_V2_GAP_MAP.md
 .agent_board/CHECKPOINT.md
 .agent_board/RUN_STATE.md
@@ -183,6 +187,11 @@ Current P2.8 risk / approval scene depth:
 - In-app browser verified #approvals shows 4 approval detail cards, next-step/read-only copy, hides risk details, and has console error count 0.
 - Playwright CLI verified direct #risk and #approvals loads at 390px set data-scene, reveal matching details, hide the other detail list, and have no horizontal overflow.
 - Playwright CLI console error check returned 0 errors.
+
+Current P2.9 side-detail view-model cleanup:
+- npm run lint passed after source changes.
+- In-app browser verified #risk and #approvals retain the expected visible detail copy after the view-model extraction.
+- Playwright CLI verified direct #risk and #approvals loads at 390px with no horizontal overflow and console error count 0.
 ```
 
 ---
@@ -233,7 +242,7 @@ Live backend toggle still requires configuring VITE_BACKEND_API_BASE_URL and run
 ## Next Safe Task
 
 ```text
-Commit the local P2.8 risk / approval scene depth pass, then stop at remote push boundary.
+Commit the local P2.9 side-detail view-model cleanup, then stop at remote push boundary.
 ```
 
 ---
