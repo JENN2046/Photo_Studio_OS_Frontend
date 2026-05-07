@@ -3263,11 +3263,44 @@ body {
   .topbar {
     left: 0;
     position: static;
-    min-height: 86px;
+    min-height: 56px;
+    padding: 0 18px;
   }
 
   .topbar-status {
+    width: 100%;
+    align-items: center;
     justify-content: flex-start;
+    gap: 12px;
+    overflow: hidden;
+    flex-wrap: nowrap;
+  }
+
+  .topbar-status span {
+    display: inline-flex;
+    width: auto;
+    max-width: none;
+    flex: 0 0 auto;
+    font-size: 0.72rem;
+    line-height: 1;
+    overflow-wrap: normal;
+    white-space: nowrap;
+  }
+
+  .topbar-status span:first-child {
+    min-width: 0;
+    flex-shrink: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .topbar-status span + span::before {
+    left: -7px;
+    height: 12px;
+  }
+
+  .topbar-status i {
+    flex: 0 0 auto;
   }
 
   .cockpit-frame {

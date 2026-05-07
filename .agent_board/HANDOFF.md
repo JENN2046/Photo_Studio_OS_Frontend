@@ -10,7 +10,7 @@ Update this whenever work stops, pauses, blocks, or completes a meaningful batch
 
 ```text
 Status: in-progress
-Result: P1B read-only production loop is complete candidate. P2 cockpit polish has started; the 1280px right-rail breakpoint is fixed and validated.
+Result: P1B read-only production loop is complete candidate. P2 cockpit maturation is in progress; 1280px side rail and 390px topbar status have both been fixed and browser-checked.
 ```
 
 ---
@@ -43,7 +43,7 @@ main
 
 ```text
 Branch main was clean after pushed 11b4b5e.
-Current batch intentionally edits read-model action pair component and .agent_board.
+Current batch intentionally edits mobile Command Center status bar CSS and .agent_board after clean 59c04a5.
 ```
 
 ---
@@ -61,9 +61,11 @@ Completed the first P1 frontend v2 realization slice:
 - Command Center now shows a compact 黄金链路 strip with PRJ-128, REV-441, DEL-220, and four read-only entries.
 - P2 cockpit polish started by restoring the Risk / Approval side rail at 1280px.
 - Optional backend read-model smoke boundaries are documented without enabling backend, auth, tokens, uploads, downloads, or writes.
-- Repeated disabled read-only action pairs are extracted into a small shared component.
+- Repeated disabled read-only action pairs are extracted into a small shared component and pushed as 59c04a5.
+- P2 browser-led cockpit QA passed at 1440px, 1024px, and 390px across Command Center and the four read-model hash pages.
+- The 390px Command Center topbar status has been fixed so studio, date, time, and live dot stay in one compact row.
 - Browser QA blockers from that slice were fixed: favicon 404 and 390px rail overflow.
-- All changes through 11b4b5e were pushed to origin/main; read-only action pair extraction commit/push is pending.
+- All changes through 59c04a5 were pushed to origin/main; current mobile topbar status fix is validated and pending local commit.
 ```
 
 ---
@@ -71,9 +73,7 @@ Completed the first P1 frontend v2 realization slice:
 ## Files Changed
 
 ```text
-docs/design/FRONTEND_V2_GAP_MAP.md
-src/features/read-models/ReadModelPages.tsx
-src/features/read-models/readModelPages.css
+src/styles/global.css
 .agent_board/RUN_STATE.md
 .agent_board/CHECKPOINT.md
 .agent_board/HANDOFF.md
@@ -108,11 +108,16 @@ Current P2 cockpit breakpoint batch:
 Current backend smoke docs batch:
 - pushed in 11b4b5e
 
-Current read-only action pair batch:
-- npm run lint passed
-- npm run build passed
-- browser QA passed for disabled action buttons across all four read-model pages and console errors
-- commit/push pending
+Current mobile Command Center status bar batch:
+- Browser probe passed for Command Center plus four hash pages at 1440px, 1024px, and 390px.
+- 390px before screenshot showed the topbar status wrapping into multiple lines.
+- 390px after screenshot passed with one compact status row.
+- 390px overflow probe returned scrollWidth 390 and clientWidth 390.
+- Console error count is 0.
+- git diff --check passed.
+- changed-file secret scan passed.
+- npm run lint passed.
+- npm run build passed.
 ```
 
 ---
@@ -122,7 +127,7 @@ Current read-only action pair batch:
 ```text
 No npm test script is defined.
 No backend live integration request is planned for this mock-first UI batch.
-No screenshot artifact was captured for the shared context batch.
+No push is authorized for the current mobile topbar batch until the user explicitly asks for push.
 ```
 
 ---
@@ -138,8 +143,7 @@ no
 ## Root Control Repo Touched
 
 ```text
-Previous P1 commits were pushed after user approval.
-Current shared context bar batch pending commit/push after validation.
+no
 ```
 
 ---
@@ -171,7 +175,7 @@ none for the next safe local frontend slice.
 ## Next Safe Action
 
 ```text
-Next safe local slice: run another browser-led cockpit pass only if a concrete issue appears.
+Next safe local slice: local commit for the 390px Command Center topbar status fix, then continue into the next P2 task.
 ```
 
 ---
@@ -185,6 +189,6 @@ Next safe local slice: run another browser-led cockpit pass only if a concrete i
 继续 A4-Sustained Local Frontend Autopilot。
 先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的 P1B Review / Delivery 队列继续。
 保持 mock-first/read-only，不碰 backend、root control repo、依赖、.env、deploy、生产服务、上传/下载/auth/storage/write actions。
-按用户当前批准的持续推进节奏，小批次验证后 commit/push；只有 hard stop 才停。
+按当前持续推进节奏，小批次验证后可以本地 commit；push 只有用户明确说 push 才执行。
 用中文汇报。
 ```

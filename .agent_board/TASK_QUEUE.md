@@ -10,7 +10,7 @@ It does not authorize remote writes, commits, pushes, deployments, backend chang
 ## Current Mission
 
 ```text
-P1B Review / Delivery read-only realization and P2 cockpit completion track
+P2 Read-only Cockpit Maturation
 ```
 
 Mode:
@@ -22,7 +22,7 @@ A4-Sustained Local Frontend Autopilot
 Goal:
 
 ```text
-Complete the read-only Frontend v2 production loop by deepening Review Gallery and Delivery Readiness, then aligning all four read-model scenes with Command Center navigation and browser QA.
+Mature the read-only cockpit after the P1B production loop: browser-led Command Center QA, focused component consolidation, boundary states, local QA runway, and completion map updates.
 ```
 
 ---
@@ -83,12 +83,14 @@ none
 
 ### todo
 
-Current safe queue after commit `9b47889`.
+Current safe queue after commit `59c04a5`.
 
 ```text
-1. Run another browser-led cockpit pass at 1440px / 1024px / 390px after the next visual or layout change.
-2. Keep optional backend smoke blocked unless a local backend base URL is intentionally configured outside this repo.
-3. Re-scan for a second safe cleanup only after a new concrete duplication or QA issue is observed.
+1. Re-scan read-model pages for one concrete shared component cleanup only if duplication is still present after the action pair extraction.
+2. Add or clarify read-only boundary states only where the UI can rehearse them locally without backend writes.
+3. Solidify the local QA runway for Command Center plus the four hash pages.
+4. Refresh the P2 completion map after the current cockpit maturation slice.
+5. Keep optional backend smoke blocked unless a local backend base URL is intentionally configured outside this repo.
 ```
 
 ### done
@@ -131,6 +133,10 @@ Current safe queue after commit `9b47889`.
 35. Fixed the P2 1280px cockpit breakpoint so Risk / Approval side rail remains in the right column instead of dropping below the main panel.
 36. Added frontend-only backend read-model smoke contract notes without enabling backend, auth, tokens, uploads, downloads, or writes.
 37. Extracted repeated read-only disabled action pairs across Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness.
+38. Committed and pushed the read-only action pair extraction as 59c04a5.
+39. Ran the P2 browser-led cockpit pass at 1440px, 1024px, and 390px for Command Center and the four read-model hash pages; no console errors or horizontal overflow were observed.
+40. Fixed the 390px Command Center status bar so studio, date, time, and live dot stay in one compact line.
+41. Validated the mobile status bar batch with git diff --check, changed-file secret scan, npm run lint, npm run build, 390px screenshot inspection, overflow probe, and console error check.
 ```
 
 ### blocked

@@ -10,10 +10,10 @@ Codex should update this after each meaningful batch of local frontend work.
 
 ```text
 Status: in-progress
-Updated: 2026-05-07 10:33 +0800
+Updated: 2026-05-07 11:04 +0800
 Repo: Photo_Studio_OS_Frontend
 Mode: A4-Sustained Local Frontend Autopilot
-Mission: P1B Review / Delivery read-only realization and P2 cockpit completion track
+Mission: P2 Read-only Cockpit Maturation
 ```
 
 ---
@@ -25,8 +25,8 @@ Fill from actual command output.
 ```text
 Workspace: A:\Photo_Studio_OS_Frontend
 Branch: main
-Worktree: intentionally editing read-only action pair extraction and .agent_board
-Diff stat: src/features/read-models/ReadModelPages.tsx plus .agent_board
+Worktree: intentionally editing mobile Command Center status bar CSS and .agent_board
+Diff stat: src/styles/global.css plus .agent_board
 Package manager: npm with package-lock.json
 Available scripts: dev, build, lint, preview
 ```
@@ -58,7 +58,10 @@ Pushed f249a8a: implemented a shared read-model context bar for #asset-inbox, #q
 Pushed c1dd63f: implemented Command Center 黄金链路 strip and refreshed P1B completion docs/board.
 Pushed 9b47889: fixed P2 1280px cockpit breakpoint so Risk / Approval rail remains visible in the right column.
 Pushed 11b4b5e: added frontend-only backend read-model smoke contract notes.
-Extracted repeated read-only disabled action pairs; commit/push pending.
+Pushed 59c04a5: extracted repeated read-only disabled action pairs.
+Started P2 Read-only Cockpit Maturation.
+Ran browser-led cockpit QA at 1440px, 1024px, and 390px for Command Center plus #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness.
+Fixed the 390px Command Center status bar so studio, date, time, and live dot remain one compact line.
 ```
 
 ---
@@ -66,16 +69,7 @@ Extracted repeated read-only disabled action pairs; commit/push pending.
 ## Changed Files
 
 ```text
-docs/design/FRONTEND_V2_GAP_MAP.md
-src/features/read-models/ReadModelPages.tsx
-src/features/read-models/readModelPages.css
-src/features/command-center/CommandCenter.tsx
 src/styles/global.css
-.agent_board/CHECKPOINT.md
-.agent_board/RUN_STATE.md
-.agent_board/TASK_QUEUE.md
-.agent_board/HANDOFF.md
-.agent_board/VALIDATION_LOG.md
 .agent_board/CHECKPOINT.md
 .agent_board/RUN_STATE.md
 .agent_board/TASK_QUEUE.md
@@ -88,13 +82,17 @@ src/styles/global.css
 ## Validation Run
 
 ```text
-Current read-only action pair extraction batch:
-- git diff --check passed
-- changed-file secret scan passed before board updates
-- npm run lint passed
-- npm run build passed
-- in-app browser QA passed for disabled action buttons across all four read-model pages and console error count 0
-- commit/push pending
+Current mobile Command Center status bar batch:
+- Browser probe passed across Command Center and four hash pages at 1440px, 1024px, and 390px before the fix.
+- 390px screenshot showed topbar status wrapping into multiple lines.
+- CSS fix applied under the mobile Command Center rules.
+- 390px screenshot after the fix passed.
+- Playwright CLI 390px overflow probe returned scrollWidth 390 and clientWidth 390.
+- Playwright CLI console error check returned 0 errors.
+- git diff --check passed.
+- changed-file secret scan passed.
+- npm run lint passed.
+- npm run build passed.
 ```
 
 ---
@@ -104,7 +102,7 @@ Current read-only action pair extraction batch:
 ```text
 No npm test script is defined.
 No backend live integration request is needed for this mock-first UI batch.
-No screenshot artifact was captured for this batch; DOM/overflow/browser console checks were used.
+No push is authorized for this batch until the user explicitly asks for push.
 ```
 
 ---
@@ -145,7 +143,7 @@ Live backend toggle still requires configuring VITE_BACKEND_API_BASE_URL and run
 ## Next Safe Task
 
 ```text
-After action pair extraction is pushed, run another browser-led cockpit pass only if a concrete issue appears.
+Locally commit the mobile status bar fix if staged checks stay green, then continue with the next P2 safe task.
 ```
 
 ---

@@ -281,6 +281,37 @@ Not validated:
 Notes:
 - Verified 上传未启用, 下载未启用, 退回精修, 只读建议, 公开审核未启用, 反馈写入未启用, 下载未开放, and 外部交付未启用 each appear once and remain disabled.
 - Console error count was 0.
+
+## VALIDATION-20260507-MOBILE-TOPBAR-STATUS
+
+Task: Keep Command Center topbar status compact at 390px.
+Commands run:
+- Browser-led probe at 1440px, 1024px, and 390px for Command Center plus #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness
+- Playwright CLI 390px before/after screenshot inspection
+- Playwright CLI 390px overflow probe
+- Playwright CLI console error check
+- git diff --check
+- changed-file secret scan on current diff
+- npm run lint
+- npm run build
+Result: passed
+Failures:
+- Initial 390px screenshot showed the Command Center topbar status split across multiple lines with the live dot on its own line.
+Fix attempted:
+- Scoped the mobile topbar status rules so studio, date, time, and live dot stay in one compact row with overflow protection.
+Re-run result:
+- 390px screenshot passed after the fix.
+- Overflow probe returned scrollWidth 390 and clientWidth 390.
+- Console error count was 0.
+- git diff --check passed.
+- changed-file secret scan passed.
+- npm run lint passed.
+- npm run build passed.
+Not validated:
+- No npm test script is defined.
+- No backend live integration was run; frontend remains mock-first.
+Notes:
+- This is a frontend-only CSS and local task-rail batch.
 ```
 
 ---

@@ -17,7 +17,7 @@ A4-Sustained Local Frontend Autopilot
 ## Current Mission
 
 ```text
-P1B Review / Delivery read-only realization and P2 cockpit completion track
+P2 Read-only Cockpit Maturation
 ```
 
 ---
@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-Extract repeated read-only action pair component
+Select the next P2 safe local task after the mobile status bar batch
 ```
 
 ---
@@ -58,7 +58,7 @@ Extract repeated read-only action pair component
 ## Last Completed Task
 
 ```text
-Pushed 11b4b5e: documented optional backend read-model smoke boundary
+Pushed 59c04a5: extracted repeated read-only action pairs
 ```
 
 ---
@@ -66,7 +66,7 @@ Pushed 11b4b5e: documented optional backend read-model smoke boundary
 ## Last Validation
 
 ```text
-npm run lint passed; npm run build passed; browser QA confirmed four read-model disabled action pairs remain disabled and console error count is 0
+git diff --check passed; changed-file secret scan passed; npm run lint passed; npm run build passed; 390px Command Center screenshot, overflow probe, and console error check passed
 ```
 
 ---
@@ -75,7 +75,7 @@ npm run lint passed; npm run build passed; browser QA confirmed four read-model 
 
 ```text
 Branch: main
-Worktree: intentionally editing read-only action pair extraction after pushed 11b4b5e
+Worktree: validated mobile Command Center status bar CSS and .agent_board pending local commit after clean 59c04a5
 ```
 
 ---
@@ -123,5 +123,5 @@ not blocked
 ## Next Action
 
 ```text
-Validate, commit, and push read-only action pair extraction; then run another browser-led cockpit pass only if a concrete issue appears.
+Commit the mobile status bar batch locally if staged checks stay green, then continue to the next P2 safe task. Do not push without explicit user approval.
 ```
