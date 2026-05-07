@@ -10,10 +10,10 @@ Codex should update this after each meaningful batch of local frontend work.
 
 ```text
 Status: complete-candidate
-Updated: 2026-05-07 13:49 +0800
+Updated: 2026-05-07 14:36 +0800
 Repo: Photo_Studio_OS_Frontend
 Mode: A4-Sustained Local Frontend Autopilot
-Mission: P2.7 Command Rail Scene Hygiene
+Mission: P2.8 Risk / Approval Scene Depth
 ```
 
 ---
@@ -25,8 +25,8 @@ Fill from actual command output.
 ```text
 Workspace: A:\Photo_Studio_OS_Frontend
 Branch: main
-Worktree: intentionally editing command rail scene hygiene source, docs, and .agent_board after local d68fdcf
-Diff stat: AppShell.tsx, global.css, docs, README, and .agent_board
+Worktree: intentionally editing P2.8 risk / approval source, docs, and .agent_board after local ab11292
+Diff stat: CommandCenter.tsx, global.css, docs, README, and .agent_board
 Package manager: npm with package-lock.json
 Available scripts: dev, build, lint, preview
 ```
@@ -97,6 +97,12 @@ Reduced Command Center rail to five unique hash scene entries.
 Added hash-aware aria-current state in AppShell.
 Browser-clicked all five rail scene entries in the in-app browser with one unique active state after each click.
 Browser-validated # plus five rail scenes at 1513px and 390px with no horizontal overflow or console errors.
+Locally committed ab11292: fixed command rail scene state uniqueness.
+Started P2.8 Risk / Approval Scene Depth from a clean worktree after ab11292.
+Added hash-derived Command Center data-scene state so direct #risk and #approvals loads reveal scene UI after React render.
+Deepened #risk with read-only detail cards for risk impact, owner, and suggested action.
+Deepened #approvals with read-only detail cards for approval type, state, impact, and next step.
+Browser-validated #risk and #approvals in the in-app browser and at 390px with no horizontal overflow or console errors.
 ```
 
 ---
@@ -104,7 +110,7 @@ Browser-validated # plus five rail scenes at 1513px and 390px with no horizontal
 ## Changed Files
 
 ```text
-src/components/layout/AppShell.tsx
+src/features/command-center/CommandCenter.tsx
 src/styles/global.css
 README.md
 docs/design/FRONTEND_V2_GAP_MAP.md
@@ -170,6 +176,13 @@ Current P2.7 command rail scene hygiene:
 - changed-file secret scan passed.
 - npm run lint passed.
 - npm run build passed.
+
+Current P2.8 risk / approval scene depth:
+- npm run lint passed after source changes.
+- In-app browser verified #risk shows 3 risk detail cards, owner/action copy, hides approval details, and has console error count 0.
+- In-app browser verified #approvals shows 4 approval detail cards, next-step/read-only copy, hides risk details, and has console error count 0.
+- Playwright CLI verified direct #risk and #approvals loads at 390px set data-scene, reveal matching details, hide the other detail list, and have no horizontal overflow.
+- Playwright CLI console error check returned 0 errors.
 ```
 
 ---
@@ -220,7 +233,7 @@ Live backend toggle still requires configuring VITE_BACKEND_API_BASE_URL and run
 ## Next Safe Task
 
 ```text
-Stop at remote push boundary after the local P2.7 command rail scene hygiene commit.
+Commit the local P2.8 risk / approval scene depth pass, then stop at remote push boundary.
 ```
 
 ---

@@ -121,6 +121,8 @@ Click affordance QA:
   `#risk`, `#projects`, `#approvals`, `#activity`, and `#inspections`.
 - Only one Command Center rail entry should expose `aria-current="page"` after
   a scene click.
+- Direct Command Center hash loads for `#risk` and `#approvals` should reveal
+  their read-only detail lists at desktop and 390px widths.
 - Read-model cards may update local selected detail state only.
 - Disabled upload, download, public review, delivery, and write-action buttons
   must remain disabled and expose clear read-only posture.

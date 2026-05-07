@@ -17,7 +17,7 @@ A4-Sustained Local Frontend Autopilot
 ## Current Mission
 
 ```text
-P2.7 Command Rail Scene Hygiene
+P2.8 Risk / Approval Scene Depth
 ```
 
 ---
@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-Command rail scene hygiene complete candidate
+Risk / Approval scene depth complete candidate
 ```
 
 ---
@@ -58,7 +58,7 @@ Command rail scene hygiene complete candidate
 ## Last Completed Task
 
 ```text
-Made Command Center rail scene entries unique and hash-aware
+Deepened Command Center risk and approval scenes with stable direct hash state
 ```
 
 ---
@@ -66,7 +66,7 @@ Made Command Center rail scene entries unique and hash-aware
 ## Last Validation
 
 ```text
-In-app browser confirmed five unique rail scene links and one aria-current state after clicking #risk, #projects, #approvals, #activity, and #inspections; Playwright CLI confirmed # plus five rail scenes at 1513px and 390px with five unique links, one active state, no horizontal overflow, and no console errors; git diff --check, changed-file secret scan, npm run lint, and npm run build passed
+In-app browser confirmed #risk and #approvals show only their matching read-only detail lists with console error count 0; Playwright CLI confirmed direct #risk and #approvals loads at 390px set the expected data-scene, reveal details, and have no horizontal overflow
 ```
 
 ---
@@ -75,7 +75,7 @@ In-app browser confirmed five unique rail scene links and one aria-current state
 
 ```text
 Branch: main
-Worktree: P2.7 command rail scene hygiene validated and ready for local commit after d68fdcf
+Worktree: intentionally editing P2.8 risk / approval source, docs, and .agent_board after local ab11292
 ```
 
 ---
@@ -115,7 +115,7 @@ no
 ## Current Stop Status
 
 ```text
-stop at remote push boundary after local P2.7 commit
+stop at remote push boundary after local P2.8 commit
 ```
 
 ---
@@ -123,5 +123,5 @@ stop at remote push boundary after local P2.7 commit
 ## Next Action
 
 ```text
-Commit the P2.7 command rail scene hygiene pass, then wait for explicit push approval.
+Run final guarded validation, commit the P2.8 risk / approval scene depth pass locally, then wait for explicit push approval.
 ```

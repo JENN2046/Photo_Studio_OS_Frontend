@@ -2686,6 +2686,142 @@ body {
   font-size: 1.12rem;
 }
 
+.risk-detail-list,
+.approval-detail-list {
+  display: none;
+}
+
+.risk-detail-list {
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.risk-detail,
+.approval-detail {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid rgba(242, 247, 255, 0.1);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.028);
+}
+
+.risk-detail > div,
+.approval-detail-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.risk-detail span,
+.approval-detail-head span,
+.approval-detail small {
+  color: rgba(165, 178, 191, 0.82);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.risk-detail strong,
+.approval-detail h3 {
+  margin: 0;
+  color: rgba(242, 247, 255, 0.94);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.risk-detail p,
+.approval-detail p {
+  margin: 0;
+  color: rgba(213, 224, 233, 0.78);
+  font-size: 0.74rem;
+  line-height: 1.5;
+}
+
+.risk-detail dl {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+
+.risk-detail dl div {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  gap: 7px;
+}
+
+.risk-detail dt,
+.risk-detail dd {
+  margin: 0;
+  font-size: 0.7rem;
+  line-height: 1.45;
+}
+
+.risk-detail dt {
+  color: rgba(165, 178, 191, 0.76);
+}
+
+.risk-detail dd {
+  color: rgba(220, 230, 239, 0.86);
+}
+
+.risk-detail-high {
+  border-color: rgba(255, 78, 52, 0.24);
+}
+
+.risk-detail-medium,
+.approval-detail-waiting {
+  border-color: rgba(255, 156, 36, 0.22);
+}
+
+.approval-detail-list {
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.cockpit-frame[data-scene="risk"] .risk-detail-list,
+.cockpit-frame:has(#risk:target) .risk-detail-list,
+.cockpit-frame[data-scene="approvals"] .approval-detail-list,
+.cockpit-frame:has(#approvals:target) .approval-detail-list {
+  display: grid;
+}
+
+.approval-detail-head {
+  flex-wrap: wrap;
+}
+
+.approval-detail-head b,
+.approval-detail-head strong {
+  display: inline-flex;
+  min-height: 20px;
+  align-items: center;
+  padding: 1px 7px;
+  border: 1px solid rgba(242, 247, 255, 0.13);
+  border-radius: 5px;
+  color: rgba(220, 230, 239, 0.84);
+  font-size: 0.68rem;
+}
+
+.approval-detail-head strong {
+  margin-left: auto;
+  border-color: rgba(255, 78, 52, 0.26);
+  color: rgba(255, 156, 36, 0.94);
+}
+
+.approval-detail-blocked {
+  border-color: rgba(255, 78, 52, 0.24);
+}
+
+.approval-detail-cleared {
+  border-color: rgba(0, 214, 152, 0.2);
+}
+
+.approval-detail-cleared .approval-detail-head strong {
+  border-color: rgba(0, 214, 152, 0.22);
+  color: rgba(86, 238, 183, 0.88);
+}
+
 .panel-link {
   display: flex;
   align-items: center;
@@ -3028,29 +3164,41 @@ body {
 }
 
 @media (min-width: 1101px) {
+  .cockpit-frame[data-scene="projects"] .gauge-cluster,
   .cockpit-frame:has(#projects:target) .gauge-cluster,
+  .cockpit-frame[data-scene="activity"] .gauge-cluster,
   .cockpit-frame:has(#activity:target) .gauge-cluster,
+  .cockpit-frame[data-scene="inspections"] .gauge-cluster,
   .cockpit-frame:has(#inspections:target) .gauge-cluster {
     display: none;
   }
 
+  .cockpit-frame[data-scene="projects"] .cockpit-main,
   .cockpit-frame:has(#projects:target) .cockpit-main,
+  .cockpit-frame[data-scene="activity"] .cockpit-main,
   .cockpit-frame:has(#activity:target) .cockpit-main,
+  .cockpit-frame[data-scene="inspections"] .cockpit-main,
   .cockpit-frame:has(#inspections:target) .cockpit-main {
     display: grid;
     grid-template-rows: minmax(0, 1fr);
   }
 
+  .cockpit-frame[data-scene="projects"] .execution-grid,
   .cockpit-frame:has(#projects:target) .execution-grid,
+  .cockpit-frame[data-scene="activity"] .execution-grid,
   .cockpit-frame:has(#activity:target) .execution-grid,
+  .cockpit-frame[data-scene="inspections"] .execution-grid,
   .cockpit-frame:has(#inspections:target) .execution-grid {
     height: 100%;
     min-height: 0;
     align-content: stretch;
   }
 
+  .cockpit-frame[data-scene="projects"] .project-execution-panel,
   .cockpit-frame:has(#projects:target) .project-execution-panel,
+  .cockpit-frame[data-scene="activity"] .timeline-panel,
   .cockpit-frame:has(#activity:target) .timeline-panel,
+  .cockpit-frame[data-scene="inspections"] .inspection-panel,
   .cockpit-frame:has(#inspections:target) .inspection-panel {
     grid-column: 1 / -1;
     order: -1;
@@ -3064,17 +3212,23 @@ body {
       0 0 0 1px rgba(68, 145, 255, 0.1);
   }
 
+  .cockpit-frame[data-scene="activity"] .timeline,
   .cockpit-frame:has(#activity:target) .timeline,
+  .cockpit-frame[data-scene="inspections"] .inspection-feed,
   .cockpit-frame:has(#inspections:target) .inspection-feed {
     gap: 4px;
   }
 
+  .cockpit-frame[data-scene="risk"],
   .cockpit-frame:has(#risk:target),
+  .cockpit-frame[data-scene="approvals"],
   .cockpit-frame:has(#approvals:target) {
     grid-template-columns: minmax(0, 0.72fr) minmax(420px, 0.46fr);
   }
 
+  .cockpit-frame[data-scene="risk"] #risk,
   .cockpit-frame:has(#risk:target) #risk,
+  .cockpit-frame[data-scene="approvals"] #approvals,
   .cockpit-frame:has(#approvals:target) #approvals {
     border-color: rgba(68, 145, 255, 0.42);
     background:

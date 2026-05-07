@@ -10,7 +10,7 @@ Update this whenever work stops, pauses, blocks, or completes a meaningful batch
 
 ```text
 Status: complete-candidate
-Result: P2.7 Command Rail Scene Hygiene is browser-validated. Command Center rail now has one entry per scene hash and exposes exactly one aria-current active state during scene clicks.
+Result: P2.8 Risk / Approval Scene Depth is browser-validated. #risk and #approvals now reveal focused read-only detail lists, and direct hash loads are stable after React render.
 ```
 
 ---
@@ -45,7 +45,8 @@ main
 Branch main was clean after local commit 4cc1539.
 Branch main was clean after local commit ea67bc1.
 Branch main was clean after local commit d68fdcf.
-Current batch intentionally edits command rail scene hygiene source, docs, and .agent_board after local commit d68fdcf.
+Branch main was clean after local commit ab11292.
+Current batch intentionally edits P2.8 risk / approval source, docs, and .agent_board after local commit ab11292.
 ```
 
 ---
@@ -93,6 +94,11 @@ Completed the first P1 frontend v2 realization slice:
 - AppShell now tracks the current hash route and exposes aria-current for the active Command Center scene.
 - In-app browser clicked all five rail scene entries and verified one active rail state per route.
 - Playwright CLI verified # plus five rail scenes at 1513px and 390px with no horizontal overflow or console errors.
+- ab11292 is a local commit for command rail scene state uniqueness and has not been pushed.
+- P2.8 Risk / Approval Scene Depth added hash-derived Command Center data-scene state for stable direct #risk and #approvals loads.
+- #risk now shows read-only detail cards for impact, owner, and suggested next action.
+- #approvals now shows read-only detail cards for type, state, impact, and next step.
+- In-app browser and Playwright CLI 390px QA confirmed the matching detail list is visible, the other list is hidden, no horizontal overflow is present, and console error count is 0.
 ```
 
 ---
@@ -100,7 +106,7 @@ Completed the first P1 frontend v2 realization slice:
 ## Files Changed
 
 ```text
-src/components/layout/AppShell.tsx
+src/features/command-center/CommandCenter.tsx
 src/styles/global.css
 README.md
 docs/design/FRONTEND_V2_GAP_MAP.md
@@ -187,6 +193,11 @@ Current P2.7 command rail scene hygiene:
 - changed-file secret scan passed.
 - npm run lint passed.
 - npm run build passed.
+
+Current P2.8 risk / approval scene depth:
+- npm run lint passed after source changes.
+- In-app browser verified #risk and #approvals detail visibility and console error count 0.
+- Playwright CLI verified direct #risk and #approvals loads at 390px with matching data-scene, visible details, no horizontal overflow, and console error count 0.
 ```
 
 ---
@@ -196,7 +207,7 @@ Current P2.7 command rail scene hygiene:
 ```text
 No npm test script is defined.
 No backend live integration request is planned for this mock-first UI batch.
-No push is authorized for local commits 472d848, 078f894, f7b1b8f, 1265584, 27ba2b5, 6f1666b, 4cc1539, ea67bc1, d68fdcf, or the current P2.7 command rail scene hygiene pass until the user explicitly asks for push.
+No push is authorized for local commits 472d848, 078f894, f7b1b8f, 1265584, 27ba2b5, 6f1666b, 4cc1539, ea67bc1, d68fdcf, ab11292, or the current P2.8 risk / approval scene depth pass until the user explicitly asks for push.
 ```
 
 ---
@@ -244,7 +255,7 @@ none for the next safe local frontend slice.
 ## Next Safe Action
 
 ```text
-Next safe action: commit the P2.7 command rail scene hygiene pass locally, then wait for explicit push approval.
+Next safe action: run final guarded validation, commit the P2.8 risk / approval scene depth pass locally, then wait for explicit push approval.
 ```
 
 ---
@@ -256,7 +267,7 @@ Next safe action: commit the P2.7 command rail scene hygiene pass locally, then 
 
 读取 AGENTS.md 和 .agent_board/*。
 继续 A4-Sustained Local Frontend Autopilot。
-先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的 P2.7 command rail hygiene 队列继续。
+先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的 P2.8 risk / approval scene depth 队列继续。
 保持 mock-first/read-only，不碰 backend、root control repo、依赖、.env、deploy、生产服务、上传/下载/auth/storage/write actions。
 按当前持续推进节奏，小批次验证后可以本地 commit；push 只有用户明确说 push 才执行。
 用中文汇报。

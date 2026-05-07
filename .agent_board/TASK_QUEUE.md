@@ -10,7 +10,7 @@ It does not authorize remote writes, commits, pushes, deployments, backend chang
 ## Current Mission
 
 ```text
-P2.7 Command Rail Scene Hygiene
+P2.8 Risk / Approval Scene Depth
 ```
 
 Mode:
@@ -22,7 +22,7 @@ A4-Sustained Local Frontend Autopilot
 Goal:
 
 ```text
-Keep the command rail unambiguous under browser inspection: one visible entry per Command Center hash scene, one active state, and stable accessible current-page semantics.
+Deepen the read-only Command Center risk and approval hash scenes while keeping direct hash loads, desktop layout, and 390px layout stable.
 ```
 
 ---
@@ -165,6 +165,12 @@ none
 71. Added hash-aware aria-current state in AppShell so exactly one Command Center rail target is exposed as the current page.
 72. Browser-clicked all five rail scene entries in the in-app browser and verified one unique active state after each click.
 73. Browser-validated # plus five rail scenes at 1513px and 390px with unique rail links, one active state, no horizontal overflow, and no console errors.
+74. Locally committed ab11292: fix: make command rail scene state unique.
+75. Started P2.8 Risk / Approval Scene Depth from clean local commit ab11292.
+76. Added Command Center hash-derived data-scene state so direct #risk and #approvals loads reveal their target UI after React render.
+77. Deepened #risk with read-only detail cards for risk impact, owner, and suggested next action.
+78. Deepened #approvals with read-only detail cards for approval type, state, impact, and next step.
+79. Browser-validated #risk and #approvals in the in-app browser and at 390px with no horizontal overflow or console errors.
 ```
 
 ### blocked

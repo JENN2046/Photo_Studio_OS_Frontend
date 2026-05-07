@@ -524,6 +524,34 @@ Notes:
 - No horizontal overflow or console errors were observed in the desktop/mobile matrix.
 ```
 
+```text
+## VALIDATION-20260507-RISK-APPROVAL-SCENE-DEPTH
+
+Task: Deepen Command Center #risk and #approvals read-only scenes.
+Commands run:
+- npm run lint
+- in-app browser direct hash QA for #risk and #approvals
+- Playwright CLI 390px direct hash QA for #risk and #approvals
+- Playwright CLI console error check
+- git diff --check
+- changed-file secret scan on current diff
+- npm run build
+Result: passed
+Failures:
+- Initial 390px direct #risk probe showed the detail text in DOM but hidden because CSS :target did not always activate after React render on direct hash load.
+Fix attempted:
+- Added hash-derived Command Center data-scene state while retaining existing :target selectors.
+Re-run result: passed
+Not validated:
+- No npm test script is defined.
+- No backend live integration was run; frontend remains mock-first.
+Notes:
+- #risk shows 3 read-only detail cards for impact, owner, and suggested action.
+- #approvals shows 4 read-only detail cards for type, state, impact, and next step.
+- Direct #risk and #approvals loads at 390px set data-scene, reveal the matching detail list, hide the other detail list, and report no horizontal overflow.
+- Console error count was 0.
+```
+
 ---
 
 ## Entry Template

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { GaugeCluster } from "../../components/gauges/GaugeCluster";
 import { AppShell } from "../../components/layout/AppShell";
 import { useCommandCenterSnapshot } from "./useCommandCenterSnapshot";
@@ -38,6 +38,16 @@ const errorStatusLanes = [
     state: "手动"
   }
 ] as const;
+
+const commandCenterSceneIds = [
+  "risk",
+  "projects",
+  "approvals",
+  "activity",
+  "inspections"
+] as const;
+
+type CommandCenterScene = (typeof commandCenterSceneIds)[number];
 
 function getDebugStateLabel(debugState: "live" | "loading" | "error") {
   const labels = {
@@ -119,6 +129,111 @@ function getApprovalSeverity(state: "waiting" | "blocked" | "cleared") {
   }
 
   return state === "waiting" ? "中" : "低";
+}
+
+function getApprovalTypeLabel(
+  type: "review" | "delivery" | "qc" | "retouch"
+) {
+  const labels = {
+    review: "客户审核",
+    delivery: "交付确认",
+    qc: "质检复核",
+    retouch: "精修返工"
+  } satisfies Record<typeof type, string>;
+
+  return labels[type];
+}
+
+function getApprovalStateLabel(state: "waiting" | "blocked" | "cleared") {
+  const labels = {
+    waiting: "待处理",
+    blocked: "阻塞",
+    cleared: "已清除"
+  } satisfies Record<typeof state, string>;
+
+  return labels[state];
+}
+
+function getRiskImpact(label: string) {
+  if (label.includes("曝光")) {
+    return "3 张主图需要重新校准高光，可能影响客户二审节奏。";
+  }
+
+  if (label.includes("色彩")) {
+    return "标签与背景色温偏离参考，需要精修复核统一色彩基准。";
+  }
+
+  return "边缘焦点存在波动，需要在进入审核前完成局部检查。";
+}
+
+function getRiskOwner(label: string) {
+  if (label.includes("曝光")) {
+    return "制片台 / Agent 巡检";
+  }
+
+  if (label.includes("色彩")) {
+    return "精修负责人";
+  }
+
+  return "拍摄负责人";
+}
+
+function getRiskAction(label: string) {
+  if (label.includes("曝光")) {
+    return "先打开质检 / 精修确认曝光阈值。";
+  }
+
+  if (label.includes("色彩")) {
+    return "对照参考图复核标签与肤色保护。";
+  }
+
+  return "补查焦点边缘并标记是否需要补拍。";
+}
+
+function getApprovalImpact(
+  type: "review" | "delivery" | "qc" | "retouch",
+  state: "waiting" | "blocked" | "cleared"
+) {
+  if (state === "cleared") {
+    return "当前阻塞已清除，仅保留只读追踪。";
+  }
+
+  if (type === "delivery") {
+    return "交付包仍需人工确认，外部交付保持禁用。";
+  }
+
+  if (type === "qc") {
+    return "质检结果会影响审核入口，返修建议仍只读。";
+  }
+
+  if (type === "retouch") {
+    return "精修排期需要确认，当前不写入任务状态。";
+  }
+
+  return "客户审核仍待确认，反馈写入保持禁用。";
+}
+
+function getApprovalNextStep(
+  type: "review" | "delivery" | "qc" | "retouch",
+  state: "waiting" | "blocked" | "cleared"
+) {
+  if (state === "cleared") {
+    return "保持观察，无业务写入。";
+  }
+
+  if (type === "delivery") {
+    return "打开审核画廊核对交付清单与阻断项。";
+  }
+
+  if (type === "qc") {
+    return "打开质检 / 精修查看失败原因。";
+  }
+
+  if (type === "retouch") {
+    return "确认返修说明与截止时间。";
+  }
+
+  return "打开审核画廊查看待反馈项。";
 }
 
 function getRecoveryStateLabel(
@@ -233,6 +348,37 @@ function scrollToCurrentHash() {
       behavior: "auto"
     });
   });
+}
+
+function getCommandCenterSceneFromHash(): CommandCenterScene | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  const [routeHash] = window.location.hash.slice(1).split("?");
+
+  return commandCenterSceneIds.includes(routeHash as CommandCenterScene)
+    ? (routeHash as CommandCenterScene)
+    : null;
+}
+
+function useCommandCenterScene() {
+  const [scene, setScene] = useState<CommandCenterScene | null>(
+    getCommandCenterSceneFromHash
+  );
+
+  useEffect(() => {
+    const updateScene = () => setScene(getCommandCenterSceneFromHash());
+
+    updateScene();
+    window.addEventListener("hashchange", updateScene);
+
+    return () => {
+      window.removeEventListener("hashchange", updateScene);
+    };
+  }, []);
+
+  return scene;
 }
 
 function useCommandCenterAnchorScroll(status: "loading" | "ready" | "error") {
@@ -461,6 +607,7 @@ function CommandCenterStateSurface({
 export function CommandCenter() {
   const { snapshot, status, errorMessage, debugState, canRetry, retry } =
     useCommandCenterSnapshot();
+  const activeScene = useCommandCenterScene();
   useCommandCenterAnchorScroll(status);
 
   if (status === "loading") {
@@ -525,7 +672,11 @@ export function CommandCenter() {
   return (
     <AppShell>
       <main className="command-center cockpit-command-center">
-        <section className="cockpit-frame" aria-label="命令中心总览">
+        <section
+          className="cockpit-frame"
+          data-scene={activeScene ?? "overview"}
+          aria-label="命令中心总览"
+        >
           <div className="cockpit-main">
             <GaugeCluster
               coverage={snapshot.coverage}
@@ -686,6 +837,30 @@ export function CommandCenter() {
                   </article>
                 ))}
               </div>
+              <div className="risk-detail-list" aria-label="风险只读详情">
+                {snapshot.riskPulse.map((risk) => (
+                  <article
+                    className={`risk-detail risk-detail-${risk.level}`}
+                    key={risk.id}
+                  >
+                    <div>
+                      <span>{risk.id}</span>
+                      <strong>{risk.label}</strong>
+                    </div>
+                    <p>{getRiskImpact(risk.label)}</p>
+                    <dl>
+                      <div>
+                        <dt>负责人</dt>
+                        <dd>{getRiskOwner(risk.label)}</dd>
+                      </div>
+                      <div>
+                        <dt>建议</dt>
+                        <dd>{getRiskAction(risk.label)}</dd>
+                      </div>
+                    </dl>
+                  </article>
+                ))}
+              </div>
               <a className="panel-link" href={qcRetouchHref}>
                 打开质检 / 精修
               </a>
@@ -720,6 +895,25 @@ export function CommandCenter() {
                     </div>
                     <small className={`state state-${item.state}`}>
                       {formatQueueDue(item.ageHours)}
+                    </small>
+                  </article>
+                ))}
+              </div>
+              <div className="approval-detail-list" aria-label="审批只读详情">
+                {snapshot.approvalQueue.map((item) => (
+                  <article
+                    className={`approval-detail approval-detail-${item.state}`}
+                    key={item.id}
+                  >
+                    <div className="approval-detail-head">
+                      <span>{item.id}</span>
+                      <b>{getApprovalTypeLabel(item.type)}</b>
+                      <strong>{getApprovalStateLabel(item.state)}</strong>
+                    </div>
+                    <h3>{item.title}</h3>
+                    <p>{getApprovalImpact(item.type, item.state)}</p>
+                    <small>
+                      下一步：{getApprovalNextStep(item.type, item.state)}
                     </small>
                   </article>
                 ))}
