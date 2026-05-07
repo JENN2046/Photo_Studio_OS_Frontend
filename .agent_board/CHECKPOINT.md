@@ -10,7 +10,7 @@ Codex should update this after each meaningful batch of local frontend work.
 
 ```text
 Status: in-progress
-Updated: 2026-05-07 11:18 +0800
+Updated: 2026-05-07 11:22 +0800
 Repo: Photo_Studio_OS_Frontend
 Mode: A4-Sustained Local Frontend Autopilot
 Mission: P2 Read-only Cockpit Maturation
@@ -25,8 +25,8 @@ Fill from actual command output.
 ```text
 Workspace: A:\Photo_Studio_OS_Frontend
 Branch: main
-Worktree: intentionally editing read-model boundary-state rehearsal and .agent_board
-Diff stat: src/features/read-models/ReadModelPages.tsx, src/features/read-models/readModelPages.css, plus .agent_board
+Worktree: intentionally editing README local QA runway and .agent_board
+Diff stat: README.md plus .agent_board
 Package manager: npm with package-lock.json
 Available scripts: dev, build, lint, preview
 ```
@@ -69,6 +69,8 @@ Locally committed 078f894: shared read-model metric strip.
 Added DEV-only readModelState boundary rehearsals for loading, error, and missing-config.
 Clarified read-model state notices with mock-first/read-only status labels.
 Browser-checked loading, error, missing-config, and idle states at 390px.
+Locally committed f7b1b8f: rehearsed read-model boundary states.
+Documented the local Frontend v2 QA runway in README.md.
 ```
 
 ---
@@ -76,8 +78,7 @@ Browser-checked loading, error, missing-config, and idle states at 390px.
 ## Changed Files
 
 ```text
-src/features/read-models/ReadModelPages.tsx
-src/features/read-models/readModelPages.css
+README.md
 .agent_board/CHECKPOINT.md
 .agent_board/RUN_STATE.md
 .agent_board/TASK_QUEUE.md
@@ -90,14 +91,11 @@ src/features/read-models/readModelPages.css
 ## Validation Run
 
 ```text
-Current boundary-state rehearsal batch:
-- npm run lint passed.
-- Playwright CLI 390px browser check passed for loading, error, missing-config, and idle states.
-- State notices showed the expected title and status meta.
-- 390px overflow probe returned no horizontal overflow across checked states.
-- Playwright CLI console error check returned 0 errors.
+Current local QA runway docs batch:
+- README.md documents local Vite route, Command Center, four read-model hash routes, 390px QA expectations, and DEV-only readModelState rehearsals.
 - git diff --check passed.
 - changed-file secret scan passed.
+- npm run lint passed.
 - npm run build passed.
 ```
 
@@ -149,7 +147,7 @@ Live backend toggle still requires configuring VITE_BACKEND_API_BASE_URL and run
 ## Next Safe Task
 
 ```text
-Locally commit the boundary-state rehearsal if staged checks stay green, then continue with the next P2 safe task.
+Locally commit the QA runway docs if staged checks stay green, then continue with the P2 completion map.
 ```
 
 ---

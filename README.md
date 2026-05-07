@@ -85,6 +85,36 @@ Recent local validation:
   Vite/esbuild startup with `spawn EPERM`; that is an environment limitation,
   not a source change requirement.
 
+## Frontend v2 Local QA Runway
+
+Use the local Vite server only:
+
+```powershell
+npm run dev
+```
+
+Baseline cockpit routes:
+
+- `http://127.0.0.1:5173/#`
+- `http://127.0.0.1:5173/#asset-inbox?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220`
+- `http://127.0.0.1:5173/#qc-retouch?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220`
+- `http://127.0.0.1:5173/#review-gallery?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220`
+- `http://127.0.0.1:5173/#delivery-readiness?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220`
+
+For browser QA, check the four read-model pages and Command Center at desktop,
+tablet, and 390px widths. Confirm Chinese mock content, tab navigation,
+Command Center entry links, no console errors, and no horizontal overflow.
+
+DEV-only read-model boundary rehearsals:
+
+- Add `readModelState=loading` to a read-model hash query to hold the loading state.
+- Add `readModelState=error` to rehearse the read-only error state.
+- Add `readModelState=missing-config` to rehearse a missing backend read-model config.
+- Omit the required id such as `deliveryId` on `#delivery-readiness` to check idle context handling.
+
+These rehearsals are local UI states. They do not enable uploads, downloads,
+public links, auth, storage, backend writes, or production access.
+
 ## Read-only Contract
 
 The frontend alpha may define read-only interfaces and consume mock adapters.

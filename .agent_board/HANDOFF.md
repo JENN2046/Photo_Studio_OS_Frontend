@@ -68,7 +68,8 @@ Completed the first P1 frontend v2 realization slice:
 - All changes through 59c04a5 were pushed to origin/main.
 - 472d848 is a local commit for the mobile Command Center topbar status fix and has not been pushed.
 - 078f894 is a local commit for the shared read-model metric strip and has not been pushed.
-- Current boundary-state rehearsal is validated; local commit is pending.
+- f7b1b8f is a local commit for read-model boundary-state rehearsal and has not been pushed.
+- Current README local QA runway docs batch is validated and pending local commit.
 ```
 
 ---
@@ -76,8 +77,7 @@ Completed the first P1 frontend v2 realization slice:
 ## Files Changed
 
 ```text
-src/features/read-models/ReadModelPages.tsx
-src/features/read-models/readModelPages.css
+README.md
 .agent_board/RUN_STATE.md
 .agent_board/CHECKPOINT.md
 .agent_board/HANDOFF.md
@@ -112,14 +112,11 @@ Current P2 cockpit breakpoint batch:
 Current backend smoke docs batch:
 - pushed in 11b4b5e
 
-Current boundary-state rehearsal batch:
-- npm run lint passed.
-- 390px browser checks passed for loading, error, missing-config, and idle states.
-- State notices showed expected titles and mock-first/read-only meta.
-- 390px overflow probe returned no horizontal overflow across checked states.
-- Console error count is 0.
+Current README local QA runway docs batch:
+- README documents Command Center, four read-model hash routes, 390px QA expectations, and DEV-only readModelState rehearsals.
 - git diff --check passed.
 - changed-file secret scan passed.
+- npm run lint passed.
 - npm run build passed.
 ```
 
@@ -130,7 +127,7 @@ Current boundary-state rehearsal batch:
 ```text
 No npm test script is defined.
 No backend live integration request is planned for this mock-first UI batch.
-No push is authorized for local commits 472d848, 078f894, or the current boundary-state batch until the user explicitly asks for push.
+No push is authorized for local commits 472d848, 078f894, f7b1b8f, or the current docs batch until the user explicitly asks for push.
 ```
 
 ---
@@ -178,7 +175,7 @@ none for the next safe local frontend slice.
 ## Next Safe Action
 
 ```text
-Next safe local slice: local commit for read-model boundary-state rehearsal, then continue into the next P2 task.
+Next safe local slice: locally commit README QA runway docs, then continue into the P2 completion map.
 ```
 
 ---

@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-Select the next P2 local QA runway task after boundary-state rehearsal
+Validate and commit local QA runway documentation
 ```
 
 ---
@@ -58,7 +58,7 @@ Select the next P2 local QA runway task after boundary-state rehearsal
 ## Last Completed Task
 
 ```text
-Locally committed 078f894: shared read-model metric strip
+Locally committed f7b1b8f: rehearsed read-model boundary states
 ```
 
 ---
@@ -66,7 +66,7 @@ Locally committed 078f894: shared read-model metric strip
 ## Last Validation
 
 ```text
-git diff --check passed; changed-file secret scan passed; npm run lint passed; npm run build passed; 390px browser check passed for read-model loading, error, missing-config, and idle states with no horizontal overflow and console error count 0
+git diff --check passed; changed-file secret scan passed; npm run lint passed; npm run build passed for README local QA runway docs batch
 ```
 
 ---
@@ -75,7 +75,7 @@ git diff --check passed; changed-file secret scan passed; npm run lint passed; n
 
 ```text
 Branch: main
-Worktree: intentionally editing read-model boundary-state rehearsal and .agent_board after local 078f894
+Worktree: intentionally editing README local QA runway and .agent_board after local f7b1b8f
 ```
 
 ---
@@ -123,5 +123,5 @@ not blocked
 ## Next Action
 
 ```text
-Commit the boundary-state batch locally if staged checks stay green, then continue to the next P2 safe task. Do not push without explicit user approval.
+Commit the docs batch locally if staged checks stay green, then continue to the P2 completion map. Do not push without explicit user approval.
 ```

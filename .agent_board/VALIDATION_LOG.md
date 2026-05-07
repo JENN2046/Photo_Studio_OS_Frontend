@@ -362,6 +362,23 @@ Notes:
 - git diff --check passed.
 - changed-file secret scan passed.
 - npm run build passed.
+
+## VALIDATION-20260507-QA-RUNWAY-DOCS
+
+Task: Document Frontend v2 local QA runway.
+Commands run:
+- git diff --check
+- changed-file secret scan on current diff
+- npm run lint
+- npm run build
+Result: passed
+Failures: none
+Fix attempted: not applicable
+Re-run result: not applicable
+Not validated:
+- No npm test script is defined.
+Notes:
+- README.md now lists the local Command Center route, four read-model hash routes, 390px QA expectations, and DEV-only readModelState rehearsals.
 ```
 
 ---
