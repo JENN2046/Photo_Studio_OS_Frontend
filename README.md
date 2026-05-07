@@ -107,6 +107,9 @@ Recent local validation:
 - Sandboxed sessions that block Node child process spawning may fail during
   Vite/esbuild startup with `spawn EPERM`; that is an environment limitation,
   not a source change requirement.
+- The four read-model pages expose visible runtime chips for read source,
+  request state, transport posture, and the `mock-first / read-only` write
+  boundary.
 
 ## Frontend v2 Local QA Runway
 

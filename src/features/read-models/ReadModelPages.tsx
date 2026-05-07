@@ -6,7 +6,10 @@ import {
   fetchQcRetouchQueueReadModel,
   fetchReviewGalleryReadModel
 } from "../../api/backendReadModels";
-import type { BackendReadModelState } from "./useBackendReadModel";
+import type {
+  BackendReadModelRuntimeView,
+  BackendReadModelState
+} from "./useBackendReadModel";
 import { useBackendReadModel } from "./useBackendReadModel";
 import {
   createAssetInboxViewModel,
@@ -46,6 +49,8 @@ interface ReadModelFrameProps {
   title: string;
   deck: string;
   params: URLSearchParams;
+  runtime: BackendReadModelRuntimeView;
+  status: BackendReadModelState<unknown>["status"];
 }
 
 const routeLabels: Record<ReadModelRoute, string> = {
@@ -116,8 +121,14 @@ function applyReadModelDebugState<T>({
 
   const baseState = {
     data: null,
+    runtime: {
+      source: "debug",
+      sourceLabel: "DEV 调试",
+      transportLabel: `${label} 边界态演练`,
+      boundaryLabel: "mock-first / read-only"
+    },
     retry: state.retry
-  } satisfies Pick<BackendReadModelState<T>, "data" | "retry">;
+  } satisfies Pick<BackendReadModelState<T>, "data" | "retry" | "runtime">;
 
   if (debugState === "loading") {
     return {
@@ -154,7 +165,9 @@ function ReadModelFrame({
   eyebrow,
   title,
   deck,
-  params
+  params,
+  runtime,
+  status
 }: ReadModelFrameProps) {
   const sharedQuery = getSharedQuery(params);
 
@@ -179,14 +192,26 @@ function ReadModelFrame({
             ))}
           </nav>
         </section>
-        <ReadModelContextBar params={params} />
+        <ReadModelContextBar
+          params={params}
+          runtime={runtime}
+          status={status}
+        />
         {children}
       </main>
     </AppShell>
   );
 }
 
-function ReadModelContextBar({ params }: { params: URLSearchParams }) {
+function ReadModelContextBar({
+  params,
+  runtime,
+  status
+}: {
+  params: URLSearchParams;
+  runtime: BackendReadModelRuntimeView;
+  status: BackendReadModelState<unknown>["status"];
+}) {
   const projectId = getParam(params, "projectId");
   const reviewSessionId = getParam(params, "reviewSessionId");
   const deliveryId = getParam(params, "deliveryId");
@@ -195,6 +220,13 @@ function ReadModelContextBar({ params }: { params: URLSearchParams }) {
     { label: "审核会话", value: reviewSessionId },
     { label: "交付包", value: deliveryId }
   ].filter((item) => item.value);
+  const statusLabels: Record<typeof status, string> = {
+    "missing-config": "后端未配置",
+    idle: "等待上下文",
+    loading: "读取中",
+    ready: "已就绪",
+    error: "读取失败"
+  };
 
   return (
     <section className="read-model-context-bar" aria-label="生产链路上下文">
@@ -213,8 +245,20 @@ function ReadModelContextBar({ params }: { params: URLSearchParams }) {
           </span>
         )}
         <span>
-          <b>数据姿态</b>
-          mock-first / read-only
+          <b>读取源</b>
+          {runtime.sourceLabel}
+        </span>
+        <span data-runtime-source={runtime.source}>
+          <b>运行状态</b>
+          {statusLabels[status]}
+        </span>
+        <span>
+          <b>传输</b>
+          {runtime.transportLabel}
+        </span>
+        <span data-runtime-source="readonly">
+          <b>写入边界</b>
+          {runtime.boundaryLabel}
         </span>
       </div>
       <a href="#">返回命令中心</a>
@@ -289,6 +333,8 @@ export function AssetInboxPage({ params }: ReadModelPageProps) {
       deck="只读场景：入库、绑定、文件元数据与最新质检状态。"
       eyebrow="v2 只读模型"
       params={params}
+      runtime={state.runtime}
+      status={state.status}
       title="素材收件箱"
     >
       <ReadModelStateNotice state={state} idleLabel="请先选择 projectId" />
@@ -324,6 +370,8 @@ export function QcRetouchQueuePage({ params }: ReadModelPageProps) {
       deck="只读场景：质检告警、精修状态、负责人与阻塞说明。"
       eyebrow="v2 只读模型"
       params={params}
+      runtime={state.runtime}
+      status={state.status}
       title="质检 / 精修队列"
     >
       <ReadModelStateNotice state={state} idleLabel="请先选择 projectId" />
@@ -361,6 +409,8 @@ export function ReviewGalleryPage({ params }: ReadModelPageProps) {
       deck="只读场景：客户审核素材、评论与修订状态（外部访问仍禁用）。"
       eyebrow="v2 只读模型"
       params={params}
+      runtime={state.runtime}
+      status={state.status}
       title="审核画廊"
     >
       <ReadModelStateNotice
@@ -401,6 +451,8 @@ export function DeliveryReadinessPage({ params }: ReadModelPageProps) {
       deck="只读场景：交付清单、就绪检查、阻断与外部访问边界。"
       eyebrow="v2 只读模型"
       params={params}
+      runtime={state.runtime}
+      status={state.status}
       title="交付就绪"
     >
       <ReadModelStateNotice state={state} idleLabel="请先选择 deliveryId" />

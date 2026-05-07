@@ -10,10 +10,10 @@ Codex should update this after each meaningful batch of local frontend work.
 
 ```text
 Status: complete-candidate
-Updated: 2026-05-07 16:55 +0800
+Updated: 2026-05-07 17:25 +0800
 Repo: Photo_Studio_OS_Frontend
 Mode: A4-Sustained Local Frontend Autopilot
-Mission: P2.20 Full Browser QA Aggregation
+Mission: P3.1 Read-model Runtime State Surface
 ```
 
 ---
@@ -25,8 +25,8 @@ Fill from actual command output.
 ```text
 Workspace: A:\Photo_Studio_OS_Frontend
 Branch: main
-Worktree: intentionally editing P2.20 QA aggregation scripts/docs/.agent_board after local 6605681
-Diff stat: qa-readonly-all.ps1, validate-local helpers, README.md, FRONTEND_V2_GAP_MAP.md, and .agent_board
+Worktree: intentionally editing P3.1 read-model runtime state source/docs/.agent_board after local 320b086
+Diff stat: useBackendReadModel.ts, ReadModelPages.tsx, readModelPages.css, README.md, FRONTEND_V2_GAP_MAP.md, and .agent_board
 Package manager: npm with package-lock.json
 Available scripts: dev, build, lint, preview
 ```
@@ -140,6 +140,10 @@ Started P2.20 Full Browser QA Aggregation from clean local commit 6605681.
 Added scripts/qa-readonly-all.ps1 as a single route, boundary-state, and interaction QA entry point.
 Updated scripts/validate-local.ps1 and scripts/validate-local.sh browser-QA mode to call the aggregate script.
 Updated README.md and FRONTEND_V2_GAP_MAP.md to document the full browser-QA aggregate entry point.
+Started P3.1 Read-model Runtime State Surface from clean local commit 320b086.
+Extended useBackendReadModel with frontend-only runtime view metadata.
+Updated all four read-model context bars to show read source, runtime status, transport posture, and mock-first/read-only write boundary.
+Added restrained runtime chip styling for mock, backend, debug, missing-config, and read-only states.
 ```
 
 ---
@@ -154,9 +158,9 @@ docs/design/FRONTEND_V2_GAP_MAP.md
 .agent_board/VALIDATION_LOG.md
 .agent_board/HANDOFF.md
 README.md
-scripts/validate-local.ps1
-scripts/validate-local.sh
-scripts/qa-readonly-all.ps1
+src/features/read-models/useBackendReadModel.ts
+src/features/read-models/ReadModelPages.tsx
+src/features/read-models/readModelPages.css
 ```
 
 ---
@@ -309,6 +313,12 @@ Current P2.19 PowerShell validation runtime guard:
 Current P2.20 full browser QA aggregation:
 - scripts/qa-readonly-all.ps1 runs route, boundary-state, and interaction matrices in sequence.
 - scripts/validate-local.ps1 and scripts/validate-local.sh browser-QA mode now call the aggregate script.
+- scripts/validate-local.ps1 passed.
+- scripts/qa-readonly-all.ps1 passed route, boundary-state, and interaction matrices.
+- git diff --check passed.
+- changed-file secret scan passed.
+
+Current P3.1 read-model runtime state surface:
 - scripts/validate-local.ps1 passed.
 - scripts/qa-readonly-all.ps1 passed route, boundary-state, and interaction matrices.
 - git diff --check passed.

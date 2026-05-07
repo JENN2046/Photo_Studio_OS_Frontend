@@ -97,6 +97,32 @@
   background: rgba(255, 255, 255, 0.035);
 }
 
+.read-model-context-bar span[data-runtime-source="mock"] {
+  border-color: rgba(53, 209, 160, 0.28);
+  color: rgba(170, 238, 213, 0.94);
+  background: rgba(53, 209, 160, 0.07);
+}
+
+.read-model-context-bar span[data-runtime-source="backend"] {
+  border-color: rgba(159, 211, 223, 0.3);
+  color: rgba(202, 235, 242, 0.94);
+  background: rgba(159, 211, 223, 0.07);
+}
+
+.read-model-context-bar span[data-runtime-source="backend-error"],
+.read-model-context-bar span[data-runtime-source="missing-config"] {
+  border-color: rgba(255, 94, 64, 0.32);
+  color: rgba(255, 176, 156, 0.95);
+  background: rgba(255, 94, 64, 0.08);
+}
+
+.read-model-context-bar span[data-runtime-source="debug"],
+.read-model-context-bar span[data-runtime-source="readonly"] {
+  border-color: rgba(255, 255, 255, 0.18);
+  color: var(--color-text-primary);
+  background: rgba(255, 255, 255, 0.055);
+}
+
 .read-model-context-bar b {
   color: var(--color-text-muted);
   font-weight: 500;

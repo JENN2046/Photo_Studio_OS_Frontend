@@ -10,7 +10,7 @@ It does not authorize remote writes, commits, pushes, deployments, backend chang
 ## Current Mission
 
 ```text
-P2.20 Full Browser QA Aggregation
+P3.1 Read-model Runtime State Surface
 ```
 
 Mode:
@@ -22,7 +22,7 @@ A4-Sustained Local Frontend Autopilot
 Goal:
 
 ```text
-Provide one local browser-QA entry point that runs route, boundary-state, and interaction matrices in sequence.
+Make read-model runtime posture visible across Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness without enabling writes or backend mutations.
 ```
 
 ---
@@ -83,7 +83,7 @@ none
 
 ### todo
 
-Current safe queue after starting P2.20 full browser QA aggregation.
+Current safe queue after starting P3.1 read-model runtime state surface.
 
 ```text
 none
@@ -234,6 +234,12 @@ none
 140. Updated scripts/validate-local.ps1 and scripts/validate-local.sh browser-QA mode to call the aggregate QA script.
 141. Updated README.md and FRONTEND_V2_GAP_MAP.md to document the full browser-QA aggregate entry point.
 142. Validated P2.20 with scripts/validate-local.ps1, scripts/qa-readonly-all.ps1, git diff --check, and changed-file secret scan.
+143. Started P3.1 from clean local commit 320b086.
+144. Extended useBackendReadModel with a frontend-only runtime view for read source, transport posture, and mock-first/read-only boundary.
+145. Updated all four read-model context bars to show source, runtime status, transport, and write boundary chips.
+146. Added restrained runtime chip styling for mock, backend, debug, missing-config, and read-only states.
+147. Documented P3.1 runtime state surface in README.md and FRONTEND_V2_GAP_MAP.md.
+148. Validated P3.1 with scripts/validate-local.ps1, scripts/qa-readonly-all.ps1, git diff --check, and changed-file secret scan.
 ```
 
 ### blocked

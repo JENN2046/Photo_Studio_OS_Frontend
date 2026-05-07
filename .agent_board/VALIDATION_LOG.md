@@ -827,6 +827,28 @@ Notes:
 - Full browser QA passed: 10 route checks at 1440x960 and 390x844, 32 boundary-state checks at 1024x768 and 390x844, and read-model tab/selection/disabled-action interaction checks at 1440x960 and 390x844.
 ```
 
+```text
+## VALIDATION-20260507-READMODEL-RUNTIME-SURFACE
+
+Task: Add visible read-model runtime state surface.
+Commands run:
+- powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1
+- powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-all.ps1
+- git diff --check
+- changed-file secret scan on current diff
+Result: passed
+Failures: none
+Fix attempted: not applicable
+Re-run result: not applicable
+Not validated:
+- No npm test script is defined.
+- No backend live integration was run; frontend remains mock-first unless VITE_BACKEND_API_BASE_URL is configured.
+Notes:
+- useBackendReadModel now exposes frontend-only runtime view metadata.
+- Read-model context bars now show read source, runtime status, transport posture, and mock-first/read-only write boundary.
+- Full browser QA passed: 10 route checks at 1440x960 and 390x844, 32 boundary-state checks at 1024x768 and 390x844, and read-model tab/selection/disabled-action checks at 1440x960 and 390x844.
+```
+
 ---
 
 ## Entry Template

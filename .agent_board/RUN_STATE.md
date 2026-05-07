@@ -17,7 +17,7 @@ A4-Sustained Local Frontend Autopilot
 ## Current Mission
 
 ```text
-P2.20 Full Browser QA Aggregation
+P3.1 Read-model Runtime State Surface
 ```
 
 ---
@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-P2.20 full read-only browser QA aggregation complete candidate
+P3.1 read-model runtime state surface complete candidate
 ```
 
 ---
@@ -58,7 +58,7 @@ P2.20 full read-only browser QA aggregation complete candidate
 ## Last Completed Task
 
 ```text
-Committed 6605681: guarded PowerShell validation runtime
+Committed 320b086: aggregated read-only browser QA
 ```
 
 ---
@@ -75,7 +75,7 @@ scripts/validate-local.ps1 passed; scripts/qa-readonly-all.ps1 passed route, bou
 
 ```text
 Branch: main
-Worktree: intentionally editing P2.20 QA aggregation scripts/docs/.agent_board after local 6605681
+Worktree: intentionally editing P3.1 read-model runtime state source/docs/.agent_board after local 320b086
 ```
 
 ---
@@ -115,7 +115,7 @@ no
 ## Current Stop Status
 
 ```text
-continue local P2.20 validation, local commit if green, and stop at remote push boundary
+continue local P3.1 validation, local commit if green, and stop at remote push boundary
 ```
 
 ---

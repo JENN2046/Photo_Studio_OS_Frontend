@@ -8,6 +8,22 @@ export type BackendReadModelStatus =
   | "ready"
   | "error";
 
+export type BackendReadModelSource =
+  | "initializing"
+  | "idle"
+  | "mock"
+  | "missing-config"
+  | "backend"
+  | "backend-error"
+  | "debug";
+
+export interface BackendReadModelRuntimeView {
+  source: BackendReadModelSource;
+  sourceLabel: string;
+  transportLabel: string;
+  boundaryLabel: string;
+}
+
 interface BackendReadModelRuntime {
   baseUrl: string;
   options: BackendReadModelRequestOptions;
@@ -19,6 +35,7 @@ export interface BackendReadModelState<T> {
   message: string;
   errorMessage: string | null;
   canRetry: boolean;
+  runtime: BackendReadModelRuntimeView;
   retry: () => void;
 }
 
@@ -56,7 +73,29 @@ function getBaseState<T>(): BackendReadModelState<T> {
     message: "只读模型请求加载中。",
     errorMessage: null,
     canRetry: false,
+    runtime: createRuntimeView({
+      source: "initializing",
+      sourceLabel: "初始化",
+      transportLabel: "等待只读模型"
+    }),
     retry: () => undefined
+  };
+}
+
+function createRuntimeView({
+  source,
+  sourceLabel,
+  transportLabel
+}: {
+  source: BackendReadModelSource;
+  sourceLabel: string;
+  transportLabel: string;
+}): BackendReadModelRuntimeView {
+  return {
+    source,
+    sourceLabel,
+    transportLabel,
+    boundaryLabel: "mock-first / read-only"
   };
 }
 
@@ -84,6 +123,11 @@ export function useBackendReadModel<T>({
         message: idleMessage,
         errorMessage: null,
         canRetry: false,
+        runtime: createRuntimeView({
+          source: "idle",
+          sourceLabel: "等待上下文",
+          transportLabel: "未发起请求"
+        }),
         retry
       });
 
@@ -102,6 +146,11 @@ export function useBackendReadModel<T>({
           message: "正在显示本地只读模拟数据。",
           errorMessage: null,
           canRetry: false,
+          runtime: createRuntimeView({
+            source: "mock",
+            sourceLabel: "本地模拟",
+            transportLabel: "后端未配置"
+          }),
           retry
         });
 
@@ -116,6 +165,11 @@ export function useBackendReadModel<T>({
         message: "未配置 VITE_BACKEND_API_BASE_URL。",
         errorMessage: null,
         canRetry: false,
+        runtime: createRuntimeView({
+          source: "missing-config",
+          sourceLabel: "未配置",
+          transportLabel: "VITE_BACKEND_API_BASE_URL 缺失"
+        }),
         retry
       });
 
@@ -130,6 +184,11 @@ export function useBackendReadModel<T>({
       message: "只读模型请求加载中。",
       errorMessage: null,
       canRetry: false,
+      runtime: createRuntimeView({
+        source: "backend",
+        sourceLabel: "后端只读",
+        transportLabel: "请求中"
+      }),
       retry
     });
 
@@ -145,6 +204,11 @@ export function useBackendReadModel<T>({
           message: "只读模型已加载。",
           errorMessage: null,
           canRetry: true,
+          runtime: createRuntimeView({
+            source: "backend",
+            sourceLabel: "后端只读",
+            transportLabel: "已连接"
+          }),
           retry
         });
       })
@@ -162,6 +226,11 @@ export function useBackendReadModel<T>({
               ? error.message
               : "未知的只读模型错误",
           canRetry: true,
+          runtime: createRuntimeView({
+            source: "backend-error",
+            sourceLabel: "后端只读",
+            transportLabel: "请求失败"
+          }),
           retry
         });
       });

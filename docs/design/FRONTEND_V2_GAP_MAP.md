@@ -45,6 +45,7 @@ As of the current Frontend v2 local state, the read-only production loop has mov
 - P2.18 adds a Bash validation runtime preflight so incompatible Bash/WSL Node versions fail early with a clear Vite 7 Node requirement instead of failing deep inside `npm run build`.
 - P2.19 adds the same Node runtime preflight to the PowerShell validation helper so both local validation entry points guard Vite 7's Node requirement before npm gates.
 - P2.20 adds `scripts/qa-readonly-all.ps1` as a single local browser-QA entry point and makes both validation helpers call it in browser-QA mode.
+- P3.1 read-model runtime state surface now exposes visible chips for read source, runtime status, transport posture, and `mock-first / read-only` write boundary across all four read-model pages.
 - `--ps-*` token aliases and text-color compatibility aliases exist in `src/styles/tokens.css`.
 - Current long-track focus is post-RC read-only UX tightening, reusable local QA, and optional backend read-model smoke testing only when a local backend base URL is explicitly configured.
 
@@ -90,6 +91,7 @@ Image references:
 | Labels | Command Center and read-model visible copy are Chinese-first; technical IDs such as `SKU`, `QC`, `CR3`, and backend query names remain intentional. | `src/features/command-center/commandCenterViewModel.ts`, `src/features/read-models/readModelViewModels.ts` |
 | Visual tokens | `--ps-*` bridge tokens and read-model text aliases are available for new v2 work. | `src/styles/tokens.css` |
 | Dedicated pages | Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness are dedicated read-only hash scenes with mock-first fallback. | `src/features/read-models/ReadModelPages.tsx` |
+| Runtime state surface | Four read-model pages show source/status/transport/write-boundary chips derived from `useBackendReadModel`. | `src/features/read-models/useBackendReadModel.ts`, `src/features/read-models/ReadModelPages.tsx` |
 | RC QA posture | Command Center entry clicks, keyboard focus visibility, five-page responsive matrix, read-model boundary states, scripted read-only route QA, scripted boundary-state QA, scripted interaction QA, full read-only browser QA aggregation, and the local validation orchestrator have current evidence. | `.agent_board/VALIDATION_LOG.md`, `scripts/validate-local.ps1`, `scripts/validate-local.sh`, `scripts/qa-readonly-all.ps1`, `scripts/qa-readonly-routes.ps1`, `scripts/qa-readonly-boundary-states.ps1`, `scripts/qa-readonly-interactions.ps1` |
 
 ## Overall Gaps
@@ -124,6 +126,7 @@ Image references:
 | Bash validation environment guard. | `scripts/validate-local.sh` checks Node.js before npm gates and reports the Vite 7 requirement when Bash/WSL exposes an incompatible runtime. | Use PowerShell validation on this machine unless the Bash/WSL Node runtime is `20.19+` or `22.12+`. | P2.18 done |
 | PowerShell validation environment guard. | `scripts/validate-local.ps1` also checks Node.js before npm gates and reports the Vite 7 requirement when the shell runtime is incompatible. | Keep both validation helpers aligned when changing project runtime gates. | P2.19 done |
 | Full browser QA aggregation. | `scripts/qa-readonly-all.ps1` runs the route, boundary-state, and interaction matrices in sequence; both validation helpers use it for browser-QA mode. | Run the aggregate script before broad read-only UI handoffs instead of remembering three separate commands. | P2.20 done |
+| Read-model runtime state surface. | Context bar now shows read source, runtime status, transport posture, and read-only write boundary across all four read-model scenes. | Keep future runtime states derived in `useBackendReadModel`; do not leak production URLs or secrets into UI. | P3.1 done |
 | Optional backend read-model smoke. | Still intentionally not run in this frontend-only mock-first batch. | Run only with a deliberately configured local `VITE_BACKEND_API_BASE_URL` outside this repo. | P2 blocked |
 
 ## Command Center Gap Table

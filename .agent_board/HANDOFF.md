@@ -10,7 +10,7 @@ Update this whenever work stops, pauses, blocks, or completes a meaningful batch
 
 ```text
 Status: complete-candidate
-Result: P2.20 Full Browser QA Aggregation is in progress. Browser-QA mode now has one aggregate entry point for route, boundary-state, and interaction matrices.
+Result: P3.1 Read-model Runtime State Surface is in progress. Four read-model pages now expose read source, runtime status, transport posture, and mock-first/read-only boundary chips.
 ```
 
 ---
@@ -54,7 +54,8 @@ Branch main was clean after local commit 60b74a1.
 Branch main was clean after local commit 1184d7d.
 Branch main was clean after local commit fc6b2a0.
 Branch main was clean after local commit 6605681.
-Current batch intentionally edits P2.20 QA aggregation scripts/docs/.agent_board after local commit 6605681.
+Branch main was clean after local commit 320b086.
+Current batch intentionally edits P3.1 read-model runtime state source/docs/.agent_board after local commit 320b086.
 ```
 
 ---
@@ -133,6 +134,8 @@ Completed the first P1 frontend v2 realization slice:
 - README.md and FRONTEND_V2_GAP_MAP.md now describe both validation helpers as runtime-guarded.
 - P2.20 added scripts/qa-readonly-all.ps1 to run route, boundary-state, and interaction matrices in sequence.
 - scripts/validate-local.ps1 and scripts/validate-local.sh browser-QA mode now call the aggregate script.
+- P3.1 added frontend-only runtime view metadata to useBackendReadModel.
+- All four read-model context bars now show read source, runtime status, transport posture, and mock-first/read-only write boundary.
 ```
 
 ---
@@ -321,6 +324,12 @@ Current P2.20 full browser QA aggregation:
 - scripts/qa-readonly-all.ps1 passed route, boundary-state, and interaction matrices.
 - git diff --check passed.
 - changed-file secret scan passed.
+
+Current P3.1 read-model runtime state surface:
+- scripts/validate-local.ps1 passed.
+- scripts/qa-readonly-all.ps1 passed route, boundary-state, and interaction matrices.
+- git diff --check passed.
+- changed-file secret scan passed.
 ```
 
 ---
@@ -379,7 +388,7 @@ none for the next safe local frontend slice.
 ## Next Safe Action
 
 ```text
-Next safe action: run targeted validation for P2.20, commit locally if green, then wait for explicit push approval.
+Next safe action: run final P3.1 validation, commit locally if green, then wait for explicit push approval.
 ```
 
 ---
@@ -391,7 +400,7 @@ Next safe action: run targeted validation for P2.20, commit locally if green, th
 
 读取 AGENTS.md 和 .agent_board/*。
 继续 A4-Sustained Local Frontend Autopilot。
-先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的 P2.20 Full Browser QA Aggregation 队列继续。
+先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的 P3.1 Read-model Runtime State Surface 队列继续。
 保持 mock-first/read-only，不碰 backend、root control repo、依赖、.env、deploy、生产服务、上传/下载/auth/storage/write actions。
 按当前持续推进节奏，小批次验证后可以本地 commit；push 只有用户明确说 push 才执行。
 用中文汇报。
