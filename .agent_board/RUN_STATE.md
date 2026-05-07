@@ -17,7 +17,7 @@ A4-Sustained Local Frontend Autopilot
 ## Current Mission
 
 ```text
-T128-001 Command Center Read-only Frontend Skeleton
+P1 Asset Inbox / QC read-only realization
 ```
 
 ---
@@ -25,7 +25,7 @@ T128-001 Command Center Read-only Frontend Skeleton
 ## Current Phase
 
 ```text
-api-boundary
+asset-qc-realization
 ```
 
 Suggested phases:
@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-Frontend v2 read-model API bridge complete
+Refresh v2 gap map and queue before Asset Inbox / QC implementation
 ```
 
 ---
@@ -58,7 +58,7 @@ Frontend v2 read-model API bridge complete
 ## Last Completed Task
 
 ```text
-Added optional Command Center backend v2 client plus Asset Inbox/QC/Review/Delivery read-model fetchers
+Pushed a872b2b: localized Command Center/read-model surfaces and added mock-first read-model fixtures
 ```
 
 ---
@@ -66,7 +66,7 @@ Added optional Command Center backend v2 client plus Asset Inbox/QC/Review/Deliv
 ## Last Validation
 
 ```text
-npm run lint passed; npm run build passed; local HTTP check at 127.0.0.1:5173 returned 200 after five-endpoint API bridge
+npm run lint passed; npm run build passed; git diff --check passed; read-model browser QA passed before a872b2b
 ```
 
 ---
@@ -75,8 +75,7 @@ npm run lint passed; npm run build passed; local HTTP check at 127.0.0.1:5173 re
 
 ```text
 Branch: main
-Worktree: dirty; existing frontend-thread edits plus local API bridge and board updates
-Changed files include existing UI/style/mock edits, docs/design/FRONTEND_V2_GAP_MAP.md, public/, src/api/client.ts, src/api/backendReadModels.ts, src/vite-env.d.ts, .agent_board/*
+Worktree: clean at start of P1 run; HEAD and origin/main at a872b2b
 ```
 
 ---
@@ -124,5 +123,5 @@ not blocked
 ## Next Action
 
 ```text
-Coordinate with the active frontend thread before touching shared components/styles; next safe slice is wiring these API fetchers into owned pages or view models.
+Batch 1: refresh docs/design/FRONTEND_V2_GAP_MAP.md and .agent_board to current facts, then validate, commit, and push.
 ```

@@ -10,7 +10,7 @@ It does not authorize remote writes, commits, pushes, deployments, backend chang
 ## Current Mission
 
 ```text
-T128-001 Command Center Read-only Frontend Skeleton
+P1 Asset Inbox / QC read-only realization
 ```
 
 Mode:
@@ -22,7 +22,7 @@ A4-Sustained Local Frontend Autopilot
 Goal:
 
 ```text
-Advance the Photo Studio OS Frontend as a read-only Command Center Alpha.
+Advance the Photo Studio OS Frontend from Command Center Alpha into read-only v2 Asset Inbox and QC / Retouch workspaces.
 ```
 
 ---
@@ -83,13 +83,14 @@ none
 
 ### todo
 
-Current safe queue after the Command Center Alpha local commit.
+Current safe queue after commit `a872b2b`.
 
 ```text
-1. Decide whether to push local commits to a remote branch.
-2. Add a focused read-only view model validation path if the project later gains a test script.
-3. Continue viewport QA only if a new breakpoint or state surface exposes a real layout issue.
-4. Wire Asset Inbox / QC / Review / Delivery read-only API fetchers into owned pages or view models after ownership with the active frontend thread is clear.
+1. Refresh docs/design/FRONTEND_V2_GAP_MAP.md and board state to current frontend facts.
+2. Align read-model mock data with the Golden Product Loop fixture: 1 client, 1 project, 3 SKUs, 9 shots, 6 assets, 3 QC checks, 1 review, 1 delivery.
+3. Deepen #asset-inbox into a read-only production workspace with intake status, thumbnail grid, selected asset, binding state, right preview, file metadata, and QC checklist.
+4. Deepen #qc-retouch into a read-only QC / Retouch workspace with failure reasons, severity, owner, instructions, due time, technical/manual checks, and disabled next-action posture.
+5. Run browser QA for Command Center entry, Asset Inbox, QC / Retouch, tab switching, Chinese mock data, console errors, and 390px viewport.
 ```
 
 ### done
@@ -115,6 +116,9 @@ Current safe queue after the Command Center Alpha local commit.
 18. Added optional Command Center backend v2 read-model bridge in src/api while preserving mock-first default behavior.
 19. Added typed read-only API fetchers for Asset Inbox, QC / Retouch Queue, Review Gallery, and Delivery Readiness.
 20. Validated the five-endpoint API bridge with npm run lint, npm run build, and an HTTP 200 check against the existing local Vite server.
+21. Pushed docs/design/FRONTEND_V2_GAP_MAP.md to origin/main in 57439ff.
+22. Wired read-model surfaces into Command Center entry points in 4c7459c.
+23. Localized Command Center and read-model surfaces, added mock-first read-model fixtures, and pushed a872b2b.
 ```
 
 ### blocked

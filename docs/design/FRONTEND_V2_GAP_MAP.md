@@ -1,6 +1,6 @@
 # Photo Studio OS Frontend v2 Gap Map
 
-Date: 2026-05-06
+Date: 2026-05-07
 Target repo: `A:\Photo_Studio_OS_Frontend`
 Source reference set: `A:\Photo_Studio_OS\.agent_board\references\photo_studio_v2`
 
@@ -12,6 +12,17 @@ Boundary:
 - The frontend remains read-only and mock-first.
 - Do not add upload, download, auth, storage, external Review links, external Delivery links, approval writes, backend mutations, or production connections from this task.
 - Current frontend `AGENTS.md`, repository reality, and approved Command Center Alpha scope override the v2 reference documents.
+
+## Implementation Status
+
+As of commit `a872b2b`, the frontend has moved past the initial P0 copy/API boundary pass:
+
+- Command Center visible copy, rail labels, gauge labels, risk/approval/activity copy, and read-model surfaces are Chinese-first.
+- Four dedicated hash read-only pages exist: `#asset-inbox`, `#qc-retouch`, `#review-gallery`, and `#delivery-readiness`.
+- These pages are mock-first by default and only call backend read-model fetchers when `VITE_BACKEND_API_BASE_URL` is configured.
+- The read-model pages have shared metrics, rows, and read-only detail cards.
+- `--ps-*` token aliases and text-color compatibility aliases exist in `src/styles/tokens.css`.
+- Current P1 focus is to make Asset Inbox and QC / Retouch feel like real production workspaces while remaining read-only.
 
 ## Source Files Used
 
@@ -49,24 +60,24 @@ Image references:
 
 | Area | Current state | Evidence |
 |---|---|---|
-| App shell | Command Center-only cockpit with left rail, topbar, and anchor navigation. | `src/components/layout/AppShell.tsx` |
-| Command Center | Implemented as a read-only mock page with gauge cluster, studio context, Golden Path, Risk Pulse, Approval Queue, Project Execution, Activity Timeline, AI Inspection Feed, SKU, Asset, Review, and Delivery summary panels. | `src/features/command-center/CommandCenter.tsx` |
-| Data model | Mock-first `CommandCenterSnapshot` includes studio, coverage, qc, workflow stages, projects, skus, assets, reviews, deliveries, approvals, risks, activity, and AI inspection. | `src/api/types.ts`, `src/mocks/commandCenter.mock.ts` |
-| Labels | Status, risk, approval, and stage labels are centralized, but still English. | `src/features/command-center/commandCenterViewModel.ts` |
-| Visual tokens | Existing tokens use generic `--color-*` names. The v2 visual package expects `--ps-*` token usage for new v2 work. | `src/styles/tokens.css` |
-| Dedicated pages | Asset Inbox, QC, Review, and Delivery are only compact Command Center sections, not dedicated scenes. | `src/features/command-center/CommandCenter.tsx` |
+| App shell | Command Center cockpit with Chinese left rail, topbar status, and anchor navigation. | `src/components/layout/AppShell.tsx` |
+| Command Center | Implemented as a read-only mock page with gauge cluster, Risk Pulse, Approval Queue, Project Execution, Activity Timeline, and Agent Inspection Feed. | `src/features/command-center/CommandCenter.tsx` |
+| Data model | Mock-first `CommandCenterSnapshot` plus backend v2 read-only boundary and per-surface mock read models. | `src/api/types.ts`, `src/api/backendReadModels.ts`, `src/mocks/commandCenter.mock.ts`, `src/features/read-models/readModelMocks.ts` |
+| Labels | Command Center and read-model visible copy are Chinese-first; technical IDs such as `SKU`, `QC`, `CR3`, and backend query names remain intentional. | `src/features/command-center/commandCenterViewModel.ts`, `src/features/read-models/readModelViewModels.ts` |
+| Visual tokens | `--ps-*` bridge tokens and read-model text aliases are available for new v2 work. | `src/styles/tokens.css` |
+| Dedicated pages | Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness are dedicated read-only hash scenes with mock-first fallback. | `src/features/read-models/ReadModelPages.tsx` |
 
 ## Overall Gaps
 
 | Gap | Impact | Recommended action | Priority |
 |---|---|---|---|
-| User-facing copy is mostly English. | Fails v2 visual checklist: all user-facing text should be Chinese. | Add a Chinese label map, then replace Command Center-visible labels without changing behavior. | P0 |
-| v2 `--ps-*` visual tokens are copied but not used. | Future work may drift into generic color naming and inconsistent visual tone. | Introduce a local token bridge or migrate new v2 components to `--ps-*` names. | P0 |
-| Command Center exists, but v2 Chinese Command Center structure is only partially aligned. | The page feels close visually, but not yet like the final Chinese production console. | Keep the current gauge anchor; localize nav/topbar/panels and tighten right rail / bottom timeline naming. | P0 |
-| Asset Inbox / QC is not a real scene. | Missing the Capture One intake, binding, file info, right preview, and QC checklist workflow. | Add a read-only Asset Inbox scene or full-width section using mock data only. | P1 |
-| QC is only represented as aggregate health and AI score. | QC failures are not explainable or actionable. | Add read-only QC checklist, failure reason, severity, and retouch feedback surfaces. | P1 |
-| Review / Delivery are compact summaries only. | Client review state and delivery readiness are not visible enough for the Golden Product Loop. | Add read-only Review / Revision and Delivery readiness surfaces with disabled future-action placeholders. | P1 |
-| Mock data does not mirror the v2 fixture exactly. | The first Golden Product Loop is not visible as `1 client / 1 project / 3 SKUs / 9 shots / 6 assets / 3 QC checks / 1 review / 1 delivery`. | Add fixture-aligned mock fields: `shotRequirements`, `qcChecks`, `revisionRequests`, `deliveryReadiness`, binding state. | P1 |
+| User-facing copy was mostly English. | Completed for main Command Center and read-model surfaces; continue watching new UI copy. | Keep future visible copy Chinese-first. | P0 done |
+| v2 `--ps-*` visual tokens were absent from local token bridge. | Completed as a compatibility bridge; future components should prefer stable token aliases. | Use existing `--ps-*` and `--color-text-*` aliases before adding new token names. | P0 done |
+| Command Center needed Chinese alignment. | Completed for shell, gauges, rail, risk, approval, activity, and Agent inspection copy. | Preserve the current composition while adding P1 scene depth. | P0 done |
+| Asset Inbox is a dedicated scene but still generic. | Operators can open it, but it needs a real production workspace shape. | Add thumbnail grid, selected asset, binding state, file info, right preview, and QC checklist. | P1 |
+| QC / Retouch is a dedicated scene but still generic. | QC failures are visible, but not yet inspectable enough. | Add queue lanes, severity, per-check result, retouch owner, instructions, due time, and read-only next-action surface. | P1 |
+| Review / Delivery have dedicated scenes with detail cards. | Good enough for this stage, but still need richer client/delivery views later. | Defer until Asset + QC are complete. | P1 later |
+| Mock data does not mirror the v2 fixture exactly. | The first Golden Product Loop is close but not exact. | Add fixture-aligned mock fields: 3 SKUs, 9 shots, 6 assets, 3 QC checks, 1 review, 1 delivery. | P1 |
 
 ## Command Center Gap Table
 
@@ -178,20 +189,20 @@ Use this as the first copy alignment pass before creating more pages.
 
 ## Recommended Execution Order
 
-1. Add a frontend Chinese label map for Command Center visible copy.
-2. Bridge or adopt the copied v2 `--ps-*` visual tokens for new v2 page work.
-3. Localize Command Center shell, gauges, right rail, activity, and compact entity panels.
-4. Add fixture-aligned mock fields for the first Golden Product Loop:
+1. Completed: Chinese-first Command Center and read-model surface copy.
+2. Completed: local `--ps-*` token bridge and read-model text aliases.
+3. Completed: Command Center shell, gauges, right rail, activity, and compact entity panel localization.
+4. Next: add fixture-aligned mock fields for the first Golden Product Loop:
    - `shotRequirements`
    - `assetBindings`
    - `qcChecks`
    - `retouchTasks`
    - `revisionRequests`
    - `deliveryReadiness`
-5. Create read-only Asset Inbox / QC surface with thumbnail grid, binding state, right preview, and QC checklist.
-6. Create read-only QC / Retouch queue surface with failure reasons and retouch standards.
-7. Create read-only Review / Delivery surface with review gallery summary, revision state, delivery readiness, and disabled future external actions.
-8. Run `npm run lint` and `npm run build` after code/style changes.
+5. Next: deepen read-only Asset Inbox with thumbnail grid, binding state, right preview, and QC checklist.
+6. Next: deepen read-only QC / Retouch queue with failure reasons, severity, ownership, and retouch standards.
+7. Later: deepen Review / Delivery surfaces with review gallery summary, revision state, delivery readiness, and disabled future external actions.
+8. Always run `npm run lint` and `npm run build` after code/style changes.
 
 ## Stop Conditions
 
