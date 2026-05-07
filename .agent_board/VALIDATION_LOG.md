@@ -805,6 +805,28 @@ Notes:
 - scripts/validate-local.ps1 now checks Node.js before npm gates, matching the Bash helper's runtime guard.
 ```
 
+```text
+## VALIDATION-20260507-FULL-BROWSER-QA-AGGREGATION
+
+Task: Add a full read-only browser-QA aggregate script.
+Commands run:
+- powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1
+- powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-all.ps1
+- git diff --check
+- changed-file secret scan on current diff
+Result: passed
+Failures: none
+Fix attempted: not applicable
+Re-run result: not applicable
+Not validated:
+- No npm test script is defined.
+- No backend live integration was run; frontend remains mock-first unless VITE_BACKEND_API_BASE_URL is configured.
+Notes:
+- scripts/qa-readonly-all.ps1 runs route, boundary-state, and interaction matrices in sequence.
+- scripts/validate-local.ps1 and scripts/validate-local.sh now delegate browser-QA mode to the aggregate script.
+- Full browser QA passed: 10 route checks at 1440x960 and 390x844, 32 boundary-state checks at 1024x768 and 390x844, and read-model tab/selection/disabled-action interaction checks at 1440x960 and 390x844.
+```
+
 ---
 
 ## Entry Template

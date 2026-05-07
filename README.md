@@ -116,6 +116,12 @@ Use the local Vite server only:
 npm run dev
 ```
 
+Automated full read-only browser QA:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-all.ps1
+```
+
 Automated read-only route matrix:
 
 ```powershell
@@ -135,8 +141,9 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-interactions.ps1
 ```
 
 The QA scripts use transient `npx --package @playwright/cli` execution without
-changing `package.json` or `package-lock.json`. The route matrix checks Command
-Center scenes plus the four read-model hash pages at `1440x960` and `390x844`
+changing `package.json` or `package-lock.json`. The full QA script runs the
+route, boundary-state, and interaction matrices in sequence. The route matrix
+checks Command Center scenes plus the four read-model hash pages at `1440x960` and `390x844`
 for expected Chinese copy, required workspace selectors, Command Center
 `aria-current` state, console errors, and horizontal overflow. The boundary
 matrix checks loading, error, missing-config, and missing-id idle states for all

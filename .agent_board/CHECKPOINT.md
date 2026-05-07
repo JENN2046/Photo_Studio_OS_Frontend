@@ -10,10 +10,10 @@ Codex should update this after each meaningful batch of local frontend work.
 
 ```text
 Status: complete-candidate
-Updated: 2026-05-07 16:35 +0800
+Updated: 2026-05-07 16:55 +0800
 Repo: Photo_Studio_OS_Frontend
 Mode: A4-Sustained Local Frontend Autopilot
-Mission: P2.19 PowerShell Validation Runtime Guard
+Mission: P2.20 Full Browser QA Aggregation
 ```
 
 ---
@@ -25,8 +25,8 @@ Fill from actual command output.
 ```text
 Workspace: A:\Photo_Studio_OS_Frontend
 Branch: main
-Worktree: intentionally editing P2.19 validation script/docs/.agent_board after local fc6b2a0
-Diff stat: scripts/validate-local.ps1, README.md, FRONTEND_V2_GAP_MAP.md, and .agent_board
+Worktree: intentionally editing P2.20 QA aggregation scripts/docs/.agent_board after local 6605681
+Diff stat: qa-readonly-all.ps1, validate-local helpers, README.md, FRONTEND_V2_GAP_MAP.md, and .agent_board
 Package manager: npm with package-lock.json
 Available scripts: dev, build, lint, preview
 ```
@@ -136,6 +136,10 @@ Documented the Bash helper's Vite 7 Node requirement in README.md and FRONTEND_V
 Started P2.19 PowerShell validation runtime guard from clean local commit fc6b2a0.
 Added matching Node.js runtime preflight to scripts/validate-local.ps1 before npm gates.
 Updated README.md and FRONTEND_V2_GAP_MAP.md so both validation helpers are documented as runtime-guarded.
+Started P2.20 Full Browser QA Aggregation from clean local commit 6605681.
+Added scripts/qa-readonly-all.ps1 as a single route, boundary-state, and interaction QA entry point.
+Updated scripts/validate-local.ps1 and scripts/validate-local.sh browser-QA mode to call the aggregate script.
+Updated README.md and FRONTEND_V2_GAP_MAP.md to document the full browser-QA aggregate entry point.
 ```
 
 ---
@@ -152,6 +156,7 @@ docs/design/FRONTEND_V2_GAP_MAP.md
 README.md
 scripts/validate-local.ps1
 scripts/validate-local.sh
+scripts/qa-readonly-all.ps1
 ```
 
 ---
@@ -300,6 +305,14 @@ Current P2.19 PowerShell validation runtime guard:
 - PowerShell and Bash validation helpers now expose the same Vite 7 runtime requirement before lint/build.
 - scripts/validate-local.ps1 passed with Node.js 22.22.0, lint, build, git diff --check, and changed-file secret scan.
 - bash scripts/validate-local.sh reported Node.js 18.19.1 plus Vite 7's Node.js 20.19+ or 22.12+ requirement before exiting.
+
+Current P2.20 full browser QA aggregation:
+- scripts/qa-readonly-all.ps1 runs route, boundary-state, and interaction matrices in sequence.
+- scripts/validate-local.ps1 and scripts/validate-local.sh browser-QA mode now call the aggregate script.
+- scripts/validate-local.ps1 passed.
+- scripts/qa-readonly-all.ps1 passed route, boundary-state, and interaction matrices.
+- git diff --check passed.
+- changed-file secret scan passed.
 ```
 
 ---

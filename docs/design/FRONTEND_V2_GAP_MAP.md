@@ -44,6 +44,7 @@ As of the current Frontend v2 local state, the read-only production loop has mov
 - P2.16/P2.17 now align the Bash validation helper and add `scripts/qa-readonly-interactions.ps1` for read-model tabs, local selection state, and disabled action posture.
 - P2.18 adds a Bash validation runtime preflight so incompatible Bash/WSL Node versions fail early with a clear Vite 7 Node requirement instead of failing deep inside `npm run build`.
 - P2.19 adds the same Node runtime preflight to the PowerShell validation helper so both local validation entry points guard Vite 7's Node requirement before npm gates.
+- P2.20 adds `scripts/qa-readonly-all.ps1` as a single local browser-QA entry point and makes both validation helpers call it in browser-QA mode.
 - `--ps-*` token aliases and text-color compatibility aliases exist in `src/styles/tokens.css`.
 - Current long-track focus is post-RC read-only UX tightening, reusable local QA, and optional backend read-model smoke testing only when a local backend base URL is explicitly configured.
 
@@ -89,7 +90,7 @@ Image references:
 | Labels | Command Center and read-model visible copy are Chinese-first; technical IDs such as `SKU`, `QC`, `CR3`, and backend query names remain intentional. | `src/features/command-center/commandCenterViewModel.ts`, `src/features/read-models/readModelViewModels.ts` |
 | Visual tokens | `--ps-*` bridge tokens and read-model text aliases are available for new v2 work. | `src/styles/tokens.css` |
 | Dedicated pages | Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness are dedicated read-only hash scenes with mock-first fallback. | `src/features/read-models/ReadModelPages.tsx` |
-| RC QA posture | Command Center entry clicks, keyboard focus visibility, five-page responsive matrix, read-model boundary states, scripted read-only route QA, scripted boundary-state QA, scripted interaction QA, and the local validation orchestrator have current evidence. | `.agent_board/VALIDATION_LOG.md`, `scripts/validate-local.ps1`, `scripts/validate-local.sh`, `scripts/qa-readonly-routes.ps1`, `scripts/qa-readonly-boundary-states.ps1`, `scripts/qa-readonly-interactions.ps1` |
+| RC QA posture | Command Center entry clicks, keyboard focus visibility, five-page responsive matrix, read-model boundary states, scripted read-only route QA, scripted boundary-state QA, scripted interaction QA, full read-only browser QA aggregation, and the local validation orchestrator have current evidence. | `.agent_board/VALIDATION_LOG.md`, `scripts/validate-local.ps1`, `scripts/validate-local.sh`, `scripts/qa-readonly-all.ps1`, `scripts/qa-readonly-routes.ps1`, `scripts/qa-readonly-boundary-states.ps1`, `scripts/qa-readonly-interactions.ps1` |
 
 ## Overall Gaps
 
@@ -122,6 +123,7 @@ Image references:
 | Scripted interaction QA. | Local QA script checks read-model tab switching, local card selection, and disabled read-only actions at desktop and 390px. | Run through `scripts/qa-readonly-interactions.ps1` or the full validation helper after read-model interaction changes. | P2.17 done |
 | Bash validation environment guard. | `scripts/validate-local.sh` checks Node.js before npm gates and reports the Vite 7 requirement when Bash/WSL exposes an incompatible runtime. | Use PowerShell validation on this machine unless the Bash/WSL Node runtime is `20.19+` or `22.12+`. | P2.18 done |
 | PowerShell validation environment guard. | `scripts/validate-local.ps1` also checks Node.js before npm gates and reports the Vite 7 requirement when the shell runtime is incompatible. | Keep both validation helpers aligned when changing project runtime gates. | P2.19 done |
+| Full browser QA aggregation. | `scripts/qa-readonly-all.ps1` runs the route, boundary-state, and interaction matrices in sequence; both validation helpers use it for browser-QA mode. | Run the aggregate script before broad read-only UI handoffs instead of remembering three separate commands. | P2.20 done |
 | Optional backend read-model smoke. | Still intentionally not run in this frontend-only mock-first batch. | Run only with a deliberately configured local `VITE_BACKEND_API_BASE_URL` outside this repo. | P2 blocked |
 
 ## Command Center Gap Table

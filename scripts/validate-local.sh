@@ -144,19 +144,11 @@ run_powershell_script() {
 
 if [ "$include_browser_qa" -eq 1 ]; then
   echo ""
-  echo "== read-only route QA =="
-  run_powershell_script "scripts/qa-readonly-routes.ps1"
-
-  echo ""
-  echo "== read-model boundary-state QA =="
-  run_powershell_script "scripts/qa-readonly-boundary-states.ps1"
-
-  echo ""
-  echo "== read-model interaction QA =="
-  run_powershell_script "scripts/qa-readonly-interactions.ps1"
+  echo "== full read-only browser QA =="
+  run_powershell_script "scripts/qa-readonly-all.ps1"
 else
   echo ""
-  echo "Skip: browser QA scripts. Re-run with --include-browser-qa to include route, boundary-state, and interaction matrices."
+  echo "Skip: browser QA scripts. Re-run with --include-browser-qa to include the full read-only browser QA matrix."
 fi
 
 echo ""

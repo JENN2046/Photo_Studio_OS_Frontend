@@ -10,7 +10,7 @@ It does not authorize remote writes, commits, pushes, deployments, backend chang
 ## Current Mission
 
 ```text
-P2.19 PowerShell Validation Runtime Guard
+P2.20 Full Browser QA Aggregation
 ```
 
 Mode:
@@ -22,7 +22,7 @@ A4-Sustained Local Frontend Autopilot
 Goal:
 
 ```text
-Keep PowerShell and Bash validation helpers aligned by checking the Vite 7 Node runtime requirement before npm gates.
+Provide one local browser-QA entry point that runs route, boundary-state, and interaction matrices in sequence.
 ```
 
 ---
@@ -83,7 +83,7 @@ none
 
 ### todo
 
-Current safe queue after starting P2.19 PowerShell validation runtime guard.
+Current safe queue after starting P2.20 full browser QA aggregation.
 
 ```text
 none
@@ -229,6 +229,11 @@ none
 135. Added a matching Node.js runtime preflight to scripts/validate-local.ps1 before npm gates.
 136. Updated README.md and FRONTEND_V2_GAP_MAP.md to describe both validation helpers as runtime-guarded.
 137. Validated P2.19 with scripts/validate-local.ps1, Bash runtime-preflight check, git diff --check, and changed-file secret scan.
+138. Started P2.20 from clean local commit 6605681.
+139. Added scripts/qa-readonly-all.ps1 to run route, boundary-state, and interaction QA matrices in sequence.
+140. Updated scripts/validate-local.ps1 and scripts/validate-local.sh browser-QA mode to call the aggregate QA script.
+141. Updated README.md and FRONTEND_V2_GAP_MAP.md to document the full browser-QA aggregate entry point.
+142. Validated P2.20 with scripts/validate-local.ps1, scripts/qa-readonly-all.ps1, git diff --check, and changed-file secret scan.
 ```
 
 ### blocked

@@ -115,28 +115,14 @@ if ($changedFiles.Count -eq 0) {
 
 if ($IncludeBrowserQa) {
   Write-Host ""
-  Write-Host "== read-only route QA =="
-  powershell -ExecutionPolicy Bypass -File "scripts\qa-readonly-routes.ps1"
-  if ($LASTEXITCODE -ne 0) {
-    $failed = $true
-  }
-
-  Write-Host ""
-  Write-Host "== read-model boundary-state QA =="
-  powershell -ExecutionPolicy Bypass -File "scripts\qa-readonly-boundary-states.ps1"
-  if ($LASTEXITCODE -ne 0) {
-    $failed = $true
-  }
-
-  Write-Host ""
-  Write-Host "== read-model interaction QA =="
-  powershell -ExecutionPolicy Bypass -File "scripts\qa-readonly-interactions.ps1"
+  Write-Host "== full read-only browser QA =="
+  powershell -ExecutionPolicy Bypass -File "scripts\qa-readonly-all.ps1"
   if ($LASTEXITCODE -ne 0) {
     $failed = $true
   }
 } else {
   Write-Host ""
-  Write-Host "Skip: browser QA scripts. Re-run with -IncludeBrowserQa to include route, boundary-state, and interaction matrices."
+  Write-Host "Skip: browser QA scripts. Re-run with -IncludeBrowserQa to include the full read-only browser QA matrix."
 }
 
 if ($failed) {
