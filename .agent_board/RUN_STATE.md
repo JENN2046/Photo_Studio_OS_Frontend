@@ -17,7 +17,7 @@ A4-Sustained Local Frontend Autopilot
 ## Current Mission
 
 ```text
-P2.18 Bash Validation Runtime Guard
+P2.19 PowerShell Validation Runtime Guard
 ```
 
 ---
@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-P2.18 Bash validation runtime preflight complete candidate
+P2.19 PowerShell validation runtime preflight complete candidate
 ```
 
 ---
@@ -58,7 +58,7 @@ P2.18 Bash validation runtime preflight complete candidate
 ## Last Completed Task
 
 ```text
-Committed 1184d7d: read-model interaction QA
+Committed fc6b2a0: guarded Bash validation runtime
 ```
 
 ---
@@ -66,7 +66,7 @@ Committed 1184d7d: read-model interaction QA
 ## Last Validation
 
 ```text
-scripts/validate-local.ps1 passed; bash scripts/validate-local.sh now fails early at runtime preflight with Node.js 18.19.1 and clear Vite 7 requirement; git diff --check and changed-file secret scan passed.
+scripts/validate-local.ps1 passed with Node.js 22.22.0 preflight, lint, build, git diff --check, and changed-file secret scan. bash scripts/validate-local.sh still exits early at Node.js 18.19.1 preflight with the expected Vite 7 requirement message.
 ```
 
 ---
@@ -75,7 +75,7 @@ scripts/validate-local.ps1 passed; bash scripts/validate-local.sh now fails earl
 
 ```text
 Branch: main
-Worktree: intentionally editing P2.18 validation script/docs/.agent_board after local 1184d7d
+Worktree: intentionally editing P2.19 validation script/docs/.agent_board after local fc6b2a0
 ```
 
 ---
@@ -115,7 +115,7 @@ no
 ## Current Stop Status
 
 ```text
-continue local P2.18 validation, local commit if green, and stop at remote push boundary
+continue local P2.19 validation, local commit if green, and stop at remote push boundary
 ```
 
 ---

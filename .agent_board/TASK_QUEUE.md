@@ -10,7 +10,7 @@ It does not authorize remote writes, commits, pushes, deployments, backend chang
 ## Current Mission
 
 ```text
-P2.18 Bash Validation Runtime Guard
+P2.19 PowerShell Validation Runtime Guard
 ```
 
 Mode:
@@ -22,7 +22,7 @@ A4-Sustained Local Frontend Autopilot
 Goal:
 
 ```text
-Fail Bash validation early and clearly when the shell exposes an incompatible Node runtime for Vite 7.
+Keep PowerShell and Bash validation helpers aligned by checking the Vite 7 Node runtime requirement before npm gates.
 ```
 
 ---
@@ -83,7 +83,7 @@ none
 
 ### todo
 
-Current safe queue after starting P2.18 Bash validation runtime guard.
+Current safe queue after starting P2.19 PowerShell validation runtime guard.
 
 ```text
 none
@@ -225,6 +225,10 @@ none
 131. Added a Node.js runtime preflight to scripts/validate-local.sh before npm gates.
 132. Documented the Bash helper's Vite 7 Node requirement in README.md and FRONTEND_V2_GAP_MAP.md.
 133. Validated P2.18 with scripts/validate-local.ps1, Bash runtime-preflight check, git diff --check, and changed-file secret scan.
+134. Started P2.19 from clean local commit fc6b2a0.
+135. Added a matching Node.js runtime preflight to scripts/validate-local.ps1 before npm gates.
+136. Updated README.md and FRONTEND_V2_GAP_MAP.md to describe both validation helpers as runtime-guarded.
+137. Validated P2.19 with scripts/validate-local.ps1, Bash runtime-preflight check, git diff --check, and changed-file secret scan.
 ```
 
 ### blocked

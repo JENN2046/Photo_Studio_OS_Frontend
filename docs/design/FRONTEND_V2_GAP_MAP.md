@@ -43,6 +43,7 @@ As of the current Frontend v2 local state, the read-only production loop has mov
 - P2.15 local validation orchestration now allows `scripts/validate-local.ps1 -IncludeBrowserQa` to run lint/build, whitespace, changed-file secret scan, route QA, and boundary-state QA from one local entry point.
 - P2.16/P2.17 now align the Bash validation helper and add `scripts/qa-readonly-interactions.ps1` for read-model tabs, local selection state, and disabled action posture.
 - P2.18 adds a Bash validation runtime preflight so incompatible Bash/WSL Node versions fail early with a clear Vite 7 Node requirement instead of failing deep inside `npm run build`.
+- P2.19 adds the same Node runtime preflight to the PowerShell validation helper so both local validation entry points guard Vite 7's Node requirement before npm gates.
 - `--ps-*` token aliases and text-color compatibility aliases exist in `src/styles/tokens.css`.
 - Current long-track focus is post-RC read-only UX tightening, reusable local QA, and optional backend read-model smoke testing only when a local backend base URL is explicitly configured.
 
@@ -120,6 +121,7 @@ Image references:
 | Local validation orchestration. | `scripts/validate-local.ps1` now performs changed-file secret scan and can run both browser QA matrices via `-IncludeBrowserQa`. | Use default mode for fast local gates and `-IncludeBrowserQa` before larger read-only UI commits when the dev server is running. | P2.15 done |
 | Scripted interaction QA. | Local QA script checks read-model tab switching, local card selection, and disabled read-only actions at desktop and 390px. | Run through `scripts/qa-readonly-interactions.ps1` or the full validation helper after read-model interaction changes. | P2.17 done |
 | Bash validation environment guard. | `scripts/validate-local.sh` checks Node.js before npm gates and reports the Vite 7 requirement when Bash/WSL exposes an incompatible runtime. | Use PowerShell validation on this machine unless the Bash/WSL Node runtime is `20.19+` or `22.12+`. | P2.18 done |
+| PowerShell validation environment guard. | `scripts/validate-local.ps1` also checks Node.js before npm gates and reports the Vite 7 requirement when the shell runtime is incompatible. | Keep both validation helpers aligned when changing project runtime gates. | P2.19 done |
 | Optional backend read-model smoke. | Still intentionally not run in this frontend-only mock-first batch. | Run only with a deliberately configured local `VITE_BACKEND_API_BASE_URL` outside this repo. | P2 blocked |
 
 ## Command Center Gap Table

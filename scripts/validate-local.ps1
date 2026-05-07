@@ -17,6 +17,33 @@ if (-not (Test-Path "package.json")) {
 }
 
 Write-Host ""
+Write-Host "== Runtime preflight =="
+$nodeCommand = Get-Command node -ErrorAction SilentlyContinue
+if (-not $nodeCommand) {
+  Write-Host "Node.js was not found in this shell. Use a shell with the project Node runtime before running validation."
+  exit 1
+}
+
+$nodeVersion = (& node -p "process.versions.node").Trim()
+if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($nodeVersion)) {
+  Write-Host "Unable to read the Node.js version from this shell."
+  exit 1
+}
+
+$nodeVersionParts = $nodeVersion.Split(".")
+$nodeMajor = [int]$nodeVersionParts[0]
+$nodeMinor = [int]$nodeVersionParts[1]
+$nodeOk = (($nodeMajor -eq 20 -and $nodeMinor -ge 19) -or ($nodeMajor -eq 22 -and $nodeMinor -ge 12) -or ($nodeMajor -gt 22))
+if (-not $nodeOk) {
+  Write-Host "Node.js $nodeVersion detected in this shell."
+  Write-Host "Vite 7 requires Node.js 20.19+ or 22.12+ for this project's build gate."
+  Write-Host "Use a shell with a compatible Node runtime before running validation."
+  exit 1
+}
+
+Write-Host "Node.js $nodeVersion"
+
+Write-Host ""
 Write-Host "== Git status =="
 git branch --show-current
 git status --short

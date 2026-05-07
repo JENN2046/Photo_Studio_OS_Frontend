@@ -10,7 +10,7 @@ Update this whenever work stops, pauses, blocks, or completes a meaningful batch
 
 ```text
 Status: complete-candidate
-Result: P2.18 Bash validation runtime guard is in progress. Bash helper now fails early with a clear Vite 7 Node requirement when Bash/WSL exposes an incompatible Node runtime.
+Result: P2.19 PowerShell validation runtime guard is in progress. Both validation helpers now guard the Vite 7 Node requirement before npm gates.
 ```
 
 ---
@@ -52,7 +52,8 @@ Branch main was clean after local commit 32ab2f6.
 Branch main was clean after local commit e3bd271.
 Branch main was clean after local commit 60b74a1.
 Branch main was clean after local commit 1184d7d.
-Current batch intentionally edits P2.18 validation script/docs/.agent_board after local commit 1184d7d.
+Branch main was clean after local commit fc6b2a0.
+Current batch intentionally edits P2.19 validation script/docs/.agent_board after local commit fc6b2a0.
 ```
 
 ---
@@ -127,6 +128,8 @@ Completed the first P1 frontend v2 realization slice:
 - git diff --check and changed-file secret scan passed.
 - P2.18 added a Node.js runtime preflight to scripts/validate-local.sh before npm gates.
 - README.md and FRONTEND_V2_GAP_MAP.md now document the Bash helper's Vite 7 Node requirement.
+- P2.19 added a matching Node.js runtime preflight to scripts/validate-local.ps1 before npm gates.
+- README.md and FRONTEND_V2_GAP_MAP.md now describe both validation helpers as runtime-guarded.
 ```
 
 ---
@@ -301,6 +304,12 @@ Current P2.18 Bash validation runtime guard:
 - bash scripts/validate-local.sh reported Node.js 18.19.1 plus Vite 7's Node.js 20.19+ or 22.12+ requirement before exiting.
 - git diff --check passed.
 - changed-file secret scan passed.
+
+Current P2.19 PowerShell validation runtime guard:
+- scripts/validate-local.ps1 checks Node.js before npm gates.
+- PowerShell and Bash validation helpers now expose the same Vite 7 runtime requirement before lint/build.
+- scripts/validate-local.ps1 passed with Node.js 22.22.0, lint, build, git diff --check, and changed-file secret scan.
+- bash scripts/validate-local.sh reported Node.js 18.19.1 plus Vite 7's Node.js 20.19+ or 22.12+ requirement before exiting.
 ```
 
 ---
@@ -359,7 +368,7 @@ none for the next safe local frontend slice.
 ## Next Safe Action
 
 ```text
-Next safe action: run targeted validation for P2.18, commit locally if green, then wait for explicit push approval.
+Next safe action: run targeted validation for P2.19, commit locally if green, then wait for explicit push approval.
 ```
 
 ---
@@ -371,7 +380,7 @@ Next safe action: run targeted validation for P2.18, commit locally if green, th
 
 读取 AGENTS.md 和 .agent_board/*。
 继续 A4-Sustained Local Frontend Autopilot。
-先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的 P2.18 Bash validation runtime guard 队列继续。
+先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的 P2.19 PowerShell validation runtime guard 队列继续。
 保持 mock-first/read-only，不碰 backend、root control repo、依赖、.env、deploy、生产服务、上传/下载/auth/storage/write actions。
 按当前持续推进节奏，小批次验证后可以本地 commit；push 只有用户明确说 push 才执行。
 用中文汇报。

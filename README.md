@@ -94,9 +94,9 @@ bash scripts/validate-local.sh
 bash scripts/validate-local.sh --include-browser-qa
 ```
 
-The Bash helper now performs a Node runtime preflight before npm gates. This
-project uses Vite 7, so the Bash or WSL shell running the helper must expose
-Node.js `20.19+` or `22.12+`.
+Both validation helpers perform a Node runtime preflight before npm gates. This
+project uses Vite 7, so the shell running either helper must expose Node.js
+`20.19+` or `22.12+`.
 
 ## Validation Status
 
