@@ -112,6 +112,24 @@ Notes:
 - Existing Vite dev server at 127.0.0.1:5173 was reused and not stopped.
 - Frontend remains mock-first unless VITE_BACKEND_API_BASE_URL is configured.
 - API bridge covers Command Center, Asset Inbox, QC / Retouch Queue, Review Gallery, and Delivery Readiness.
+
+## VALIDATION-20260507-P1B-DOCS
+
+Task: Refresh Frontend v2 P1B/P2 implementation map and sustained task rail.
+Commands run:
+- git diff --check
+- changed-file secret scan on docs and .agent_board files
+- npm run lint
+- npm run build
+Result: passed
+Failures: none
+Fix attempted: none required
+Re-run result: not applicable
+Not validated:
+- No npm test script is defined.
+- No browser QA was needed for docs/board-only changes.
+Notes:
+- This batch updates current facts after c19e171 and points the next safe work at Review Gallery / Delivery Readiness.
 ```
 
 ---

@@ -9,8 +9,8 @@ Update this whenever work stops, pauses, blocks, or completes a meaningful batch
 ## Handoff Summary
 
 ```text
-Status: completed-validated
-Result: optional five-endpoint frontend v2 backend read-model API bridge added locally; mock fallback preserved
+Status: in-progress
+Result: Asset Inbox and QC / Retouch P1 read-only workspaces are complete; next track is Review Gallery and Delivery Readiness realization.
 ```
 
 ---
@@ -18,7 +18,7 @@ Result: optional five-endpoint frontend v2 backend read-model API bridge added l
 ## Original Goal
 
 ```text
-Use the backend v2 read-model contract locally without disturbing the current Command Center Alpha or active frontend-thread component work.
+Complete Frontend v2 as a read-only production cockpit: Review / Delivery next, then cross-page consistency and browser QA.
 ```
 
 ---
@@ -42,9 +42,8 @@ main
 ## Worktree State
 
 ```text
-Branch main is dirty.
-Existing UI/style/mock/docs/public changes were present before this API bridge.
-Local API bridge and board updates are pending commit.
+Branch main was clean at start of this P1B docs batch.
+Current batch intentionally edits docs/design/FRONTEND_V2_GAP_MAP.md and .agent_board.
 ```
 
 ---
@@ -52,11 +51,12 @@ Local API bridge and board updates are pending commit.
 ## What Was Done
 
 ```text
-Added src/api/backendReadModels.ts for GET /api/v1/command-center/v2 mapping.
-Added read-only fetchers and types for Asset Inbox, QC / Retouch Queue, Review Gallery, and Delivery Readiness.
-Updated src/api/client.ts to choose mock by default and backend only when VITE_BACKEND_API_BASE_URL is set.
-Added src/vite-env.d.ts declarations for the optional backend env toggles.
-Avoided CommandCenter component/style/mock edits owned by the active frontend thread.
+Completed the first P1 frontend v2 realization slice:
+- Golden Product Loop mock fixture aligned to 1 client / 1 project / 3 SKUs / 9 shots / 6 assets / 3 QC checks / 1 review / 1 delivery.
+- #asset-inbox now has Capture One intake, thumbnail grid, selected asset preview, binding/file detail, QC checklist, and disabled upload/download posture.
+- #qc-retouch now has queue selection, selected preview, failure reasons, owner, due time, technical/manual checks, retouch instructions, and disabled suggested actions.
+- Browser QA blockers from that slice were fixed: favicon 404 and 390px rail overflow.
+- All changes through c19e171 were pushed to origin/main.
 ```
 
 ---
@@ -64,13 +64,10 @@ Avoided CommandCenter component/style/mock edits owned by the active frontend th
 ## Files Changed
 
 ```text
-src/api/backendReadModels.ts
-src/api/client.ts
-src/vite-env.d.ts
+docs/design/FRONTEND_V2_GAP_MAP.md
 .agent_board/RUN_STATE.md
 .agent_board/CHECKPOINT.md
 .agent_board/HANDOFF.md
-.agent_board/VALIDATION_LOG.md
 .agent_board/TASK_QUEUE.md
 ```
 
@@ -79,10 +76,19 @@ src/vite-env.d.ts
 ## Validation
 
 ```text
-npm run lint: passed
-npm run build: passed
-HTTP check http://127.0.0.1:5173: 200 from the existing local Vite server
-git diff --check: passed
+Previous P1 slice:
+- npm run lint: passed
+- npm run build: passed
+- git diff --check: passed
+- changed-file secret scan: passed
+- browser QA: passed for #asset-inbox, #qc-retouch, Command Center entries, tab switching, console errors, and 390px viewport
+
+Current docs batch:
+- git diff --check passed
+- changed-file secret scan passed
+- npm run lint passed
+- npm run build passed
+- commit/push pending
 ```
 
 ---
@@ -91,9 +97,8 @@ git diff --check: passed
 
 ```text
 No npm test script is defined.
-No backend live integration request was run from the frontend in this slice.
-No screenshot QA was run because this was an API boundary change.
-No commit, push, PR, deploy, or remote action was performed.
+No backend live integration request is planned for this docs batch.
+No browser screenshot QA is needed for docs-only batch.
 ```
 
 ---
@@ -109,7 +114,8 @@ no
 ## Root Control Repo Touched
 
 ```text
-no
+Previous P1 commits were pushed after user approval.
+Current P1B docs batch pending commit/push after validation.
 ```
 
 ---
@@ -125,7 +131,7 @@ no
 ## Blockers
 
 ```text
-Do not edit shared components/styles/mock data until ownership with the active frontend thread is clear.
+none
 ```
 
 ---
@@ -133,7 +139,7 @@ Do not edit shared components/styles/mock data until ownership with the active f
 ## Human Decisions Needed
 
 ```text
-Coordinate with the active frontend thread before shared UI edits.
+none for the next safe local frontend slice.
 ```
 
 ---
@@ -141,7 +147,7 @@ Coordinate with the active frontend thread before shared UI edits.
 ## Next Safe Action
 
 ```text
-Next safe local slice: wire the read-only API fetchers into owned pages or view models after ownership is clear.
+Next safe local slice: deepen #review-gallery into a read-only client review workspace.
 ```
 
 ---
@@ -153,8 +159,8 @@ Next safe local slice: wire the read-only API fetchers into owned pages or view 
 
 读取 AGENTS.md 和 .agent_board/*。
 继续 A4-Sustained Local Frontend Autopilot。
-先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的下一个安全任务继续。
-不要碰 backend、root control repo、依赖、.env、deploy、push、PR、生产服务。
-只有 hard stop 才停。
+先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的 P1B Review / Delivery 队列继续。
+保持 mock-first/read-only，不碰 backend、root control repo、依赖、.env、deploy、生产服务、上传/下载/auth/storage/write actions。
+按用户当前批准的持续推进节奏，小批次验证后 commit/push；只有 hard stop 才停。
 用中文汇报。
 ```

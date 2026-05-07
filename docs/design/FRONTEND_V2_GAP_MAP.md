@@ -15,14 +15,16 @@ Boundary:
 
 ## Implementation Status
 
-As of commit `a872b2b`, the frontend has moved past the initial P0 copy/API boundary pass:
+As of commit `c19e171`, the frontend has moved through the first P1 read-only production cockpit slice:
 
 - Command Center visible copy, rail labels, gauge labels, risk/approval/activity copy, and read-model surfaces are Chinese-first.
 - Four dedicated hash read-only pages exist: `#asset-inbox`, `#qc-retouch`, `#review-gallery`, and `#delivery-readiness`.
 - These pages are mock-first by default and only call backend read-model fetchers when `VITE_BACKEND_API_BASE_URL` is configured.
-- The read-model pages have shared metrics, rows, and read-only detail cards.
+- Asset Inbox is now a dedicated read-only production workspace with Capture One intake status, thumbnail grid, selected asset preview, binding/file detail, disabled upload/download posture, and QC checklist.
+- QC / Retouch is now a dedicated read-only queue workspace with selected item detail, failure reasons, severity, owner, due time, technical/manual checks, retouch instructions, and disabled suggested-action posture.
+- Review Gallery and Delivery Readiness still use the shared read-model dashboard shell and are the next P1B realization target.
 - `--ps-*` token aliases and text-color compatibility aliases exist in `src/styles/tokens.css`.
-- Current P1 focus is to make Asset Inbox and QC / Retouch feel like real production workspaces while remaining read-only.
+- Current long-track focus is to finish the read-only production loop across Review / Delivery, align cross-page interaction patterns, and keep browser QA green.
 
 ## Source Files Used
 
@@ -74,10 +76,11 @@ Image references:
 | User-facing copy was mostly English. | Completed for main Command Center and read-model surfaces; continue watching new UI copy. | Keep future visible copy Chinese-first. | P0 done |
 | v2 `--ps-*` visual tokens were absent from local token bridge. | Completed as a compatibility bridge; future components should prefer stable token aliases. | Use existing `--ps-*` and `--color-text-*` aliases before adding new token names. | P0 done |
 | Command Center needed Chinese alignment. | Completed for shell, gauges, rail, risk, approval, activity, and Agent inspection copy. | Preserve the current composition while adding P1 scene depth. | P0 done |
-| Asset Inbox is a dedicated scene but still generic. | Operators can open it, but it needs a real production workspace shape. | Add thumbnail grid, selected asset, binding state, file info, right preview, and QC checklist. | P1 |
-| QC / Retouch is a dedicated scene but still generic. | QC failures are visible, but not yet inspectable enough. | Add queue lanes, severity, per-check result, retouch owner, instructions, due time, and read-only next-action surface. | P1 |
-| Review / Delivery have dedicated scenes with detail cards. | Good enough for this stage, but still need richer client/delivery views later. | Defer until Asset + QC are complete. | P1 later |
-| Mock data does not mirror the v2 fixture exactly. | The first Golden Product Loop is close but not exact. | Add fixture-aligned mock fields: 3 SKUs, 9 shots, 6 assets, 3 QC checks, 1 review, 1 delivery. | P1 |
+| Asset Inbox dedicated workspace. | Completed as a read-only scene; continue browser QA when shared rail or read-model styles change. | Preserve the current read-only posture and reuse its selection/preview pattern. | P1 done |
+| QC / Retouch dedicated workspace. | Completed as a read-only scene; continue checking failure-detail and disabled action posture. | Preserve the current read-only posture and reuse its queue/detail pattern. | P1 done |
+| Review Gallery still uses the generic read-model dashboard. | Operators can see review state, but not a true customer-review scene. | Add review gallery grid, selected item preview, client comment/revision state, disabled public review posture. | P1B |
+| Delivery Readiness still uses the generic read-model dashboard. | Operators can see readiness cards, but not a true delivery outbox scene. | Add package summary, manifest/checklist, blockers, selected delivery contents, disabled external delivery/download posture. | P1B |
+| Mock data mirrors the first Golden Product Loop at the read-model level. | Completed for P1 asset/QC/review/delivery fixture counts. | Reuse fixture IDs across Review / Delivery UI, deriving extra frontend context in view models only. | P1 done |
 
 ## Command Center Gap Table
 
@@ -102,14 +105,14 @@ v2 target references: E / F visual anchors, role-based Photographer View, page m
 
 | Dimension | Current frontend | v2 target | Gap | Copy alignment | Priority |
 |---|---|---|---|---|---|
-| Scene presence | Only `Asset Watch` compact list inside Command Center. | Dedicated Asset Inbox / QC scene. | No dedicated intake page, no production workspace. | `素材收件箱 / 质检中心`. | P1 |
-| Capture One intake | Not represented. | Show Capture One Export Directory status. | Missing source folder / intake state / import batch summary. | `Capture One 导出目录`, `导入批次`, `等待登记`, `已登记`. | P1 |
-| Thumbnail grid | Current asset list is text-only with generated abstract markers. | Image-first thumbnail grid with binding and QC badges. | No image grid, no selected asset state. | `素材缩略图`, `选中素材`, `可用`, `需检查`, `不通过`. | P1 |
-| Binding state | Asset summary has `skuId` and `usage`, but no Shot Requirement binding. | Bind asset to SKU and ShotRequirement. | Missing shot requirement target and binding confidence/status. | `绑定 SKU`, `绑定 Shot Requirement`, `未绑定`, `绑定冲突`. | P1 |
-| File info | Current shows file name and usage only. | File info should be visible: name, format, source, capture time, size, profile if available. | Missing file metadata display. | `文件信息`, `文件名`, `格式`, `来源`, `拍摄时间`, `色彩配置`. | P2 |
-| Right preview | Not present. | Right side large image preview. | Missing preview panel and selected-asset details. | `右侧预览`, `素材详情`, `放大检查`. | P1 |
-| QC checklist | Not present in Asset surface. | QC checklist visible beside preview. | Missing checklist categories and pass/warn/fail state. | `质检清单`, `曝光`, `构图`, `裁切`, `阴影`, `商品标签可见`. | P1 |
-| Risk highlight | Inspection score is shown, but not explained. | Risk points should be specific and restrained. | Score lacks reason/actionability. | `风险点`, `原因`, `建议复查`, `需返修`. | P1 |
+| Scene presence | Dedicated Asset Inbox and QC / Retouch hash scenes are implemented. | Dedicated Asset Inbox / QC scene. | Done for read-only P1. | `素材收件箱 / 质检中心`. | P1 done |
+| Capture One intake | Asset Inbox shows Capture One placeholder source and intake state. | Show Capture One Export Directory status. | Done as read-only mock. | `Capture One 导出目录`, `导入批次`, `等待登记`, `已登记`. | P1 done |
+| Thumbnail grid | Asset Inbox has a local thumbnail-style grid and selected asset state. | Image-first thumbnail grid with binding and QC badges. | Done without real upload/download assets. | `素材缩略图`, `选中素材`, `可用`, `需检查`, `不通过`. | P1 done |
+| Binding state | Selected asset shows SKU, Shot Requirement, binding status, reason, and confidence. | Bind asset to SKU and ShotRequirement. | Done as read-only frontend fixture/view state. | `绑定 SKU`, `绑定 Shot Requirement`, `未绑定`, `绑定冲突`. | P1 done |
+| File info | Selected asset shows dimensions, size, extension, and color space. | File info should be visible. | Capture time/source can remain future fixture enrichment. | `文件信息`, `文件名`, `格式`, `来源`, `拍摄时间`, `色彩配置`. | P1 done |
+| Right preview | Asset Inbox has a generated read-only preview panel. | Right side large image preview. | Done without real image download. | `右侧预览`, `素材详情`, `放大检查`. | P1 done |
+| QC checklist | Asset Inbox selected detail shows latest QC state and failed reasons. | QC checklist visible beside preview. | Done for first P1 slice; richer category checklist can be P2. | `质检清单`, `曝光`, `构图`, `裁切`, `阴影`, `商品标签可见`. | P1 done |
+| Risk highlight | Failed/warning assets expose reasons and badges. | Risk points should be specific and restrained. | Done for read-model fixture reasons. | `风险点`, `原因`, `建议复查`, `需返修`. | P1 done |
 
 ## QC Gap Table
 
@@ -117,11 +120,11 @@ v2 target references: G visual anchor, role-based Retoucher View, visual checkli
 
 | Dimension | Current frontend | v2 target | Gap | Copy alignment | Priority |
 |---|---|---|---|---|---|
-| QC scene | Aggregate `QC Health` gauge and `AI Inspection Feed`. | Dedicated QC surface that explains failure reasons. | No QC queue/checklist/detail page. | `质检中心`, `QC 队列`. | P1 |
-| QC states | `passed`, `flagged`, `pending` in data; no per-check result. | Pass / warning / fail per QC check. | Missing `qcChecks` array and per-asset result. | `通过`, `警告`, `失败`, `待质检`. | P1 |
-| Failure reason | AI finding text exists, but QC failure model is absent. | QC failure reason must be specific. | No structured reason, severity, owner, or retouch action. | `失败原因`, `返修意见`, `影响范围`, `负责人`. | P1 |
-| Retouch feedback | Retouch exists only as workflow status and approval type. | Retoucher should see standard, deadline, revision notes, references. | Missing retouch task standard and due date. | `修图标准`, `截止时间`, `返修说明`, `参考图`. | P2 |
-| Visual layout | Compact feed. | Queue lanes plus large preview and feedback detail. | No selected asset/large image inspection layout. | `待修`, `修图中`, `QC 失败`, `返修`, `已通过`. | P2 |
+| QC scene | Dedicated QC / Retouch read-only queue workspace exists. | Dedicated QC surface that explains failure reasons. | Done for P1. | `质检中心`, `QC 队列`. | P1 done |
+| QC states | Per-item latest status, technical/manual checks, and next action are visible. | Pass / warning / fail per QC check. | Done with read-model queue fixture. | `通过`, `警告`, `失败`, `待质检`. | P1 done |
+| Failure reason | Selected QC item shows failure reasons, severity, owner, and suggestion. | QC failure reason must be specific. | Done for first Golden Product Loop. | `失败原因`, `返修意见`, `影响范围`, `负责人`. | P1 done |
+| Retouch feedback | Selected QC item shows assignee, due time, instructions, complexity, and revision count. | Retoucher should see standard, deadline, revision notes, references. | Done for read-only P1; reference assets can be P2. | `修图标准`, `截止时间`, `返修说明`, `参考图`. | P1 done |
+| Visual layout | Queue list, selected preview, and feedback detail grid exist. | Queue lanes plus large preview and feedback detail. | Done without real image download or write actions. | `待修`, `修图中`, `QC 失败`, `返修`, `已通过`. | P1 done |
 
 ## Review / Delivery Gap Table
 
@@ -129,12 +132,12 @@ v2 target references: role-based Client Review View, information architecture, p
 
 | Dimension | Current frontend | v2 target | Gap | Copy alignment | Priority |
 |---|---|---|---|---|---|
-| Review scene | `Review Sessions` compact list. | Review / Revision scene with reviewable assets, feedback, approval status, revision deadline. | No review gallery, selected item, comment summary, or revision loop. | `审核与返修`, `待客户审核`, `已批准`, `需返修`, `返修截止`. | P1 |
-| Review state | Uses generic approval states. | Client-facing review progress should be clear and calm. | `waiting/blocked/cleared` not enough for client review semantics. | `待审核`, `需反馈`, `已确认`, `需修改`. | P1 |
-| Feedback panel | Not present. | Comment field / feedback panel is expected, but alpha should remain read-only. | Need read-only feedback summary or disabled placeholder. | `客户反馈`, `修改意见`, `只读预览`, `写入功能未启用`. | P2 |
-| Delivery scene | `Delivery Packages` compact list. | Delivery readiness, outbox state, package contents, confirmation. | No readiness checklist, output specs, blockers, or confirmation state. | `交付包`, `交付就绪度`, `输出规格`, `交付清单`, `待确认`. | P1 |
-| Delivery status | Raw `ready`, `sentinel`, `draft` can leak into UI. | User-facing delivery state should explain readiness. | Needs mapping. | `草稿`, `已就绪`, `只读哨兵`, `等待确认`. | P0 |
-| External links/download | Not implemented, correctly blocked. | v2 may eventually need delivery links, but current frontend must not implement external delivery. | Keep disabled placeholders only. | `外部交付未启用`, `下载未开放`, `需要人工审批`. | P0 |
+| Review scene | Dedicated route exists, but still uses generic read-model dashboard. | Review / Revision scene with reviewable assets, feedback, approval status, revision deadline. | Needs gallery grid, selected review item, status breakdown, and disabled public-review posture. | `审核与返修`, `待客户审核`, `已批准`, `需返修`, `返修截止`. | P1B |
+| Review state | Review status is localized in shared view model. | Client-facing review progress should be clear and calm. | Needs review-specific grouping and selected-item feedback detail. | `待审核`, `需反馈`, `已确认`, `需修改`. | P1B |
+| Feedback panel | Generic detail cards only. | Comment field / feedback panel is expected, but alpha should remain read-only. | Add read-only client comment/revision panel and disabled feedback action. | `客户反馈`, `修改意见`, `只读预览`, `写入功能未启用`. | P1B |
+| Delivery scene | Dedicated route exists, but still uses generic read-model dashboard. | Delivery readiness, outbox state, package contents, confirmation. | Needs package/manifest summary, blockers, checklist, output count, and disabled download/external delivery posture. | `交付包`, `交付就绪度`, `输出规格`, `交付清单`, `待确认`. | P1B |
+| Delivery status | Delivery state is localized in shared view model. | User-facing delivery state should explain readiness. | Needs delivery-specific outbox composition. | `草稿`, `已就绪`, `只读哨兵`, `等待确认`. | P1B |
+| External links/download | Not implemented, correctly blocked. | v2 may eventually need delivery links, but current frontend must not implement external delivery. | Keep disabled placeholders only; do not implement real links/download. | `外部交付未启用`, `下载未开放`, `需要人工审批`. | P0 enforced |
 
 ## Recommended Chinese Label Map
 
@@ -192,17 +195,19 @@ Use this as the first copy alignment pass before creating more pages.
 1. Completed: Chinese-first Command Center and read-model surface copy.
 2. Completed: local `--ps-*` token bridge and read-model text aliases.
 3. Completed: Command Center shell, gauges, right rail, activity, and compact entity panel localization.
-4. Next: add fixture-aligned mock fields for the first Golden Product Loop:
+4. Completed: add fixture-aligned mock fields for the first Golden Product Loop:
    - `shotRequirements`
    - `assetBindings`
    - `qcChecks`
    - `retouchTasks`
    - `revisionRequests`
    - `deliveryReadiness`
-5. Next: deepen read-only Asset Inbox with thumbnail grid, binding state, right preview, and QC checklist.
-6. Next: deepen read-only QC / Retouch queue with failure reasons, severity, ownership, and retouch standards.
-7. Later: deepen Review / Delivery surfaces with review gallery summary, revision state, delivery readiness, and disabled future external actions.
-8. Always run `npm run lint` and `npm run build` after code/style changes.
+5. Completed: deepen read-only Asset Inbox with thumbnail grid, binding state, right preview, and QC checklist.
+6. Completed: deepen read-only QC / Retouch queue with failure reasons, severity, ownership, and retouch standards.
+7. Next: deepen Review Gallery with selected review item, client comment/revision state, status summary, and disabled public-review/write posture.
+8. Next: deepen Delivery Readiness with package/manifest summary, readiness checklist, blockers, output count, and disabled external delivery/download posture.
+9. Next: align cross-page selection/preview/read-only action patterns across all four read-model scenes.
+10. Always run `npm run lint` and `npm run build` after code/style changes.
 
 ## Stop Conditions
 
