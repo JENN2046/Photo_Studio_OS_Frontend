@@ -608,6 +608,14 @@
   background: rgba(255, 255, 255, 0.035);
 }
 
+.asset-preview-actions button:disabled,
+.qc-suggestion-actions button:disabled,
+.review-actions button:disabled,
+.delivery-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.82;
+}
+
 .asset-inbox-detail-grid {
   display: grid;
   grid-area: details;

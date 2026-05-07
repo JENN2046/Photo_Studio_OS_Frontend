@@ -10,7 +10,7 @@ Update this whenever work stops, pauses, blocks, or completes a meaningful batch
 
 ```text
 Status: complete-candidate
-Result: P2.5 read-only RC hardening is browser-validated. The Command Center rail click defect found during验货 is fixed locally: scene clicks now visibly switch focus instead of only changing the hash.
+Result: P2.6 read-only click affordance pass is browser-validated. Visible Command Center heading actions now navigate, read-model cards select local detail state, and disabled actions expose explicit read-only affordance.
 ```
 
 ---
@@ -43,7 +43,8 @@ main
 
 ```text
 Branch main was clean after local commit 4cc1539.
-Current batch intentionally edits command rail scene-click CSS and .agent_board after local commit 4cc1539.
+Branch main was clean after local commit ea67bc1.
+Current batch intentionally edits P2.6 click affordance source, docs, and .agent_board after local commit ea67bc1.
 ```
 
 ---
@@ -81,6 +82,11 @@ Completed the first P1 frontend v2 realization slice:
 - 4cc1539 is a local commit for the P2.5 RC closeout docs and has not been pushed.
 - Command Center rail scene clicks now visibly switch focus: #projects, #activity, and #inspections promote the selected panel to the desktop first viewport; #risk and #approvals expand/highlight the right-side target panel.
 - Rail scene clicks were browser-validated at 1513px and 390px with no horizontal overflow or console errors.
+- ea67bc1 is a local commit for the command rail scene-click fix and has not been pushed.
+- P2.6 Read-only Click Affordance Pass converted Command Center `查看全部` / `查看详情` heading actions into real hash links.
+- Shared read-only action buttons now expose disabled, aria-disabled, title tooltip, and not-allowed cursor semantics.
+- Read-model page selection and disabled action behavior were browser-validated across Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness.
+- The 10-route desktop/mobile browser matrix passed with no horizontal overflow or console errors.
 ```
 
 ---
@@ -88,7 +94,12 @@ Completed the first P1 frontend v2 realization slice:
 ## Files Changed
 
 ```text
+src/features/command-center/CommandCenter.tsx
+src/features/read-models/ReadModelPages.tsx
+src/features/read-models/readModelPages.css
 src/styles/global.css
+README.md
+docs/design/FRONTEND_V2_GAP_MAP.md
 .agent_board/CHECKPOINT.md
 .agent_board/RUN_STATE.md
 .agent_board/TASK_QUEUE.md
@@ -151,6 +162,17 @@ Current command rail scene-click fix:
 - changed-file secret scan passed.
 - npm run lint passed.
 - npm run build passed.
+
+Current P2.6 click affordance pass:
+- In-app browser verified Command Center `查看全部` navigates to #inspections.
+- In-app browser verified Command Center `查看详情` navigates to #risk.
+- Playwright CLI verified read-model local selection changes selected detail across the four read-model pages.
+- Playwright CLI verified disabled action buttons expose title, aria-disabled, disabled, and not-allowed cursor posture.
+- Playwright CLI verified 10 routes at 1440px and 390px with no horizontal overflow or console errors.
+- git diff --check passed.
+- changed-file secret scan passed.
+- npm run lint passed.
+- npm run build passed.
 ```
 
 ---
@@ -160,7 +182,7 @@ Current command rail scene-click fix:
 ```text
 No npm test script is defined.
 No backend live integration request is planned for this mock-first UI batch.
-No push is authorized for local commits 472d848, 078f894, f7b1b8f, 1265584, 27ba2b5, 6f1666b, 4cc1539, or the current command rail scene-click fix until the user explicitly asks for push.
+No push is authorized for local commits 472d848, 078f894, f7b1b8f, 1265584, 27ba2b5, 6f1666b, 4cc1539, ea67bc1, or the current P2.6 click affordance pass until the user explicitly asks for push.
 ```
 
 ---
@@ -208,7 +230,7 @@ none for the next safe local frontend slice.
 ## Next Safe Action
 
 ```text
-Next safe action: wait for explicit push approval after the local command rail scene-click fix commit.
+Next safe action: commit the P2.6 click affordance pass locally, then wait for explicit push approval.
 ```
 
 ---
@@ -220,7 +242,7 @@ Next safe action: wait for explicit push approval after the local command rail s
 
 读取 AGENTS.md 和 .agent_board/*。
 继续 A4-Sustained Local Frontend Autopilot。
-先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的 P2.5 RC hardening 队列继续。
+先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的 P2.6 click affordance 队列继续。
 保持 mock-first/read-only，不碰 backend、root control repo、依赖、.env、deploy、生产服务、上传/下载/auth/storage/write actions。
 按当前持续推进节奏，小批次验证后可以本地 commit；push 只有用户明确说 push 才执行。
 用中文汇报。

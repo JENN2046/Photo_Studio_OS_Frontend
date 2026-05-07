@@ -292,7 +292,13 @@ function ReadOnlyActionPair({
   return (
     <div className={className} aria-label={ariaLabel}>
       {labels.map((label) => (
-        <button disabled key={label} type="button">
+        <button
+          aria-disabled="true"
+          disabled
+          key={label}
+          title={`${label}：当前阶段保持只读，不执行业务写入。`}
+          type="button"
+        >
           {label}
         </button>
       ))}

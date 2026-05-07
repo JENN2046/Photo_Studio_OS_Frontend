@@ -641,7 +641,9 @@ export function CommandCenter() {
                   <p className="eyebrow" id="ai-title">
                     Agent 巡检
                   </p>
-                  <span>查看全部</span>
+                  <a className="panel-heading-action" href="#inspections">
+                    查看全部
+                  </a>
                 </div>
                 <div className="inspection-feed">
                   {snapshot.aiInspectionFeed.map((event) => (
@@ -672,7 +674,9 @@ export function CommandCenter() {
                 <p className="eyebrow" id="risk-pulse-title">
                   风险雷达
                 </p>
-                <span>•••</span>
+                <a className="panel-heading-action" href="#risk">
+                  查看详情
+                </a>
               </div>
               <div className="signal-list">
                 {snapshot.riskPulse.map((risk) => (

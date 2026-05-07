@@ -113,6 +113,14 @@ Keyboard QA:
 - Confirm the active item has a visible 2px focus ring and that focus movement
   does not resize or shift the layout.
 
+Click affordance QA:
+
+- Visible Command Center text actions should navigate to the matching hash scene
+  or use a normal link style.
+- Read-model cards may update local selected detail state only.
+- Disabled upload, download, public review, delivery, and write-action buttons
+  must remain disabled and expose clear read-only posture.
+
 DEV-only read-model boundary rehearsals:
 
 - Add `readModelState=loading` to a read-model hash query to hold the loading state.

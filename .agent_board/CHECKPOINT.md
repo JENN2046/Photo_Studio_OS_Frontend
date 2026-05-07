@@ -10,10 +10,10 @@ Codex should update this after each meaningful batch of local frontend work.
 
 ```text
 Status: complete-candidate
-Updated: 2026-05-07 12:04 +0800
+Updated: 2026-05-07 12:18 +0800
 Repo: Photo_Studio_OS_Frontend
 Mode: A4-Sustained Local Frontend Autopilot
-Mission: P2.5 Frontend v2 Read-only RC Hardening
+Mission: P2.6 Read-only Click Affordance Pass
 ```
 
 ---
@@ -25,8 +25,8 @@ Fill from actual command output.
 ```text
 Workspace: A:\Photo_Studio_OS_Frontend
 Branch: main
-Worktree: intentionally editing command rail scene-click CSS and .agent_board after local 4cc1539
-Diff stat: src/styles/global.css plus .agent_board
+Worktree: intentionally editing P2.6 click affordance source, docs, and .agent_board after local ea67bc1
+Diff stat: CommandCenter.tsx, ReadModelPages.tsx, readModelPages.css, global.css, docs, README, and .agent_board
 Package manager: npm with package-lock.json
 Available scripts: dev, build, lint, preview
 ```
@@ -84,6 +84,13 @@ Refreshed README.md, FRONTEND_V2_GAP_MAP.md, and .agent_board with P2.5 RC harde
 Locally committed 4cc1539: closed the P2.5 RC hardening runway.
 Fixed Command Center rail scene clicks so selected command scenes visibly switch focus instead of only changing the hash.
 Browser-validated rail clicks at 1513px and 390px for #projects, #activity, #inspections, #risk, and #approvals.
+Locally committed ea67bc1: fixed Command Center rail scene click visibility.
+Started P2.6 Read-only Click Affordance Pass.
+Converted Command Center heading actions for Agent inspection and Risk detail from fake labels into real scene links.
+Added explicit disabled title/aria/cursor semantics to shared read-only action buttons.
+Browser-clicked heading actions in the in-app browser and verified navigation to #inspections and #risk.
+Browser-validated read-model local selection and disabled action semantics across Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness.
+Browser-validated the 10-route desktop/mobile matrix with no horizontal overflow or console errors.
 ```
 
 ---
@@ -91,11 +98,17 @@ Browser-validated rail clicks at 1513px and 390px for #projects, #activity, #ins
 ## Changed Files
 
 ```text
+src/features/command-center/CommandCenter.tsx
+src/features/read-models/ReadModelPages.tsx
+src/features/read-models/readModelPages.css
 src/styles/global.css
+README.md
+docs/design/FRONTEND_V2_GAP_MAP.md
 .agent_board/CHECKPOINT.md
 .agent_board/RUN_STATE.md
 .agent_board/TASK_QUEUE.md
 .agent_board/VALIDATION_LOG.md
+.agent_board/HANDOFF.md
 ```
 
 ---
@@ -127,6 +140,17 @@ Current rail scene-click fix:
 - #risk and #approvals expand/highlight the right-side target panel.
 - 390px rail clicks scroll to the target scene with no horizontal overflow.
 - Console error count was 0.
+- git diff --check passed.
+- changed-file secret scan passed.
+- npm run lint passed.
+- npm run build passed.
+
+Current P2.6 click affordance pass:
+- In-app browser verified Command Center `查看全部` navigates to #inspections.
+- In-app browser verified Command Center `查看详情` navigates to #risk.
+- Playwright CLI verified read-model local selection changes selected detail across Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness.
+- Playwright CLI verified shared disabled action buttons expose title, aria-disabled, disabled, and not-allowed cursor posture.
+- Playwright CLI verified 10 routes at 1440px and 390px with no horizontal overflow or console errors.
 - git diff --check passed.
 - changed-file secret scan passed.
 - npm run lint passed.
@@ -181,7 +205,7 @@ Live backend toggle still requires configuring VITE_BACKEND_API_BASE_URL and run
 ## Next Safe Task
 
 ```text
-Stop at remote push boundary after the local command rail scene-click fix commit.
+Stop at remote push boundary after the local P2.6 click affordance commit.
 ```
 
 ---

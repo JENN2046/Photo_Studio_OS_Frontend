@@ -10,7 +10,7 @@ It does not authorize remote writes, commits, pushes, deployments, backend chang
 ## Current Mission
 
 ```text
-P2.5 Frontend v2 Read-only RC Hardening
+P2.6 Read-only Click Affordance Pass
 ```
 
 Mode:
@@ -22,7 +22,7 @@ A4-Sustained Local Frontend Autopilot
 Goal:
 
 ```text
-Harden the read-only Frontend v2 release candidate: full browser QA, keyboard focus visibility, read-only semantics, boundary-state matrix, QA documentation, and completion-map closure.
+Make the read-only cockpit feel honest under inspection: visible actions either navigate, select local UI state, or clearly communicate disabled read-only posture.
 ```
 
 ---
@@ -153,6 +153,12 @@ none
 59. Added active rail highlighting for #projects, #activity, #inspections, #risk, and #approvals.
 60. Browser-validated rail scene clicks at 1513px and 390px with no horizontal overflow or console errors.
 61. Validated the rail scene-click fix with git diff --check, changed-file secret scan, npm run lint, and npm run build.
+62. Started P2.6 Read-only Click Affordance Pass from local commit ea67bc1.
+63. Converted Command Center fake heading actions for Agent inspection and Risk detail into real hash navigation links.
+64. Added explicit title, aria-disabled, disabled, and cursor affordances for shared read-only action buttons.
+65. Browser-clicked Command Center heading actions in the in-app browser and verified they navigate to #inspections and #risk.
+66. Browser-validated read-model local selection and disabled action semantics across Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness.
+67. Browser-validated a 10-route desktop/mobile matrix with no horizontal overflow or console errors.
 ```
 
 ### blocked

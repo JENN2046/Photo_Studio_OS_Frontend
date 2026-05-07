@@ -470,6 +470,32 @@ Notes:
 - Console error count was 0.
 ```
 
+```text
+## VALIDATION-20260507-CLICK-AFFORDANCE-PASS
+
+Task: Clarify read-only click affordances across Command Center and read-model pages.
+Commands run:
+- in-app browser click QA for Command Center `查看全部` and `查看详情`
+- Playwright CLI read-model local selection and disabled action matrix for #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness
+- Playwright CLI 10-route desktop/mobile matrix for Command Center scenes and four read-model pages
+- git diff --check
+- changed-file secret scan on current diff
+- npm run lint
+- npm run build
+Result: passed
+Failures: none
+Fix attempted: not applicable
+Re-run result: not applicable
+Not validated:
+- No npm test script is defined.
+- No backend live integration was run; frontend remains mock-first.
+Notes:
+- `查看全部` navigates to #inspections and `查看详情` navigates to #risk.
+- Asset/QC/Review/Delivery selectable cards changed selected detail locally.
+- Disabled read-only actions exposed title, aria-disabled, disabled, and not-allowed cursor posture.
+- No horizontal overflow or console errors were observed in the 10-route desktop/mobile matrix.
+```
+
 ---
 
 ## Entry Template

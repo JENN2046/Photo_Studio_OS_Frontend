@@ -17,7 +17,7 @@ A4-Sustained Local Frontend Autopilot
 ## Current Mission
 
 ```text
-P2.5 Frontend v2 Read-only RC Hardening
+P2.6 Read-only Click Affordance Pass
 ```
 
 ---
@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-Command Center rail scene-click fix complete candidate
+Read-only click affordance pass complete candidate
 ```
 
 ---
@@ -58,7 +58,7 @@ Command Center rail scene-click fix complete candidate
 ## Last Completed Task
 
 ```text
-Fixed Command Center rail scene clicks so selected scenes visibly switch focus
+Clarified clickable-looking actions so they navigate, select locally, or show disabled read-only posture
 ```
 
 ---
@@ -66,7 +66,7 @@ Fixed Command Center rail scene clicks so selected scenes visibly switch focus
 ## Last Validation
 
 ```text
-Command rail click QA passed at 1513px and 390px for #projects, #activity, #inspections, #risk, and #approvals; console error count 0; git diff --check, changed-file secret scan, npm run lint, and npm run build passed
+In-app browser confirmed Command Center heading actions navigate to #inspections and #risk; Playwright CLI confirmed read-model selection and disabled action semantics across the four read-model pages; 10-route desktop/mobile matrix passed with console error count 0 and no horizontal overflow; git diff --check, changed-file secret scan, npm run lint, and npm run build passed
 ```
 
 ---
@@ -75,7 +75,7 @@ Command rail click QA passed at 1513px and 390px for #projects, #activity, #insp
 
 ```text
 Branch: main
-Worktree: command rail scene-click fix validated and ready for local commit after 4cc1539
+Worktree: P2.6 click affordance pass validated and ready for local commit after ea67bc1
 ```
 
 ---
@@ -115,7 +115,7 @@ no
 ## Current Stop Status
 
 ```text
-stop at remote push boundary after local commit
+stop at remote push boundary after local P2.6 commit
 ```
 
 ---
@@ -123,5 +123,5 @@ stop at remote push boundary after local commit
 ## Next Action
 
 ```text
-Wait for explicit push approval after the local command rail scene-click fix commit.
+Commit the P2.6 click affordance pass, then wait for explicit push approval.
 ```

@@ -2391,6 +2391,32 @@ body {
   margin-bottom: 10px;
 }
 
+.panel-heading a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 27px;
+  padding: 5px 8px;
+  border: 1px solid rgba(242, 247, 255, 0.12);
+  border-radius: 4px;
+  color: rgba(220, 230, 239, 0.84);
+  font-size: 0.7rem;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.panel-heading a:hover {
+  border-color: rgba(159, 211, 223, 0.34);
+  color: rgba(242, 247, 255, 0.94);
+  background: rgba(159, 211, 223, 0.06);
+}
+
+.panel-heading a:focus-visible {
+  outline: 2px solid rgba(159, 211, 223, 0.5);
+  outline-offset: 2px;
+  border-color: rgba(159, 211, 223, 0.48);
+}
+
 .panel-heading span {
   color: rgba(187, 200, 213, 0.88);
 }
