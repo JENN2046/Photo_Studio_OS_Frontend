@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { AppShell } from "../../components/layout/AppShell";
 import {
   fetchAssetInboxReadModel,
@@ -6,6 +6,7 @@ import {
   fetchQcRetouchQueueReadModel,
   fetchReviewGalleryReadModel
 } from "../../api/backendReadModels";
+import type { BackendAssetInbox } from "../../api/backendReadModels";
 import type { BackendReadModelState } from "./useBackendReadModel";
 import { useBackendReadModel } from "./useBackendReadModel";
 import {
@@ -13,6 +14,12 @@ import {
   createDeliveryReadinessViewModel,
   createQcRetouchQueueViewModel,
   createReviewGalleryViewModel,
+  formatBytes,
+  formatReason,
+  formatSource,
+  formatStatus,
+  toneFromStatus,
+  type ReadModelTone,
   type ReadModelViewModel
 } from "./readModelViewModels";
 import {
@@ -41,6 +48,8 @@ interface ReadModelFrameProps {
   deck: string;
   params: URLSearchParams;
 }
+
+type AssetInboxItem = BackendAssetInbox["items"][number];
 
 const routeLabels: Record<ReadModelRoute, string> = {
   "asset-inbox": "素材收件箱",
@@ -207,6 +216,219 @@ function ReadModelDashboard({ viewModel }: { viewModel: ReadModelViewModel }) {
   );
 }
 
+function formatPercent(value: number | undefined): string {
+  if (typeof value !== "number" || Number.isNaN(value)) {
+    return "待计算";
+  }
+
+  return `${Math.round(value * 100)}%`;
+}
+
+function formatDimensions(asset: AssetInboxItem): string {
+  if (!asset.file.width || !asset.file.height) {
+    return "尺寸待定";
+  }
+
+  return `${asset.file.width} x ${asset.file.height}`;
+}
+
+function assetTone(asset: AssetInboxItem): ReadModelTone {
+  return toneFromStatus(asset.latestQc?.status ?? asset.status);
+}
+
+function assetShotLabel(asset: AssetInboxItem): string {
+  return asset.shotRequirement
+    ? `${asset.shotRequirement.shotTypeCode} / ${formatStatus(
+        asset.shotRequirement.status
+      )}`
+    : "镜头需求待绑定";
+}
+
+function assetSkuLabel(asset: AssetInboxItem): string {
+  return asset.sku ? `${asset.sku.code} / ${asset.sku.name}` : "未绑定 SKU";
+}
+
+function AssetInboxWorkspace({
+  model,
+  viewModel
+}: {
+  model: BackendAssetInbox;
+  viewModel: ReadModelViewModel;
+}) {
+  const [selectedAssetId, setSelectedAssetId] = useState(
+    model.selectedAssetId ?? model.items[0]?.assetId ?? ""
+  );
+  const selectedAsset = useMemo(
+    () =>
+      model.items.find((item) => item.assetId === selectedAssetId) ??
+      model.items[0],
+    [model.items, selectedAssetId]
+  );
+  const selectedTone = selectedAsset ? assetTone(selectedAsset) : "neutral";
+  const boundCount = model.items.filter(
+    (item) => item.binding.status === "bound"
+  ).length;
+  const qcRiskCount = model.items.filter((item) =>
+    ["failed", "warning"].includes(item.latestQc?.status ?? "")
+  ).length;
+
+  return (
+    <section className="asset-inbox-workspace">
+      <section
+        className="read-model-metrics asset-inbox-metrics"
+        aria-label={`${viewModel.title} 指标面板`}
+      >
+        {viewModel.metrics.map((metric) => (
+          <article
+            className={`read-model-metric read-model-tone-${metric.tone}`}
+            key={metric.label}
+          >
+            <span>{metric.label}</span>
+            <strong>{metric.value}</strong>
+            <small>{metric.detail}</small>
+          </article>
+        ))}
+      </section>
+
+      <section className="asset-inbox-console" aria-label="素材工作台">
+        <header className="asset-inbox-intake">
+          <div>
+            <p className="eyebrow">Capture One Intake</p>
+            <strong>{formatSource(model.intake.source)}</strong>
+            <span>
+              {formatStatus(model.intake.status)} /{" "}
+              {formatReason(model.intake.message)}
+            </span>
+          </div>
+          <div className="asset-inbox-intake-stats" aria-label="素材入库统计">
+            <span>
+              <b>{model.total}</b>
+              素材
+            </span>
+            <span>
+              <b>{boundCount}</b>
+              已绑定
+            </span>
+            <span>
+              <b>{qcRiskCount}</b>
+              QC 风险
+            </span>
+          </div>
+        </header>
+
+        <div className="asset-inbox-body">
+          <section className="asset-thumbnail-panel" aria-label="缩略图网格">
+            <div className="asset-panel-head">
+              <div>
+                <p className="eyebrow">Asset Grid</p>
+                <strong>{model.projectId}</strong>
+              </div>
+              <span>{model.items.length} / {model.limit}</span>
+            </div>
+            <div className="asset-thumbnail-grid">
+              {model.items.map((asset) => {
+                const tone = assetTone(asset);
+
+                return (
+                  <button
+                    aria-pressed={asset.assetId === selectedAsset?.assetId}
+                    className={`asset-thumbnail read-model-tone-${tone}`}
+                    key={asset.assetId}
+                    onClick={() => setSelectedAssetId(asset.assetId)}
+                    type="button"
+                  >
+                    <span className="asset-thumbnail-visual" aria-hidden="true">
+                      <b>{asset.file.fileExt ?? "RAW"}</b>
+                    </span>
+                    <span className="asset-thumbnail-copy">
+                      <strong>{asset.file.originalFilename ?? asset.assetId}</strong>
+                      <small>{assetSkuLabel(asset)}</small>
+                      <small>{assetShotLabel(asset)}</small>
+                    </span>
+                    <i>{formatStatus(asset.latestQc?.status ?? asset.status)}</i>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          <section className="asset-preview-panel" aria-label="选中素材预览">
+            {selectedAsset ? (
+              <>
+                <div
+                  className={`asset-preview-visual read-model-tone-${selectedTone}`}
+                >
+                  <span>{selectedAsset.file.fileExt ?? "RAW"}</span>
+                  <strong>{selectedAsset.assetId}</strong>
+                  <small>{selectedAsset.file.originalFilename}</small>
+                </div>
+                <div className="asset-preview-copy">
+                  <p className="eyebrow">Selected Asset</p>
+                  <h2>{selectedAsset.file.originalFilename ?? selectedAsset.assetId}</h2>
+                  <span>{assetSkuLabel(selectedAsset)}</span>
+                  <span>{assetShotLabel(selectedAsset)}</span>
+                </div>
+                <div className="asset-preview-actions" aria-label="只读操作状态">
+                  <button disabled type="button">
+                    上传未启用
+                  </button>
+                  <button disabled type="button">
+                    下载未启用
+                  </button>
+                </div>
+              </>
+            ) : (
+              <p>暂无素材可预览。</p>
+            )}
+          </section>
+        </div>
+      </section>
+
+      {selectedAsset ? (
+        <section className="asset-inbox-detail-grid" aria-label="素材只读详情">
+          <article
+            className={`read-model-detail read-model-tone-${toneFromStatus(
+              selectedAsset.binding.status
+            )}`}
+          >
+            <span>绑定状态</span>
+            <strong>{formatStatus(selectedAsset.binding.status)}</strong>
+            <small>
+              {formatReason(selectedAsset.binding.reason)} / 置信度{" "}
+              {formatPercent(selectedAsset.binding.confidence)}
+            </small>
+          </article>
+          <article className="read-model-detail read-model-tone-neutral">
+            <span>文件信息</span>
+            <strong>{formatDimensions(selectedAsset)}</strong>
+            <small>
+              {formatBytes(selectedAsset.file.fileSizeBytes)} /{" "}
+              {selectedAsset.file.colorSpace ?? "色彩空间待定"}
+            </small>
+          </article>
+          <article
+            className={`read-model-detail read-model-tone-${toneFromStatus(
+              selectedAsset.latestQc?.status
+            )}`}
+          >
+            <span>QC Checklist</span>
+            <strong>
+              {formatStatus(selectedAsset.latestQc?.status ?? selectedAsset.status)}
+            </strong>
+            <small>
+              {(selectedAsset.latestQc?.failedReasons ?? []).length > 0
+                ? selectedAsset.latestQc?.failedReasons
+                    ?.map((reason) => formatReason(reason))
+                    .join(" / ")
+                : selectedAsset.latestQc?.notes ?? "暂未发现质检风险"}
+            </small>
+          </article>
+        </section>
+      ) : null}
+    </section>
+  );
+}
+
 export function AssetInboxPage({ params }: ReadModelPageProps) {
   const projectId = getParam(params, "projectId");
   const state = useBackendReadModel({
@@ -231,7 +453,8 @@ export function AssetInboxPage({ params }: ReadModelPageProps) {
         idleLabel="请先选择 projectId"
       />
       {state.data ? (
-        <ReadModelDashboard
+        <AssetInboxWorkspace
+          model={state.data}
           viewModel={createAssetInboxViewModel(state.data)}
         />
       ) : null}

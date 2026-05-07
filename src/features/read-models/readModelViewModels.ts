@@ -38,7 +38,7 @@ export interface ReadModelViewModel {
   details: ReadModelDetail[];
 }
 
-function formatStatus(value: string | undefined): string {
+export function formatStatus(value: string | undefined): string {
   if (!value) {
     return "未知";
   }
@@ -115,7 +115,7 @@ function formatStatus(value: string | undefined): string {
   return statusMap[status.toLowerCase()] ?? status;
 }
 
-function formatReason(value: string | undefined): string {
+export function formatReason(value: string | undefined): string {
   if (!value) {
     return "无";
   }
@@ -148,7 +148,7 @@ function formatReason(value: string | undefined): string {
   return reasonMap[reason.toLowerCase()] ?? formatStatus(value);
 }
 
-function formatSource(value: string): string {
+export function formatSource(value: string): string {
   const sourceMap: Record<string, string> = {
     capture_one_placeholder: "Capture One 导出目录",
     capture_one_export: "Capture One 导出目录",
@@ -191,7 +191,7 @@ function formatShortDateTime(value: string | undefined): string {
   }).format(date);
 }
 
-function formatBytes(value: string | undefined): string {
+export function formatBytes(value: string | undefined): string {
   if (!value) {
     return "体积待定";
   }
@@ -217,7 +217,7 @@ function formatBytes(value: string | undefined): string {
   return `${numericValue} B`;
 }
 
-function toneFromStatus(value: string | undefined): ReadModelTone {
+export function toneFromStatus(value: string | undefined): ReadModelTone {
   if (!value) {
     return "neutral";
   }
