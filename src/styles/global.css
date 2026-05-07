@@ -3192,6 +3192,12 @@ body {
     grid-template-columns: minmax(0, 1fr) 286px;
   }
 
+  .cockpit-frame > .cockpit-side {
+    grid-column: auto;
+    grid-template-columns: 1fr;
+    order: initial;
+  }
+
   .gauges {
     grid-template-columns: minmax(178px, 0.8fr) minmax(270px, 1.05fr) minmax(178px, 0.8fr);
     gap: 18px;

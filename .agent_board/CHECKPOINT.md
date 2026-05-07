@@ -10,7 +10,7 @@ Codex should update this after each meaningful batch of local frontend work.
 
 ```text
 Status: in-progress
-Updated: 2026-05-07 10:19 +0800
+Updated: 2026-05-07 10:24 +0800
 Repo: Photo_Studio_OS_Frontend
 Mode: A4-Sustained Local Frontend Autopilot
 Mission: P1B Review / Delivery read-only realization and P2 cockpit completion track
@@ -25,8 +25,8 @@ Fill from actual command output.
 ```text
 Workspace: A:\Photo_Studio_OS_Frontend
 Branch: main
-Worktree: intentionally editing Command Center 黄金链路, gap map, and .agent_board
-Diff stat: CommandCenter.tsx, global.css, docs/design/FRONTEND_V2_GAP_MAP.md, and .agent_board
+Worktree: intentionally editing P2 cockpit breakpoint fix and .agent_board
+Diff stat: src/styles/global.css plus .agent_board
 Package manager: npm with package-lock.json
 Available scripts: dev, build, lint, preview
 ```
@@ -55,7 +55,8 @@ Pushed e529c3b: refreshed the P1B/P2 gap map and task rail.
 Pushed da8f32b: deepened #review-gallery into a read-only client review workspace.
 Pushed 4f61aa6: deepened #delivery-readiness into a read-only delivery outbox workspace.
 Pushed f249a8a: implemented a shared read-model context bar for #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness.
-Implemented Command Center 黄金链路 strip and refreshed P1B completion docs/board; commit/push pending.
+Pushed c1dd63f: implemented Command Center 黄金链路 strip and refreshed P1B completion docs/board.
+Fixed P2 1280px cockpit breakpoint so Risk / Approval rail remains visible in the right column; commit/push pending.
 ```
 
 ---
@@ -85,13 +86,12 @@ src/styles/global.css
 ## Validation Run
 
 ```text
-Current Command Center navigation / P1B closeout batch:
-- git diff --check passed
-- changed-file secret scan passed before board updates
+Current P2 cockpit breakpoint batch:
 - npm run lint passed
 - npm run build passed
-- in-app browser QA passed for Command Center 黄金链路 strip, all four entry clicks, read-model context text, and tab switching back to 素材收件箱
-- Playwright CLI 390px QA passed for Command Center: 黄金链路 and IDs visible, no horizontal overflow, console error count 0
+- Playwright CLI 1280px QA passed: cockpit side rail x=994, y=56, width=286; Risk / Approval text visible
+- Playwright CLI 390px QA passed: side rail stacks below main, no horizontal overflow
+- Playwright CLI console error check passed with 0 errors
 - commit/push pending
 ```
 
@@ -143,7 +143,7 @@ Live backend toggle still requires configuring VITE_BACKEND_API_BASE_URL and run
 ## Next Safe Task
 
 ```text
-After Command Center navigation batch is pushed, start P2 cockpit polish with a narrow browser-led pass.
+After P2 breakpoint fix is pushed, continue with backend read-model contract notes or safe read-model component cleanup.
 ```
 
 ---

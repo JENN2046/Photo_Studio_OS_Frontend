@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-Refresh P1B completion facts and queue P2 cockpit polish
+Fix P2 cockpit 1280px side rail breakpoint
 ```
 
 ---
@@ -66,7 +66,7 @@ Pushed f249a8a: aligned read-model production context
 ## Last Validation
 
 ```text
-npm run lint passed; npm run build passed; git diff --check passed; changed-file secret scan passed; browser QA passed for Command Center 黄金链路 entries, all four hash pages, read-model tab switching, Chinese mock IDs, console errors, and 390px overflow
+npm run lint passed; npm run build passed; 1280px browser QA shows cockpit side rail in the right column; 390px remains stacked with no horizontal overflow; console error count 0
 ```
 
 ---
@@ -75,7 +75,7 @@ npm run lint passed; npm run build passed; git diff --check passed; changed-file
 
 ```text
 Branch: main
-Worktree: intentionally editing Command Center 黄金链路 plus gap map / board after pushed f249a8a
+Worktree: intentionally editing P2 cockpit breakpoint fix after pushed c1dd63f
 ```
 
 ---
@@ -123,5 +123,5 @@ not blocked
 ## Next Action
 
 ```text
-Batch 5: commit/push Command Center 黄金链路 and P1B docs/board refresh, then continue with P2 cockpit polish.
+Commit/push P2 cockpit breakpoint fix, then continue with backend read-model contract notes or safe read-model component cleanup.
 ```

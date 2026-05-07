@@ -83,12 +83,12 @@ none
 
 ### todo
 
-Current safe queue after commit `f249a8a`.
+Current safe queue after commit `c1dd63f`.
 
 ```text
-1. Start P2 cockpit polish with a narrow browser-led pass on text fit, panel density, and narrow viewport comfort.
-2. Add or refine frontend-only contract notes for optional backend read-model smoke testing when VITE_BACKEND_API_BASE_URL is configured.
-3. Re-scan read-model pages for duplicated presentational patterns that can be safely extracted without broad refactor.
+1. Add or refine frontend-only contract notes for optional backend read-model smoke testing when VITE_BACKEND_API_BASE_URL is configured.
+2. Re-scan read-model pages for duplicated presentational patterns that can be safely extracted without broad refactor.
+3. Run another browser-led cockpit pass at 1440px / 1024px / 390px after the next visual or layout change.
 ```
 
 ### done
@@ -128,6 +128,7 @@ Current safe queue after commit `f249a8a`.
 32. Aligned all four read-model hash pages with a shared production context bar showing projectId, reviewSessionId, deliveryId, mock-first/read-only posture, and a return link to Command Center.
 33. Strengthened Command Center production navigation with a `黄金链路` strip showing PRJ-128, REV-441, DEL-220, and four read-only page entries.
 34. Ran final P1B browser QA for Command Center entry clicks, read-model tab switching, Chinese mock data, console errors, and 390px viewport overflow.
+35. Fixed the P2 1280px cockpit breakpoint so Risk / Approval side rail remains in the right column instead of dropping below the main panel.
 ```
 
 ### blocked

@@ -10,7 +10,7 @@ Update this whenever work stops, pauses, blocks, or completes a meaningful batch
 
 ```text
 Status: in-progress
-Result: P1B read-only production loop is complete candidate: four read-model workspaces, shared context bar, Command Center 黄金链路 entries, and browser QA are green. Next track is P2 cockpit polish.
+Result: P1B read-only production loop is complete candidate. P2 cockpit polish has started; the 1280px right-rail breakpoint is fixed and validated.
 ```
 
 ---
@@ -42,8 +42,8 @@ main
 ## Worktree State
 
 ```text
-Branch main was clean after pushed f249a8a.
-Current batch intentionally edits Command Center, global styles, gap map, and .agent_board for P1B closeout.
+Branch main was clean after pushed c1dd63f.
+Current batch intentionally edits global styles and .agent_board for a P2 cockpit breakpoint fix.
 ```
 
 ---
@@ -59,8 +59,9 @@ Completed the first P1 frontend v2 realization slice:
 - #delivery-readiness now has package/manifest summary, selected output preview, readiness checklist, blockers, disabled download, and disabled external delivery posture.
 - All four read-model hash pages now share a production context bar with projectId, reviewSessionId, deliveryId, mock-first/read-only posture, and a return link to Command Center.
 - Command Center now shows a compact 黄金链路 strip with PRJ-128, REV-441, DEL-220, and four read-only entries.
+- P2 cockpit polish started by restoring the Risk / Approval side rail at 1280px.
 - Browser QA blockers from that slice were fixed: favicon 404 and 390px rail overflow.
-- All changes through f249a8a were pushed to origin/main; Command Center 黄金链路 / docs closeout batch commit/push is pending.
+- All changes through c1dd63f were pushed to origin/main; P2 breakpoint fix commit/push is pending.
 ```
 
 ---
@@ -97,11 +98,12 @@ Current shared context bar batch:
 - pushed in f249a8a
 
 Current Command Center 黄金链路 batch:
-- git diff --check passed before board updates
-- changed-file secret scan passed before board updates
+- pushed in c1dd63f
+
+Current P2 cockpit breakpoint batch:
 - npm run lint passed
 - npm run build passed
-- browser QA passed for Command Center entry clicks, read-model tab switching, console errors, and 390px horizontal overflow
+- browser QA passed for 1280px side rail placement, 390px stacking/no overflow, and console errors
 - commit/push pending
 ```
 
@@ -161,7 +163,7 @@ none for the next safe local frontend slice.
 ## Next Safe Action
 
 ```text
-Next safe local slice: P2 cockpit polish with a narrow browser-led pass on text fit, panel density, and narrow viewport comfort.
+Next safe local slice: backend read-model contract notes or safe read-model component cleanup.
 ```
 
 ---

@@ -223,6 +223,29 @@ Notes:
 - Verified Command Center displays 黄金链路 plus PRJ-128, REV-441, DEL-220.
 - Verified 黄金链路 entries navigate to #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness with the expected read-model context.
 - 390px viewport reported no horizontal overflow and console error count was 0.
+
+## VALIDATION-20260507-P2-COCKPIT-BREAKPOINT
+
+Task: Keep Command Center Risk / Approval side rail visible at the 1280px cockpit breakpoint.
+Commands run:
+- npm run lint
+- npm run build
+- Playwright CLI 1280px screenshot inspection
+- Playwright CLI 1280px side-rail bounding-box probe
+- Playwright CLI 390px horizontal-overflow and stacking probe
+- Playwright CLI console error check
+Result: passed
+Failures:
+- Initial 1280px screenshot showed the right rail content below the main cockpit, leaving the first viewport right column blank.
+Fix attempted:
+- Scoped the `max-width: 1320px` cockpit rule to reset `.cockpit-frame > .cockpit-side` back to the right column while keeping mobile stacking below 1100px.
+Re-run result:
+- 1280px side rail returned to x=994, y=56, width=286 with Risk / Approval text visible.
+- 390px remains stacked below the main panel with no horizontal overflow.
+Not validated:
+- No npm test script is defined.
+Notes:
+- This is a frontend-only CSS breakpoint fix; no data, backend, dependency, or write-action boundary changed.
 ```
 
 ---
