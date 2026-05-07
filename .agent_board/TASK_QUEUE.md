@@ -83,13 +83,12 @@ none
 
 ### todo
 
-Current safe queue after commit `472d848`.
+Current safe queue after local commit `078f894`.
 
 ```text
-1. Add or clarify read-only boundary states only where the UI can rehearse them locally without backend writes.
-2. Solidify the local QA runway for Command Center plus the four hash pages.
-3. Refresh the P2 completion map after the current cockpit maturation slice.
-4. Keep optional backend smoke blocked unless a local backend base URL is intentionally configured outside this repo.
+1. Solidify the local QA runway for Command Center plus the four hash pages.
+2. Refresh the P2 completion map after the current cockpit maturation slice.
+3. Keep optional backend smoke blocked unless a local backend base URL is intentionally configured outside this repo.
 ```
 
 ### done
@@ -138,6 +137,9 @@ Current safe queue after commit `472d848`.
 41. Validated the mobile status bar batch with git diff --check, changed-file secret scan, npm run lint, npm run build, 390px screenshot inspection, overflow probe, and console error check.
 42. Extracted the repeated read-model metric panel rendering into a shared ReadModelMetricStrip component without changing fetchers or data shape.
 43. Browser-checked the four read-model hash pages at 390px after the metric strip extraction; each page retained 3 metric cards, no horizontal overflow, and console error count remained 0.
+44. Added local DEV-only readModelState overrides for read-model loading, error, and missing-config boundary rehearsals.
+45. Clarified read-model state notices with explicit status labels and mock-first/read-only posture.
+46. Browser-checked loading, error, missing-config, and idle states at 390px with no horizontal overflow and console error count 0.
 ```
 
 ### blocked

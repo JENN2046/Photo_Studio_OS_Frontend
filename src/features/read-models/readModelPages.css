@@ -127,6 +127,12 @@
   color: var(--color-text-muted);
 }
 
+.read-model-state small {
+  color: var(--color-text-secondary);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
 .read-model-state button {
   min-width: 86px;
   min-height: 36px;

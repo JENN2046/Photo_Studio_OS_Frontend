@@ -10,7 +10,7 @@ Codex should update this after each meaningful batch of local frontend work.
 
 ```text
 Status: in-progress
-Updated: 2026-05-07 11:15 +0800
+Updated: 2026-05-07 11:18 +0800
 Repo: Photo_Studio_OS_Frontend
 Mode: A4-Sustained Local Frontend Autopilot
 Mission: P2 Read-only Cockpit Maturation
@@ -25,8 +25,8 @@ Fill from actual command output.
 ```text
 Workspace: A:\Photo_Studio_OS_Frontend
 Branch: main
-Worktree: intentionally editing read-model metric strip extraction and .agent_board
-Diff stat: src/features/read-models/ReadModelPages.tsx plus .agent_board
+Worktree: intentionally editing read-model boundary-state rehearsal and .agent_board
+Diff stat: src/features/read-models/ReadModelPages.tsx, src/features/read-models/readModelPages.css, plus .agent_board
 Package manager: npm with package-lock.json
 Available scripts: dev, build, lint, preview
 ```
@@ -65,6 +65,10 @@ Fixed the 390px Command Center status bar so studio, date, time, and live dot re
 Locally committed 472d848: tightened mobile Command Center status bar.
 Extracted repeated read-model metric panel rendering into a shared ReadModelMetricStrip component.
 Browser-checked #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness at 390px after the metric strip extraction.
+Locally committed 078f894: shared read-model metric strip.
+Added DEV-only readModelState boundary rehearsals for loading, error, and missing-config.
+Clarified read-model state notices with mock-first/read-only status labels.
+Browser-checked loading, error, missing-config, and idle states at 390px.
 ```
 
 ---
@@ -73,6 +77,7 @@ Browser-checked #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readin
 
 ```text
 src/features/read-models/ReadModelPages.tsx
+src/features/read-models/readModelPages.css
 .agent_board/CHECKPOINT.md
 .agent_board/RUN_STATE.md
 .agent_board/TASK_QUEUE.md
@@ -85,11 +90,11 @@ src/features/read-models/ReadModelPages.tsx
 ## Validation Run
 
 ```text
-Current metric strip extraction batch:
+Current boundary-state rehearsal batch:
 - npm run lint passed.
-- Playwright CLI 390px browser check passed for #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness.
-- Each checked page retained 3 .read-model-metric cards.
-- 390px overflow probe returned no horizontal overflow.
+- Playwright CLI 390px browser check passed for loading, error, missing-config, and idle states.
+- State notices showed the expected title and status meta.
+- 390px overflow probe returned no horizontal overflow across checked states.
 - Playwright CLI console error check returned 0 errors.
 - git diff --check passed.
 - changed-file secret scan passed.
@@ -144,7 +149,7 @@ Live backend toggle still requires configuring VITE_BACKEND_API_BASE_URL and run
 ## Next Safe Task
 
 ```text
-Locally commit the metric strip extraction if staged checks stay green, then continue with the next P2 safe task.
+Locally commit the boundary-state rehearsal if staged checks stay green, then continue with the next P2 safe task.
 ```
 
 ---

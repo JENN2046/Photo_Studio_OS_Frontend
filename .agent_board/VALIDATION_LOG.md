@@ -336,6 +336,32 @@ Notes:
 - git diff --check passed.
 - changed-file secret scan passed.
 - npm run build passed.
+
+## VALIDATION-20260507-READMODEL-BOUNDARY-STATES
+
+Task: Add local read-model boundary-state rehearsal.
+Commands run:
+- npm run lint
+- Playwright CLI 390px browser check for loading, error, missing-config, and idle states
+- Playwright CLI console error check
+- git diff --check
+- changed-file secret scan on current diff
+- npm run build
+Result: passed
+Failures: none
+Fix attempted: none required
+Re-run result: not applicable
+Not validated:
+- No npm test script is defined.
+Notes:
+- Verified readModelState=loading shows 只读模型加载中.
+- Verified readModelState=error shows 只读模型不可用.
+- Verified readModelState=missing-config shows 后端只读模型未配置.
+- Verified missing deliveryId shows 请先选择 deliveryId.
+- Each checked state included mock-first / read-only status meta, had no horizontal overflow at 390px, and console error count was 0.
+- git diff --check passed.
+- changed-file secret scan passed.
+- npm run build passed.
 ```
 
 ---

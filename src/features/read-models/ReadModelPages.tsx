@@ -45,6 +45,7 @@ type ReadModelRoute =
   | "qc-retouch"
   | "review-gallery"
   | "delivery-readiness";
+type ReadModelDebugState = "live" | "loading" | "error" | "missing-config";
 
 interface ReadModelFrameProps {
   activeRoute: ReadModelRoute;
@@ -91,6 +92,73 @@ function getSharedQuery(params: URLSearchParams): string {
 
   const query = next.toString();
   return query ? `?${query}` : "";
+}
+
+function getReadModelDebugState(params: URLSearchParams): ReadModelDebugState {
+  if (!import.meta.env.DEV) {
+    return "live";
+  }
+
+  const debugState = getParam(params, "readModelState");
+
+  if (
+    debugState === "loading" ||
+    debugState === "error" ||
+    debugState === "missing-config"
+  ) {
+    return debugState;
+  }
+
+  return "live";
+}
+
+function applyReadModelDebugState<T>({
+  label,
+  params,
+  state
+}: {
+  label: string;
+  params: URLSearchParams;
+  state: BackendReadModelState<T>;
+}): BackendReadModelState<T> {
+  const debugState = getReadModelDebugState(params);
+
+  if (debugState === "live") {
+    return state;
+  }
+
+  const baseState = {
+    data: null,
+    retry: state.retry
+  } satisfies Pick<BackendReadModelState<T>, "data" | "retry">;
+
+  if (debugState === "loading") {
+    return {
+      ...baseState,
+      status: "loading",
+      message: `内部调试：${label} 只读模型保持加载态。`,
+      errorMessage: null,
+      canRetry: false
+    };
+  }
+
+  if (debugState === "missing-config") {
+    return {
+      ...baseState,
+      status: "missing-config",
+      message: "内部调试：模拟后端只读模型未配置。",
+      errorMessage: null,
+      canRetry: false
+    };
+  }
+
+  return {
+    ...baseState,
+    status: "error",
+    message: "内部调试：只读模型请求失败。",
+    errorMessage: `Simulated ${label} read-model boundary fault`,
+    canRetry: true
+  };
 }
 
 function ReadModelFrame({
@@ -184,12 +252,24 @@ function ReadModelStateNotice<T>({
     loading: "只读模型加载中",
     error: "只读模型不可用"
   } satisfies Record<Exclude<typeof state.status, "ready">, string>;
+  const statusLabelByStatus = {
+    "missing-config": "后端未配置",
+    idle: "等待上下文",
+    loading: "读取中",
+    error: "读取失败"
+  } satisfies Record<Exclude<typeof state.status, "ready">, string>;
 
   return (
-    <section className={`read-model-state read-model-state-${state.status}`}>
+    <section
+      className={`read-model-state read-model-state-${state.status}`}
+      role={state.status === "error" ? "alert" : "status"}
+    >
       <div>
         <strong>{titleByStatus[state.status]}</strong>
         <span>{state.errorMessage ?? state.message}</span>
+        <small>
+          状态 / {statusLabelByStatus[state.status]} · mock-first / read-only
+        </small>
       </div>
       {state.canRetry ? (
         <button onClick={state.retry} type="button">
@@ -1106,13 +1186,18 @@ function DeliveryReadinessWorkspace({
 
 export function AssetInboxPage({ params }: ReadModelPageProps) {
   const projectId = getParam(params, "projectId");
-  const state = useBackendReadModel({
+  const baseState = useBackendReadModel({
     enabled: Boolean(projectId),
     idleMessage: "请先选择 projectId 加载素材收件箱。",
     load: ({ baseUrl, options }) =>
       fetchAssetInboxReadModel(baseUrl, projectId, { limit: 24 }, options),
     mockData: projectId ? createMockAssetInbox(projectId) : undefined,
     deps: [projectId]
+  });
+  const state = applyReadModelDebugState({
+    label: "Asset Inbox",
+    params,
+    state: baseState
   });
 
   return (
@@ -1139,13 +1224,18 @@ export function AssetInboxPage({ params }: ReadModelPageProps) {
 
 export function QcRetouchQueuePage({ params }: ReadModelPageProps) {
   const projectId = getParam(params, "projectId");
-  const state = useBackendReadModel({
+  const baseState = useBackendReadModel({
     enabled: Boolean(projectId),
     idleMessage: "请先选择 projectId 加载质检 / 精修队列。",
     load: ({ baseUrl, options }) =>
       fetchQcRetouchQueueReadModel(baseUrl, projectId, { limit: 24 }, options),
     mockData: projectId ? createMockQcRetouchQueue(projectId) : undefined,
     deps: [projectId]
+  });
+  const state = applyReadModelDebugState({
+    label: "QC / Retouch",
+    params,
+    state: baseState
   });
 
   return (
@@ -1169,7 +1259,7 @@ export function QcRetouchQueuePage({ params }: ReadModelPageProps) {
 
 export function ReviewGalleryPage({ params }: ReadModelPageProps) {
   const reviewSessionId = getParam(params, "reviewSessionId");
-  const state = useBackendReadModel({
+  const baseState = useBackendReadModel({
     enabled: Boolean(reviewSessionId),
     idleMessage: "请先选择 reviewSessionId 加载审核画廊。",
     load: ({ baseUrl, options }) =>
@@ -1178,6 +1268,11 @@ export function ReviewGalleryPage({ params }: ReadModelPageProps) {
       ? createMockReviewGallery(reviewSessionId)
       : undefined,
     deps: [reviewSessionId]
+  });
+  const state = applyReadModelDebugState({
+    label: "Review Gallery",
+    params,
+    state: baseState
   });
 
   return (
@@ -1204,7 +1299,7 @@ export function ReviewGalleryPage({ params }: ReadModelPageProps) {
 
 export function DeliveryReadinessPage({ params }: ReadModelPageProps) {
   const deliveryId = getParam(params, "deliveryId");
-  const state = useBackendReadModel({
+  const baseState = useBackendReadModel({
     enabled: Boolean(deliveryId),
     idleMessage: "请先选择 deliveryId 加载交付就绪。",
     load: ({ baseUrl, options }) =>
@@ -1213,6 +1308,11 @@ export function DeliveryReadinessPage({ params }: ReadModelPageProps) {
       ? createMockDeliveryReadiness(deliveryId)
       : undefined,
     deps: [deliveryId]
+  });
+  const state = applyReadModelDebugState({
+    label: "Delivery Readiness",
+    params,
+    state: baseState
   });
 
   return (

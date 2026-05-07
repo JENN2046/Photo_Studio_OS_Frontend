@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-Select the next P2 boundary-state task after metric strip extraction
+Select the next P2 local QA runway task after boundary-state rehearsal
 ```
 
 ---
@@ -58,7 +58,7 @@ Select the next P2 boundary-state task after metric strip extraction
 ## Last Completed Task
 
 ```text
-Locally committed 472d848: tightened mobile Command Center status bar
+Locally committed 078f894: shared read-model metric strip
 ```
 
 ---
@@ -66,7 +66,7 @@ Locally committed 472d848: tightened mobile Command Center status bar
 ## Last Validation
 
 ```text
-git diff --check passed; changed-file secret scan passed; npm run lint passed; npm run build passed; 390px browser check passed for four read-model pages after metric strip extraction with 3 metric cards each, no horizontal overflow, and console error count 0
+git diff --check passed; changed-file secret scan passed; npm run lint passed; npm run build passed; 390px browser check passed for read-model loading, error, missing-config, and idle states with no horizontal overflow and console error count 0
 ```
 
 ---
@@ -75,7 +75,7 @@ git diff --check passed; changed-file secret scan passed; npm run lint passed; n
 
 ```text
 Branch: main
-Worktree: intentionally editing ReadModelPages.tsx metric strip extraction and .agent_board after local 472d848
+Worktree: intentionally editing read-model boundary-state rehearsal and .agent_board after local 078f894
 ```
 
 ---
@@ -123,5 +123,5 @@ not blocked
 ## Next Action
 
 ```text
-Commit the metric strip batch locally if staged checks stay green, then continue to the next P2 safe task. Do not push without explicit user approval.
+Commit the boundary-state batch locally if staged checks stay green, then continue to the next P2 safe task. Do not push without explicit user approval.
 ```
