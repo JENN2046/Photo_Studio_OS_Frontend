@@ -6,7 +6,10 @@ import {
   fetchQcRetouchQueueReadModel,
   fetchReviewGalleryReadModel
 } from "../../api/backendReadModels";
-import type { BackendAssetInbox } from "../../api/backendReadModels";
+import type {
+  BackendAssetInbox,
+  BackendQcRetouchQueue
+} from "../../api/backendReadModels";
 import type { BackendReadModelState } from "./useBackendReadModel";
 import { useBackendReadModel } from "./useBackendReadModel";
 import {
@@ -16,6 +19,7 @@ import {
   createReviewGalleryViewModel,
   formatBytes,
   formatReason,
+  formatShortDateTime,
   formatSource,
   formatStatus,
   toneFromStatus,
@@ -50,6 +54,7 @@ interface ReadModelFrameProps {
 }
 
 type AssetInboxItem = BackendAssetInbox["items"][number];
+type QcRetouchItem = BackendQcRetouchQueue["items"][number];
 
 const routeLabels: Record<ReadModelRoute, string> = {
   "asset-inbox": "素材收件箱",
@@ -236,7 +241,9 @@ function assetTone(asset: AssetInboxItem): ReadModelTone {
   return toneFromStatus(asset.latestQc?.status ?? asset.status);
 }
 
-function assetShotLabel(asset: AssetInboxItem): string {
+function assetShotLabel(asset: {
+  shotRequirement?: { shotTypeCode: string; status: string };
+}): string {
   return asset.shotRequirement
     ? `${asset.shotRequirement.shotTypeCode} / ${formatStatus(
         asset.shotRequirement.status
@@ -244,7 +251,7 @@ function assetShotLabel(asset: AssetInboxItem): string {
     : "镜头需求待绑定";
 }
 
-function assetSkuLabel(asset: AssetInboxItem): string {
+function assetSkuLabel(asset: { sku?: { code: string; name: string } }): string {
   return asset.sku ? `${asset.sku.code} / ${asset.sku.name}` : "未绑定 SKU";
 }
 
@@ -429,6 +436,253 @@ function AssetInboxWorkspace({
   );
 }
 
+const qcResultLabels: Record<string, string> = {
+  focus: "焦点",
+  exposure: "曝光",
+  crop: "裁切",
+  color: "色彩",
+  binding: "绑定",
+  producer: "制片复核",
+  retouchLead: "精修负责人"
+};
+
+function formatQcResultKey(key: string): string {
+  return qcResultLabels[key] ?? formatStatus(key);
+}
+
+function formatQcResultValue(value: unknown): string {
+  return typeof value === "string" ? formatStatus(value) : String(value);
+}
+
+function qcItemTone(item: QcRetouchItem): ReadModelTone {
+  return toneFromStatus(item.qc.latestStatus ?? item.retouch?.status);
+}
+
+function QcResultList({
+  results
+}: {
+  results: Record<string, unknown>;
+}) {
+  const entries = Object.entries(results);
+
+  if (entries.length === 0) {
+    return <p className="qc-empty-note">暂无检查结果。</p>;
+  }
+
+  return (
+    <ul className="qc-result-list">
+      {entries.map(([key, value]) => (
+        <li key={key}>
+          <span>{formatQcResultKey(key)}</span>
+          <b>{formatQcResultValue(value)}</b>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function QcRetouchWorkspace({
+  model,
+  viewModel
+}: {
+  model: BackendQcRetouchQueue;
+  viewModel: ReadModelViewModel;
+}) {
+  const [selectedAssetId, setSelectedAssetId] = useState(
+    model.items[0]?.assetId ?? ""
+  );
+  const selectedItem = useMemo(
+    () =>
+      model.items.find((item) => item.assetId === selectedAssetId) ??
+      model.items[0],
+    [model.items, selectedAssetId]
+  );
+  const failedCount = model.items.filter(
+    (item) => item.qc.latestStatus === "failed"
+  ).length;
+  const warningCount = model.items.filter(
+    (item) => item.qc.latestStatus === "warning"
+  ).length;
+  const activeRetouchCount = model.items.filter(
+    (item) => item.retouch && item.retouch.status !== "done"
+  ).length;
+  const selectedTone = selectedItem ? qcItemTone(selectedItem) : "neutral";
+  const failedReasons = selectedItem?.qc.failedReasons ?? [];
+
+  return (
+    <section className="qc-retouch-workspace">
+      <section
+        className="read-model-metrics qc-retouch-metrics"
+        aria-label={`${viewModel.title} 指标面板`}
+      >
+        {viewModel.metrics.map((metric) => (
+          <article
+            className={`read-model-metric read-model-tone-${metric.tone}`}
+            key={metric.label}
+          >
+            <span>{metric.label}</span>
+            <strong>{metric.value}</strong>
+            <small>{metric.detail}</small>
+          </article>
+        ))}
+      </section>
+
+      <section className="qc-retouch-console" aria-label="QC 精修工作台">
+        <header className="qc-retouch-summary">
+          <div>
+            <p className="eyebrow">QC Queue</p>
+            <strong>{model.projectId}</strong>
+            <span>只读队列 / 不执行退回、补拍或审批写入</span>
+          </div>
+          <div className="qc-retouch-summary-stats">
+            <span>
+              <b>{failedCount}</b>
+              失败
+            </span>
+            <span>
+              <b>{warningCount}</b>
+              警告
+            </span>
+            <span>
+              <b>{activeRetouchCount}</b>
+              精修中
+            </span>
+          </div>
+        </header>
+
+        <div className="qc-retouch-body">
+          <section className="qc-queue-panel" aria-label="QC 队列">
+            <div className="asset-panel-head">
+              <div>
+                <p className="eyebrow">Retouch Queue</p>
+                <strong>{model.items.length} 个素材版本</strong>
+              </div>
+              <span>{model.page} / {model.limit}</span>
+            </div>
+            <div className="qc-queue-list">
+              {model.items.map((item) => {
+                const tone = qcItemTone(item);
+
+                return (
+                  <button
+                    aria-pressed={item.assetId === selectedItem?.assetId}
+                    className={`qc-queue-card read-model-tone-${tone}`}
+                    key={item.assetId}
+                    onClick={() => setSelectedAssetId(item.assetId)}
+                    type="button"
+                  >
+                    <span>
+                      <b>{item.assetId}</b>
+                      <i>{formatStatus(item.qc.latestStatus)}</i>
+                    </span>
+                    <strong>{assetSkuLabel(item)}</strong>
+                    <small>{assetShotLabel(item)}</small>
+                    <small>
+                      {item.retouch?.assignedTo ?? "负责人待定"} /{" "}
+                      {formatShortDateTime(item.retouch?.dueAt)}
+                    </small>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          <section className="qc-selected-panel" aria-label="选中 QC 详情">
+            {selectedItem ? (
+              <>
+                <div
+                  className={`qc-preview-visual read-model-tone-${selectedTone}`}
+                >
+                  <span>{formatStatus(selectedItem.qc.latestStatus)}</span>
+                  <strong>{selectedItem.assetId}</strong>
+                  <small>{selectedItem.previewKey ?? "预览键待生成"}</small>
+                </div>
+                <div className="qc-selected-copy">
+                  <p className="eyebrow">Selected QC</p>
+                  <h2>{assetSkuLabel(selectedItem)}</h2>
+                  <span>{assetShotLabel(selectedItem)}</span>
+                  <span>
+                    负责人：{selectedItem.retouch?.assignedTo ?? "待分配"}
+                  </span>
+                </div>
+                <div className="qc-suggestion-actions">
+                  <button disabled type="button">
+                    {formatStatus(selectedItem.qc.nextAction)}
+                  </button>
+                  <button disabled type="button">
+                    只读建议
+                  </button>
+                </div>
+              </>
+            ) : (
+              <p>暂无 QC 项可预览。</p>
+            )}
+          </section>
+        </div>
+      </section>
+
+      {selectedItem ? (
+        <section className="qc-retouch-detail-grid" aria-label="QC 只读详情">
+          <article
+            className={`read-model-detail read-model-tone-${toneFromStatus(
+              selectedItem.qc.latestStatus
+            )}`}
+          >
+            <span>失败原因</span>
+            <strong>
+              {failedReasons.length > 0
+                ? failedReasons.map((reason) => formatReason(reason)).join(" / ")
+                : "未发现失败项"}
+            </strong>
+            <small>严重度：{formatStatus(selectedItem.qc.latestStatus)}</small>
+          </article>
+          <article
+            className={`read-model-detail read-model-tone-${toneFromStatus(
+              selectedItem.retouch?.status
+            )}`}
+          >
+            <span>精修任务</span>
+            <strong>{formatStatus(selectedItem.retouch?.status)}</strong>
+            <small>
+              {selectedItem.retouch?.assignedTo ?? "负责人待定"} / 截止{" "}
+              {formatShortDateTime(selectedItem.retouch?.dueAt)}
+            </small>
+          </article>
+          <article className="qc-result-panel read-model-detail read-model-tone-neutral">
+            <span>技术检查</span>
+            <strong>自动检查结果</strong>
+            <QcResultList results={selectedItem.qc.technicalResults} />
+          </article>
+          <article className="qc-result-panel read-model-detail read-model-tone-neutral">
+            <span>人工检查</span>
+            <strong>制片与精修复核</strong>
+            <QcResultList results={selectedItem.qc.manualResults} />
+          </article>
+          <article
+            className={`read-model-detail qc-retouch-instructions read-model-tone-${selectedTone}`}
+          >
+            <span>返修说明</span>
+            <strong>{selectedItem.retouch?.instructions ?? "暂无返修说明"}</strong>
+            <small>
+              复杂度：{formatStatus(selectedItem.retouch?.complexity)} / 修订{" "}
+              {selectedItem.retouch?.revisionCount ?? 0} 次
+            </small>
+          </article>
+          <article
+            className={`read-model-detail read-model-tone-${toneFromStatus(
+              selectedItem.qc.nextAction
+            )}`}
+          >
+            <span>建议动作</span>
+            <strong>{formatStatus(selectedItem.qc.nextAction)}</strong>
+            <small>当前仅展示建议，业务写入未启用。</small>
+          </article>
+        </section>
+      ) : null}
+    </section>
+  );
+}
+
 export function AssetInboxPage({ params }: ReadModelPageProps) {
   const projectId = getParam(params, "projectId");
   const state = useBackendReadModel({
@@ -483,7 +737,8 @@ export function QcRetouchQueuePage({ params }: ReadModelPageProps) {
     >
       <ReadModelStateNotice state={state} idleLabel="请先选择 projectId" />
       {state.data ? (
-        <ReadModelDashboard
+        <QcRetouchWorkspace
+          model={state.data}
           viewModel={createQcRetouchQueueViewModel(state.data)}
         />
       ) : null}

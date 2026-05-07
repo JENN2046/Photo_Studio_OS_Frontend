@@ -171,7 +171,7 @@ function formatChecklistKey(value: string): string {
   return checklistMap[value] ?? formatStatus(value);
 }
 
-function formatShortDateTime(value: string | undefined): string {
+export function formatShortDateTime(value: string | undefined): string {
   if (!value) {
     return "时间待定";
   }
