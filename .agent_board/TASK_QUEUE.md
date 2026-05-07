@@ -10,7 +10,7 @@ It does not authorize remote writes, commits, pushes, deployments, backend chang
 ## Current Mission
 
 ```text
-P3.2 Command Center Runtime State Surface
+P3.3/P3.4/P3.5 Runtime QA Consolidation Batch
 ```
 
 Mode:
@@ -22,7 +22,7 @@ A4-Sustained Local Frontend Autopilot
 Goal:
 
 ```text
-Make Command Center runtime posture visible in the main cockpit without enabling writes, backend mutations, uploads, downloads, auth, storage, or production links.
+Share runtime chip rendering, centralize read-only QA fixtures, and harden invalid DEV debug-state fallback coverage without enabling writes, backend mutations, uploads, downloads, auth, storage, or production links.
 ```
 
 ---
@@ -83,7 +83,7 @@ none
 
 ### todo
 
-Current safe queue after starting P3.2 Command Center runtime state surface.
+Current safe queue after starting Batch A runtime QA consolidation.
 
 ```text
 none
@@ -246,6 +246,14 @@ none
 152. Added restrained Command Center runtime chip styling without changing the three-gauge visual anchor.
 153. Refreshed README.md and FRONTEND_V2_GAP_MAP.md with P3.2 runtime state facts.
 154. Extended read-only route QA to assert Command Center runtime chip copy across ready/loading/error states.
+155. Started Batch A P3.3/P3.4/P3.5 from clean local commit aad1371.
+156. Added shared RuntimeChipList for Command Center and read-model runtime/context bars.
+157. Added read-model route helpers for route IDs, labels, shared context query, and Command Center read-model href construction.
+158. Centralized Golden Product Loop QA IDs and route hashes in scripts/qa-readonly-fixtures.ps1.
+159. Updated route, boundary-state, and interaction QA scripts to reuse the shared read-only fixture.
+160. Extended route QA with invalid commandCenterState and readModelState fallback coverage.
+161. Refreshed README.md, FRONTEND_V2_GAP_MAP.md, and .agent_board for Batch A.
+162. Validated Batch A with scripts/validate-local.ps1 and scripts/qa-readonly-all.ps1.
 ```
 
 ### blocked

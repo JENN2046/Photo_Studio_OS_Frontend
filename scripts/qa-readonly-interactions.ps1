@@ -15,6 +15,8 @@ if (-not (Test-Path "package.json")) {
   exit 1
 }
 
+. (Join-Path $PSScriptRoot "qa-readonly-fixtures.ps1")
+
 $normalizedBaseUrl = $BaseUrl.TrimEnd("/")
 $playwrightPackage = "@playwright/cli"
 $npx = "npx"
@@ -60,13 +62,8 @@ function Invoke-QaCode {
 function Test-Tabs {
   param([hashtable]$Viewport)
 
-  $targetRoutes = @(
-    "asset-inbox",
-    "qc-retouch",
-    "review-gallery",
-    "delivery-readiness"
-  ) | ConvertTo-Json -Compress
-  $entryUrl = New-RouteUrl "#asset-inbox?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220"
+  $targetRoutes = $ReadModelRouteNames | ConvertTo-Json -Compress
+  $entryUrl = New-RouteUrl $ReadOnlyRouteHashes.AssetInbox
   $code = "async (page) => { const targets = $targetRoutes; const consoleErrors = []; page.removeAllListeners('console'); page.on('console', (message) => { if (message.type() === 'error') consoleErrors.push(message.text()); }); await page.goto('$entryUrl'); await page.waitForLoadState('domcontentloaded'); await page.waitForSelector('.read-model-tabs a', { timeout: 2000 }); const checks = []; for (const target of targets) { const clickResult = await page.evaluate((target) => { const links = Array.from(document.querySelectorAll('.read-model-tabs a')); const link = links.find((item) => (item.getAttribute('href') || '').startsWith('#' + target)); if (!link) return { target, clicked: false }; link.click(); return { target, clicked: true, href: link.getAttribute('href') }; }, target); await page.waitForTimeout(80); const state = await page.evaluate((target) => { const current = Array.from(document.querySelectorAll('.read-model-tabs a[aria-current=""page""]')).map((item) => item.getAttribute('href') || ''); const root = document.documentElement; return { target, hash: location.hash, current, overflow: root.scrollWidth > root.clientWidth + 1, scrollWidth: root.scrollWidth, clientWidth: root.clientWidth }; }, target); checks.push(Object.assign({}, clickResult, state)); } return { viewport: '$($Viewport.Name)', checks, consoleErrorCount: consoleErrors.length, consoleErrors }; }"
   $raw = Invoke-QaCode $code
   $result = $raw | ConvertFrom-Json
@@ -148,25 +145,25 @@ function Test-Workspace {
 $routes = @(
   @{
     Name = "asset-inbox"
-    Hash = "#asset-inbox?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220"
+    Hash = $ReadOnlyRouteHashes.AssetInbox
     CardSelector = ".asset-thumbnail"
     ActionSelector = ".asset-preview-actions"
   },
   @{
     Name = "qc-retouch"
-    Hash = "#qc-retouch?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220"
+    Hash = $ReadOnlyRouteHashes.QcRetouch
     CardSelector = ".qc-queue-card"
     ActionSelector = ".qc-suggestion-actions"
   },
   @{
     Name = "review-gallery"
-    Hash = "#review-gallery?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220"
+    Hash = $ReadOnlyRouteHashes.ReviewGallery
     CardSelector = ".review-card"
     ActionSelector = ".review-actions"
   },
   @{
     Name = "delivery-readiness"
-    Hash = "#delivery-readiness?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220"
+    Hash = $ReadOnlyRouteHashes.DeliveryReadiness
     CardSelector = ".delivery-artifact-card"
     ActionSelector = ".delivery-actions"
   }
@@ -194,7 +191,7 @@ try {
     throw
   }
 
-  Invoke-PlaywrightCli @("open", (New-RouteUrl "#asset-inbox?projectId=PRJ-128"))
+  Invoke-PlaywrightCli @("open", (New-RouteUrl $ReadOnlyRouteHashes.AssetInbox))
 
   $allPassed = $true
   foreach ($viewport in $viewports) {

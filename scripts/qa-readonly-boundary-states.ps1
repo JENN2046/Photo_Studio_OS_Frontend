@@ -15,6 +15,8 @@ if (-not (Test-Path "package.json")) {
   exit 1
 }
 
+. (Join-Path $PSScriptRoot "qa-readonly-fixtures.ps1")
+
 $normalizedBaseUrl = $BaseUrl.TrimEnd("/")
 $playwrightPackage = "@playwright/cli"
 $npx = "npx"
@@ -149,8 +151,8 @@ $states = @{
 $readModelPages = @(
   @{
     Name = "asset-inbox"
-    HashBase = "#asset-inbox?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220"
-    IdleHash = "#asset-inbox?reviewSessionId=REV-441&deliveryId=DEL-220"
+    HashBase = $ReadOnlyRouteHashes.AssetInbox
+    IdleHash = $ReadOnlyRouteHashes.AssetInboxIdle
     WorkspaceSelector = ".asset-inbox-console"
     LoadingMessage = "%E5%86%85%E9%83%A8%E8%B0%83%E8%AF%95%EF%BC%9AAsset%20Inbox%20%E5%8F%AA%E8%AF%BB%E6%A8%A1%E5%9E%8B%E4%BF%9D%E6%8C%81%E5%8A%A0%E8%BD%BD%E6%80%81%E3%80%82"
     ErrorMessage = "Simulated%20Asset%20Inbox%20read-model%20boundary%20fault"
@@ -161,8 +163,8 @@ $readModelPages = @(
   },
   @{
     Name = "qc-retouch"
-    HashBase = "#qc-retouch?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220"
-    IdleHash = "#qc-retouch?reviewSessionId=REV-441&deliveryId=DEL-220"
+    HashBase = $ReadOnlyRouteHashes.QcRetouch
+    IdleHash = $ReadOnlyRouteHashes.QcRetouchIdle
     WorkspaceSelector = ".qc-retouch-console"
     LoadingMessage = "%E5%86%85%E9%83%A8%E8%B0%83%E8%AF%95%EF%BC%9AQC%20%2F%20Retouch%20%E5%8F%AA%E8%AF%BB%E6%A8%A1%E5%9E%8B%E4%BF%9D%E6%8C%81%E5%8A%A0%E8%BD%BD%E6%80%81%E3%80%82"
     ErrorMessage = "Simulated%20QC%20%2F%20Retouch%20read-model%20boundary%20fault"
@@ -173,8 +175,8 @@ $readModelPages = @(
   },
   @{
     Name = "review-gallery"
-    HashBase = "#review-gallery?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220"
-    IdleHash = "#review-gallery?projectId=PRJ-128&deliveryId=DEL-220"
+    HashBase = $ReadOnlyRouteHashes.ReviewGallery
+    IdleHash = $ReadOnlyRouteHashes.ReviewGalleryIdle
     WorkspaceSelector = ".review-gallery-console"
     LoadingMessage = "%E5%86%85%E9%83%A8%E8%B0%83%E8%AF%95%EF%BC%9AReview%20Gallery%20%E5%8F%AA%E8%AF%BB%E6%A8%A1%E5%9E%8B%E4%BF%9D%E6%8C%81%E5%8A%A0%E8%BD%BD%E6%80%81%E3%80%82"
     ErrorMessage = "Simulated%20Review%20Gallery%20read-model%20boundary%20fault"
@@ -185,8 +187,8 @@ $readModelPages = @(
   },
   @{
     Name = "delivery-readiness"
-    HashBase = "#delivery-readiness?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220"
-    IdleHash = "#delivery-readiness?projectId=PRJ-128&reviewSessionId=REV-441"
+    HashBase = $ReadOnlyRouteHashes.DeliveryReadiness
+    IdleHash = $ReadOnlyRouteHashes.DeliveryReadinessIdle
     WorkspaceSelector = ".delivery-readiness-console"
     LoadingMessage = "%E5%86%85%E9%83%A8%E8%B0%83%E8%AF%95%EF%BC%9ADelivery%20Readiness%20%E5%8F%AA%E8%AF%BB%E6%A8%A1%E5%9E%8B%E4%BF%9D%E6%8C%81%E5%8A%A0%E8%BD%BD%E6%80%81%E3%80%82"
     ErrorMessage = "Simulated%20Delivery%20Readiness%20read-model%20boundary%20fault"
@@ -255,7 +257,7 @@ try {
     throw
   }
 
-  Invoke-PlaywrightCli @("open", (New-RouteUrl "#asset-inbox?projectId=PRJ-128"))
+  Invoke-PlaywrightCli @("open", (New-RouteUrl $ReadOnlyRouteHashes.AssetInbox))
 
   $allPassed = $true
   foreach ($viewport in $viewports) {

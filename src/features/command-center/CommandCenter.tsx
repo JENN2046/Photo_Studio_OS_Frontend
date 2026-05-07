@@ -2,6 +2,11 @@ import { useEffect, useState } from "react";
 import { GaugeCluster } from "../../components/gauges/GaugeCluster";
 import { AppShell } from "../../components/layout/AppShell";
 import {
+  RuntimeChipList,
+  type RuntimeChip
+} from "../../components/panels/RuntimeChipList";
+import { createReadModelHref } from "../read-models/readModelRoutes";
+import {
   getCommandCenterApprovalDetail,
   getCommandCenterRiskDetail
 } from "./commandCenterViewModel";
@@ -124,22 +129,6 @@ function getProjectPhaseLabel(projectId: string) {
   };
 
   return labels[projectId] ?? "1 / 3";
-}
-
-function createReadModelHref(
-  route: "asset-inbox" | "qc-retouch" | "review-gallery" | "delivery-readiness",
-  params: Record<string, string | undefined>
-) {
-  const searchParams = new URLSearchParams();
-
-  Object.entries(params).forEach(([key, value]) => {
-    if (value) {
-      searchParams.set(key, value);
-    }
-  });
-
-  const query = searchParams.toString();
-  return query ? `#${route}?${query}` : `#${route}`;
 }
 
 function getApprovalSeverity(state: "waiting" | "blocked" | "cleared") {
@@ -317,33 +306,47 @@ function CommandCenterRuntimeStrip({
   debugState: CommandCenterDebugState;
   variant?: "default" | "status";
 }) {
+  const chips: RuntimeChip[] = [
+    {
+      key: "source",
+      label: "读取源",
+      value: runtime.sourceLabel,
+      tone: runtime.source
+    },
+    {
+      key: "status",
+      label: "运行状态",
+      value: getCommandCenterStatusLabel(status),
+      tone: runtime.source
+    },
+    {
+      key: "transport",
+      label: "传输",
+      value: runtime.transportLabel
+    },
+    {
+      key: "boundary",
+      label: "写入边界",
+      value: runtime.boundaryLabel,
+      tone: "readonly"
+    }
+  ];
+
+  if (debugState !== "live") {
+    chips.push({
+      key: "debug",
+      label: "调试",
+      value: getDebugStateLabel(debugState),
+      tone: "debug"
+    });
+  }
+
   return (
     <section
       className={`command-runtime-strip command-runtime-strip-${variant}`}
       aria-label="命令中心只读运行状态"
     >
-      <span data-runtime-source={runtime.source}>
-        <b>读取源</b>
-        {runtime.sourceLabel}
-      </span>
-      <span data-runtime-source={runtime.source}>
-        <b>运行状态</b>
-        {getCommandCenterStatusLabel(status)}
-      </span>
-      <span>
-        <b>传输</b>
-        {runtime.transportLabel}
-      </span>
-      <span data-runtime-source="readonly">
-        <b>写入边界</b>
-        {runtime.boundaryLabel}
-      </span>
-      {debugState !== "live" ? (
-        <span data-runtime-source="debug">
-          <b>调试</b>
-          {getDebugStateLabel(debugState)}
-        </span>
-      ) : null}
+      <RuntimeChipList chips={chips} />
     </section>
   );
 }

@@ -17,7 +17,7 @@ A4-Sustained Local Frontend Autopilot
 ## Current Mission
 
 ```text
-P3.2 Command Center Runtime State Surface
+P3.3/P3.4/P3.5 Runtime QA Consolidation Batch
 ```
 
 ---
@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-P3.2 Command Center runtime state surface complete candidate
+Batch A runtime QA consolidation complete candidate
 ```
 
 ---
@@ -58,7 +58,7 @@ P3.2 Command Center runtime state surface complete candidate
 ## Last Completed Task
 
 ```text
-Committed 8c6b37d: exposed read model runtime state
+scripts/qa-readonly-all.ps1 passed after shared runtime chip renderer and QA fixture consolidation
 ```
 
 ---
@@ -66,7 +66,7 @@ Committed 8c6b37d: exposed read model runtime state
 ## Last Validation
 
 ```text
-scripts/validate-local.ps1 passed; scripts/qa-readonly-all.ps1 passed route, boundary-state, and interaction matrices, including Command Center ready/loading/error runtime chip checks; git diff --check and changed-file secret scan passed.
+scripts/validate-local.ps1 passed with lint/build/whitespace/changed-file secret scan after an elevated rerun for the known Vite/esbuild spawn EPERM sandbox limitation; scripts/qa-readonly-all.ps1 passed route, boundary-state, and interaction matrices, including 14-route invalid fallback coverage.
 ```
 
 ---
@@ -75,7 +75,7 @@ scripts/validate-local.ps1 passed; scripts/qa-readonly-all.ps1 passed route, bou
 
 ```text
 Branch: main
-Worktree: intentionally editing P3.2 Command Center runtime state source/docs/scripts/.agent_board after local 8c6b37d; ready for local commit
+Worktree: intentionally editing Batch A source/docs/scripts/.agent_board after local aad1371; ready for local commit
 ```
 
 ---
@@ -115,7 +115,7 @@ no
 ## Current Stop Status
 
 ```text
-P3.2 validation green; local commit allowed, then stop at remote push boundary
+Batch A validation green; local commit allowed, then stop at remote push boundary
 ```
 
 ---

@@ -10,10 +10,10 @@ Codex should update this after each meaningful batch of local frontend work.
 
 ```text
 Status: complete-candidate
-Updated: 2026-05-07 18:29 +0800
+Updated: 2026-05-07 19:15 +0800
 Repo: Photo_Studio_OS_Frontend
 Mode: A4-Sustained Local Frontend Autopilot
-Mission: P3.2 Command Center Runtime State Surface
+Mission: P3.3/P3.4/P3.5 Runtime QA Consolidation Batch
 ```
 
 ---
@@ -25,8 +25,8 @@ Fill from actual command output.
 ```text
 Workspace: A:\Photo_Studio_OS_Frontend
 Branch: main
-Worktree: intentionally editing P3.2 Command Center runtime state source/docs/scripts/.agent_board after local 8c6b37d; ready for local commit
-Diff stat: useCommandCenterSnapshot.ts, CommandCenter.tsx, global.css, qa-readonly-routes.ps1, README.md, FRONTEND_V2_GAP_MAP.md, and .agent_board
+Worktree: intentionally editing Batch A source/docs/scripts/.agent_board after local aad1371; final validation and local commit pending
+Diff stat: RuntimeChipList.tsx, CommandCenter.tsx, ReadModelPages.tsx, readModelRoutes.ts, global.css, readModelPages.css, QA scripts, README.md, FRONTEND_V2_GAP_MAP.md, and .agent_board
 Package manager: npm with package-lock.json
 Available scripts: dev, build, lint, preview
 ```
@@ -151,6 +151,13 @@ Rendered Command Center runtime chips in ready/loading/error states for read sou
 Added restrained Command Center runtime chip styling while preserving the three-gauge cockpit anchor.
 Updated README.md and FRONTEND_V2_GAP_MAP.md with P3.2 facts.
 Extended scripts/qa-readonly-routes.ps1 to assert Command Center runtime chip copy across ready/loading/error states.
+Committed aad1371: exposed Command Center runtime state.
+Started Batch A P3.3/P3.4/P3.5 from clean local commit aad1371.
+Added RuntimeChipList as a shared frontend-only runtime chip renderer.
+Moved read-model route IDs, labels, shared query preservation, and Command Center read-model href construction into readModelRoutes.ts.
+Centralized Golden Product Loop QA IDs and read-model route hashes in scripts/qa-readonly-fixtures.ps1.
+Updated route, boundary-state, and interaction QA scripts to reuse the shared fixture.
+Extended route QA to verify invalid commandCenterState and readModelState values fall back to the normal mock-first ready path.
 ```
 
 ---
@@ -165,10 +172,16 @@ docs/design/FRONTEND_V2_GAP_MAP.md
 .agent_board/VALIDATION_LOG.md
 .agent_board/HANDOFF.md
 README.md
-src/features/command-center/useCommandCenterSnapshot.ts
+src/components/panels/RuntimeChipList.tsx
 src/features/command-center/CommandCenter.tsx
+src/features/read-models/ReadModelPages.tsx
+src/features/read-models/readModelRoutes.ts
+src/features/read-models/readModelPages.css
 src/styles/global.css
+scripts/qa-readonly-fixtures.ps1
 scripts/qa-readonly-routes.ps1
+scripts/qa-readonly-boundary-states.ps1
+scripts/qa-readonly-interactions.ps1
 ```
 
 ---
@@ -338,6 +351,14 @@ Current P3.2 Command Center runtime state surface:
 - Route QA covered 12 routes at 1440x960 and 390x844, including Command Center ready/loading/error runtime chip checks.
 - Boundary-state QA covered 16 read-model cases at 1024x768 and 390x844.
 - Interaction QA covered read-model tabs, local selection, and disabled actions at 1440x960 and 390x844.
+
+Current Batch A runtime QA consolidation:
+- npm run lint passed after source/script changes.
+- scripts/validate-local.ps1 passed after an elevated rerun for the known Vite/esbuild spawn EPERM sandbox limitation.
+- scripts/qa-readonly-all.ps1 passed route, boundary-state, and interaction matrices.
+- Route QA covered 14 routes at 1440x960 and 390x844, including invalid commandCenterState and readModelState fallback checks.
+- Boundary-state QA covered 16 read-model cases at 1024x768 and 390x844.
+- Interaction QA covered read-model tabs, local selection, and disabled actions at 1440x960 and 390x844.
 ```
 
 ---
@@ -364,7 +385,7 @@ bash scripts/validate-local.sh cannot complete full validation in the current ba
 ## Remaining Safe Tasks
 
 ```text
-Next safe local P3 slice can continue after committing P3.2.
+Next safe local P3 slice can continue after committing Batch A.
 ```
 
 ---
@@ -384,6 +405,7 @@ No known uncommitted user-owned changes at the start of this run.
 Live backend toggle still requires configuring VITE_BACKEND_API_BASE_URL and running the backend stack.
 The QA script uses transient npx @playwright/cli execution and does not change dependency manifests.
 The boundary-state QA script uses transient npx @playwright/cli execution and does not change dependency manifests.
+The centralized QA fixture is local only and does not alter backend contracts or production IDs.
 The Bash validation helper source is updated, but full Bash execution is environment-blocked until bash/WSL Node matches Vite's required version range.
 ```
 
@@ -392,7 +414,7 @@ The Bash validation helper source is updated, but full Bash execution is environ
 ## Next Safe Task
 
 ```text
-Commit locally if final staged checks are green, then stop at remote push boundary.
+Run final validation; commit Batch A locally if final staged checks are green, then stop at remote push boundary.
 ```
 
 ---

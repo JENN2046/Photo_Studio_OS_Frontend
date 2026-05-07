@@ -42,6 +42,28 @@ Local helper candidates, if added and safe:
 ## Entries
 
 ```text
+## VALIDATION-20260507-1915
+
+Task: Batch A P3.3/P3.4/P3.5 runtime QA consolidation.
+Commands run:
+- npm run lint
+- powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1
+- powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-all.ps1
+Result: passed after elevated rerun for known sandbox EPERM on Vite/esbuild build and transient npx cache limits
+Failures:
+- Sandboxed validate-local.ps1 reached npm run build and failed with Vite/esbuild spawn EPERM.
+- Sandboxed qa-readonly-all.ps1 could not start transient npx @playwright/cli because the sandbox npm cache was only-if-cached and the package was unavailable.
+Fix attempted:
+- Re-ran the same local validation and browser QA commands outside the sandbox with approval.
+Re-run result:
+- validate-local.ps1 passed with lint, build, git diff --check, and changed-file secret scan.
+- qa-readonly-all.ps1 passed route, boundary-state, and interaction matrices.
+- Route QA covered 14 routes at 1440x960 and 390x844, including invalid commandCenterState and readModelState fallback checks.
+- Boundary-state QA covered 16 read-model cases at 1024x768 and 390x844.
+- Interaction QA covered tabs, local selection, and disabled read-only actions at 1440x960 and 390x844.
+Not validated: npm test is not defined; no backend live integration; no push/deploy validation
+Notes: The batch remains mock-first/read-only and does not change dependency manifests, backend fetcher wire shape, auth, upload, download, storage, production endpoints, or write actions.
+
 ## VALIDATION-20260505-2020
 
 Task: Command Center Alpha and Autopilot Rails Pack local validation.

@@ -10,7 +10,7 @@ Update this whenever work stops, pauses, blocks, or completes a meaningful batch
 
 ```text
 Status: complete-candidate
-Result: P3.2 Command Center Runtime State Surface is validated locally. Command Center now exposes read source, runtime status, transport posture, and mock-first/read-only boundary chips in ready/loading/error states.
+Result: Batch A P3.3/P3.4/P3.5 is validated locally. Runtime chips now share one renderer, read-model route helpers are centralized, QA scripts share one Golden Product Loop fixture, and route QA covers invalid DEV debug-state fallback.
 ```
 
 ---
@@ -56,7 +56,8 @@ Branch main was clean after local commit fc6b2a0.
 Branch main was clean after local commit 6605681.
 Branch main was clean after local commit 320b086.
 Branch main was clean after local commit 8c6b37d.
-Current batch intentionally edits P3.2 Command Center runtime state source/docs/.agent_board after local commit 8c6b37d.
+Branch main was clean after local commit aad1371.
+Current batch intentionally edits Batch A runtime QA consolidation source/docs/scripts/.agent_board after local commit aad1371.
 ```
 
 ---
@@ -141,6 +142,10 @@ Completed the first P1 frontend v2 realization slice:
 - P3.2 added frontend-only runtime view metadata to useCommandCenterSnapshot.
 - Command Center now shows runtime chips for read source, runtime status, transport posture, and mock-first/read-only write boundary in ready/loading/error states.
 - Route QA now asserts the Command Center runtime chip copy across ready/loading/error states.
+- Batch A P3.3/P3.4/P3.5 added RuntimeChipList as the shared runtime chip renderer.
+- Read-model route IDs, labels, shared query preservation, and Command Center read-model href construction now live in readModelRoutes.ts.
+- QA scripts now reuse scripts/qa-readonly-fixtures.ps1 for Golden Product Loop IDs and route hashes.
+- Route QA now includes invalid commandCenterState and readModelState fallback checks.
 ```
 
 ---
@@ -155,10 +160,16 @@ docs/design/FRONTEND_V2_GAP_MAP.md
 .agent_board/VALIDATION_LOG.md
 .agent_board/HANDOFF.md
 README.md
-src/features/command-center/useCommandCenterSnapshot.ts
+src/components/panels/RuntimeChipList.tsx
 src/features/command-center/CommandCenter.tsx
+src/features/read-models/ReadModelPages.tsx
+src/features/read-models/readModelRoutes.ts
+src/features/read-models/readModelPages.css
 src/styles/global.css
+scripts/qa-readonly-fixtures.ps1
 scripts/qa-readonly-routes.ps1
+scripts/qa-readonly-boundary-states.ps1
+scripts/qa-readonly-interactions.ps1
 ```
 
 ---
@@ -342,6 +353,12 @@ Current P3.2 Command Center runtime state surface:
 - scripts/validate-local.ps1 passed with lint/build/whitespace/changed-file secret scan.
 - scripts/qa-readonly-all.ps1 passed route, boundary-state, and interaction matrices.
 - Route QA now covers 12 routes at 1440x960 and 390x844, including Command Center ready/loading/error runtime chip checks.
+
+Current Batch A runtime QA consolidation:
+- npm run lint passed after source/script changes.
+- scripts/validate-local.ps1 passed after an elevated rerun for the known Vite/esbuild spawn EPERM sandbox limitation.
+- scripts/qa-readonly-all.ps1 passed route, boundary-state, and interaction matrices.
+- Route QA covered 14 routes at 1440x960 and 390x844, including invalid commandCenterState and readModelState fallback checks.
 ```
 
 ---
@@ -352,7 +369,7 @@ Current P3.2 Command Center runtime state surface:
 No npm test script is defined.
 No backend live integration request is planned for this mock-first UI batch.
 Full Bash helper validation awaits a compatible bash/WSL Node 20.19+ or 22.12+ environment and Rollup optional native package availability; the helper now reports that blocker before npm gates.
-No push is authorized for local commits after the last explicit push, including 8c6b37d and the current P3.2 batch, until the user explicitly asks for push.
+No push is authorized for local commits after the last explicit push, including aad1371 and the current Batch A work, until the user explicitly asks for push.
 ```
 
 ---
@@ -400,7 +417,7 @@ none for the next safe local frontend slice.
 ## Next Safe Action
 
 ```text
-Next safe action: commit P3.2 locally if final staged checks remain green, then wait for explicit push approval.
+Next safe action: commit Batch A locally if final staged checks remain green, then wait for explicit push approval.
 ```
 
 ---
@@ -412,7 +429,7 @@ Next safe action: commit P3.2 locally if final staged checks remain green, then 
 
 读取 AGENTS.md 和 .agent_board/*。
 继续 A4-Sustained Local Frontend Autopilot。
-先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的 P3.2 Command Center Runtime State Surface 队列继续。
+先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的 Batch A runtime QA consolidation 队列继续。
 保持 mock-first/read-only，不碰 backend、root control repo、依赖、.env、deploy、生产服务、上传/下载/auth/storage/write actions。
 按当前持续推进节奏，小批次验证后可以本地 commit；push 只有用户明确说 push 才执行。
 用中文汇报。

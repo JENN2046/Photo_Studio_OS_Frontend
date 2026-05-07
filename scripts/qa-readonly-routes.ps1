@@ -15,6 +15,8 @@ if (-not (Test-Path "package.json")) {
   exit 1
 }
 
+. (Join-Path $PSScriptRoot "qa-readonly-fixtures.ps1")
+
 $normalizedBaseUrl = $BaseUrl.TrimEnd("/")
 $playwrightPackage = "@playwright/cli"
 $npx = "npx"
@@ -103,21 +105,27 @@ function Test-Route {
 $routes = @(
   @{
     Name = "command-center"
-    Hash = "#"
+    Hash = $ReadOnlyRouteHashes.CommandCenter
     Selector = ".cockpit-command-center"
     ExpectedEncoded = @("SKU%20%E8%A6%86%E7%9B%96%E7%8E%87", "%E5%B7%A5%E4%BD%9C%E5%AE%A4%E5%B0%B1%E7%BB%AA%E5%BA%A6", "%E9%BB%84%E9%87%91%E9%93%BE%E8%B7%AF", "Agent%20%E5%B7%A1%E6%A3%80", "%E8%AF%BB%E5%8F%96%E6%BA%90", "%E8%BF%90%E8%A1%8C%E7%8A%B6%E6%80%81", "%E4%BC%A0%E8%BE%93", "%E5%86%99%E5%85%A5%E8%BE%B9%E7%95%8C", "mock-first%20%2F%20read-only")
   },
   @{
     Name = "command-center-loading"
-    Hash = "?commandCenterState=loading#"
+    Hash = $ReadOnlyRouteHashes.CommandCenterLoading
     Selector = ".status-command-loading"
     ExpectedEncoded = @("%E9%81%A5%E6%B5%8B%E5%AF%B9%E9%BD%90%E4%B8%AD", "%E8%AF%BB%E5%8F%96%E6%BA%90", "%E8%BF%90%E8%A1%8C%E7%8A%B6%E6%80%81", "DEV%20%E8%B0%83%E8%AF%95", "%E5%91%BD%E4%BB%A4%E4%B8%AD%E5%BF%83%E8%BE%B9%E7%95%8C%E6%80%81%E6%BC%94%E7%BB%83", "mock-first%20%2F%20read-only")
   },
   @{
     Name = "command-center-error"
-    Hash = "?commandCenterState=error#"
+    Hash = $ReadOnlyRouteHashes.CommandCenterError
     Selector = ".status-command-error"
     ExpectedEncoded = @("%E5%8F%AA%E8%AF%BB%E4%BF%9D%E7%95%99%E6%80%81", "%E8%AF%BB%E5%8F%96%E6%BA%90", "%E8%BF%90%E8%A1%8C%E7%8A%B6%E6%80%81", "DEV%20%E8%B0%83%E8%AF%95", "%E5%91%BD%E4%BB%A4%E4%B8%AD%E5%BF%83%E8%BE%B9%E7%95%8C%E6%80%81%E6%BC%94%E7%BB%83", "mock-first%20%2F%20read-only")
+  },
+  @{
+    Name = "command-center-invalid-state"
+    Hash = $ReadOnlyRouteHashes.CommandCenterInvalidState
+    Selector = ".cockpit-command-center"
+    ExpectedEncoded = @("SKU%20%E8%A6%86%E7%9B%96%E7%8E%87", "%E6%9C%AC%E5%9C%B0%E6%A8%A1%E6%8B%9F", "%E8%BF%90%E8%A1%8C%E7%8A%B6%E6%80%81", "mock-first%20%2F%20read-only")
   },
   @{
     Name = "command-risk"
@@ -156,25 +164,31 @@ $routes = @(
   },
   @{
     Name = "asset-inbox"
-    Hash = "#asset-inbox?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220"
+    Hash = $ReadOnlyRouteHashes.AssetInbox
     Selector = ".asset-inbox-console"
     ExpectedEncoded = @("%E7%B4%A0%E6%9D%90%E6%94%B6%E4%BB%B6%E7%AE%B1", "%E7%BB%91%E5%AE%9A%E7%8A%B6%E6%80%81", "%E4%B8%8A%E4%BC%A0%E6%9C%AA%E5%90%AF%E7%94%A8", "%E4%B8%8B%E8%BD%BD%E6%9C%AA%E5%90%AF%E7%94%A8")
   },
   @{
+    Name = "asset-inbox-invalid-state"
+    Hash = $ReadOnlyRouteHashes.AssetInboxInvalidState
+    Selector = ".asset-inbox-console"
+    ExpectedEncoded = @("%E7%B4%A0%E6%9D%90%E6%94%B6%E4%BB%B6%E7%AE%B1", "%E6%9C%AC%E5%9C%B0%E6%A8%A1%E6%8B%9F", "%E5%B7%B2%E5%B0%B1%E7%BB%AA", "mock-first%20%2F%20read-only")
+  },
+  @{
     Name = "qc-retouch"
-    Hash = "#qc-retouch?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220"
+    Hash = $ReadOnlyRouteHashes.QcRetouch
     Selector = ".qc-retouch-console"
     ExpectedEncoded = @("%E8%B4%A8%E6%A3%80%20%2F%20%E7%B2%BE%E4%BF%AE%E9%98%9F%E5%88%97", "%E6%8A%80%E6%9C%AF%E6%A3%80%E6%9F%A5", "%E9%80%80%E5%9B%9E%E7%B2%BE%E4%BF%AE", "%E5%8F%AA%E8%AF%BB%E5%BB%BA%E8%AE%AE")
   },
   @{
     Name = "review-gallery"
-    Hash = "#review-gallery?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220"
+    Hash = $ReadOnlyRouteHashes.ReviewGallery
     Selector = ".review-gallery-console"
     ExpectedEncoded = @("%E5%AE%A1%E6%A0%B8%E7%94%BB%E5%BB%8A", "%E5%AE%A2%E6%88%B7%E5%8F%8D%E9%A6%88", "%E5%85%AC%E5%BC%80%E5%AE%A1%E6%A0%B8%E6%9C%AA%E5%90%AF%E7%94%A8", "%E5%8F%8D%E9%A6%88%E5%86%99%E5%85%A5%E6%9C%AA%E5%90%AF%E7%94%A8")
   },
   @{
     Name = "delivery-readiness"
-    Hash = "#delivery-readiness?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220"
+    Hash = $ReadOnlyRouteHashes.DeliveryReadiness
     Selector = ".delivery-readiness-console"
     ExpectedEncoded = @("%E4%BA%A4%E4%BB%98%E5%B0%B1%E7%BB%AA", "%E5%B0%B1%E7%BB%AA%E6%A3%80%E6%9F%A5", "%E4%B8%8B%E8%BD%BD%E6%9C%AA%E5%BC%80%E6%94%BE", "%E5%A4%96%E9%83%A8%E4%BA%A4%E4%BB%98%E6%9C%AA%E5%90%AF%E7%94%A8")
   }
@@ -202,7 +216,7 @@ try {
     throw
   }
 
-  Invoke-PlaywrightCli @("open", (New-RouteUrl "#"))
+  Invoke-PlaywrightCli @("open", (New-RouteUrl $ReadOnlyRouteHashes.CommandCenter))
 
   $allPassed = $true
   foreach ($viewport in $viewports) {

@@ -1,6 +1,10 @@
 import { type ReactNode } from "react";
 import { AppShell } from "../../components/layout/AppShell";
 import {
+  RuntimeChipList,
+  type RuntimeChip
+} from "../../components/panels/RuntimeChipList";
+import {
   fetchAssetInboxReadModel,
   fetchDeliveryReadinessReadModel,
   fetchQcRetouchQueueReadModel,
@@ -29,17 +33,18 @@ import {
   createMockQcRetouchQueue,
   createMockReviewGallery
 } from "./readModelMocks";
+import {
+  getReadModelSharedQuery,
+  readModelRouteIds,
+  readModelRouteLabels,
+  type ReadModelRoute
+} from "./readModelRoutes";
 import "./readModelPages.css";
 
 export interface ReadModelPageProps {
   params: URLSearchParams;
 }
 
-type ReadModelRoute =
-  | "asset-inbox"
-  | "qc-retouch"
-  | "review-gallery"
-  | "delivery-readiness";
 type ReadModelDebugState = "live" | "loading" | "error" | "missing-config";
 
 interface ReadModelFrameProps {
@@ -53,37 +58,8 @@ interface ReadModelFrameProps {
   status: BackendReadModelState<unknown>["status"];
 }
 
-const routeLabels: Record<ReadModelRoute, string> = {
-  "asset-inbox": "素材收件箱",
-  "qc-retouch": "质检 / 精修",
-  "review-gallery": "审核画廊",
-  "delivery-readiness": "交付就绪"
-};
-
 function getParam(params: URLSearchParams, key: string): string {
   return params.get(key)?.trim() ?? "";
-}
-
-function getSharedQuery(params: URLSearchParams): string {
-  const next = new URLSearchParams();
-  const projectId = getParam(params, "projectId");
-  const reviewSessionId = getParam(params, "reviewSessionId");
-  const deliveryId = getParam(params, "deliveryId");
-
-  if (projectId) {
-    next.set("projectId", projectId);
-  }
-
-  if (reviewSessionId) {
-    next.set("reviewSessionId", reviewSessionId);
-  }
-
-  if (deliveryId) {
-    next.set("deliveryId", deliveryId);
-  }
-
-  const query = next.toString();
-  return query ? `?${query}` : "";
 }
 
 function getReadModelDebugState(params: URLSearchParams): ReadModelDebugState {
@@ -169,7 +145,7 @@ function ReadModelFrame({
   runtime,
   status
 }: ReadModelFrameProps) {
-  const sharedQuery = getSharedQuery(params);
+  const sharedQuery = getReadModelSharedQuery(params);
 
   return (
     <AppShell>
@@ -181,13 +157,13 @@ function ReadModelFrame({
             <p>{deck}</p>
           </div>
           <nav className="read-model-tabs" aria-label="只读模型场景">
-            {(Object.keys(routeLabels) as ReadModelRoute[]).map((route) => (
+            {readModelRouteIds.map((route) => (
               <a
                 aria-current={route === activeRoute ? "page" : undefined}
                 href={`#${route}${sharedQuery}`}
                 key={route}
               >
-                {routeLabels[route]}
+                {readModelRouteLabels[route]}
               </a>
             ))}
           </nav>
@@ -227,39 +203,48 @@ function ReadModelContextBar({
     ready: "已就绪",
     error: "读取失败"
   };
+  const chips: RuntimeChip[] = [
+    ...(contextItems.length > 0
+      ? contextItems.map((item) => ({
+          key: item.label,
+          label: item.label,
+          value: item.value
+        }))
+      : [
+          {
+            key: "context",
+            label: "上下文",
+            value: "等待选择生产对象"
+          }
+        ]),
+    {
+      key: "source",
+      label: "读取源",
+      value: runtime.sourceLabel
+    },
+    {
+      key: "status",
+      label: "运行状态",
+      value: statusLabels[status],
+      tone: runtime.source
+    },
+    {
+      key: "transport",
+      label: "传输",
+      value: runtime.transportLabel
+    },
+    {
+      key: "boundary",
+      label: "写入边界",
+      value: runtime.boundaryLabel,
+      tone: "readonly"
+    }
+  ];
 
   return (
     <section className="read-model-context-bar" aria-label="生产链路上下文">
       <div>
-        {contextItems.length > 0 ? (
-          contextItems.map((item) => (
-            <span key={item.label}>
-              <b>{item.label}</b>
-              {item.value}
-            </span>
-          ))
-        ) : (
-          <span>
-            <b>上下文</b>
-            等待选择生产对象
-          </span>
-        )}
-        <span>
-          <b>读取源</b>
-          {runtime.sourceLabel}
-        </span>
-        <span data-runtime-source={runtime.source}>
-          <b>运行状态</b>
-          {statusLabels[status]}
-        </span>
-        <span>
-          <b>传输</b>
-          {runtime.transportLabel}
-        </span>
-        <span data-runtime-source="readonly">
-          <b>写入边界</b>
-          {runtime.boundaryLabel}
-        </span>
+        <RuntimeChipList chips={chips} />
       </div>
       <a href="#">返回命令中心</a>
     </section>

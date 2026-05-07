@@ -112,6 +112,9 @@ Recent local validation:
   boundary.
 - Command Center exposes matching runtime chips for read source, request state,
   transport posture, and the `mock-first / read-only` write boundary.
+- Command Center and read-model pages share the same runtime chip renderer, and
+  browser QA uses one Golden Product Loop fixture for `PRJ-128`, `REV-441`, and
+  `DEL-220`.
 
 ## Frontend v2 Local QA Runway
 
@@ -148,9 +151,10 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-interactions.ps1
 The QA scripts use transient `npx --package @playwright/cli` execution without
 changing `package.json` or `package-lock.json`. The full QA script runs the
 route, boundary-state, and interaction matrices in sequence. The route matrix
-checks Command Center scenes plus the four read-model hash pages at `1440x960` and `390x844`
-for expected Chinese copy, Command Center runtime chips, required workspace
-selectors, Command Center `aria-current` state, console errors, and horizontal overflow. The boundary
+checks Command Center scenes plus the four read-model hash pages at `1440x960`
+and `390x844` for expected Chinese copy, runtime chips, invalid debug-state
+fallbacks, required workspace selectors, Command Center `aria-current` state,
+console errors, and horizontal overflow. The boundary
 matrix checks loading, error, missing-config, and missing-id idle states for all
 four read-model pages at `1024x768` and `390x844`. The interaction matrix checks
 read-model tab switching, local selection state, and disabled read-only action
@@ -200,6 +204,8 @@ DEV-only read-model boundary rehearsals:
 - Add `readModelState=loading` to a read-model hash query to hold the loading state.
 - Add `readModelState=error` to rehearse the read-only error state.
 - Add `readModelState=missing-config` to rehearse a missing backend read-model config.
+- Unknown `readModelState` values should fall back to the normal mock-first
+  ready path.
 - Omit the required id such as `deliveryId` on `#delivery-readiness` to check idle context handling.
 - Run `scripts\qa-readonly-boundary-states.ps1` to verify these states across the four read-model pages.
 
@@ -210,8 +216,11 @@ DEV-only Command Center boundary rehearsals:
 
 - Add `commandCenterState=loading` to rehearse the Command Center loading state.
 - Add `commandCenterState=error` to rehearse the Command Center read-boundary error state.
+- Unknown `commandCenterState` values should fall back to the normal mock-first
+  cockpit path.
 - The Command Center runtime chips should remain visible in ready, loading, and error states.
-- `scripts\qa-readonly-routes.ps1` checks the ready, loading, and error runtime chip copy.
+- `scripts\qa-readonly-routes.ps1` checks ready, loading, error, and invalid
+  debug-state fallback runtime chip copy.
 
 ## Read-only Contract
 

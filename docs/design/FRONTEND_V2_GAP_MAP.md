@@ -47,6 +47,9 @@ As of the current Frontend v2 local state, the read-only production loop has mov
 - P2.20 adds `scripts/qa-readonly-all.ps1` as a single local browser-QA entry point and makes both validation helpers call it in browser-QA mode.
 - P3.1 read-model runtime state surface now exposes visible chips for read source, runtime status, transport posture, and `mock-first / read-only` write boundary across all four read-model pages.
 - P3.2 Command Center runtime state surface now exposes the same read source, runtime status, transport posture, and `mock-first / read-only` write boundary chips on the main cockpit, including DEV-only loading/error rehearsals; route QA now asserts the cockpit runtime chip copy across ready/loading/error states.
+- P3.3 shared runtime chip rendering now keeps Command Center and read-model runtime posture chips on the same frontend-only renderer and tone rules.
+- P3.4 read-only QA scripts now share one Golden Product Loop fixture for `PRJ-128`, `REV-441`, and `DEL-220`.
+- P3.5 route QA now checks invalid DEV debug query values fall back to the normal mock-first ready path without console errors or overflow.
 - `--ps-*` token aliases and text-color compatibility aliases exist in `src/styles/tokens.css`.
 - Current long-track focus is post-RC read-only UX tightening, reusable local QA, and optional backend read-model smoke testing only when a local backend base URL is explicitly configured.
 
@@ -92,8 +95,8 @@ Image references:
 | Labels | Command Center and read-model visible copy are Chinese-first; technical IDs such as `SKU`, `QC`, `CR3`, and backend query names remain intentional. | `src/features/command-center/commandCenterViewModel.ts`, `src/features/read-models/readModelViewModels.ts` |
 | Visual tokens | `--ps-*` bridge tokens and read-model text aliases are available for new v2 work. | `src/styles/tokens.css` |
 | Dedicated pages | Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness are dedicated read-only hash scenes with mock-first fallback. | `src/features/read-models/ReadModelPages.tsx` |
-| Runtime state surface | Command Center and the four read-model pages show source/status/transport/write-boundary chips from their frontend runtime hooks. | `src/features/command-center/useCommandCenterSnapshot.ts`, `src/features/command-center/CommandCenter.tsx`, `src/features/read-models/useBackendReadModel.ts`, `src/features/read-models/ReadModelPages.tsx` |
-| RC QA posture | Command Center entry clicks, keyboard focus visibility, five-page responsive matrix, read-model boundary states, scripted read-only route QA, scripted boundary-state QA, scripted interaction QA, full read-only browser QA aggregation, and the local validation orchestrator have current evidence. | `.agent_board/VALIDATION_LOG.md`, `scripts/validate-local.ps1`, `scripts/validate-local.sh`, `scripts/qa-readonly-all.ps1`, `scripts/qa-readonly-routes.ps1`, `scripts/qa-readonly-boundary-states.ps1`, `scripts/qa-readonly-interactions.ps1` |
+| Runtime state surface | Command Center and the four read-model pages show source/status/transport/write-boundary chips from their frontend runtime hooks through a shared renderer. | `src/components/panels/RuntimeChipList.tsx`, `src/features/command-center/useCommandCenterSnapshot.ts`, `src/features/command-center/CommandCenter.tsx`, `src/features/read-models/useBackendReadModel.ts`, `src/features/read-models/ReadModelPages.tsx` |
+| RC QA posture | Command Center entry clicks, keyboard focus visibility, five-page responsive matrix, read-model boundary states, scripted read-only route QA, scripted boundary-state QA, scripted interaction QA, full read-only browser QA aggregation, shared Golden Loop QA fixtures, and the local validation orchestrator have current evidence. | `.agent_board/VALIDATION_LOG.md`, `scripts/validate-local.ps1`, `scripts/validate-local.sh`, `scripts/qa-readonly-all.ps1`, `scripts/qa-readonly-fixtures.ps1`, `scripts/qa-readonly-routes.ps1`, `scripts/qa-readonly-boundary-states.ps1`, `scripts/qa-readonly-interactions.ps1` |
 
 ## Overall Gaps
 
@@ -120,7 +123,7 @@ Image references:
 | Command Center side-detail view model. | Risk detail and approval detail derivation moved out of the component and into `commandCenterViewModel.ts`. | Extend stable mapping in the view-model layer when adding risk IDs or approval types. | P2.9 done |
 | Read-model workspace view model cleanup. | Asset label/tone, QC result label/value, review tone, delivery checklist labels, and delivery artifact derivation moved out of `ReadModelPages.tsx`. | Keep page components focused on local selection state and rendering; add future read-model derivation to `readModelViewModels.ts`. | P2.11 done |
 | Read-model workspace component split. | Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness workspace components moved out of `ReadModelPages.tsx` into `readModelWorkspaces.tsx`. | Keep route/data-state orchestration in `ReadModelPages.tsx`; add future workspace-only UI changes in `readModelWorkspaces.tsx`. | P2.12 done |
-| Scripted read-only route QA. | Local QA script checks 10 hash routes across desktop and 390px for Chinese copy, required selectors, rail active state, console errors, and horizontal overflow. | Run `scripts/qa-readonly-routes.ps1` after route, layout, rail, or read-model page changes while the Vite server is running. | P2.13 done |
+| Scripted read-only route QA. | Local QA script checks Command Center scenes, read-model pages, runtime chips, rail active state, invalid DEV debug fallback, console errors, and horizontal overflow across desktop and 390px. | Run `scripts/qa-readonly-routes.ps1` after route, layout, rail, runtime-state, or read-model page changes while the Vite server is running. | P3.5 done |
 | Scripted boundary-state QA. | Local QA script checks all four read-model pages across loading, error, missing-config, and missing-id idle states at 1024px and 390px. | Run `scripts/qa-readonly-boundary-states.ps1` after read-model state, shell, notice, or responsive style changes. | P2.14 done |
 | Local validation orchestration. | `scripts/validate-local.ps1` now performs changed-file secret scan and can run both browser QA matrices via `-IncludeBrowserQa`. | Use default mode for fast local gates and `-IncludeBrowserQa` before larger read-only UI commits when the dev server is running. | P2.15 done |
 | Scripted interaction QA. | Local QA script checks read-model tab switching, local card selection, and disabled read-only actions at desktop and 390px. | Run through `scripts/qa-readonly-interactions.ps1` or the full validation helper after read-model interaction changes. | P2.17 done |
@@ -129,6 +132,9 @@ Image references:
 | Full browser QA aggregation. | `scripts/qa-readonly-all.ps1` runs the route, boundary-state, and interaction matrices in sequence; both validation helpers use it for browser-QA mode. | Run the aggregate script before broad read-only UI handoffs instead of remembering three separate commands. | P2.20 done |
 | Read-model runtime state surface. | Context bar now shows read source, runtime status, transport posture, and read-only write boundary across all four read-model scenes. | Keep future runtime states derived in `useBackendReadModel`; do not leak production URLs or secrets into UI. | P3.1 done |
 | Command Center runtime state surface. | Main cockpit now shows read source, runtime status, transport posture, and read-only write boundary in ready/loading/error states. | Keep future Command Center runtime posture derived in `useCommandCenterSnapshot`; do not expose backend URLs or secret-bearing config. | P3.2 done |
+| Shared runtime chip renderer. | Command Center and read-model runtime/context bars now use one `RuntimeChipList` component and shared tone rules. | Extend the shared chip shape only when a real runtime-state field appears; avoid page-local duplicate chip markup. | P3.3 done |
+| Golden Loop QA fixtures. | Route, boundary-state, and interaction QA scripts now reuse one local fixture for Golden Product Loop IDs and read-model hashes. | Update `scripts/qa-readonly-fixtures.ps1` first when the canonical local fixture IDs change. | P3.4 done |
+| Invalid debug-state fallback QA. | Route QA covers unknown `commandCenterState` and `readModelState` values falling back to normal mock-first ready screens. | Keep unknown DEV query values non-destructive and read-only. | P3.5 done |
 | Optional backend read-model smoke. | Still intentionally not run in this frontend-only mock-first batch. | Run only with a deliberately configured local `VITE_BACKEND_API_BASE_URL` outside this repo. | P2 blocked |
 
 ## Command Center Gap Table
@@ -272,8 +278,9 @@ Use this as the first copy alignment pass before creating more pages.
 23. Completed: P2.15 local validation orchestration with optional browser QA aggregation.
 24. Completed: P2.16/P2.17 Bash validation helper parity plus read-model interaction QA.
 25. Completed: P3.1/P3.2 visible runtime state surfaces for read-model pages and Command Center.
-26. Next: optional backend read-model smoke remains blocked until a local backend base URL is intentionally configured outside this repo.
-27. Always run `scripts/validate-local.ps1`; add `-IncludeBrowserQa` after route/layout/read-model changes while the dev server is running.
+26. Completed: P3.3/P3.4/P3.5 shared runtime chip renderer, centralized Golden Loop QA fixtures, and invalid debug-state fallback route QA.
+27. Next: optional backend read-model smoke remains blocked until a local backend base URL is intentionally configured outside this repo.
+28. Always run `scripts/validate-local.ps1`; add `-IncludeBrowserQa` after route/layout/read-model changes while the dev server is running.
 
 ## Stop Conditions
 
