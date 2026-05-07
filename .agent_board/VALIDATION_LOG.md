@@ -678,6 +678,31 @@ Notes:
 - No package manifest or lockfile changed.
 ```
 
+```text
+## VALIDATION-20260507-READONLY-BOUNDARY-QA-SCRIPT
+
+Task: Add a repeatable local read-model boundary-state QA matrix script.
+Commands run:
+- powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-boundary-states.ps1
+- powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-routes.ps1
+- git diff --check
+- changed-file secret scan on current diff
+- npm run lint
+- npm run build
+Result: passed
+Failures: none
+Fix attempted: not applicable
+Re-run result: not applicable
+Not validated:
+- No npm test script is defined.
+- No backend live integration was run; frontend remains mock-first unless VITE_BACKEND_API_BASE_URL is configured.
+Notes:
+- The script covers Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness.
+- It checks loading, error, missing-config, and missing required id idle states at 1024x768 and 390x844.
+- Checks include required state selectors, expected Chinese copy, retry button posture, absence of workspace content during boundary states, console errors, and horizontal overflow.
+- No package manifest or lockfile changed.
+```
+
 ---
 
 ## Entry Template

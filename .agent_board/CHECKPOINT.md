@@ -241,6 +241,18 @@ Current P2.13 read-only route QA matrix automation:
 - changed-file secret scan passed.
 - npm run lint passed.
 - npm run build passed.
+
+Current P2.14 read-model boundary-state QA automation:
+- Added scripts/qa-readonly-boundary-states.ps1 as a local Playwright CLI boundary-state matrix without adding project dependencies.
+- The script covers Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness.
+- The script checks loading, error, missing-config, and missing required id idle states at 1024x768 and 390x844.
+- Checks include required state selectors, expected Chinese copy, retry button posture, absence of workspace content during boundary states, console errors, and horizontal overflow.
+- scripts/qa-readonly-boundary-states.ps1 passed across all 32 state/viewport checks.
+- scripts/qa-readonly-routes.ps1 passed after the boundary-state script was added.
+- git diff --check passed.
+- changed-file secret scan passed.
+- npm run lint passed.
+- npm run build passed.
 ```
 
 ---
@@ -285,6 +297,7 @@ none
 No known uncommitted user-owned changes at the start of this run.
 Live backend toggle still requires configuring VITE_BACKEND_API_BASE_URL and running the backend stack.
 The QA script uses transient npx @playwright/cli execution and does not change dependency manifests.
+The boundary-state QA script uses transient npx @playwright/cli execution and does not change dependency manifests.
 ```
 
 ---
@@ -292,7 +305,7 @@ The QA script uses transient npx @playwright/cli execution and does not change d
 ## Next Safe Task
 
 ```text
-Finish P2.13 validation, commit locally if green, then stop at remote push boundary.
+Finish P2.14 validation, commit locally if green, then stop at remote push boundary.
 ```
 
 ---

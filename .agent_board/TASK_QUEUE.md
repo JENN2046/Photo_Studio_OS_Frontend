@@ -10,7 +10,7 @@ It does not authorize remote writes, commits, pushes, deployments, backend chang
 ## Current Mission
 
 ```text
-P2.13 Read-only Route QA Matrix Automation
+P2.14 Read-model Boundary State QA Automation
 ```
 
 Mode:
@@ -22,7 +22,7 @@ A4-Sustained Local Frontend Autopilot
 Goal:
 
 ```text
-Make the post-RC read-only browser route checks repeatable through a local script that covers Command Center scenes and the four read-model workspaces without adding project dependencies or enabling backend/write behavior.
+Make the DEV-only read-model loading/error/missing-config/missing-id idle checks repeatable through a local script without adding project dependencies or enabling backend/write behavior.
 ```
 
 ---
@@ -83,7 +83,7 @@ none
 
 ### todo
 
-Current safe queue after starting P2.13 scripted route QA.
+Current safe queue after starting P2.14 scripted boundary-state QA.
 
 ```text
 none
@@ -199,6 +199,13 @@ none
 105. Added a short selector wait after hash navigation so React hash-scene updates are checked after render instead of racing the route transition.
 106. Ran scripts/qa-readonly-routes.ps1 successfully across all 20 route/viewport checks.
 107. Validated P2.13 with scripts/qa-readonly-routes.ps1, git diff --check, changed-file secret scan, npm run lint, and npm run build.
+108. Started P2.14 Read-model Boundary State QA Automation from clean local commit 699a71c.
+109. Added scripts/qa-readonly-boundary-states.ps1 as a local Playwright CLI matrix runner without changing package.json or package-lock.json.
+110. Covered Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness boundary states.
+111. Added 1024x768 and 390x844 checks for loading, error, missing-config, and missing required id idle states.
+112. Checked required state selectors, expected Chinese copy, retry button posture, absence of workspace content during boundary states, console errors, and horizontal overflow.
+113. Ran scripts/qa-readonly-boundary-states.ps1 successfully across all 32 state/viewport checks.
+114. Re-ran scripts/qa-readonly-routes.ps1 and validated P2.14 with git diff --check, changed-file secret scan, npm run lint, and npm run build.
 ```
 
 ### blocked

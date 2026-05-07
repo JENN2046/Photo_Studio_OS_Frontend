@@ -17,7 +17,7 @@ A4-Sustained Local Frontend Autopilot
 ## Current Mission
 
 ```text
-P2.13 Read-only Route QA Matrix Automation
+P2.14 Read-model Boundary State QA Automation
 ```
 
 ---
@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-P2.13 scripted read-only route QA complete candidate
+P2.14 scripted boundary-state QA complete candidate
 ```
 
 ---
@@ -58,7 +58,7 @@ P2.13 scripted read-only route QA complete candidate
 ## Last Completed Task
 
 ```text
-Committed 25110ed: split read-model workspace components
+Committed 699a71c: automated read-only route QA
 ```
 
 ---
@@ -66,7 +66,7 @@ Committed 25110ed: split read-model workspace components
 ## Last Validation
 
 ```text
-scripts/qa-readonly-routes.ps1, git diff --check, changed-file secret scan, npm run lint, and npm run build passed for P2.13
+scripts/qa-readonly-boundary-states.ps1, scripts/qa-readonly-routes.ps1, git diff --check, changed-file secret scan, npm run lint, and npm run build passed for P2.14
 ```
 
 ---
@@ -75,7 +75,7 @@ scripts/qa-readonly-routes.ps1, git diff --check, changed-file secret scan, npm 
 
 ```text
 Branch: main
-Worktree: intentionally editing P2.13 QA script/docs/.agent_board after local 25110ed
+Worktree: intentionally editing P2.14 QA script/docs/.agent_board after local 699a71c
 ```
 
 ---
@@ -115,7 +115,7 @@ no
 ## Current Stop Status
 
 ```text
-continue local P2.13 validation, local commit if green, and stop at remote push boundary
+continue local P2.14 validation, local commit if green, and stop at remote push boundary
 ```
 
 ---
@@ -123,5 +123,5 @@ continue local P2.13 validation, local commit if green, and stop at remote push 
 ## Next Action
 
 ```text
-Finish P2.13 docs/board updates, run validation, and commit locally without push.
+Finish P2.14 docs/board updates, run validation, and commit locally without push.
 ```

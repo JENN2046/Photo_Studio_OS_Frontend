@@ -99,11 +99,19 @@ Automated read-only route matrix:
 powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-routes.ps1
 ```
 
+Automated read-model boundary-state matrix:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-boundary-states.ps1
+```
+
 The script uses transient `npx --package @playwright/cli` execution without
-changing `package.json` or `package-lock.json`. It checks Command Center scenes
-plus the four read-model hash pages at `1440x960` and `390x844` for expected
-Chinese copy, required workspace selectors, Command Center `aria-current`
-state, console errors, and horizontal overflow.
+changing `package.json` or `package-lock.json`. The route matrix checks Command
+Center scenes plus the four read-model hash pages at `1440x960` and `390x844`
+for expected Chinese copy, required workspace selectors, Command Center
+`aria-current` state, console errors, and horizontal overflow. The boundary
+matrix checks loading, error, missing-config, and missing-id idle states for all
+four read-model pages at `1024x768` and `390x844`.
 
 Baseline cockpit routes:
 
@@ -150,6 +158,7 @@ DEV-only read-model boundary rehearsals:
 - Add `readModelState=error` to rehearse the read-only error state.
 - Add `readModelState=missing-config` to rehearse a missing backend read-model config.
 - Omit the required id such as `deliveryId` on `#delivery-readiness` to check idle context handling.
+- Run `scripts\qa-readonly-boundary-states.ps1` to verify these states across the four read-model pages.
 
 These rehearsals are local UI states. They do not enable uploads, downloads,
 public links, auth, storage, backend writes, or production access.
