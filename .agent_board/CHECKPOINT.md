@@ -10,7 +10,7 @@ Codex should update this after each meaningful batch of local frontend work.
 
 ```text
 Status: in-progress
-Updated: 2026-05-07 10:29 +0800
+Updated: 2026-05-07 10:33 +0800
 Repo: Photo_Studio_OS_Frontend
 Mode: A4-Sustained Local Frontend Autopilot
 Mission: P1B Review / Delivery read-only realization and P2 cockpit completion track
@@ -25,8 +25,8 @@ Fill from actual command output.
 ```text
 Workspace: A:\Photo_Studio_OS_Frontend
 Branch: main
-Worktree: intentionally editing backend read-model smoke contract docs and .agent_board
-Diff stat: README.md, docs/design/COMMAND_CENTER_READONLY_API_CONTRACT_NOTE.md, and .agent_board
+Worktree: intentionally editing read-only action pair extraction and .agent_board
+Diff stat: src/features/read-models/ReadModelPages.tsx plus .agent_board
 Package manager: npm with package-lock.json
 Available scripts: dev, build, lint, preview
 ```
@@ -57,7 +57,8 @@ Pushed 4f61aa6: deepened #delivery-readiness into a read-only delivery outbox wo
 Pushed f249a8a: implemented a shared read-model context bar for #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness.
 Pushed c1dd63f: implemented Command Center 黄金链路 strip and refreshed P1B completion docs/board.
 Pushed 9b47889: fixed P2 1280px cockpit breakpoint so Risk / Approval rail remains visible in the right column.
-Added frontend-only backend read-model smoke contract notes; commit/push pending.
+Pushed 11b4b5e: added frontend-only backend read-model smoke contract notes.
+Extracted repeated read-only disabled action pairs; commit/push pending.
 ```
 
 ---
@@ -87,9 +88,12 @@ src/styles/global.css
 ## Validation Run
 
 ```text
-Current backend read-model smoke docs batch:
+Current read-only action pair extraction batch:
 - git diff --check passed
-- changed-file secret scan passed
+- changed-file secret scan passed before board updates
+- npm run lint passed
+- npm run build passed
+- in-app browser QA passed for disabled action buttons across all four read-model pages and console error count 0
 - commit/push pending
 ```
 
@@ -141,7 +145,7 @@ Live backend toggle still requires configuring VITE_BACKEND_API_BASE_URL and run
 ## Next Safe Task
 
 ```text
-After backend read-model smoke docs are pushed, continue with safe read-model component cleanup.
+After action pair extraction is pushed, run another browser-led cockpit pass only if a concrete issue appears.
 ```
 
 ---

@@ -200,6 +200,26 @@ function ReadModelStateNotice<T>({
   );
 }
 
+function ReadOnlyActionPair({
+  ariaLabel,
+  className,
+  labels
+}: {
+  ariaLabel?: string;
+  className: string;
+  labels: [string, string];
+}) {
+  return (
+    <div className={className} aria-label={ariaLabel}>
+      {labels.map((label) => (
+        <button disabled key={label} type="button">
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function ReadModelDashboard({ viewModel }: { viewModel: ReadModelViewModel }) {
   return (
     <section className="read-model-grid">
@@ -416,14 +436,11 @@ function AssetInboxWorkspace({
                   <span>{assetSkuLabel(selectedAsset)}</span>
                   <span>{assetShotLabel(selectedAsset)}</span>
                 </div>
-                <div className="asset-preview-actions" aria-label="只读操作状态">
-                  <button disabled type="button">
-                    上传未启用
-                  </button>
-                  <button disabled type="button">
-                    下载未启用
-                  </button>
-                </div>
+                <ReadOnlyActionPair
+                  ariaLabel="只读操作状态"
+                  className="asset-preview-actions"
+                  labels={["上传未启用", "下载未启用"]}
+                />
               </>
             ) : (
               <p>暂无素材可预览。</p>
@@ -646,14 +663,10 @@ function QcRetouchWorkspace({
                     负责人：{selectedItem.retouch?.assignedTo ?? "待分配"}
                   </span>
                 </div>
-                <div className="qc-suggestion-actions">
-                  <button disabled type="button">
-                    {formatStatus(selectedItem.qc.nextAction)}
-                  </button>
-                  <button disabled type="button">
-                    只读建议
-                  </button>
-                </div>
+                <ReadOnlyActionPair
+                  className="qc-suggestion-actions"
+                  labels={[formatStatus(selectedItem.qc.nextAction), "只读建议"]}
+                />
               </>
             ) : (
               <p>暂无 QC 项可预览。</p>
@@ -853,14 +866,10 @@ function ReviewGalleryWorkspace({
                       formatReason(selectedItem.issueType)}
                   </span>
                 </div>
-                <div className="review-actions">
-                  <button disabled type="button">
-                    公开审核未启用
-                  </button>
-                  <button disabled type="button">
-                    反馈写入未启用
-                  </button>
-                </div>
+                <ReadOnlyActionPair
+                  className="review-actions"
+                  labels={["公开审核未启用", "反馈写入未启用"]}
+                />
               </>
             ) : (
               <p>暂无审核项可预览。</p>
@@ -1065,14 +1074,10 @@ function DeliveryReadinessWorkspace({
                     外部访问：{model.externalAccess.enabled ? "已启用" : "未启用"}
                   </span>
                 </div>
-                <div className="delivery-actions">
-                  <button disabled type="button">
-                    下载未开放
-                  </button>
-                  <button disabled type="button">
-                    外部交付未启用
-                  </button>
-                </div>
+                <ReadOnlyActionPair
+                  className="delivery-actions"
+                  labels={["下载未开放", "外部交付未启用"]}
+                />
               </>
             ) : (
               <p>暂无交付项可预览。</p>

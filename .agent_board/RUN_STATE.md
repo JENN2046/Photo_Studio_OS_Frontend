@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-Document optional backend read-model smoke boundary
+Extract repeated read-only action pair component
 ```
 
 ---
@@ -58,7 +58,7 @@ Document optional backend read-model smoke boundary
 ## Last Completed Task
 
 ```text
-Pushed 9b47889: fixed P2 cockpit 1280px side rail breakpoint
+Pushed 11b4b5e: documented optional backend read-model smoke boundary
 ```
 
 ---
@@ -66,7 +66,7 @@ Pushed 9b47889: fixed P2 cockpit 1280px side rail breakpoint
 ## Last Validation
 
 ```text
-docs-only diff; git diff --check passed; changed-file secret scan passed
+npm run lint passed; npm run build passed; browser QA confirmed four read-model disabled action pairs remain disabled and console error count is 0
 ```
 
 ---
@@ -75,7 +75,7 @@ docs-only diff; git diff --check passed; changed-file secret scan passed
 
 ```text
 Branch: main
-Worktree: intentionally editing read-model smoke contract docs after pushed 9b47889
+Worktree: intentionally editing read-only action pair extraction after pushed 11b4b5e
 ```
 
 ---
@@ -123,5 +123,5 @@ not blocked
 ## Next Action
 
 ```text
-Validate, commit, and push backend read-model smoke contract notes; then continue with safe read-model component cleanup.
+Validate, commit, and push read-only action pair extraction; then run another browser-led cockpit pass only if a concrete issue appears.
 ```

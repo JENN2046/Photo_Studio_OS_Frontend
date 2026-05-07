@@ -262,6 +262,25 @@ Not validated:
 - No backend live integration was run.
 Notes:
 - Documentation keeps mock-first default and forbids tokens, .env edits, auth, upload/download, writes, public links, and production endpoints.
+
+## VALIDATION-20260507-READONLY-ACTION-PAIR
+
+Task: Extract repeated read-only disabled action pairs.
+Commands run:
+- git diff --check
+- changed-file secret scan on ReadModelPages.tsx
+- npm run lint
+- npm run build
+- in-app browser QA for disabled action buttons across #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness
+Result: passed
+Failures: none
+Fix attempted: none required
+Re-run result: not applicable
+Not validated:
+- No npm test script is defined.
+Notes:
+- Verified 上传未启用, 下载未启用, 退回精修, 只读建议, 公开审核未启用, 反馈写入未启用, 下载未开放, and 外部交付未启用 each appear once and remain disabled.
+- Console error count was 0.
 ```
 
 ---

@@ -42,8 +42,8 @@ main
 ## Worktree State
 
 ```text
-Branch main was clean after pushed 9b47889.
-Current batch intentionally edits README, backend read-model smoke contract docs, and .agent_board.
+Branch main was clean after pushed 11b4b5e.
+Current batch intentionally edits read-model action pair component and .agent_board.
 ```
 
 ---
@@ -61,8 +61,9 @@ Completed the first P1 frontend v2 realization slice:
 - Command Center now shows a compact 黄金链路 strip with PRJ-128, REV-441, DEL-220, and four read-only entries.
 - P2 cockpit polish started by restoring the Risk / Approval side rail at 1280px.
 - Optional backend read-model smoke boundaries are documented without enabling backend, auth, tokens, uploads, downloads, or writes.
+- Repeated disabled read-only action pairs are extracted into a small shared component.
 - Browser QA blockers from that slice were fixed: favicon 404 and 390px rail overflow.
-- All changes through 9b47889 were pushed to origin/main; backend smoke docs commit/push is pending.
+- All changes through 11b4b5e were pushed to origin/main; read-only action pair extraction commit/push is pending.
 ```
 
 ---
@@ -105,8 +106,12 @@ Current P2 cockpit breakpoint batch:
 - pushed in 9b47889
 
 Current backend smoke docs batch:
-- git diff --check passed
-- changed-file secret scan passed
+- pushed in 11b4b5e
+
+Current read-only action pair batch:
+- npm run lint passed
+- npm run build passed
+- browser QA passed for disabled action buttons across all four read-model pages and console errors
 - commit/push pending
 ```
 
@@ -166,7 +171,7 @@ none for the next safe local frontend slice.
 ## Next Safe Action
 
 ```text
-Next safe local slice: safe read-model component cleanup.
+Next safe local slice: run another browser-led cockpit pass only if a concrete issue appears.
 ```
 
 ---

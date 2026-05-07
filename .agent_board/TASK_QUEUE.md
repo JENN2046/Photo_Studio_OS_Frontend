@@ -86,9 +86,9 @@ none
 Current safe queue after commit `9b47889`.
 
 ```text
-1. Re-scan read-model pages for duplicated presentational patterns that can be safely extracted without broad refactor.
-2. Run another browser-led cockpit pass at 1440px / 1024px / 390px after the next visual or layout change.
-3. Keep optional backend smoke blocked unless a local backend base URL is intentionally configured outside this repo.
+1. Run another browser-led cockpit pass at 1440px / 1024px / 390px after the next visual or layout change.
+2. Keep optional backend smoke blocked unless a local backend base URL is intentionally configured outside this repo.
+3. Re-scan for a second safe cleanup only after a new concrete duplication or QA issue is observed.
 ```
 
 ### done
@@ -130,6 +130,7 @@ Current safe queue after commit `9b47889`.
 34. Ran final P1B browser QA for Command Center entry clicks, read-model tab switching, Chinese mock data, console errors, and 390px viewport overflow.
 35. Fixed the P2 1280px cockpit breakpoint so Risk / Approval side rail remains in the right column instead of dropping below the main panel.
 36. Added frontend-only backend read-model smoke contract notes without enabling backend, auth, tokens, uploads, downloads, or writes.
+37. Extracted repeated read-only disabled action pairs across Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness.
 ```
 
 ### blocked
