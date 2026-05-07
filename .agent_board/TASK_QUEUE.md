@@ -10,7 +10,7 @@ It does not authorize remote writes, commits, pushes, deployments, backend chang
 ## Current Mission
 
 ```text
-P2.11 Read-model Workspace View-model Cleanup
+P2.12 Read-model Workspace Component Split
 ```
 
 Mode:
@@ -22,7 +22,7 @@ A4-Sustained Local Frontend Autopilot
 Goal:
 
 ```text
-Keep read-model page components focused on rendering and local selection state by moving reusable asset/QC/review/delivery derivation into the view-model layer.
+Keep ReadModelPages.tsx focused on routing, params, mock-first read state, and page shell by moving the four large workspace components into a dedicated component module.
 ```
 
 ---
@@ -83,7 +83,7 @@ none
 
 ### todo
 
-Current safe queue after starting P2.11 read-model cleanup.
+Current safe queue after starting P2.12 read-model component split.
 
 ```text
 none
@@ -184,6 +184,13 @@ none
 90. Moved asset label/tone helpers, QC result labels, review tone, delivery checklist labels, and delivery artifact derivation into src/features/read-models/readModelViewModels.ts.
 91. Browser-validated the four read-model hash pages in the in-app browser and at 390px after the P2.11 view-model cleanup.
 92. Validated P2.11 with git diff --check, changed-file secret scan, npm run lint, and npm run build.
+93. Locally committed e3bd271: refactor: derive read model workspace details.
+94. Started P2.12 Read-model Workspace Component Split from clean local commit e3bd271.
+95. Created src/features/read-models/readModelWorkspaces.tsx for Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness workspace components.
+96. Reduced src/features/read-models/ReadModelPages.tsx to route params, read-model state, mock-first loading, state notices, context bar, and page shell orchestration.
+97. Browser-validated #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness in the in-app browser after the workspace component split.
+98. Playwright CLI validated the four read-model hash pages at 390px with no horizontal overflow or console errors.
+99. Validated P2.12 with git diff --check, changed-file secret scan, npm run lint, and npm run build.
 ```
 
 ### blocked

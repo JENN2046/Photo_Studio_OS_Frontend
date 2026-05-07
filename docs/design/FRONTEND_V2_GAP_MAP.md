@@ -37,6 +37,7 @@ As of the current Frontend v2 local state, the read-only production loop has mov
 - P2.8 Risk / Approval scene depth adds read-only detail cards for risk impact, owner, suggested action, approval state, approval impact, and next step; direct `#risk` / `#approvals` hash loads are stabilized with Command Center scene state.
 - P2.9 Command Center side-detail helpers now live in the view-model layer, using stable risk IDs plus approval type/state instead of component-local copy guessing.
 - P2.11 read-model workspace helpers now live in `readModelViewModels.ts`: asset labels/tone, QC result labels, review item tone, delivery checklist labels, and delivery artifact derivation are no longer component-local.
+- P2.12 read-model workspace components now live in `readModelWorkspaces.tsx`, while `ReadModelPages.tsx` owns route params, read-model state, mock-first loading, and page shell only.
 - `--ps-*` token aliases and text-color compatibility aliases exist in `src/styles/tokens.css`.
 - Current long-track focus is post-RC read-only UX tightening and optional backend read-model smoke testing only when a local backend base URL is explicitly configured.
 
@@ -108,6 +109,7 @@ Image references:
 | Risk / Approval scene depth. | #risk and #approvals now expose focused read-only detail lists, and direct hash loads are stable after React render. | Keep details derived from read-model/mock state and avoid introducing approval writes. | P2.8 done |
 | Command Center side-detail view model. | Risk detail and approval detail derivation moved out of the component and into `commandCenterViewModel.ts`. | Extend stable mapping in the view-model layer when adding risk IDs or approval types. | P2.9 done |
 | Read-model workspace view model cleanup. | Asset label/tone, QC result label/value, review tone, delivery checklist labels, and delivery artifact derivation moved out of `ReadModelPages.tsx`. | Keep page components focused on local selection state and rendering; add future read-model derivation to `readModelViewModels.ts`. | P2.11 done |
+| Read-model workspace component split. | Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness workspace components moved out of `ReadModelPages.tsx` into `readModelWorkspaces.tsx`. | Keep route/data-state orchestration in `ReadModelPages.tsx`; add future workspace-only UI changes in `readModelWorkspaces.tsx`. | P2.12 done |
 | Optional backend read-model smoke. | Still intentionally not run in this frontend-only mock-first batch. | Run only with a deliberately configured local `VITE_BACKEND_API_BASE_URL` outside this repo. | P2 blocked |
 
 ## Command Center Gap Table
@@ -245,8 +247,9 @@ Use this as the first copy alignment pass before creating more pages.
 17. Completed: P2.9 Command Center side-detail view-model consolidation.
 18. Completed: P2.10 Command Center gap table fact refresh.
 19. Completed: P2.11 read-model workspace helper derivation into `readModelViewModels.ts`.
-20. Next: optional backend read-model smoke remains blocked until a local backend base URL is intentionally configured outside this repo.
-21. Always run `npm run lint` and `npm run build` after code/style changes.
+20. Completed: P2.12 read-model workspace component split into `readModelWorkspaces.tsx`.
+21. Next: optional backend read-model smoke remains blocked until a local backend base URL is intentionally configured outside this repo.
+22. Always run `npm run lint` and `npm run build` after code/style changes.
 
 ## Stop Conditions
 

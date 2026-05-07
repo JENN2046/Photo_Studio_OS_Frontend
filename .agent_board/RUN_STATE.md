@@ -17,7 +17,7 @@ A4-Sustained Local Frontend Autopilot
 ## Current Mission
 
 ```text
-P2.11 Read-model Workspace View-model Cleanup
+P2.12 Read-model Workspace Component Split
 ```
 
 ---
@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-P2.11 read-model workspace view-model cleanup complete candidate
+P2.12 read-model workspace component split complete candidate
 ```
 
 ---
@@ -58,7 +58,7 @@ P2.11 read-model workspace view-model cleanup complete candidate
 ## Last Completed Task
 
 ```text
-Committed 32ab2f6: refreshed Command Center gap table facts after P2.9
+Committed e3bd271: derived read-model workspace details from the view-model layer
 ```
 
 ---
@@ -66,7 +66,7 @@ Committed 32ab2f6: refreshed Command Center gap table facts after P2.9
 ## Last Validation
 
 ```text
-git diff --check, changed-file secret scan, npm run lint, npm run build, in-app browser route QA, and Playwright CLI 390px matrix passed for P2.11
+git diff --check, changed-file secret scan, npm run lint, npm run build, in-app browser route QA, and Playwright CLI 390px matrix passed for P2.12
 ```
 
 ---
@@ -75,7 +75,7 @@ git diff --check, changed-file secret scan, npm run lint, npm run build, in-app 
 
 ```text
 Branch: main
-Worktree: intentionally editing P2.11 source/docs/.agent_board after local 32ab2f6
+Worktree: intentionally editing P2.12 source/docs/.agent_board after local e3bd271
 ```
 
 ---
@@ -115,7 +115,7 @@ no
 ## Current Stop Status
 
 ```text
-stop at remote push boundary after local P2.11 commit
+stop at remote push boundary after local P2.12 commit
 ```
 
 ---
@@ -123,5 +123,5 @@ stop at remote push boundary after local P2.11 commit
 ## Next Action
 
 ```text
-Commit P2.11 locally without push.
+Commit P2.12 locally without push.
 ```

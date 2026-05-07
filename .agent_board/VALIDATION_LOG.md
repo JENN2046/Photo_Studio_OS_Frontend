@@ -625,6 +625,31 @@ Notes:
 - Backend fetchers, mock fixture data, CSS, dependencies, .env, upload/download/auth/storage/write behavior, and production links were not changed.
 ```
 
+```text
+## VALIDATION-20260507-READMODEL-WORKSPACE-SPLIT
+
+Task: Move read-model workspace components into a dedicated module.
+Commands run:
+- npm run lint
+- in-app browser route check for #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness
+- Playwright CLI 390px matrix for #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness
+- Playwright CLI console error check
+- git diff --check
+- changed-file secret scan on current diff
+- npm run build
+Result: passed
+Failures: none
+Fix attempted: not applicable
+Re-run result: not applicable
+Not validated:
+- No npm test script is defined.
+- No backend live integration was run; frontend remains mock-first unless VITE_BACKEND_API_BASE_URL is configured.
+Notes:
+- ReadModelPages.tsx now owns route params, read-model state, debug state rehearsal, state notices, context bar, and page shell orchestration.
+- readModelWorkspaces.tsx now owns Asset Inbox, QC / Retouch, Review Gallery, Delivery Readiness workspace components, and local workspace primitives.
+- Backend fetchers, mock fixture data, CSS, dependencies, .env, upload/download/auth/storage/write behavior, and production links were not changed.
+```
+
 ---
 
 ## Entry Template

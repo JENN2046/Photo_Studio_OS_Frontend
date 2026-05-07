@@ -10,7 +10,7 @@ Update this whenever work stops, pauses, blocks, or completes a meaningful batch
 
 ```text
 Status: complete-candidate
-Result: P2.11 Read-model Workspace View-model Cleanup is browser-validated and ready for final guarded validation / local commit. Read-model workspace helpers now live in the view-model layer.
+Result: P2.12 Read-model Workspace Component Split is browser-validated and ready for final guarded validation / local commit. ReadModelPages.tsx is now a route/state shell, and workspace UI lives in readModelWorkspaces.tsx.
 ```
 
 ---
@@ -49,7 +49,8 @@ Branch main was clean after local commit ab11292.
 Branch main was clean after local commit 96ef6ad.
 Branch main was clean after local commit 6d33e17.
 Branch main was clean after local commit 32ab2f6.
-Current batch intentionally edits P2.11 source/docs/.agent_board after local commit 32ab2f6.
+Branch main was clean after local commit e3bd271.
+Current batch intentionally edits P2.12 source/docs/.agent_board after local commit e3bd271.
 ```
 
 ---
@@ -111,6 +112,10 @@ Completed the first P1 frontend v2 realization slice:
 - P2.11 moved read-model workspace helper derivation out of ReadModelPages.tsx and into readModelViewModels.ts.
 - Asset label/tone helpers, QC result labels, review item tone, delivery checklist labels, and delivery artifact derivation are now owned by the read-model view-model layer.
 - In-app browser and Playwright CLI 390px QA confirmed the four read-model hash pages still render expected headings, tabs, metrics, workspace surfaces, read-only copy, no console errors, and no horizontal overflow.
+- e3bd271 is a local commit for the P2.11 read-model workspace detail derivation and has not been pushed.
+- P2.12 moved Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness workspace components into readModelWorkspaces.tsx.
+- ReadModelPages.tsx now owns route params, read-model state, mock-first loading, state notices, context bar, and page shell orchestration.
+- In-app browser and Playwright CLI 390px QA confirmed the four read-model hash pages still render expected headings, tabs, metrics, workspace surfaces, read-only copy, no console errors, and no horizontal overflow after the split.
 ```
 
 ---
@@ -125,7 +130,7 @@ docs/design/FRONTEND_V2_GAP_MAP.md
 .agent_board/VALIDATION_LOG.md
 .agent_board/HANDOFF.md
 src/features/read-models/ReadModelPages.tsx
-src/features/read-models/readModelViewModels.ts
+src/features/read-models/readModelWorkspaces.tsx
 ```
 
 ---
@@ -227,6 +232,15 @@ Current P2.11 read-model workspace view-model cleanup:
 - changed-file secret scan passed.
 - npm run lint passed.
 - npm run build passed.
+
+Current P2.12 read-model workspace component split:
+- npm run lint passed after source changes.
+- In-app browser verified four read-model hash pages with expected headings, workspace consoles, tabs, metrics, key read-only copy, and console error count 0.
+- Playwright CLI 390px matrix verified all four read-model hash pages with no horizontal overflow and console error count 0.
+- git diff --check passed.
+- changed-file secret scan passed.
+- npm run lint passed.
+- npm run build passed.
 ```
 
 ---
@@ -236,7 +250,7 @@ Current P2.11 read-model workspace view-model cleanup:
 ```text
 No npm test script is defined.
 No backend live integration request is planned for this mock-first UI batch.
-No push is authorized for local commits 472d848, 078f894, f7b1b8f, 1265584, 27ba2b5, 6f1666b, 4cc1539, ea67bc1, d68fdcf, ab11292, 96ef6ad, 6d33e17, 32ab2f6, or the current P2.11 cleanup until the user explicitly asks for push.
+No push is authorized for local commits 472d848, 078f894, f7b1b8f, 1265584, 27ba2b5, 6f1666b, 4cc1539, ea67bc1, d68fdcf, ab11292, 96ef6ad, 6d33e17, 32ab2f6, e3bd271, or the current P2.12 cleanup until the user explicitly asks for push.
 ```
 
 ---
@@ -284,7 +298,7 @@ none for the next safe local frontend slice.
 ## Next Safe Action
 
 ```text
-Next safe action: commit the P2.11 read-model workspace cleanup locally, then wait for explicit push approval.
+Next safe action: commit the P2.12 read-model workspace component split locally, then wait for explicit push approval.
 ```
 
 ---
@@ -296,7 +310,7 @@ Next safe action: commit the P2.11 read-model workspace cleanup locally, then wa
 
 读取 AGENTS.md 和 .agent_board/*。
 继续 A4-Sustained Local Frontend Autopilot。
-先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的 P2.11 read-model workspace cleanup 队列继续。
+先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的 P2.12 read-model workspace component split 队列继续。
 保持 mock-first/read-only，不碰 backend、root control repo、依赖、.env、deploy、生产服务、上传/下载/auth/storage/write actions。
 按当前持续推进节奏，小批次验证后可以本地 commit；push 只有用户明确说 push 才执行。
 用中文汇报。
