@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-Refresh v2 gap map and queue before Review / Delivery implementation
+Deepen Review Gallery read-only workspace
 ```
 
 ---
@@ -58,7 +58,7 @@ Refresh v2 gap map and queue before Review / Delivery implementation
 ## Last Completed Task
 
 ```text
-Pushed c19e171: cleared frontend v2 browser QA blockers after Asset Inbox and QC / Retouch realization
+Pushed e529c3b: refreshed frontend v2 completion track
 ```
 
 ---
@@ -66,7 +66,7 @@ Pushed c19e171: cleared frontend v2 browser QA blockers after Asset Inbox and QC
 ## Last Validation
 
 ```text
-npm run lint passed; npm run build passed; git diff --check passed; changed-file secret scan passed for current P1B docs batch
+npm run lint passed; npm run build passed; git diff --check passed; changed-file secret scan passed; browser QA passed for #review-gallery at 1280px and 390px with console error count 0
 ```
 
 ---
@@ -123,5 +123,5 @@ not blocked
 ## Next Action
 
 ```text
-Batch 1: refresh docs/design/FRONTEND_V2_GAP_MAP.md and .agent_board to current P1B/P2 facts, then validate, commit, and push.
+Batch 2: commit/push Review Gallery workspace, then continue to Delivery Readiness workspace.
 ```

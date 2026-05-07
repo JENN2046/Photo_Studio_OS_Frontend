@@ -51,7 +51,8 @@ Pushed eedf48a: deepened Asset Inbox into a read-only production workspace.
 Pushed 3bbe680: deepened QC / Retouch into a read-only queue workspace.
 Pushed c19e171: cleared favicon 404 and 390px rail overflow browser QA blockers.
 Started P1B Review / Delivery realization run.
-Batch 1 refreshes the gap map and queue so downstream agents see current facts.
+Pushed e529c3b: refreshed the P1B/P2 gap map and task rail.
+Implemented #review-gallery as a read-only client review workspace; commit/push pending.
 ```
 
 ---
@@ -60,6 +61,13 @@ Batch 1 refreshes the gap map and queue so downstream agents see current facts.
 
 ```text
 docs/design/FRONTEND_V2_GAP_MAP.md
+src/features/read-models/ReadModelPages.tsx
+src/features/read-models/readModelPages.css
+.agent_board/CHECKPOINT.md
+.agent_board/RUN_STATE.md
+.agent_board/TASK_QUEUE.md
+.agent_board/HANDOFF.md
+.agent_board/VALIDATION_LOG.md
 .agent_board/CHECKPOINT.md
 .agent_board/RUN_STATE.md
 .agent_board/TASK_QUEUE.md
@@ -70,11 +78,12 @@ docs/design/FRONTEND_V2_GAP_MAP.md
 ## Validation Run
 
 ```text
-Current docs/board batch:
+Current Review Gallery batch:
 - git diff --check passed
 - changed-file secret scan passed
 - npm run lint passed
 - npm run build passed
+- browser QA passed for #review-gallery direct hash, key Chinese content, console errors, and 390px horizontal overflow
 - commit/push pending
 ```
 
@@ -126,7 +135,7 @@ Live backend toggle still requires configuring VITE_BACKEND_API_BASE_URL and run
 ## Next Safe Task
 
 ```text
-After docs/board batch is pushed, deepen Review Gallery as a read-only client review workspace.
+After Review Gallery batch is pushed, deepen Delivery Readiness as a read-only delivery outbox workspace.
 ```
 
 ---

@@ -130,6 +130,28 @@ Not validated:
 - No browser QA was needed for docs/board-only changes.
 Notes:
 - This batch updates current facts after c19e171 and points the next safe work at Review Gallery / Delivery Readiness.
+
+## VALIDATION-20260507-REVIEW-GALLERY
+
+Task: Deepen #review-gallery into a read-only client review workspace.
+Commands run:
+- git diff --check
+- changed-file secret scan on ReadModelPages.tsx and readModelPages.css
+- npm run lint
+- npm run build
+- Playwright CLI direct hash check for #review-gallery
+- Playwright CLI 390px horizontal-overflow probe
+- Playwright CLI console error check
+Result: passed
+Failures: none
+Fix attempted: none required
+Re-run result: not applicable
+Not validated:
+- No npm test script is defined.
+- Full four-page browser QA remains queued for the final cross-page batch.
+Notes:
+- Verified visible content includes 审核画廊, 公开审核未启用, 反馈写入未启用, 标签颜色需要回到参考图, and 需返修.
+- 390px viewport reported no horizontal overflow and console error count was 0.
 ```
 
 ---

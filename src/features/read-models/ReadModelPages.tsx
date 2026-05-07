@@ -8,7 +8,8 @@ import {
 } from "../../api/backendReadModels";
 import type {
   BackendAssetInbox,
-  BackendQcRetouchQueue
+  BackendQcRetouchQueue,
+  BackendReviewGallery
 } from "../../api/backendReadModels";
 import type { BackendReadModelState } from "./useBackendReadModel";
 import { useBackendReadModel } from "./useBackendReadModel";
@@ -55,6 +56,7 @@ interface ReadModelFrameProps {
 
 type AssetInboxItem = BackendAssetInbox["items"][number];
 type QcRetouchItem = BackendQcRetouchQueue["items"][number];
+type ReviewGalleryItem = BackendReviewGallery["items"][number];
 
 const routeLabels: Record<ReadModelRoute, string> = {
   "asset-inbox": "素材收件箱",
@@ -683,6 +685,188 @@ function QcRetouchWorkspace({
   );
 }
 
+function reviewItemTone(item: ReviewGalleryItem): ReadModelTone {
+  return toneFromStatus(item.status);
+}
+
+function ReviewGalleryWorkspace({
+  model,
+  viewModel
+}: {
+  model: BackendReviewGallery;
+  viewModel: ReadModelViewModel;
+}) {
+  const [selectedReviewItemId, setSelectedReviewItemId] = useState(
+    model.items[0]?.reviewItemId ?? ""
+  );
+  const selectedItem = useMemo(
+    () =>
+      model.items.find((item) => item.reviewItemId === selectedReviewItemId) ??
+      model.items[0],
+    [model.items, selectedReviewItemId]
+  );
+  const selectedTone = selectedItem ? reviewItemTone(selectedItem) : "neutral";
+  const summary = model.summary ?? {};
+  const revisionCount =
+    summary.revisionRequested ??
+    model.items.filter((item) => item.status === "revision_requested").length;
+
+  return (
+    <section className="review-gallery-workspace">
+      <section
+        className="read-model-metrics review-gallery-metrics"
+        aria-label={`${viewModel.title} 指标面板`}
+      >
+        {viewModel.metrics.map((metric) => (
+          <article
+            className={`read-model-metric read-model-tone-${metric.tone}`}
+            key={metric.label}
+          >
+            <span>{metric.label}</span>
+            <strong>{metric.value}</strong>
+            <small>{metric.detail}</small>
+          </article>
+        ))}
+      </section>
+
+      <section className="review-gallery-console" aria-label="审核画廊工作台">
+        <header className="review-gallery-summary">
+          <div>
+            <p className="eyebrow">Review Gallery</p>
+            <strong>{model.title ?? model.reviewSessionId}</strong>
+            <span>
+              {formatStatus(model.status)} / 到期{" "}
+              {formatShortDateTime(model.expiresAt)}
+            </span>
+          </div>
+          <div className="review-gallery-summary-stats">
+            <span>
+              <b>{summary.pending ?? 0}</b>
+              待审核
+            </span>
+            <span>
+              <b>{summary.approved ?? 0}</b>
+              已批准
+            </span>
+            <span>
+              <b>{revisionCount}</b>
+              需返修
+            </span>
+          </div>
+        </header>
+
+        <div className="review-gallery-body">
+          <section className="review-gallery-panel" aria-label="审核素材网格">
+            <div className="asset-panel-head">
+              <div>
+                <p className="eyebrow">Client Review Set</p>
+                <strong>{model.reviewSessionId}</strong>
+              </div>
+              <span>{model.items.length} 个审核项</span>
+            </div>
+            <div className="review-card-grid">
+              {model.items.map((item) => {
+                const tone = reviewItemTone(item);
+
+                return (
+                  <button
+                    aria-pressed={
+                      item.reviewItemId === selectedItem?.reviewItemId
+                    }
+                    className={`review-card read-model-tone-${tone}`}
+                    key={item.reviewItemId}
+                    onClick={() => setSelectedReviewItemId(item.reviewItemId)}
+                    type="button"
+                  >
+                    <span className="review-card-visual" aria-hidden="true">
+                      <b>{item.assetId}</b>
+                    </span>
+                    <span className="review-card-copy">
+                      <strong>{assetSkuLabel(item)}</strong>
+                      <small>{assetShotLabel(item)}</small>
+                      <small>
+                        {item.clientComment ?? formatReason(item.issueType)}
+                      </small>
+                    </span>
+                    <i>{formatStatus(item.status)}</i>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          <section className="review-selected-panel" aria-label="选中审核项">
+            {selectedItem ? (
+              <>
+                <div
+                  className={`review-preview-visual read-model-tone-${selectedTone}`}
+                >
+                  <span>{formatStatus(selectedItem.status)}</span>
+                  <strong>{selectedItem.assetId}</strong>
+                  <small>{selectedItem.previewKey ?? "预览键待生成"}</small>
+                </div>
+                <div className="review-selected-copy">
+                  <p className="eyebrow">Selected Review</p>
+                  <h2>{assetSkuLabel(selectedItem)}</h2>
+                  <span>{assetShotLabel(selectedItem)}</span>
+                  <span>
+                    {selectedItem.clientComment ??
+                      formatReason(selectedItem.issueType)}
+                  </span>
+                </div>
+                <div className="review-actions">
+                  <button disabled type="button">
+                    公开审核未启用
+                  </button>
+                  <button disabled type="button">
+                    反馈写入未启用
+                  </button>
+                </div>
+              </>
+            ) : (
+              <p>暂无审核项可预览。</p>
+            )}
+          </section>
+        </div>
+      </section>
+
+      {selectedItem ? (
+        <section className="review-detail-grid" aria-label="审核只读详情">
+          <article
+            className={`read-model-detail read-model-tone-${toneFromStatus(
+              selectedItem.status
+            )}`}
+          >
+            <span>审核状态</span>
+            <strong>{formatStatus(selectedItem.status)}</strong>
+            <small>
+              {selectedItem.reviewedAt
+                ? `客户确认 ${formatShortDateTime(selectedItem.reviewedAt)}`
+                : "等待客户确认或反馈"}
+            </small>
+          </article>
+          <article
+            className={`read-model-detail read-model-tone-${selectedTone}`}
+          >
+            <span>客户反馈</span>
+            <strong>
+              {selectedItem.clientComment ??
+                formatReason(selectedItem.issueType) ??
+                "暂无客户反馈"}
+            </strong>
+            <small>当前仅展示反馈摘要，不开放评论写入。</small>
+          </article>
+          <article className="read-model-detail read-model-tone-neutral">
+            <span>公开访问</span>
+            <strong>{model.publicAccess.enabled ? "已启用" : "未启用"}</strong>
+            <small>{formatReason(model.publicAccess.reason)}</small>
+          </article>
+        </section>
+      ) : null}
+    </section>
+  );
+}
+
 export function AssetInboxPage({ params }: ReadModelPageProps) {
   const projectId = getParam(params, "projectId");
   const state = useBackendReadModel({
@@ -772,7 +956,8 @@ export function ReviewGalleryPage({ params }: ReadModelPageProps) {
         idleLabel="请先选择 reviewSessionId"
       />
       {state.data ? (
-        <ReadModelDashboard
+        <ReviewGalleryWorkspace
+          model={state.data}
           viewModel={createReviewGalleryViewModel(state.data)}
         />
       ) : null}

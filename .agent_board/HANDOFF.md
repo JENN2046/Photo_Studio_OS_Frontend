@@ -10,7 +10,7 @@ Update this whenever work stops, pauses, blocks, or completes a meaningful batch
 
 ```text
 Status: in-progress
-Result: Asset Inbox and QC / Retouch P1 read-only workspaces are complete; next track is Review Gallery and Delivery Readiness realization.
+Result: Asset Inbox, QC / Retouch, and Review Gallery read-only workspaces are complete; next track is Delivery Readiness realization.
 ```
 
 ---
@@ -55,8 +55,9 @@ Completed the first P1 frontend v2 realization slice:
 - Golden Product Loop mock fixture aligned to 1 client / 1 project / 3 SKUs / 9 shots / 6 assets / 3 QC checks / 1 review / 1 delivery.
 - #asset-inbox now has Capture One intake, thumbnail grid, selected asset preview, binding/file detail, QC checklist, and disabled upload/download posture.
 - #qc-retouch now has queue selection, selected preview, failure reasons, owner, due time, technical/manual checks, retouch instructions, and disabled suggested actions.
+- #review-gallery now has review grid, selected review item, client feedback/revision state, status summary, disabled public review, and disabled feedback write posture.
 - Browser QA blockers from that slice were fixed: favicon 404 and 390px rail overflow.
-- All changes through c19e171 were pushed to origin/main.
+- All changes through e529c3b were pushed to origin/main; Review Gallery batch commit/push is pending.
 ```
 
 ---
@@ -65,9 +66,12 @@ Completed the first P1 frontend v2 realization slice:
 
 ```text
 docs/design/FRONTEND_V2_GAP_MAP.md
+src/features/read-models/ReadModelPages.tsx
+src/features/read-models/readModelPages.css
 .agent_board/RUN_STATE.md
 .agent_board/CHECKPOINT.md
 .agent_board/HANDOFF.md
+.agent_board/VALIDATION_LOG.md
 .agent_board/TASK_QUEUE.md
 ```
 
@@ -83,11 +87,12 @@ Previous P1 slice:
 - changed-file secret scan: passed
 - browser QA: passed for #asset-inbox, #qc-retouch, Command Center entries, tab switching, console errors, and 390px viewport
 
-Current docs batch:
+Current Review Gallery batch:
 - git diff --check passed
 - changed-file secret scan passed
 - npm run lint passed
 - npm run build passed
+- browser QA passed for #review-gallery direct hash, key Chinese content, console errors, and 390px horizontal overflow
 - commit/push pending
 ```
 
@@ -115,7 +120,7 @@ no
 
 ```text
 Previous P1 commits were pushed after user approval.
-Current P1B docs batch pending commit/push after validation.
+Current Review Gallery batch pending commit/push after validation.
 ```
 
 ---
@@ -147,7 +152,7 @@ none for the next safe local frontend slice.
 ## Next Safe Action
 
 ```text
-Next safe local slice: deepen #review-gallery into a read-only client review workspace.
+Next safe local slice: deepen #delivery-readiness into a read-only delivery outbox workspace.
 ```
 
 ---

@@ -86,12 +86,10 @@ none
 Current safe queue after commit `c19e171`.
 
 ```text
-1. Refresh docs/design/FRONTEND_V2_GAP_MAP.md and board state to current P1B/P2 facts.
-2. Deepen #review-gallery into a read-only client review workspace with gallery grid, selected review item, comment/revision state, status summary, and disabled public-review/write posture.
-3. Deepen #delivery-readiness into a read-only delivery outbox workspace with package/manifest summary, readiness checklist, blockers, output count, and disabled external delivery/download posture.
-4. Align cross-page selection, preview, detail, and disabled action patterns across Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness.
-5. Strengthen Command Center production navigation so the first Golden Product Loop IDs and four hash entry points remain clear.
-6. Run browser QA for all four hash pages, Command Center entry clicks, tab switching, Chinese mock data, console errors, and 390px viewport.
+1. Deepen #delivery-readiness into a read-only delivery outbox workspace with package/manifest summary, readiness checklist, blockers, output count, and disabled external delivery/download posture.
+2. Align cross-page selection, preview, detail, and disabled action patterns across Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness.
+3. Strengthen Command Center production navigation so the first Golden Product Loop IDs and four hash entry points remain clear.
+4. Run browser QA for all four hash pages, Command Center entry clicks, tab switching, Chinese mock data, console errors, and 390px viewport.
 ```
 
 ### done
@@ -125,6 +123,8 @@ Current safe queue after commit `c19e171`.
 26. Deepened #asset-inbox into a read-only production workspace, pushed eedf48a.
 27. Deepened #qc-retouch into a read-only QC / Retouch workspace, pushed 3bbe680.
 28. Cleared frontend v2 browser QA blockers: favicon 404 and 390px rail overflow, pushed c19e171.
+29. Refreshed P1B/P2 completion track and pushed e529c3b.
+30. Deepened #review-gallery into a read-only client review workspace with gallery grid, selected item, client feedback/revision state, status summary, disabled public review, and disabled feedback write posture.
 ```
 
 ### blocked
