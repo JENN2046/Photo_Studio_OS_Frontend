@@ -17,7 +17,7 @@ A4-Sustained Local Frontend Autopilot
 ## Current Mission
 
 ```text
-P2.15 Local Validation Orchestrator
+P2.16/P2.17 Validation Parity And Interaction QA
 ```
 
 ---
@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-P2.15 validate-local browser QA aggregation complete candidate
+P2.16/P2.17 validation parity and read-model interaction QA complete candidate
 ```
 
 ---
@@ -58,7 +58,7 @@ P2.15 validate-local browser QA aggregation complete candidate
 ## Last Completed Task
 
 ```text
-Committed 7eafcc8: automated read-model boundary QA
+Committed 60b74a1: orchestrated local frontend validation
 ```
 
 ---
@@ -66,7 +66,7 @@ Committed 7eafcc8: automated read-model boundary QA
 ## Last Validation
 
 ```text
-scripts/validate-local.ps1 -IncludeBrowserQa passed for P2.15, including lint, build, git diff --check, changed-file secret scan, route QA, and boundary-state QA
+scripts/qa-readonly-interactions.ps1, scripts/validate-local.ps1 default mode, git diff --check, and changed-file secret scan passed. bash scripts/validate-local.sh reached npm build but is blocked by the bash/WSL Node 18.19.1 toolchain and missing Rollup optional native package.
 ```
 
 ---
@@ -75,7 +75,7 @@ scripts/validate-local.ps1 -IncludeBrowserQa passed for P2.15, including lint, b
 
 ```text
 Branch: main
-Worktree: intentionally editing P2.15 validation script/docs/.agent_board after local 7eafcc8
+Worktree: intentionally editing P2.16/P2.17 validation scripts/docs/.agent_board after local 60b74a1
 ```
 
 ---
@@ -115,7 +115,7 @@ no
 ## Current Stop Status
 
 ```text
-continue local P2.15 validation, local commit if green, and stop at remote push boundary
+ready for local P2.16/P2.17 commit after staged checks; stop at remote push boundary
 ```
 
 ---
@@ -123,5 +123,5 @@ continue local P2.15 validation, local commit if green, and stop at remote push 
 ## Next Action
 
 ```text
-Run scripts/validate-local.ps1 -IncludeBrowserQa, update validation evidence, and commit locally without push.
+Stage the P2.16/P2.17 batch explicitly, run staged checks, and commit locally without push.
 ```

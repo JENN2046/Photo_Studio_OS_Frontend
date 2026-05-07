@@ -10,7 +10,7 @@ It does not authorize remote writes, commits, pushes, deployments, backend chang
 ## Current Mission
 
 ```text
-P2.15 Local Validation Orchestrator
+P2.16/P2.17 Validation Parity And Interaction QA
 ```
 
 Mode:
@@ -22,7 +22,7 @@ A4-Sustained Local Frontend Autopilot
 Goal:
 
 ```text
-Make the local frontend validation path repeatable from scripts/validate-local.ps1, with a fast default mode and an optional browser QA mode that runs the route and boundary-state matrices.
+Keep PowerShell and Bash validation entry points aligned while adding read-model tab, local selection, and disabled action interaction QA.
 ```
 
 ---
@@ -83,7 +83,7 @@ none
 
 ### todo
 
-Current safe queue after starting P2.15 local validation orchestration.
+Current safe queue after starting P2.16/P2.17 validation parity and interaction QA.
 
 ```text
 none
@@ -213,12 +213,21 @@ none
 119. Documented the fast and full local validation commands in README.md and FRONTEND_V2_GAP_MAP.md.
 120. Validated P2.15 with scripts/validate-local.ps1 -IncludeBrowserQa.
 121. Re-ran scripts/validate-local.ps1 in default mode after final board updates.
+122. Started P2.16/P2.17 from clean local commit 60b74a1.
+123. Aligned scripts/validate-local.sh with changed-file secret scan and optional --include-browser-qa behavior.
+124. Added scripts/qa-readonly-interactions.ps1 for read-model tab switching, local card selection, disabled action posture, console errors, and horizontal overflow.
+125. Updated scripts/validate-local.ps1 -IncludeBrowserQa to include the new interaction QA matrix.
+126. Ran scripts/qa-readonly-interactions.ps1 successfully at 1440x960 and 390x844.
+127. Ran scripts/validate-local.ps1 default mode successfully after P2.16/P2.17 changes.
+128. Ran bash scripts/validate-local.sh; it reached npm build but is blocked by the bash/WSL Node 18.19.1 toolchain and missing Rollup optional native package.
+129. Ran git diff --check and changed-file secret scan successfully after final board updates.
 ```
 
 ### blocked
 
 ```text
 Optional backend read-model smoke remains blocked until a local backend base URL is intentionally configured outside this repo.
+Full Bash validation helper execution remains blocked until the bash/WSL environment uses Node 20.19+ or 22.12+ and a compatible Rollup optional native package install.
 ```
 
 ### skipped

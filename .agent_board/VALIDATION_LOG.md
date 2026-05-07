@@ -727,6 +727,35 @@ Notes:
 - -IncludeBrowserQa runs scripts/qa-readonly-routes.ps1 and scripts/qa-readonly-boundary-states.ps1 while keeping package manifests unchanged.
 ```
 
+```text
+## VALIDATION-20260507-READMODEL-INTERACTION-QA
+
+Task: Align validation helpers and add read-model interaction QA.
+Commands run:
+- powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-interactions.ps1
+- powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1
+- bash scripts/validate-local.sh
+- git diff --check
+- changed-file secret scan on current diff
+Result: passed for PowerShell validation path; Bash helper full execution is blocked by environment/toolchain
+Failures:
+- bash scripts/validate-local.sh reached npm build, but the bash/WSL environment reports Node.js 18.19.1 while Vite requires Node.js 20.19+ or 22.12+.
+- The same bash/WSL run also reports missing @rollup/rollup-linux-x64-gnu optional native package.
+Fix attempted: none; no dependency, lockfile, package manager, or environment changes are allowed in this frontend batch.
+Re-run result:
+- scripts/qa-readonly-interactions.ps1 passed.
+- scripts/validate-local.ps1 default mode passed.
+- git diff --check passed.
+- changed-file secret scan passed.
+Not validated:
+- Full Bash helper validation awaits a compatible bash/WSL Node/toolchain environment.
+- No npm test script is defined.
+- No backend live integration was run; frontend remains mock-first unless VITE_BACKEND_API_BASE_URL is configured.
+Notes:
+- The interaction script checks read-model tab switching, local card selection state, disabled read-only action posture, console errors, and horizontal overflow.
+- scripts/validate-local.ps1 and scripts/validate-local.sh now include interaction QA in their browser-QA mode.
+```
+
 ---
 
 ## Entry Template

@@ -117,13 +117,21 @@ Automated read-model boundary-state matrix:
 powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-boundary-states.ps1
 ```
 
+Automated read-model interaction matrix:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-interactions.ps1
+```
+
 The QA scripts use transient `npx --package @playwright/cli` execution without
 changing `package.json` or `package-lock.json`. The route matrix checks Command
 Center scenes plus the four read-model hash pages at `1440x960` and `390x844`
 for expected Chinese copy, required workspace selectors, Command Center
 `aria-current` state, console errors, and horizontal overflow. The boundary
 matrix checks loading, error, missing-config, and missing-id idle states for all
-four read-model pages at `1024x768` and `390x844`.
+four read-model pages at `1024x768` and `390x844`. The interaction matrix checks
+read-model tab switching, local selection state, and disabled read-only action
+posture at `1440x960` and `390x844`.
 
 Baseline cockpit routes:
 

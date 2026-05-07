@@ -100,9 +100,16 @@ if ($IncludeBrowserQa) {
   if ($LASTEXITCODE -ne 0) {
     $failed = $true
   }
+
+  Write-Host ""
+  Write-Host "== read-model interaction QA =="
+  powershell -ExecutionPolicy Bypass -File "scripts\qa-readonly-interactions.ps1"
+  if ($LASTEXITCODE -ne 0) {
+    $failed = $true
+  }
 } else {
   Write-Host ""
-  Write-Host "Skip: browser QA scripts. Re-run with -IncludeBrowserQa to include route and boundary-state matrices."
+  Write-Host "Skip: browser QA scripts. Re-run with -IncludeBrowserQa to include route, boundary-state, and interaction matrices."
 }
 
 if ($failed) {

@@ -10,7 +10,7 @@ Update this whenever work stops, pauses, blocks, or completes a meaningful batch
 
 ```text
 Status: complete-candidate
-Result: P2.12 Read-model Workspace Component Split is browser-validated and ready for final guarded validation / local commit. ReadModelPages.tsx is now a route/state shell, and workspace UI lives in readModelWorkspaces.tsx.
+Result: P2.16/P2.17 validation parity and interaction QA is ready for local commit. PowerShell validation passed; Bash helper full execution is environment-blocked by bash/WSL Node 18.19.1 and missing Rollup optional native package.
 ```
 
 ---
@@ -50,7 +50,8 @@ Branch main was clean after local commit 96ef6ad.
 Branch main was clean after local commit 6d33e17.
 Branch main was clean after local commit 32ab2f6.
 Branch main was clean after local commit e3bd271.
-Current batch intentionally edits P2.12 source/docs/.agent_board after local commit e3bd271.
+Branch main was clean after local commit 60b74a1.
+Current batch intentionally edits P2.16/P2.17 validation scripts/docs/.agent_board after local commit 60b74a1.
 ```
 
 ---
@@ -116,6 +117,13 @@ Completed the first P1 frontend v2 realization slice:
 - P2.12 moved Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness workspace components into readModelWorkspaces.tsx.
 - ReadModelPages.tsx now owns route params, read-model state, mock-first loading, state notices, context bar, and page shell orchestration.
 - In-app browser and Playwright CLI 390px QA confirmed the four read-model hash pages still render expected headings, tabs, metrics, workspace surfaces, read-only copy, no console errors, and no horizontal overflow after the split.
+- P2.16/P2.17 aligned scripts/validate-local.sh with the PowerShell helper's changed-file secret scan and optional browser-QA behavior.
+- Added scripts/qa-readonly-interactions.ps1 for read-model tab switching, local card selection, disabled action posture, console errors, and horizontal overflow.
+- Added the interaction QA script to scripts/validate-local.ps1 -IncludeBrowserQa.
+- scripts/qa-readonly-interactions.ps1 passed at 1440x960 and 390x844.
+- scripts/validate-local.ps1 default mode passed.
+- bash scripts/validate-local.sh reached npm build but is blocked by the bash/WSL Node 18.19.1 toolchain and missing Rollup optional native package.
+- git diff --check and changed-file secret scan passed.
 ```
 
 ---
@@ -129,8 +137,10 @@ docs/design/FRONTEND_V2_GAP_MAP.md
 .agent_board/TASK_QUEUE.md
 .agent_board/VALIDATION_LOG.md
 .agent_board/HANDOFF.md
-src/features/read-models/ReadModelPages.tsx
-src/features/read-models/readModelWorkspaces.tsx
+README.md
+scripts/validate-local.ps1
+scripts/validate-local.sh
+scripts/qa-readonly-interactions.ps1
 ```
 
 ---
@@ -271,6 +281,16 @@ Current P2.15 local validation orchestration:
 - Fixed the validation helper's secret-scan self-check so the scanner does not match its own scan pattern text.
 - scripts/validate-local.ps1 passed in default mode.
 - scripts/validate-local.ps1 -IncludeBrowserQa passed, including route QA and boundary-state QA.
+
+Current P2.16/P2.17 validation parity and interaction QA:
+- Aligned scripts/validate-local.sh with changed-file secret scan and optional --include-browser-qa behavior.
+- Added scripts/qa-readonly-interactions.ps1 for tab switching, local card selection, disabled action posture, console errors, and horizontal overflow.
+- Added the interaction QA script to scripts/validate-local.ps1 -IncludeBrowserQa.
+- scripts/qa-readonly-interactions.ps1 passed at 1440x960 and 390x844.
+- scripts/validate-local.ps1 default mode passed.
+- bash scripts/validate-local.sh reached npm build but is blocked by the bash/WSL Node 18.19.1 toolchain and missing Rollup optional native package.
+- git diff --check passed.
+- changed-file secret scan passed.
 ```
 
 ---
@@ -280,7 +300,8 @@ Current P2.15 local validation orchestration:
 ```text
 No npm test script is defined.
 No backend live integration request is planned for this mock-first UI batch.
-No push is authorized for local commits 472d848, 078f894, f7b1b8f, 1265584, 27ba2b5, 6f1666b, 4cc1539, ea67bc1, d68fdcf, ab11292, 96ef6ad, 6d33e17, 32ab2f6, e3bd271, 25110ed, 699a71c, 7eafcc8, or the current P2.15 cleanup until the user explicitly asks for push.
+Full Bash helper validation awaits a compatible bash/WSL Node 20.19+ or 22.12+ environment and Rollup optional native package availability.
+No push is authorized for local commits 472d848, 078f894, f7b1b8f, 1265584, 27ba2b5, 6f1666b, 4cc1539, ea67bc1, d68fdcf, ab11292, 96ef6ad, 6d33e17, 32ab2f6, e3bd271, 25110ed, 699a71c, 7eafcc8, 60b74a1, or the current P2.16/P2.17 cleanup until the user explicitly asks for push.
 ```
 
 ---
@@ -312,7 +333,7 @@ no
 ## Blockers
 
 ```text
-none
+Full Bash validation helper execution is blocked by the current bash/WSL Node 18.19.1 toolchain and missing Rollup optional native package. PowerShell validation remains the validated local path.
 ```
 
 ---
@@ -328,7 +349,7 @@ none for the next safe local frontend slice.
 ## Next Safe Action
 
 ```text
-Next safe action: run scripts/validate-local.ps1 -IncludeBrowserQa, commit locally if green, then wait for explicit push approval.
+Next safe action: run targeted validation, commit locally if green, then wait for explicit push approval.
 ```
 
 ---
@@ -340,7 +361,7 @@ Next safe action: run scripts/validate-local.ps1 -IncludeBrowserQa, commit local
 
 读取 AGENTS.md 和 .agent_board/*。
 继续 A4-Sustained Local Frontend Autopilot。
-先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的 P2.15 local validation orchestrator 队列继续。
+先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的 P2.16/P2.17 validation parity and interaction QA 队列继续。
 保持 mock-first/read-only，不碰 backend、root control repo、依赖、.env、deploy、生产服务、上传/下载/auth/storage/write actions。
 按当前持续推进节奏，小批次验证后可以本地 commit；push 只有用户明确说 push 才执行。
 用中文汇报。

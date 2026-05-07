@@ -10,10 +10,10 @@ Codex should update this after each meaningful batch of local frontend work.
 
 ```text
 Status: complete-candidate
-Updated: 2026-05-07 15:32 +0800
+Updated: 2026-05-07 16:05 +0800
 Repo: Photo_Studio_OS_Frontend
 Mode: A4-Sustained Local Frontend Autopilot
-Mission: P2.12 Read-model Workspace Component Split
+Mission: P2.16/P2.17 Validation Parity And Interaction QA
 ```
 
 ---
@@ -25,8 +25,8 @@ Fill from actual command output.
 ```text
 Workspace: A:\Photo_Studio_OS_Frontend
 Branch: main
-Worktree: intentionally editing P2.12 source/docs/.agent_board after local e3bd271
-Diff stat: ReadModelPages.tsx, readModelWorkspaces.tsx, FRONTEND_V2_GAP_MAP.md, and .agent_board
+Worktree: intentionally editing P2.16/P2.17 validation scripts/docs/.agent_board after local 60b74a1
+Diff stat: validation scripts, README.md, FRONTEND_V2_GAP_MAP.md, and .agent_board
 Package manager: npm with package-lock.json
 Available scripts: dev, build, lint, preview
 ```
@@ -122,6 +122,14 @@ Created readModelWorkspaces.tsx and moved the four workspace components plus the
 Reduced ReadModelPages.tsx to route params, read-model state, mock-first loading, state notices, context bar, and page shell orchestration.
 Browser-checked the four read-model hash pages in the in-app browser after the component split.
 Playwright CLI checked all four read-model hash pages at 390px with no horizontal overflow or console errors.
+Started P2.16/P2.17 validation parity and interaction QA from clean local commit 60b74a1.
+Aligned scripts/validate-local.sh with changed-file secret scan and optional --include-browser-qa behavior.
+Added scripts/qa-readonly-interactions.ps1 for tab switching, local card selection, disabled action posture, console errors, and horizontal overflow.
+Added the interaction QA script to scripts/validate-local.ps1 -IncludeBrowserQa.
+scripts/qa-readonly-interactions.ps1 passed at 1440x960 and 390x844.
+scripts/validate-local.ps1 default mode passed.
+bash scripts/validate-local.sh reached npm build but is blocked by the bash/WSL Node 18.19.1 toolchain and missing Rollup optional native package.
+git diff --check and changed-file secret scan passed.
 ```
 
 ---
@@ -135,8 +143,10 @@ docs/design/FRONTEND_V2_GAP_MAP.md
 .agent_board/TASK_QUEUE.md
 .agent_board/VALIDATION_LOG.md
 .agent_board/HANDOFF.md
-src/features/read-models/ReadModelPages.tsx
-src/features/read-models/readModelWorkspaces.tsx
+README.md
+scripts/validate-local.ps1
+scripts/validate-local.sh
+scripts/qa-readonly-interactions.ps1
 ```
 
 ---
@@ -261,6 +271,16 @@ Current P2.15 local validation orchestration:
 - Fixed the validation helper's secret-scan self-check so the scanner does not match its own scan pattern text.
 - scripts/validate-local.ps1 passed in default mode.
 - scripts/validate-local.ps1 -IncludeBrowserQa passed, including route QA and boundary-state QA.
+
+Current P2.16/P2.17 validation parity and interaction QA:
+- Aligned scripts/validate-local.sh with changed-file secret scan and optional --include-browser-qa behavior.
+- Added scripts/qa-readonly-interactions.ps1 for tab switching, local card selection, disabled action posture, console errors, and horizontal overflow.
+- Added the interaction QA script to scripts/validate-local.ps1 -IncludeBrowserQa.
+- scripts/qa-readonly-interactions.ps1 passed at 1440x960 and 390x844.
+- scripts/validate-local.ps1 default mode passed.
+- bash scripts/validate-local.sh reached npm build but is blocked by the bash/WSL Node 18.19.1 toolchain and missing Rollup optional native package.
+- git diff --check passed.
+- changed-file secret scan passed.
 ```
 
 ---
@@ -271,6 +291,7 @@ Current P2.15 local validation orchestration:
 No npm test script is defined.
 No backend live integration request is needed for this mock-first UI batch.
 No push is authorized for this batch until the user explicitly asks for push.
+Full Bash helper validation awaits a compatible bash/WSL Node 20.19+ or 22.12+ environment and Rollup optional native package availability.
 ```
 
 ---
@@ -278,7 +299,7 @@ No push is authorized for this batch until the user explicitly asks for push.
 ## Validation Failures
 
 ```text
-none
+bash scripts/validate-local.sh cannot complete in the current bash/WSL environment because Node.js is 18.19.1 and the Rollup optional native package is unavailable there.
 ```
 
 ---
@@ -306,6 +327,7 @@ No known uncommitted user-owned changes at the start of this run.
 Live backend toggle still requires configuring VITE_BACKEND_API_BASE_URL and running the backend stack.
 The QA script uses transient npx @playwright/cli execution and does not change dependency manifests.
 The boundary-state QA script uses transient npx @playwright/cli execution and does not change dependency manifests.
+The Bash validation helper source is updated, but full Bash execution is environment-blocked until bash/WSL Node matches Vite's required version range.
 ```
 
 ---
@@ -313,7 +335,7 @@ The boundary-state QA script uses transient npx @playwright/cli execution and do
 ## Next Safe Task
 
 ```text
-Run scripts/validate-local.ps1 -IncludeBrowserQa, commit locally if green, then stop at remote push boundary.
+Run targeted validation, commit locally if green, then stop at remote push boundary.
 ```
 
 ---
