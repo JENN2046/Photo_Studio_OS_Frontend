@@ -81,6 +81,7 @@ function formatStatus(value: string | undefined): string {
     sentinel: "只读哨兵",
     sentry: "哨兵",
     ready: "就绪",
+    watch: "观察",
     delivered: "已交付",
     expired: "已过期",
     revision: "待修订",
@@ -140,6 +141,7 @@ function formatReason(value: string | undefined): string {
     "shot requirement missing": "缺少镜头需求",
     "focus left edge": "左侧边缘焦点异常",
     "color label shift": "标签色彩偏移",
+    "shadow balance watch": "阴影层次观察",
     "awaiting client decision": "等待客户确认"
   };
 
@@ -233,7 +235,8 @@ function toneFromStatus(value: string | undefined): ReadModelTone {
     value.includes("pending") ||
     value.includes("warning") ||
     value.includes("preparing") ||
-    value.includes("ambiguous")
+    value.includes("ambiguous") ||
+    value.includes("watch")
   ) {
     return "warn";
   }
