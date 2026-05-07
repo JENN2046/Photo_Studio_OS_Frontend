@@ -32,6 +32,29 @@ if [ ! -f "package.json" ]; then
 fi
 
 echo ""
+echo "== Runtime preflight =="
+if ! command -v node >/dev/null 2>&1; then
+  echo "Node.js was not found in this shell. Use a shell with the project Node runtime before running Bash validation."
+  exit 1
+fi
+
+node_version="$(node -p "process.versions.node" 2>/dev/null || true)"
+if [ -z "$node_version" ]; then
+  echo "Unable to read the Node.js version from this shell."
+  exit 1
+fi
+
+if ! node -e 'const [major, minor] = process.versions.node.split(".").map(Number); const ok = (major === 20 && minor >= 19) || (major === 22 && minor >= 12) || major > 22; process.exit(ok ? 0 : 1);'; then
+  echo "Node.js $node_version detected in this shell."
+  echo "Vite 7 requires Node.js 20.19+ or 22.12+ for this project's build gate."
+  echo "Use a Bash/WSL shell with a compatible Node runtime, or run the validated PowerShell helper:"
+  echo "  powershell -ExecutionPolicy Bypass -File scripts\\validate-local.ps1"
+  exit 1
+fi
+
+echo "Node.js $node_version"
+
+echo ""
 echo "== Git status =="
 git branch --show-current
 git status --short

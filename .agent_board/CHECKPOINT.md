@@ -10,10 +10,10 @@ Codex should update this after each meaningful batch of local frontend work.
 
 ```text
 Status: complete-candidate
-Updated: 2026-05-07 16:05 +0800
+Updated: 2026-05-07 16:20 +0800
 Repo: Photo_Studio_OS_Frontend
 Mode: A4-Sustained Local Frontend Autopilot
-Mission: P2.16/P2.17 Validation Parity And Interaction QA
+Mission: P2.18 Bash Validation Runtime Guard
 ```
 
 ---
@@ -25,8 +25,8 @@ Fill from actual command output.
 ```text
 Workspace: A:\Photo_Studio_OS_Frontend
 Branch: main
-Worktree: intentionally editing P2.16/P2.17 validation scripts/docs/.agent_board after local 60b74a1
-Diff stat: validation scripts, README.md, FRONTEND_V2_GAP_MAP.md, and .agent_board
+Worktree: intentionally editing P2.18 validation script/docs/.agent_board after local 1184d7d
+Diff stat: scripts/validate-local.sh, README.md, FRONTEND_V2_GAP_MAP.md, and .agent_board
 Package manager: npm with package-lock.json
 Available scripts: dev, build, lint, preview
 ```
@@ -130,6 +130,9 @@ scripts/qa-readonly-interactions.ps1 passed at 1440x960 and 390x844.
 scripts/validate-local.ps1 default mode passed.
 bash scripts/validate-local.sh reached npm build but is blocked by the bash/WSL Node 18.19.1 toolchain and missing Rollup optional native package.
 git diff --check and changed-file secret scan passed.
+Started P2.18 Bash validation runtime guard from clean local commit 1184d7d.
+Added Node.js runtime preflight to scripts/validate-local.sh before npm gates.
+Documented the Bash helper's Vite 7 Node requirement in README.md and FRONTEND_V2_GAP_MAP.md.
 ```
 
 ---
@@ -146,7 +149,6 @@ docs/design/FRONTEND_V2_GAP_MAP.md
 README.md
 scripts/validate-local.ps1
 scripts/validate-local.sh
-scripts/qa-readonly-interactions.ps1
 ```
 
 ---
@@ -281,6 +283,14 @@ Current P2.16/P2.17 validation parity and interaction QA:
 - bash scripts/validate-local.sh reached npm build but is blocked by the bash/WSL Node 18.19.1 toolchain and missing Rollup optional native package.
 - git diff --check passed.
 - changed-file secret scan passed.
+
+Current P2.18 Bash validation runtime guard:
+- scripts/validate-local.sh now checks Node.js before npm gates.
+- Incompatible Bash/WSL Node versions now fail with a clear Vite 7 requirement message instead of reaching npm build first.
+- scripts/validate-local.ps1 passed.
+- bash scripts/validate-local.sh reported Node.js 18.19.1 plus Vite 7's Node.js 20.19+ or 22.12+ requirement before exiting.
+- git diff --check passed.
+- changed-file secret scan passed.
 ```
 
 ---
@@ -291,7 +301,7 @@ Current P2.16/P2.17 validation parity and interaction QA:
 No npm test script is defined.
 No backend live integration request is needed for this mock-first UI batch.
 No push is authorized for this batch until the user explicitly asks for push.
-Full Bash helper validation awaits a compatible bash/WSL Node 20.19+ or 22.12+ environment and Rollup optional native package availability.
+Full Bash helper validation awaits a compatible bash/WSL Node 20.19+ or 22.12+ environment and Rollup optional native package availability; P2.18 makes that blocker explicit before npm gates.
 ```
 
 ---
@@ -299,7 +309,7 @@ Full Bash helper validation awaits a compatible bash/WSL Node 20.19+ or 22.12+ e
 ## Validation Failures
 
 ```text
-bash scripts/validate-local.sh cannot complete in the current bash/WSL environment because Node.js is 18.19.1 and the Rollup optional native package is unavailable there.
+bash scripts/validate-local.sh cannot complete full validation in the current bash/WSL environment because Node.js is 18.19.1 and the Rollup optional native package is unavailable there. P2.18 changes this into an early runtime preflight failure.
 ```
 
 ---

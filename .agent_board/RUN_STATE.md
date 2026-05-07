@@ -17,7 +17,7 @@ A4-Sustained Local Frontend Autopilot
 ## Current Mission
 
 ```text
-P2.16/P2.17 Validation Parity And Interaction QA
+P2.18 Bash Validation Runtime Guard
 ```
 
 ---
@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-P2.16/P2.17 validation parity and read-model interaction QA complete candidate
+P2.18 Bash validation runtime preflight complete candidate
 ```
 
 ---
@@ -58,7 +58,7 @@ P2.16/P2.17 validation parity and read-model interaction QA complete candidate
 ## Last Completed Task
 
 ```text
-Committed 60b74a1: orchestrated local frontend validation
+Committed 1184d7d: read-model interaction QA
 ```
 
 ---
@@ -66,7 +66,7 @@ Committed 60b74a1: orchestrated local frontend validation
 ## Last Validation
 
 ```text
-scripts/qa-readonly-interactions.ps1, scripts/validate-local.ps1 default mode, git diff --check, and changed-file secret scan passed. bash scripts/validate-local.sh reached npm build but is blocked by the bash/WSL Node 18.19.1 toolchain and missing Rollup optional native package.
+scripts/validate-local.ps1 passed; bash scripts/validate-local.sh now fails early at runtime preflight with Node.js 18.19.1 and clear Vite 7 requirement; git diff --check and changed-file secret scan passed.
 ```
 
 ---
@@ -75,7 +75,7 @@ scripts/qa-readonly-interactions.ps1, scripts/validate-local.ps1 default mode, g
 
 ```text
 Branch: main
-Worktree: intentionally editing P2.16/P2.17 validation scripts/docs/.agent_board after local 60b74a1
+Worktree: intentionally editing P2.18 validation script/docs/.agent_board after local 1184d7d
 ```
 
 ---
@@ -115,7 +115,7 @@ no
 ## Current Stop Status
 
 ```text
-ready for local P2.16/P2.17 commit after staged checks; stop at remote push boundary
+continue local P2.18 validation, local commit if green, and stop at remote push boundary
 ```
 
 ---
@@ -123,5 +123,5 @@ ready for local P2.16/P2.17 commit after staged checks; stop at remote push boun
 ## Next Action
 
 ```text
-Stage the P2.16/P2.17 batch explicitly, run staged checks, and commit locally without push.
+Run targeted validation, update evidence, and commit locally without push.
 ```

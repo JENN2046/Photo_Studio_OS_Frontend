@@ -756,6 +756,32 @@ Notes:
 - scripts/validate-local.ps1 and scripts/validate-local.sh now include interaction QA in their browser-QA mode.
 ```
 
+```text
+## VALIDATION-20260507-BASH-RUNTIME-GUARD
+
+Task: Add Bash validation runtime preflight for Vite 7 Node requirements.
+Commands run:
+- powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1
+- bash scripts/validate-local.sh
+- git diff --check
+- changed-file secret scan on current diff
+Result: passed for PowerShell validation path and Bash preflight behavior
+Failures:
+- bash scripts/validate-local.sh intentionally exits at runtime preflight in the current Bash/WSL environment because Node.js 18.19.1 is below the Vite 7 requirement.
+Fix attempted: none required; this batch converts the known environment gap into an early clear preflight failure.
+Re-run result:
+- scripts/validate-local.ps1 passed.
+- bash scripts/validate-local.sh reported Node.js 18.19.1, Vite 7's Node.js 20.19+ or 22.12+ requirement, and the PowerShell fallback command before exiting.
+- git diff --check passed.
+- changed-file secret scan passed.
+Not validated:
+- Full Bash helper validation awaits a compatible Bash/WSL Node runtime.
+- No npm test script is defined.
+- No backend live integration was run; frontend remains mock-first unless VITE_BACKEND_API_BASE_URL is configured.
+Notes:
+- scripts/validate-local.sh now checks Node.js before npm gates and reports the Vite 7 requirement clearly.
+```
+
 ---
 
 ## Entry Template

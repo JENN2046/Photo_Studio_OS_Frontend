@@ -10,7 +10,7 @@ Update this whenever work stops, pauses, blocks, or completes a meaningful batch
 
 ```text
 Status: complete-candidate
-Result: P2.16/P2.17 validation parity and interaction QA is ready for local commit. PowerShell validation passed; Bash helper full execution is environment-blocked by bash/WSL Node 18.19.1 and missing Rollup optional native package.
+Result: P2.18 Bash validation runtime guard is in progress. Bash helper now fails early with a clear Vite 7 Node requirement when Bash/WSL exposes an incompatible Node runtime.
 ```
 
 ---
@@ -51,7 +51,8 @@ Branch main was clean after local commit 6d33e17.
 Branch main was clean after local commit 32ab2f6.
 Branch main was clean after local commit e3bd271.
 Branch main was clean after local commit 60b74a1.
-Current batch intentionally edits P2.16/P2.17 validation scripts/docs/.agent_board after local commit 60b74a1.
+Branch main was clean after local commit 1184d7d.
+Current batch intentionally edits P2.18 validation script/docs/.agent_board after local commit 1184d7d.
 ```
 
 ---
@@ -124,6 +125,8 @@ Completed the first P1 frontend v2 realization slice:
 - scripts/validate-local.ps1 default mode passed.
 - bash scripts/validate-local.sh reached npm build but is blocked by the bash/WSL Node 18.19.1 toolchain and missing Rollup optional native package.
 - git diff --check and changed-file secret scan passed.
+- P2.18 added a Node.js runtime preflight to scripts/validate-local.sh before npm gates.
+- README.md and FRONTEND_V2_GAP_MAP.md now document the Bash helper's Vite 7 Node requirement.
 ```
 
 ---
@@ -140,7 +143,6 @@ docs/design/FRONTEND_V2_GAP_MAP.md
 README.md
 scripts/validate-local.ps1
 scripts/validate-local.sh
-scripts/qa-readonly-interactions.ps1
 ```
 
 ---
@@ -291,6 +293,14 @@ Current P2.16/P2.17 validation parity and interaction QA:
 - bash scripts/validate-local.sh reached npm build but is blocked by the bash/WSL Node 18.19.1 toolchain and missing Rollup optional native package.
 - git diff --check passed.
 - changed-file secret scan passed.
+
+Current P2.18 Bash validation runtime guard:
+- scripts/validate-local.sh checks Node.js before npm gates.
+- Incompatible Bash/WSL Node versions fail with a clear Vite 7 requirement message.
+- scripts/validate-local.ps1 passed.
+- bash scripts/validate-local.sh reported Node.js 18.19.1 plus Vite 7's Node.js 20.19+ or 22.12+ requirement before exiting.
+- git diff --check passed.
+- changed-file secret scan passed.
 ```
 
 ---
@@ -300,7 +310,7 @@ Current P2.16/P2.17 validation parity and interaction QA:
 ```text
 No npm test script is defined.
 No backend live integration request is planned for this mock-first UI batch.
-Full Bash helper validation awaits a compatible bash/WSL Node 20.19+ or 22.12+ environment and Rollup optional native package availability.
+Full Bash helper validation awaits a compatible bash/WSL Node 20.19+ or 22.12+ environment and Rollup optional native package availability; the helper now reports that blocker before npm gates.
 No push is authorized for local commits 472d848, 078f894, f7b1b8f, 1265584, 27ba2b5, 6f1666b, 4cc1539, ea67bc1, d68fdcf, ab11292, 96ef6ad, 6d33e17, 32ab2f6, e3bd271, 25110ed, 699a71c, 7eafcc8, 60b74a1, or the current P2.16/P2.17 cleanup until the user explicitly asks for push.
 ```
 
@@ -333,7 +343,7 @@ no
 ## Blockers
 
 ```text
-Full Bash validation helper execution is blocked by the current bash/WSL Node 18.19.1 toolchain and missing Rollup optional native package. PowerShell validation remains the validated local path.
+Full Bash validation helper execution is blocked by the current bash/WSL Node 18.19.1 toolchain and missing Rollup optional native package. PowerShell validation remains the validated local path; Bash now fails early with a readable preflight.
 ```
 
 ---
@@ -349,7 +359,7 @@ none for the next safe local frontend slice.
 ## Next Safe Action
 
 ```text
-Next safe action: run targeted validation, commit locally if green, then wait for explicit push approval.
+Next safe action: run targeted validation for P2.18, commit locally if green, then wait for explicit push approval.
 ```
 
 ---
@@ -361,7 +371,7 @@ Next safe action: run targeted validation, commit locally if green, then wait fo
 
 读取 AGENTS.md 和 .agent_board/*。
 继续 A4-Sustained Local Frontend Autopilot。
-先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的 P2.16/P2.17 validation parity and interaction QA 队列继续。
+先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的 P2.18 Bash validation runtime guard 队列继续。
 保持 mock-first/read-only，不碰 backend、root control repo、依赖、.env、deploy、生产服务、上传/下载/auth/storage/write actions。
 按当前持续推进节奏，小批次验证后可以本地 commit；push 只有用户明确说 push 才执行。
 用中文汇报。

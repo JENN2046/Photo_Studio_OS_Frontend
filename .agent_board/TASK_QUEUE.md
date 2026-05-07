@@ -10,7 +10,7 @@ It does not authorize remote writes, commits, pushes, deployments, backend chang
 ## Current Mission
 
 ```text
-P2.16/P2.17 Validation Parity And Interaction QA
+P2.18 Bash Validation Runtime Guard
 ```
 
 Mode:
@@ -22,7 +22,7 @@ A4-Sustained Local Frontend Autopilot
 Goal:
 
 ```text
-Keep PowerShell and Bash validation entry points aligned while adding read-model tab, local selection, and disabled action interaction QA.
+Fail Bash validation early and clearly when the shell exposes an incompatible Node runtime for Vite 7.
 ```
 
 ---
@@ -83,7 +83,7 @@ none
 
 ### todo
 
-Current safe queue after starting P2.16/P2.17 validation parity and interaction QA.
+Current safe queue after starting P2.18 Bash validation runtime guard.
 
 ```text
 none
@@ -221,6 +221,10 @@ none
 127. Ran scripts/validate-local.ps1 default mode successfully after P2.16/P2.17 changes.
 128. Ran bash scripts/validate-local.sh; it reached npm build but is blocked by the bash/WSL Node 18.19.1 toolchain and missing Rollup optional native package.
 129. Ran git diff --check and changed-file secret scan successfully after final board updates.
+130. Started P2.18 from clean local commit 1184d7d.
+131. Added a Node.js runtime preflight to scripts/validate-local.sh before npm gates.
+132. Documented the Bash helper's Vite 7 Node requirement in README.md and FRONTEND_V2_GAP_MAP.md.
+133. Validated P2.18 with scripts/validate-local.ps1, Bash runtime-preflight check, git diff --check, and changed-file secret scan.
 ```
 
 ### blocked
