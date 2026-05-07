@@ -10,10 +10,10 @@ Codex should update this after each meaningful batch of local frontend work.
 
 ```text
 Status: complete-candidate
-Updated: 2026-05-07 14:45 +0800
+Updated: 2026-05-07 15:03 +0800
 Repo: Photo_Studio_OS_Frontend
 Mode: A4-Sustained Local Frontend Autopilot
-Mission: P2.10 Command Center Gap Table Fact Refresh
+Mission: P2.11 Read-model Workspace View-model Cleanup
 ```
 
 ---
@@ -25,8 +25,8 @@ Fill from actual command output.
 ```text
 Workspace: A:\Photo_Studio_OS_Frontend
 Branch: main
-Worktree: intentionally editing P2.10 docs and .agent_board after local 6d33e17
-Diff stat: FRONTEND_V2_GAP_MAP.md and .agent_board
+Worktree: intentionally editing P2.11 source/docs/.agent_board after local 32ab2f6
+Diff stat: ReadModelPages.tsx, readModelViewModels.ts, FRONTEND_V2_GAP_MAP.md, and .agent_board
 Package manager: npm with package-lock.json
 Available scripts: dev, build, lint, preview
 ```
@@ -111,6 +111,11 @@ Browser-validated #risk and #approvals in the in-app browser and at 390px after 
 Locally committed 6d33e17: derived Command Center side details from the view-model layer.
 Started P2.10 Command Center Gap Table Fact Refresh from clean local commit 6d33e17.
 Refreshed the stale Command Center gap table so it no longer describes old English rail/topbar/gauge/Agent states as current.
+Locally committed 32ab2f6: refreshed Command Center gap table facts.
+Started P2.11 Read-model Workspace View-model Cleanup from clean local commit 32ab2f6.
+Moved asset label/tone helpers, QC result labels, review item tone, delivery checklist labels, and delivery artifact derivation from ReadModelPages.tsx into readModelViewModels.ts.
+Kept all four read-model pages mock-first/read-only and did not touch backend fetchers, mocks, CSS, dependencies, or package files.
+Browser-checked the four read-model hash pages in the in-app browser and at 390px with no console errors or horizontal overflow.
 ```
 
 ---
@@ -124,6 +129,8 @@ docs/design/FRONTEND_V2_GAP_MAP.md
 .agent_board/TASK_QUEUE.md
 .agent_board/VALIDATION_LOG.md
 .agent_board/HANDOFF.md
+src/features/read-models/ReadModelPages.tsx
+src/features/read-models/readModelViewModels.ts
 ```
 
 ---
@@ -198,6 +205,15 @@ Current P2.10 gap table fact refresh:
 - Docs-only diff inspected.
 - git diff --check passed.
 - changed-file secret scan passed.
+
+Current P2.11 read-model workspace view-model cleanup:
+- npm run lint passed after source changes.
+- In-app browser verified #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness headings, tab count, metric count, key read-only copy, and console error count 0.
+- Playwright CLI 390px matrix verified all four read-model hash pages have one workspace console, 4 tabs, 3 metrics, expected copy, no horizontal overflow, and console error count 0.
+- git diff --check passed.
+- changed-file secret scan passed.
+- npm run lint passed.
+- npm run build passed.
 ```
 
 ---
@@ -248,7 +264,7 @@ Live backend toggle still requires configuring VITE_BACKEND_API_BASE_URL and run
 ## Next Safe Task
 
 ```text
-Commit the local P2.10 gap table fact refresh, then stop at remote push boundary.
+Commit the local P2.11 read-model cleanup, then stop at remote push boundary.
 ```
 
 ---

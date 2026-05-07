@@ -17,7 +17,7 @@ A4-Sustained Local Frontend Autopilot
 ## Current Mission
 
 ```text
-P2.10 Command Center Gap Table Fact Refresh
+P2.11 Read-model Workspace View-model Cleanup
 ```
 
 ---
@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-Command Center gap table fact refresh complete candidate
+P2.11 read-model workspace view-model cleanup complete candidate
 ```
 
 ---
@@ -58,7 +58,7 @@ Command Center gap table fact refresh complete candidate
 ## Last Completed Task
 
 ```text
-Refreshed stale Command Center gap table facts after P2.9
+Committed 32ab2f6: refreshed Command Center gap table facts after P2.9
 ```
 
 ---
@@ -66,7 +66,7 @@ Refreshed stale Command Center gap table facts after P2.9
 ## Last Validation
 
 ```text
-Docs-only refresh after P2.9; Command Center gap table now matches the current Chinese rail, topbar, gauge, risk, approval, activity, and Agent inspection state
+git diff --check, changed-file secret scan, npm run lint, npm run build, in-app browser route QA, and Playwright CLI 390px matrix passed for P2.11
 ```
 
 ---
@@ -75,7 +75,7 @@ Docs-only refresh after P2.9; Command Center gap table now matches the current C
 
 ```text
 Branch: main
-Worktree: intentionally editing P2.10 docs and .agent_board after local 6d33e17
+Worktree: intentionally editing P2.11 source/docs/.agent_board after local 32ab2f6
 ```
 
 ---
@@ -115,7 +115,7 @@ no
 ## Current Stop Status
 
 ```text
-stop at remote push boundary after local P2.10 commit
+stop at remote push boundary after local P2.11 commit
 ```
 
 ---
@@ -123,5 +123,5 @@ stop at remote push boundary after local P2.10 commit
 ## Next Action
 
 ```text
-Run docs-only guarded validation, commit the P2.10 gap table fact refresh locally, then wait for explicit push approval.
+Commit P2.11 locally without push.
 ```

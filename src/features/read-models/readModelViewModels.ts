@@ -38,6 +38,20 @@ export interface ReadModelViewModel {
   details: ReadModelDetail[];
 }
 
+type AssetInboxItem = BackendAssetInbox["items"][number];
+type QcRetouchItem = BackendQcRetouchQueue["items"][number];
+type ReviewGalleryItem = BackendReviewGallery["items"][number];
+type DeliveryChecklistKey = keyof BackendDeliveryReadiness["checklist"];
+
+export interface DeliveryArtifact {
+  id: string;
+  label: string;
+  title: string;
+  detail: string;
+  status: string;
+  tone: ReadModelTone;
+}
+
 export function formatStatus(value: string | undefined): string {
   if (!value) {
     return "未知";
@@ -266,6 +280,104 @@ function formatShotLabel(
   return shot
     ? `${shot.shotTypeCode} / ${formatStatus(shot.status)}`
     : "镜头需求待绑定";
+}
+
+export function formatPercent(value: number | undefined): string {
+  if (typeof value !== "number" || Number.isNaN(value)) {
+    return "待计算";
+  }
+
+  return `${Math.round(value * 100)}%`;
+}
+
+export function formatDimensions(asset: AssetInboxItem): string {
+  if (!asset.file.width || !asset.file.height) {
+    return "尺寸待定";
+  }
+
+  return `${asset.file.width} x ${asset.file.height}`;
+}
+
+export function assetTone(asset: AssetInboxItem): ReadModelTone {
+  return toneFromStatus(asset.latestQc?.status ?? asset.status);
+}
+
+export function assetShotLabel(asset: {
+  shotRequirement?: { shotTypeCode: string; status: string };
+}): string {
+  return formatShotLabel(asset.shotRequirement);
+}
+
+export function assetSkuLabel(asset: {
+  sku?: { code: string; name: string };
+}): string {
+  return formatSkuLabel(asset.sku);
+}
+
+const qcResultLabels: Record<string, string> = {
+  focus: "焦点",
+  exposure: "曝光",
+  crop: "裁切",
+  color: "色彩",
+  binding: "绑定",
+  producer: "制片复核",
+  retouchLead: "精修负责人"
+};
+
+export function formatQcResultKey(key: string): string {
+  return qcResultLabels[key] ?? formatStatus(key);
+}
+
+export function formatQcResultValue(value: unknown): string {
+  return typeof value === "string" ? formatStatus(value) : String(value);
+}
+
+export function qcItemTone(item: QcRetouchItem): ReadModelTone {
+  return toneFromStatus(item.qc.latestStatus ?? item.retouch?.status);
+}
+
+export function reviewItemTone(item: ReviewGalleryItem): ReadModelTone {
+  return toneFromStatus(item.status);
+}
+
+export const deliveryChecklistLabels: Record<DeliveryChecklistKey, string> = {
+  hasItems: "包含交付素材",
+  hasPackageKey: "交付包已生成",
+  hasManifestKey: "交付清单已生成",
+  allItemsHaveFileKey: "素材文件完整"
+};
+
+export function createDeliveryArtifacts(
+  model: BackendDeliveryReadiness
+): DeliveryArtifact[] {
+  return [
+    {
+      id: "package",
+      label: "交付包",
+      title: model.packageKey ? "交付包已生成" : "交付包待生成",
+      detail: model.packageKey ?? "暂无交付包路径",
+      status: model.checklist.hasPackageKey ? "ready" : "preparing",
+      tone: model.checklist.hasPackageKey ? "good" : "warn"
+    },
+    {
+      id: "manifest",
+      label: "Manifest",
+      title: model.manifestKey ? "交付清单已生成" : "交付清单待生成",
+      detail: model.manifestKey ?? "暂无交付清单路径",
+      status: model.checklist.hasManifestKey ? "ready" : "preparing",
+      tone: model.checklist.hasManifestKey ? "good" : "warn"
+    },
+    {
+      id: "items",
+      label: "交付素材",
+      title: `${model.itemCount} 个交付项`,
+      detail: model.checklist.allItemsHaveFileKey
+        ? "所有素材文件已关联。"
+        : "仍有素材文件需要人工复核。",
+      status: model.checklist.allItemsHaveFileKey ? "ready" : "warning",
+      tone: model.checklist.allItemsHaveFileKey ? "good" : "warn"
+    }
+  ];
 }
 
 export function createAssetInboxViewModel(

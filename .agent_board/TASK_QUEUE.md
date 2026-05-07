@@ -10,7 +10,7 @@ It does not authorize remote writes, commits, pushes, deployments, backend chang
 ## Current Mission
 
 ```text
-P2.10 Command Center Gap Table Fact Refresh
+P2.11 Read-model Workspace View-model Cleanup
 ```
 
 Mode:
@@ -22,7 +22,7 @@ A4-Sustained Local Frontend Autopilot
 Goal:
 
 ```text
-Keep the Frontend v2 gap map aligned with current Command Center reality so future sessions do not chase completed English-copy or scene-navigation gaps.
+Keep read-model page components focused on rendering and local selection state by moving reusable asset/QC/review/delivery derivation into the view-model layer.
 ```
 
 ---
@@ -83,7 +83,7 @@ none
 
 ### todo
 
-Current safe queue after Command Center rail scene-click validation.
+Current safe queue after starting P2.11 read-model cleanup.
 
 ```text
 none
@@ -179,6 +179,11 @@ none
 85. Locally committed 6d33e17: refactor: derive command center side details.
 86. Started P2.10 Command Center Gap Table Fact Refresh from clean local commit 6d33e17.
 87. Refreshed the Command Center gap table to reflect current Chinese rail, topbar, gauges, golden loop, risk/approval details, activity, and Agent inspection state.
+88. Locally committed 32ab2f6: refreshed Command Center gap table facts.
+89. Started P2.11 Read-model Workspace View-model Cleanup from clean local commit 32ab2f6.
+90. Moved asset label/tone helpers, QC result labels, review tone, delivery checklist labels, and delivery artifact derivation into src/features/read-models/readModelViewModels.ts.
+91. Browser-validated the four read-model hash pages in the in-app browser and at 390px after the P2.11 view-model cleanup.
+92. Validated P2.11 with git diff --check, changed-file secret scan, npm run lint, and npm run build.
 ```
 
 ### blocked

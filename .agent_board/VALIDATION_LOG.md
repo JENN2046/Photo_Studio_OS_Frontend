@@ -596,6 +596,35 @@ Notes:
 - FRONTEND_V2_GAP_MAP.md now reflects current Chinese Command Center rail, topbar, gauges, golden loop, risk/approval detail, activity, and Agent inspection state.
 ```
 
+```text
+## VALIDATION-20260507-READMODEL-WORKSPACE-VIEWMODEL
+
+Task: Move read-model workspace helper derivation into the view-model layer.
+Commands run:
+- npm run lint
+- in-app browser route check for #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness
+- Playwright CLI 390px matrix for #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness
+- Playwright CLI console error check
+- git diff --check
+- changed-file secret scan on current diff
+- npm run build
+Result: passed
+Failures:
+- First browser probe expected a static QC `标记补拍` button, but the page correctly shows dynamic `退回精修` plus `只读建议`; no app code change was needed.
+- First 390px text probe checked aria-label/English eyebrow text that is not necessarily included in rendered innerText; selector and Chinese copy checks passed.
+Fix attempted:
+- Re-ran QA against the actual read-only copy and workspace selectors.
+Re-run result:
+- In-app browser route check passed with heading count 1, tab count 4, metric count 3, expected copy present, and console error count 0.
+- 390px matrix passed with one workspace console, 4 tabs, 3 metrics, expected read-only copy, no horizontal overflow, and console error count 0 across all four read-model hash pages.
+Not validated:
+- No npm test script is defined.
+- No backend live integration was run; frontend remains mock-first unless VITE_BACKEND_API_BASE_URL is configured.
+Notes:
+- ReadModelPages.tsx now imports asset/QC/review/delivery helper derivation from readModelViewModels.ts.
+- Backend fetchers, mock fixture data, CSS, dependencies, .env, upload/download/auth/storage/write behavior, and production links were not changed.
+```
+
 ---
 
 ## Entry Template
