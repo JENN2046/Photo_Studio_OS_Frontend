@@ -9,8 +9,8 @@ Update this whenever work stops, pauses, blocks, or completes a meaningful batch
 ## Handoff Summary
 
 ```text
-Status: in-progress
-Result: P2.5 read-only RC hardening is in progress. Command Center entry clicks, keyboard focus visibility, and the five-page RC browser matrix have been browser-checked; the focus hardening batch is fully validated and ready for local commit.
+Status: complete-candidate
+Result: P2.5 read-only RC hardening is browser-validated. Command Center entry clicks, keyboard focus visibility, five-page RC matrix, boundary-state matrix, whitespace, secret scan, lint, and build all passed; the closeout docs batch is ready for local commit.
 ```
 
 ---
@@ -43,7 +43,7 @@ main
 
 ```text
 Branch main was clean after local commit 27ba2b5.
-Current batch intentionally edits keyboard focus visibility CSS and .agent_board for P2.5 RC hardening.
+Current batch intentionally edits P2.5 RC documentation and .agent_board after local commit 6f1666b.
 ```
 
 ---
@@ -75,6 +75,9 @@ Completed the first P1 frontend v2 realization slice:
 - Command Center 黄金链路 entries were browser-clicked into Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness with correct headings and URLs.
 - Keyboard focus visibility was hardened across Command Center rail links, production links, side links, read-model tabs/context links, state buttons, and selectable read-model cards.
 - RC browser matrix passed at 1440px, 1024px, and 390px across Command Center plus the four read-model hash pages, with no horizontal overflow or console errors observed.
+- 6f1666b is a local commit for RC keyboard focus visibility and has not been pushed.
+- Boundary-state matrix passed at 1024px and 390px for loading, error, missing-config, and missing-id idle states.
+- README.md, FRONTEND_V2_GAP_MAP.md, and .agent_board were refreshed with P2.5 RC hardening evidence.
 ```
 
 ---
@@ -82,8 +85,8 @@ Completed the first P1 frontend v2 realization slice:
 ## Files Changed
 
 ```text
-src/styles/global.css
-src/features/read-models/readModelPages.css
+README.md
+docs/design/FRONTEND_V2_GAP_MAP.md
 .agent_board/CHECKPOINT.md
 .agent_board/RUN_STATE.md
 .agent_board/TASK_QUEUE.md
@@ -127,6 +130,14 @@ Current P2.5 focus hardening batch:
 - git diff --check passed.
 - changed-file secret scan passed.
 - npm run build passed.
+
+Current P2.5 RC closeout docs batch:
+- Boundary-state matrix passed at 1024px and 390px for loading, error, missing-config, and missing-id idle states.
+- No missing expected copy, horizontal overflow, or console errors were observed.
+- git diff --check passed.
+- changed-file secret scan passed.
+- npm run lint passed.
+- npm run build passed.
 ```
 
 ---
@@ -136,7 +147,7 @@ Current P2.5 focus hardening batch:
 ```text
 No npm test script is defined.
 No backend live integration request is planned for this mock-first UI batch.
-No push is authorized for local commits 472d848, 078f894, f7b1b8f, 1265584, 27ba2b5, or the current focus hardening batch until the user explicitly asks for push.
+No push is authorized for local commits 472d848, 078f894, f7b1b8f, 1265584, 27ba2b5, 6f1666b, or the current closeout docs batch until the user explicitly asks for push.
 ```
 
 ---
@@ -184,7 +195,7 @@ none for the next safe local frontend slice.
 ## Next Safe Action
 
 ```text
-Next safe local slice: locally commit the P2.5 focus hardening batch, then continue the boundary-state matrix. Stop at remote push boundary.
+Next safe local slice: locally commit the P2.5 RC closeout docs batch, then stop at remote push boundary.
 ```
 
 ---

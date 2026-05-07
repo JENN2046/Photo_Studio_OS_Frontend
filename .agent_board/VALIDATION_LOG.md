@@ -424,6 +424,28 @@ Notes:
 - changed-file secret scan passed.
 - npm run build passed.
 - This is frontend-only CSS and local task-rail work. It does not change backend fetchers, data shapes, auth, upload/download, writes, dependencies, or .env.
+
+## VALIDATION-20260507-RC-BOUNDARY-CLOSEOUT
+
+Task: Re-run P2.5 read-model boundary-state matrix and refresh RC closeout docs.
+Commands run:
+- Playwright CLI boundary-state matrix at 1024px and 390px for loading, error, missing-config, asset idle, QC idle, review idle, and delivery idle states
+Result: passed
+Failures: none
+Fix attempted: none required
+Re-run result: not applicable
+Not validated:
+- No npm test script is defined.
+- No backend live integration was run; frontend remains mock-first.
+Notes:
+- Verified expected Chinese state copy appeared for each checked route.
+- No horizontal overflow was observed at 1024px or 390px.
+- Console error count was 0.
+- git diff --check passed.
+- changed-file secret scan passed.
+- npm run lint passed.
+- npm run build passed.
+- This batch remains frontend-only, mock-first, and read-only.
 ```
 
 ---

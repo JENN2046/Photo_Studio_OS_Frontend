@@ -9,8 +9,8 @@ Codex should update this after each meaningful batch of local frontend work.
 ## Latest Checkpoint
 
 ```text
-Status: in-progress
-Updated: 2026-05-07 11:41 +0800
+Status: complete-candidate
+Updated: 2026-05-07 11:52 +0800
 Repo: Photo_Studio_OS_Frontend
 Mode: A4-Sustained Local Frontend Autopilot
 Mission: P2.5 Frontend v2 Read-only RC Hardening
@@ -25,8 +25,8 @@ Fill from actual command output.
 ```text
 Workspace: A:\Photo_Studio_OS_Frontend
 Branch: main
-Worktree: intentionally editing keyboard focus visibility CSS and .agent_board
-Diff stat: src/styles/global.css, src/features/read-models/readModelPages.css, plus .agent_board
+Worktree: intentionally editing P2.5 RC documentation and .agent_board after local 6f1666b
+Diff stat: README.md, docs/design/FRONTEND_V2_GAP_MAP.md, plus .agent_board
 Package manager: npm with package-lock.json
 Available scripts: dev, build, lint, preview
 ```
@@ -78,6 +78,9 @@ Started P2.5 RC hardening from a clean worktree.
 Browser-clicked Command Center 黄金链路 entries into all four read-model hash pages.
 Hardened keyboard focus visibility across Command Center rail/production/side links and read-model tabs/context/state/selectable cards.
 Ran the RC browser matrix at 1440px, 1024px, and 390px across Command Center plus four read-model pages.
+Locally committed 6f1666b: improved RC keyboard focus visibility.
+Re-ran the boundary-state matrix at 1024px and 390px for loading, error, missing-config, and missing-id idle states.
+Refreshed README.md, FRONTEND_V2_GAP_MAP.md, and .agent_board with P2.5 RC hardening evidence.
 ```
 
 ---
@@ -85,8 +88,8 @@ Ran the RC browser matrix at 1440px, 1024px, and 390px across Command Center plu
 ## Changed Files
 
 ```text
-src/styles/global.css
-src/features/read-models/readModelPages.css
+README.md
+docs/design/FRONTEND_V2_GAP_MAP.md
 .agent_board/CHECKPOINT.md
 .agent_board/RUN_STATE.md
 .agent_board/TASK_QUEUE.md
@@ -107,6 +110,14 @@ Current focus hardening batch:
 - Console error count was 0.
 - git diff --check passed.
 - changed-file secret scan passed.
+- npm run build passed.
+
+Current P2.5 RC closeout docs batch:
+- Boundary-state matrix passed at 1024px and 390px for loading, error, missing-config, and missing-id idle states.
+- No missing expected copy, horizontal overflow, or console errors were observed.
+- git diff --check passed.
+- changed-file secret scan passed.
+- npm run lint passed.
 - npm run build passed.
 ```
 
@@ -158,7 +169,7 @@ Live backend toggle still requires configuring VITE_BACKEND_API_BASE_URL and run
 ## Next Safe Task
 
 ```text
-Locally commit the focus hardening batch, then continue with P2.5 boundary-state matrix.
+Locally commit the P2.5 RC closeout docs batch, then stop at remote push boundary.
 ```
 
 ---

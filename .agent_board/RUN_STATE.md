@@ -25,7 +25,7 @@ P2.5 Frontend v2 Read-only RC Hardening
 ## Current Phase
 
 ```text
-p2-cockpit-polish
+complete-candidate
 ```
 
 Suggested phases:
@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-Validate and commit keyboard focus visibility hardening
+P2.5 RC hardening complete candidate; stop at remote push boundary
 ```
 
 ---
@@ -58,7 +58,7 @@ Validate and commit keyboard focus visibility hardening
 ## Last Completed Task
 
 ```text
-Locally committed 27ba2b5: refreshed P2 frontend completion map
+Validated P2.5 RC documentation / task-rail closeout
 ```
 
 ---
@@ -66,7 +66,7 @@ Locally committed 27ba2b5: refreshed P2 frontend completion map
 ## Last Validation
 
 ```text
-npm run lint passed; npm run build passed; git diff --check passed; changed-file secret scan passed; Command Center entry clicks passed; RC browser matrix passed at 1440px / 1024px / 390px across Command Center and four read-model pages with console error count 0
+npm run lint passed; npm run build passed; git diff --check passed; changed-file secret scan passed; Command Center entry clicks passed; RC browser matrix passed at 1440px / 1024px / 390px; boundary-state matrix passed at 1024px / 390px with console error count 0
 ```
 
 ---
@@ -75,7 +75,7 @@ npm run lint passed; npm run build passed; git diff --check passed; changed-file
 
 ```text
 Branch: main
-Worktree: intentionally editing keyboard focus visibility CSS and .agent_board after local 27ba2b5
+Worktree: P2.5 RC closeout docs validated and pending local commit after 6f1666b
 ```
 
 ---
@@ -115,7 +115,7 @@ no
 ## Current Stop Status
 
 ```text
-not blocked
+stopped at remote push boundary after local closeout commit
 ```
 
 ---
@@ -123,5 +123,5 @@ not blocked
 ## Next Action
 
 ```text
-Commit the focus hardening batch locally, then continue P2.5 boundary-state matrix. Do not push without explicit user approval.
+Commit the P2.5 RC closeout docs batch locally, then wait for explicit push approval. Optional backend smoke remains blocked unless a local backend base URL is configured outside this repo.
 ```

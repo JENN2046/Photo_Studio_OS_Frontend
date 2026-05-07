@@ -30,8 +30,10 @@ As of the current Frontend v2 local state, the read-only production loop has mov
 - Read-model UI now shares repeated disabled action pairs and repeated metric strip rendering.
 - DEV-only read-model boundary rehearsals exist for `readModelState=loading`, `readModelState=error`, and `readModelState=missing-config`; idle context handling is also browser-checked.
 - README.md now documents the local Frontend v2 QA runway for Command Center, the four hash pages, 390px checks, and DEV-only state rehearsals.
+- P2.5 RC hardening has browser-clicked the Command Center `黄金链路` entries, verified visible keyboard focus rings, and re-run the five-page RC matrix at 1440px / 1024px / 390px.
+- P2.5 boundary-state matrix has rechecked loading, error, missing-config, and missing-id idle states at 1024px and 390px with no console errors or horizontal overflow.
 - `--ps-*` token aliases and text-color compatibility aliases exist in `src/styles/tokens.css`.
-- Current long-track focus is P2 cockpit polish, final read-only QA depth, and optional backend read-model smoke testing only when a local backend base URL is explicitly configured.
+- Current long-track focus is RC closeout documentation and optional backend read-model smoke testing only when a local backend base URL is explicitly configured.
 
 ## Source Files Used
 
@@ -75,6 +77,7 @@ Image references:
 | Labels | Command Center and read-model visible copy are Chinese-first; technical IDs such as `SKU`, `QC`, `CR3`, and backend query names remain intentional. | `src/features/command-center/commandCenterViewModel.ts`, `src/features/read-models/readModelViewModels.ts` |
 | Visual tokens | `--ps-*` bridge tokens and read-model text aliases are available for new v2 work. | `src/styles/tokens.css` |
 | Dedicated pages | Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness are dedicated read-only hash scenes with mock-first fallback. | `src/features/read-models/ReadModelPages.tsx` |
+| RC QA posture | Command Center entry clicks, keyboard focus visibility, five-page responsive matrix, and read-model boundary states have current browser evidence. | `.agent_board/VALIDATION_LOG.md` |
 
 ## Overall Gaps
 
@@ -93,6 +96,8 @@ Image references:
 | Read-model shared UI duplication. | Disabled action pairs and metric strips are shared components. | Add more shared pieces only when concrete duplication appears; avoid speculative abstractions. | P2 done |
 | Read-model boundary-state rehearsal. | DEV-only query states cover loading, error, missing-config, and missing-id idle checks without backend writes. | Keep these states local and read-only; do not use them as production auth/backend behavior. | P2 done |
 | Local QA runway. | README documents local routes, 390px checks, and DEV-only boundary rehearsals. | Use the README route list before future P2/P3 visual or read-model changes. | P2 done |
+| Keyboard focus visibility. | Command Center links and read-model tabs/cards now expose visible focus rings. | Keep future links/buttons/selectable cards covered by `:focus-visible` styles. | P2.5 done |
+| RC browser matrix. | Command Center plus four read-model pages passed 1440px / 1024px / 390px checks; boundary states passed 1024px / 390px checks. | Re-run this matrix after route, layout, or shared style changes. | P2.5 done |
 | Optional backend read-model smoke. | Still intentionally not run in this frontend-only mock-first batch. | Run only with a deliberately configured local `VITE_BACKEND_API_BASE_URL` outside this repo. | P2 blocked |
 
 ## Command Center Gap Table
@@ -223,8 +228,9 @@ Use this as the first copy alignment pass before creating more pages.
 10. Completed: expose the first Golden Product Loop IDs and four read-only entries from Command Center.
 11. Completed: P2 cockpit polish for 1280px side rail and 390px topbar status.
 12. Completed: P2 read-model cleanup for shared action pairs, shared metric strips, local boundary-state rehearsals, and README QA runway.
-13. Next: optional backend read-model smoke remains blocked until a local backend base URL is intentionally configured outside this repo.
-14. Always run `npm run lint` and `npm run build` after code/style changes.
+13. Completed: P2.5 RC hardening for Command Center entry clicks, visible keyboard focus, five-page responsive matrix, and boundary-state matrix.
+14. Next: optional backend read-model smoke remains blocked until a local backend base URL is intentionally configured outside this repo.
+15. Always run `npm run lint` and `npm run build` after code/style changes.
 
 ## Stop Conditions
 

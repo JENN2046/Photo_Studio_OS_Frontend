@@ -83,12 +83,10 @@ none
 
 ### todo
 
-Current safe queue after local commit `27ba2b5`.
+Current safe queue after P2.5 RC hardening validation.
 
 ```text
-1. Re-run boundary-state matrix and patch only concrete defects.
-2. Refresh QA runway / gap map / handoff for P2.5 RC hardening.
-3. Keep optional backend smoke blocked unless a local backend base URL is intentionally configured outside this repo.
+none
 ```
 
 ### done
@@ -147,12 +145,16 @@ Current safe queue after local commit `27ba2b5`.
 51. Hardened keyboard focus visibility for Command Center rail/production links/side links and read-model tabs/context/state/selectable cards.
 52. Ran RC browser matrix at 1440px, 1024px, and 390px across Command Center plus four read-model pages; no horizontal overflow or console errors were observed.
 53. Validated the focus hardening batch with git diff --check, changed-file secret scan, npm run lint, and npm run build.
+54. Locally committed 6f1666b: improved RC keyboard focus visibility.
+55. Re-ran the boundary-state matrix at 1024px and 390px for loading, error, missing-config, and missing-id idle states; no missing copy, horizontal overflow, or console errors were observed.
+56. Refreshed README.md, FRONTEND_V2_GAP_MAP.md, and .agent_board with P2.5 RC hardening evidence.
+57. Validated the P2.5 RC closeout docs batch with git diff --check, changed-file secret scan, npm run lint, and npm run build.
 ```
 
 ### blocked
 
 ```text
-none
+Optional backend read-model smoke remains blocked until a local backend base URL is intentionally configured outside this repo.
 ```
 
 ### skipped

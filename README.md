@@ -105,6 +105,14 @@ For browser QA, check the four read-model pages and Command Center at desktop,
 tablet, and 390px widths. Confirm Chinese mock content, tab navigation,
 Command Center entry links, no console errors, and no horizontal overflow.
 
+Keyboard QA:
+
+- Tab through the Command Center rail, `黄金链路` entries, right-side status
+  links, read-model tabs, context links, state retry button, and selectable
+  read-model cards.
+- Confirm the active item has a visible 2px focus ring and that focus movement
+  does not resize or shift the layout.
+
 DEV-only read-model boundary rehearsals:
 
 - Add `readModelState=loading` to a read-model hash query to hold the loading state.
