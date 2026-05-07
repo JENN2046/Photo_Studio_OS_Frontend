@@ -379,6 +379,23 @@ Not validated:
 - No npm test script is defined.
 Notes:
 - README.md now lists the local Command Center route, four read-model hash routes, 390px QA expectations, and DEV-only readModelState rehearsals.
+
+## VALIDATION-20260507-P2-COMPLETION-MAP
+
+Task: Refresh P2 completion map.
+Commands run:
+- git diff --check
+- changed-file secret scan on current diff
+- npm run lint
+- npm run build
+Result: passed
+Failures: none
+Fix attempted: not applicable
+Re-run result: not applicable
+Not validated:
+- No npm test script is defined.
+Notes:
+- FRONTEND_V2_GAP_MAP.md now records P2 cockpit responsive fixes, shared read-model UI, boundary-state rehearsal, local QA runway, and optional backend smoke blocker status.
 ```
 
 ---

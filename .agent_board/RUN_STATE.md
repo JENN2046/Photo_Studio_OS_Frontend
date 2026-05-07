@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-Validate and commit local QA runway documentation
+Validate and commit P2 completion map refresh
 ```
 
 ---
@@ -58,7 +58,7 @@ Validate and commit local QA runway documentation
 ## Last Completed Task
 
 ```text
-Locally committed f7b1b8f: rehearsed read-model boundary states
+Locally committed 1265584: documented frontend v2 QA runway
 ```
 
 ---
@@ -66,7 +66,7 @@ Locally committed f7b1b8f: rehearsed read-model boundary states
 ## Last Validation
 
 ```text
-git diff --check passed; changed-file secret scan passed; npm run lint passed; npm run build passed for README local QA runway docs batch
+git diff --check passed; changed-file secret scan passed; npm run lint passed; npm run build passed for P2 completion map batch
 ```
 
 ---
@@ -75,7 +75,7 @@ git diff --check passed; changed-file secret scan passed; npm run lint passed; n
 
 ```text
 Branch: main
-Worktree: intentionally editing README local QA runway and .agent_board after local f7b1b8f
+Worktree: intentionally editing P2 completion map and .agent_board after local 1265584
 ```
 
 ---
@@ -123,5 +123,5 @@ not blocked
 ## Next Action
 
 ```text
-Commit the docs batch locally if staged checks stay green, then continue to the P2 completion map. Do not push without explicit user approval.
+Commit the completion map batch locally if staged checks stay green, then stop at remote push boundary. Do not push without explicit user approval.
 ```

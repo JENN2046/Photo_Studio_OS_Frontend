@@ -83,11 +83,10 @@ none
 
 ### todo
 
-Current safe queue after local commit `f7b1b8f`.
+Current safe queue after local commit `1265584`.
 
 ```text
-1. Refresh the P2 completion map after the current cockpit maturation slice.
-2. Keep optional backend smoke blocked unless a local backend base URL is intentionally configured outside this repo.
+1. Keep optional backend smoke blocked unless a local backend base URL is intentionally configured outside this repo.
 ```
 
 ### done
@@ -140,6 +139,7 @@ Current safe queue after local commit `f7b1b8f`.
 45. Clarified read-model state notices with explicit status labels and mock-first/read-only posture.
 46. Browser-checked loading, error, missing-config, and idle states at 390px with no horizontal overflow and console error count 0.
 47. Documented the local Frontend v2 QA runway in README.md, including Command Center, four read-model hash routes, 390px expectations, and DEV-only readModelState rehearsals.
+48. Refreshed docs/design/FRONTEND_V2_GAP_MAP.md with P2 cockpit polish, component consolidation, boundary-state rehearsal, local QA runway, and optional backend smoke blocker status.
 ```
 
 ### blocked

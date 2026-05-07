@@ -10,7 +10,7 @@ Codex should update this after each meaningful batch of local frontend work.
 
 ```text
 Status: in-progress
-Updated: 2026-05-07 11:22 +0800
+Updated: 2026-05-07 11:26 +0800
 Repo: Photo_Studio_OS_Frontend
 Mode: A4-Sustained Local Frontend Autopilot
 Mission: P2 Read-only Cockpit Maturation
@@ -25,8 +25,8 @@ Fill from actual command output.
 ```text
 Workspace: A:\Photo_Studio_OS_Frontend
 Branch: main
-Worktree: intentionally editing README local QA runway and .agent_board
-Diff stat: README.md plus .agent_board
+Worktree: intentionally editing P2 completion map and .agent_board
+Diff stat: docs/design/FRONTEND_V2_GAP_MAP.md plus .agent_board
 Package manager: npm with package-lock.json
 Available scripts: dev, build, lint, preview
 ```
@@ -71,6 +71,8 @@ Clarified read-model state notices with mock-first/read-only status labels.
 Browser-checked loading, error, missing-config, and idle states at 390px.
 Locally committed f7b1b8f: rehearsed read-model boundary states.
 Documented the local Frontend v2 QA runway in README.md.
+Locally committed 1265584: documented frontend v2 QA runway.
+Refreshed FRONTEND_V2_GAP_MAP.md with P2 completion facts and optional backend smoke blocker status.
 ```
 
 ---
@@ -78,7 +80,7 @@ Documented the local Frontend v2 QA runway in README.md.
 ## Changed Files
 
 ```text
-README.md
+docs/design/FRONTEND_V2_GAP_MAP.md
 .agent_board/CHECKPOINT.md
 .agent_board/RUN_STATE.md
 .agent_board/TASK_QUEUE.md
@@ -91,8 +93,8 @@ README.md
 ## Validation Run
 
 ```text
-Current local QA runway docs batch:
-- README.md documents local Vite route, Command Center, four read-model hash routes, 390px QA expectations, and DEV-only readModelState rehearsals.
+Current P2 completion map batch:
+- FRONTEND_V2_GAP_MAP.md records completed P2 cockpit responsive fixes, shared read-model UI, boundary-state rehearsal, README QA runway, and optional backend smoke blocker status.
 - git diff --check passed.
 - changed-file secret scan passed.
 - npm run lint passed.
@@ -147,7 +149,7 @@ Live backend toggle still requires configuring VITE_BACKEND_API_BASE_URL and run
 ## Next Safe Task
 
 ```text
-Locally commit the QA runway docs if staged checks stay green, then continue with the P2 completion map.
+Locally commit the P2 completion map if staged checks stay green, then stop at the remote push boundary.
 ```
 
 ---

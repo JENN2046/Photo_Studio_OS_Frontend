@@ -69,7 +69,8 @@ Completed the first P1 frontend v2 realization slice:
 - 472d848 is a local commit for the mobile Command Center topbar status fix and has not been pushed.
 - 078f894 is a local commit for the shared read-model metric strip and has not been pushed.
 - f7b1b8f is a local commit for read-model boundary-state rehearsal and has not been pushed.
-- Current README local QA runway docs batch is validated and pending local commit.
+- 1265584 is a local commit for the README local QA runway and has not been pushed.
+- Current P2 completion map batch is validated and pending local commit.
 ```
 
 ---
@@ -77,7 +78,7 @@ Completed the first P1 frontend v2 realization slice:
 ## Files Changed
 
 ```text
-README.md
+docs/design/FRONTEND_V2_GAP_MAP.md
 .agent_board/RUN_STATE.md
 .agent_board/CHECKPOINT.md
 .agent_board/HANDOFF.md
@@ -112,8 +113,8 @@ Current P2 cockpit breakpoint batch:
 Current backend smoke docs batch:
 - pushed in 11b4b5e
 
-Current README local QA runway docs batch:
-- README documents Command Center, four read-model hash routes, 390px QA expectations, and DEV-only readModelState rehearsals.
+Current P2 completion map batch:
+- FRONTEND_V2_GAP_MAP.md records P2 cockpit polish, shared read-model UI, boundary-state rehearsal, README QA runway, and optional backend smoke blocker status.
 - git diff --check passed.
 - changed-file secret scan passed.
 - npm run lint passed.
@@ -127,7 +128,7 @@ Current README local QA runway docs batch:
 ```text
 No npm test script is defined.
 No backend live integration request is planned for this mock-first UI batch.
-No push is authorized for local commits 472d848, 078f894, f7b1b8f, or the current docs batch until the user explicitly asks for push.
+No push is authorized for local commits 472d848, 078f894, f7b1b8f, 1265584, or the current completion-map batch until the user explicitly asks for push.
 ```
 
 ---
@@ -175,7 +176,7 @@ none for the next safe local frontend slice.
 ## Next Safe Action
 
 ```text
-Next safe local slice: locally commit README QA runway docs, then continue into the P2 completion map.
+Next safe local slice: locally commit the P2 completion map, then stop at remote push boundary.
 ```
 
 ---

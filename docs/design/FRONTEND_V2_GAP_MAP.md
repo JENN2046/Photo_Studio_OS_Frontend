@@ -26,6 +26,10 @@ As of the current Frontend v2 local state, the read-only production loop has mov
 - Delivery Readiness is now a dedicated read-only delivery outbox workspace with package/manifest summary, readiness checklist, blockers, selected output preview, disabled download, and disabled external delivery posture.
 - All four read-model hash pages share a production context bar for `projectId`, `reviewSessionId`, `deliveryId`, `mock-first / read-only`, and return-to-Command-Center navigation.
 - Command Center now exposes the first Golden Product Loop IDs through a compact `黄金链路` entry strip with four read-only page links.
+- P2 cockpit browser polish has fixed the 1280px side-rail breakpoint and the 390px Command Center topbar status line.
+- Read-model UI now shares repeated disabled action pairs and repeated metric strip rendering.
+- DEV-only read-model boundary rehearsals exist for `readModelState=loading`, `readModelState=error`, and `readModelState=missing-config`; idle context handling is also browser-checked.
+- README.md now documents the local Frontend v2 QA runway for Command Center, the four hash pages, 390px checks, and DEV-only state rehearsals.
 - `--ps-*` token aliases and text-color compatibility aliases exist in `src/styles/tokens.css`.
 - Current long-track focus is P2 cockpit polish, final read-only QA depth, and optional backend read-model smoke testing only when a local backend base URL is explicitly configured.
 
@@ -85,6 +89,11 @@ Image references:
 | Delivery Readiness dedicated workspace. | Completed as a read-only delivery outbox scene. | Preserve disabled download/external delivery posture until a separate approved production phase. | P1B done |
 | Mock data mirrors the first Golden Product Loop at the read-model level. | Completed for P1 asset/QC/review/delivery fixture counts. | Reuse fixture IDs across Review / Delivery UI, deriving extra frontend context in view models only. | P1 done |
 | Cross-page production context and Command Center entry clarity. | Completed with shared read-model context bar plus Command Center `黄金链路` strip. | Keep entry links read-only and verify them when route or fixture IDs change. | P1B done |
+| Command Center responsive cockpit polish. | 1280px side rail and 390px topbar status issues were fixed and browser-checked. | Continue checking 1440px / 1024px / 390px after future cockpit layout changes. | P2 done |
+| Read-model shared UI duplication. | Disabled action pairs and metric strips are shared components. | Add more shared pieces only when concrete duplication appears; avoid speculative abstractions. | P2 done |
+| Read-model boundary-state rehearsal. | DEV-only query states cover loading, error, missing-config, and missing-id idle checks without backend writes. | Keep these states local and read-only; do not use them as production auth/backend behavior. | P2 done |
+| Local QA runway. | README documents local routes, 390px checks, and DEV-only boundary rehearsals. | Use the README route list before future P2/P3 visual or read-model changes. | P2 done |
+| Optional backend read-model smoke. | Still intentionally not run in this frontend-only mock-first batch. | Run only with a deliberately configured local `VITE_BACKEND_API_BASE_URL` outside this repo. | P2 blocked |
 
 ## Command Center Gap Table
 
@@ -212,8 +221,10 @@ Use this as the first copy alignment pass before creating more pages.
 8. Completed: deepen Delivery Readiness with package/manifest summary, readiness checklist, blockers, output count, and disabled external delivery/download posture.
 9. Completed: align cross-page context, read-only posture, and return navigation across all four read-model scenes.
 10. Completed: expose the first Golden Product Loop IDs and four read-only entries from Command Center.
-11. Next: continue P2 cockpit polish, visual/browser QA, and contract documentation without crossing upload/download/auth/storage/write-action boundaries.
-12. Always run `npm run lint` and `npm run build` after code/style changes.
+11. Completed: P2 cockpit polish for 1280px side rail and 390px topbar status.
+12. Completed: P2 read-model cleanup for shared action pairs, shared metric strips, local boundary-state rehearsals, and README QA runway.
+13. Next: optional backend read-model smoke remains blocked until a local backend base URL is intentionally configured outside this repo.
+14. Always run `npm run lint` and `npm run build` after code/style changes.
 
 ## Stop Conditions
 
