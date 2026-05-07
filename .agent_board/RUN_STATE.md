@@ -17,7 +17,7 @@ A4-Sustained Local Frontend Autopilot
 ## Current Mission
 
 ```text
-P2.14 Read-model Boundary State QA Automation
+P2.15 Local Validation Orchestrator
 ```
 
 ---
@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-P2.14 scripted boundary-state QA complete candidate
+P2.15 validate-local browser QA aggregation complete candidate
 ```
 
 ---
@@ -58,7 +58,7 @@ P2.14 scripted boundary-state QA complete candidate
 ## Last Completed Task
 
 ```text
-Committed 699a71c: automated read-only route QA
+Committed 7eafcc8: automated read-model boundary QA
 ```
 
 ---
@@ -66,7 +66,7 @@ Committed 699a71c: automated read-only route QA
 ## Last Validation
 
 ```text
-scripts/qa-readonly-boundary-states.ps1, scripts/qa-readonly-routes.ps1, git diff --check, changed-file secret scan, npm run lint, and npm run build passed for P2.14
+scripts/validate-local.ps1 -IncludeBrowserQa passed for P2.15, including lint, build, git diff --check, changed-file secret scan, route QA, and boundary-state QA
 ```
 
 ---
@@ -75,7 +75,7 @@ scripts/qa-readonly-boundary-states.ps1, scripts/qa-readonly-routes.ps1, git dif
 
 ```text
 Branch: main
-Worktree: intentionally editing P2.14 QA script/docs/.agent_board after local 699a71c
+Worktree: intentionally editing P2.15 validation script/docs/.agent_board after local 7eafcc8
 ```
 
 ---
@@ -115,7 +115,7 @@ no
 ## Current Stop Status
 
 ```text
-continue local P2.14 validation, local commit if green, and stop at remote push boundary
+continue local P2.15 validation, local commit if green, and stop at remote push boundary
 ```
 
 ---
@@ -123,5 +123,5 @@ continue local P2.14 validation, local commit if green, and stop at remote push 
 ## Next Action
 
 ```text
-Finish P2.14 docs/board updates, run validation, and commit locally without push.
+Run scripts/validate-local.ps1 -IncludeBrowserQa, update validation evidence, and commit locally without push.
 ```

@@ -703,6 +703,30 @@ Notes:
 - No package manifest or lockfile changed.
 ```
 
+```text
+## VALIDATION-20260507-LOCAL-VALIDATION-ORCHESTRATOR
+
+Task: Add a local validation orchestrator mode for full read-only frontend QA.
+Commands run:
+- powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1
+- powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1 -IncludeBrowserQa
+- powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1 after final board updates
+Result: passed
+Failures:
+- First default run reported the validation helper's own scan pattern as a potential secret because the scanner saw the pattern assignment text in the changed script.
+Fix attempted:
+- Split the assignment-pattern scan regex into safer fragments and renamed the scan variable so the helper does not match its own rule text.
+Re-run result:
+- Default mode passed: npm lint, npm build, git diff --check, and changed-file secret scan.
+- Full mode passed: npm lint, npm build, git diff --check, changed-file secret scan, scripts/qa-readonly-routes.ps1, and scripts/qa-readonly-boundary-states.ps1.
+Not validated:
+- No npm test script is defined.
+- No backend live integration was run; frontend remains mock-first unless VITE_BACKEND_API_BASE_URL is configured.
+Notes:
+- scripts/validate-local.ps1 now has a fast default mode and optional -IncludeBrowserQa mode.
+- -IncludeBrowserQa runs scripts/qa-readonly-routes.ps1 and scripts/qa-readonly-boundary-states.ps1 while keeping package manifests unchanged.
+```
+
 ---
 
 ## Entry Template

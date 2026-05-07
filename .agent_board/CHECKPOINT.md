@@ -253,6 +253,14 @@ Current P2.14 read-model boundary-state QA automation:
 - changed-file secret scan passed.
 - npm run lint passed.
 - npm run build passed.
+
+Current P2.15 local validation orchestration:
+- Added changed-file secret scan to scripts/validate-local.ps1.
+- Added optional -IncludeBrowserQa mode to run scripts/qa-readonly-routes.ps1 and scripts/qa-readonly-boundary-states.ps1.
+- Default validate-local mode remains lightweight and prints a clear browser-QA skip notice.
+- Fixed the validation helper's secret-scan self-check so the scanner does not match its own scan pattern text.
+- scripts/validate-local.ps1 passed in default mode.
+- scripts/validate-local.ps1 -IncludeBrowserQa passed, including route QA and boundary-state QA.
 ```
 
 ---
@@ -305,7 +313,7 @@ The boundary-state QA script uses transient npx @playwright/cli execution and do
 ## Next Safe Task
 
 ```text
-Finish P2.14 validation, commit locally if green, then stop at remote push boundary.
+Run scripts/validate-local.ps1 -IncludeBrowserQa, commit locally if green, then stop at remote push boundary.
 ```
 
 ---

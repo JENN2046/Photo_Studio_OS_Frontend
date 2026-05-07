@@ -263,6 +263,14 @@ Current P2.14 read-model boundary-state QA automation:
 - changed-file secret scan passed.
 - npm run lint passed.
 - npm run build passed.
+
+Current P2.15 local validation orchestration:
+- Added changed-file secret scan to scripts/validate-local.ps1.
+- Added optional -IncludeBrowserQa mode to run scripts/qa-readonly-routes.ps1 and scripts/qa-readonly-boundary-states.ps1.
+- Default validate-local mode remains lightweight and prints a clear browser-QA skip notice.
+- Fixed the validation helper's secret-scan self-check so the scanner does not match its own scan pattern text.
+- scripts/validate-local.ps1 passed in default mode.
+- scripts/validate-local.ps1 -IncludeBrowserQa passed, including route QA and boundary-state QA.
 ```
 
 ---
@@ -272,7 +280,7 @@ Current P2.14 read-model boundary-state QA automation:
 ```text
 No npm test script is defined.
 No backend live integration request is planned for this mock-first UI batch.
-No push is authorized for local commits 472d848, 078f894, f7b1b8f, 1265584, 27ba2b5, 6f1666b, 4cc1539, ea67bc1, d68fdcf, ab11292, 96ef6ad, 6d33e17, 32ab2f6, e3bd271, 25110ed, 699a71c, or the current P2.14 cleanup until the user explicitly asks for push.
+No push is authorized for local commits 472d848, 078f894, f7b1b8f, 1265584, 27ba2b5, 6f1666b, 4cc1539, ea67bc1, d68fdcf, ab11292, 96ef6ad, 6d33e17, 32ab2f6, e3bd271, 25110ed, 699a71c, 7eafcc8, or the current P2.15 cleanup until the user explicitly asks for push.
 ```
 
 ---
@@ -320,7 +328,7 @@ none for the next safe local frontend slice.
 ## Next Safe Action
 
 ```text
-Next safe action: finish P2.14 validation, commit locally if green, then wait for explicit push approval.
+Next safe action: run scripts/validate-local.ps1 -IncludeBrowserQa, commit locally if green, then wait for explicit push approval.
 ```
 
 ---
@@ -332,7 +340,7 @@ Next safe action: finish P2.14 validation, commit locally if green, then wait fo
 
 读取 AGENTS.md 和 .agent_board/*。
 继续 A4-Sustained Local Frontend Autopilot。
-先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的 P2.14 read-model boundary state QA automation 队列继续。
+先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的 P2.15 local validation orchestrator 队列继续。
 保持 mock-first/read-only，不碰 backend、root control repo、依赖、.env、deploy、生产服务、上传/下载/auth/storage/write actions。
 按当前持续推进节奏，小批次验证后可以本地 commit；push 只有用户明确说 push 才执行。
 用中文汇报。

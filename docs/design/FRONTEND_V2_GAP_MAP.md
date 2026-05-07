@@ -40,6 +40,7 @@ As of the current Frontend v2 local state, the read-only production loop has mov
 - P2.12 read-model workspace components now live in `readModelWorkspaces.tsx`, while `ReadModelPages.tsx` owns route params, read-model state, mock-first loading, and page shell only.
 - P2.13 read-only route QA is now scripted through `scripts/qa-readonly-routes.ps1`, covering Command Center plus six promoted hash scenes and the four read-model pages at 1440px and 390px.
 - P2.14 read-model boundary-state QA is now scripted through `scripts/qa-readonly-boundary-states.ps1`, covering loading, error, missing-config, and missing-id idle states at 1024px and 390px.
+- P2.15 local validation orchestration now allows `scripts/validate-local.ps1 -IncludeBrowserQa` to run lint/build, whitespace, changed-file secret scan, route QA, and boundary-state QA from one local entry point.
 - `--ps-*` token aliases and text-color compatibility aliases exist in `src/styles/tokens.css`.
 - Current long-track focus is post-RC read-only UX tightening, reusable local QA, and optional backend read-model smoke testing only when a local backend base URL is explicitly configured.
 
@@ -85,7 +86,7 @@ Image references:
 | Labels | Command Center and read-model visible copy are Chinese-first; technical IDs such as `SKU`, `QC`, `CR3`, and backend query names remain intentional. | `src/features/command-center/commandCenterViewModel.ts`, `src/features/read-models/readModelViewModels.ts` |
 | Visual tokens | `--ps-*` bridge tokens and read-model text aliases are available for new v2 work. | `src/styles/tokens.css` |
 | Dedicated pages | Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness are dedicated read-only hash scenes with mock-first fallback. | `src/features/read-models/ReadModelPages.tsx` |
-| RC QA posture | Command Center entry clicks, keyboard focus visibility, five-page responsive matrix, read-model boundary states, scripted read-only route QA, and scripted boundary-state QA have current browser evidence. | `.agent_board/VALIDATION_LOG.md`, `scripts/qa-readonly-routes.ps1`, `scripts/qa-readonly-boundary-states.ps1` |
+| RC QA posture | Command Center entry clicks, keyboard focus visibility, five-page responsive matrix, read-model boundary states, scripted read-only route QA, scripted boundary-state QA, and the local validation orchestrator have current evidence. | `.agent_board/VALIDATION_LOG.md`, `scripts/validate-local.ps1`, `scripts/qa-readonly-routes.ps1`, `scripts/qa-readonly-boundary-states.ps1` |
 
 ## Overall Gaps
 
@@ -114,6 +115,7 @@ Image references:
 | Read-model workspace component split. | Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness workspace components moved out of `ReadModelPages.tsx` into `readModelWorkspaces.tsx`. | Keep route/data-state orchestration in `ReadModelPages.tsx`; add future workspace-only UI changes in `readModelWorkspaces.tsx`. | P2.12 done |
 | Scripted read-only route QA. | Local QA script checks 10 hash routes across desktop and 390px for Chinese copy, required selectors, rail active state, console errors, and horizontal overflow. | Run `scripts/qa-readonly-routes.ps1` after route, layout, rail, or read-model page changes while the Vite server is running. | P2.13 done |
 | Scripted boundary-state QA. | Local QA script checks all four read-model pages across loading, error, missing-config, and missing-id idle states at 1024px and 390px. | Run `scripts/qa-readonly-boundary-states.ps1` after read-model state, shell, notice, or responsive style changes. | P2.14 done |
+| Local validation orchestration. | `scripts/validate-local.ps1` now performs changed-file secret scan and can run both browser QA matrices via `-IncludeBrowserQa`. | Use default mode for fast local gates and `-IncludeBrowserQa` before larger read-only UI commits when the dev server is running. | P2.15 done |
 | Optional backend read-model smoke. | Still intentionally not run in this frontend-only mock-first batch. | Run only with a deliberately configured local `VITE_BACKEND_API_BASE_URL` outside this repo. | P2 blocked |
 
 ## Command Center Gap Table
@@ -254,8 +256,9 @@ Use this as the first copy alignment pass before creating more pages.
 20. Completed: P2.12 read-model workspace component split into `readModelWorkspaces.tsx`.
 21. Completed: P2.13 scripted read-only route QA for Command Center scenes plus four read-model pages at 1440px and 390px.
 22. Completed: P2.14 scripted read-model boundary-state QA for loading, error, missing-config, and missing-id idle states at 1024px and 390px.
-23. Next: optional backend read-model smoke remains blocked until a local backend base URL is intentionally configured outside this repo.
-24. Always run `npm run lint`, `npm run build`, the scripted read-only route QA, and the boundary-state QA after route/layout/read-model changes.
+23. Completed: P2.15 local validation orchestration with optional browser QA aggregation.
+24. Next: optional backend read-model smoke remains blocked until a local backend base URL is intentionally configured outside this repo.
+25. Always run `scripts/validate-local.ps1`; add `-IncludeBrowserQa` after route/layout/read-model changes while the dev server is running.
 
 ## Stop Conditions
 

@@ -75,6 +75,18 @@ npm run preview
 The Vite dev server is configured for `127.0.0.1:5173`; preview is configured
 for `127.0.0.1:4173`.
 
+Local validation helper:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1
+```
+
+Full local validation with browser QA, while `npm run dev` is already running:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1 -IncludeBrowserQa
+```
+
 ## Validation Status
 
 Recent local validation:
@@ -105,7 +117,7 @@ Automated read-model boundary-state matrix:
 powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-boundary-states.ps1
 ```
 
-The script uses transient `npx --package @playwright/cli` execution without
+The QA scripts use transient `npx --package @playwright/cli` execution without
 changing `package.json` or `package-lock.json`. The route matrix checks Command
 Center scenes plus the four read-model hash pages at `1440x960` and `390x844`
 for expected Chinese copy, required workspace selectors, Command Center
