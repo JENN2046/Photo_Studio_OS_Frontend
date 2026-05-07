@@ -1,7 +1,7 @@
 # Command Center Read-only API Contract Note
 
-Date: 2026-05-05
-Scope: T128 Command Center read-only Alpha
+Date: 2026-05-07
+Scope: T128 Command Center read-only Alpha and Frontend v2 read-model surfaces
 
 This note records future read-only API expectations for the Command Center. It is a frontend planning artifact only. It does not connect to a backend, change backend response shapes, add API calls, or implement production access.
 
@@ -9,7 +9,7 @@ This note records future read-only API expectations for the Command Center. It i
 
 - The Command Center Alpha uses local mock data.
 - The API client remains interface-first and read-only.
-- No live backend URL is configured.
+- Mock mode remains the default unless `VITE_BACKEND_API_BASE_URL` is explicitly configured.
 - No auth token handling is implemented.
 - No POST, PATCH, DELETE, upload, download, external Review, or external Delivery flow is implemented.
 
@@ -45,6 +45,40 @@ Candidate read-only groups:
 - Pagination or item limits for project execution, activity timeline, and inspection feed.
 - Error and loading states for a read-only dashboard fetch.
 
+## Current Frontend Read-model Fetchers
+
+The frontend now has optional, read-only fetchers in `src/api/backendReadModels.ts`.
+They remain dormant in normal development because mock data is used unless `VITE_BACKEND_API_BASE_URL` is configured.
+
+| Fetcher | Read path | Required context | Current UI surface |
+|---|---|---|---|
+| `fetchCommandCenterV2Snapshot()` | `/command-center/v2` | backend base URL | Command Center |
+| `fetchAssetInboxReadModel()` | `/projects/:projectId/asset-inbox` | `projectId` | `#asset-inbox` |
+| `fetchQcRetouchQueueReadModel()` | `/projects/:projectId/qc-retouch-queue` | `projectId` | `#qc-retouch` |
+| `fetchReviewGalleryReadModel()` | `/review-sessions/:reviewSessionId/gallery` | `reviewSessionId` | `#review-gallery` |
+| `fetchDeliveryReadinessReadModel()` | `/deliveries/:deliveryId/readiness` | `deliveryId` | `#delivery-readiness` |
+
+Optional request headers are frontend-only operator hints:
+
+- `VITE_BACKEND_USER_ROLE`, default `owner`
+- `VITE_BACKEND_USER_NAME`, default `Frontend Operator`
+
+These headers must not become auth. Production auth remains out of scope.
+
+## Optional Local Smoke Checklist
+
+Only run this when a local backend stack is already available and a safe base URL has been intentionally configured outside this repository.
+
+1. Start the frontend with `VITE_BACKEND_API_BASE_URL=<local backend base URL>`.
+2. Open `http://127.0.0.1:5173/#`.
+3. Open `#asset-inbox?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220`.
+4. Open `#qc-retouch?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220`.
+5. Open `#review-gallery?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220`.
+6. Open `#delivery-readiness?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220`.
+7. Confirm the UI remains read-only, console errors are absent, and disabled upload/download/review/delivery actions stay disabled.
+
+Stop immediately if the smoke path requires tokens, `.env` edits, backend code changes, uploads, downloads, approval writes, public links, or production endpoints.
+
 ## Explicit Non-goals
 
 - No mutation endpoints.
@@ -63,7 +97,7 @@ The next safe implementation step is still mock-first:
 
 1. Keep `CommandCenterReadClient` read-only.
 2. Preserve the mock adapter as the default.
-3. Add backend contract gaps only as documentation until backend read endpoints are explicitly approved.
+3. Keep the five read-model fetchers read-only and compatible with the documented paths.
 4. Run `npm run lint` and `npm run build` for any future code change.
 
 Stop before any real backend connection or token handling.

@@ -90,3 +90,7 @@ Recent local validation:
 The frontend alpha may define read-only interfaces and consume mock adapters.
 It must not add `POST`, `PATCH`, `DELETE`, upload, download, auth token, storage
 provider, external review, or external delivery flows.
+
+Mock mode is the default. Optional backend read-model smoke testing is documented
+in `docs/design/COMMAND_CENTER_READONLY_API_CONTRACT_NOTE.md` and only activates
+when `VITE_BACKEND_API_BASE_URL` is deliberately configured outside this repo.

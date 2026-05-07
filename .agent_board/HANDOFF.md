@@ -42,8 +42,8 @@ main
 ## Worktree State
 
 ```text
-Branch main was clean after pushed c1dd63f.
-Current batch intentionally edits global styles and .agent_board for a P2 cockpit breakpoint fix.
+Branch main was clean after pushed 9b47889.
+Current batch intentionally edits README, backend read-model smoke contract docs, and .agent_board.
 ```
 
 ---
@@ -60,8 +60,9 @@ Completed the first P1 frontend v2 realization slice:
 - All four read-model hash pages now share a production context bar with projectId, reviewSessionId, deliveryId, mock-first/read-only posture, and a return link to Command Center.
 - Command Center now shows a compact 黄金链路 strip with PRJ-128, REV-441, DEL-220, and four read-only entries.
 - P2 cockpit polish started by restoring the Risk / Approval side rail at 1280px.
+- Optional backend read-model smoke boundaries are documented without enabling backend, auth, tokens, uploads, downloads, or writes.
 - Browser QA blockers from that slice were fixed: favicon 404 and 390px rail overflow.
-- All changes through c1dd63f were pushed to origin/main; P2 breakpoint fix commit/push is pending.
+- All changes through 9b47889 were pushed to origin/main; backend smoke docs commit/push is pending.
 ```
 
 ---
@@ -101,9 +102,11 @@ Current Command Center 黄金链路 batch:
 - pushed in c1dd63f
 
 Current P2 cockpit breakpoint batch:
-- npm run lint passed
-- npm run build passed
-- browser QA passed for 1280px side rail placement, 390px stacking/no overflow, and console errors
+- pushed in 9b47889
+
+Current backend smoke docs batch:
+- git diff --check passed
+- changed-file secret scan passed
 - commit/push pending
 ```
 
@@ -163,7 +166,7 @@ none for the next safe local frontend slice.
 ## Next Safe Action
 
 ```text
-Next safe local slice: backend read-model contract notes or safe read-model component cleanup.
+Next safe local slice: safe read-model component cleanup.
 ```
 
 ---

@@ -83,12 +83,12 @@ none
 
 ### todo
 
-Current safe queue after commit `c1dd63f`.
+Current safe queue after commit `9b47889`.
 
 ```text
-1. Add or refine frontend-only contract notes for optional backend read-model smoke testing when VITE_BACKEND_API_BASE_URL is configured.
-2. Re-scan read-model pages for duplicated presentational patterns that can be safely extracted without broad refactor.
-3. Run another browser-led cockpit pass at 1440px / 1024px / 390px after the next visual or layout change.
+1. Re-scan read-model pages for duplicated presentational patterns that can be safely extracted without broad refactor.
+2. Run another browser-led cockpit pass at 1440px / 1024px / 390px after the next visual or layout change.
+3. Keep optional backend smoke blocked unless a local backend base URL is intentionally configured outside this repo.
 ```
 
 ### done
@@ -129,6 +129,7 @@ Current safe queue after commit `c1dd63f`.
 33. Strengthened Command Center production navigation with a `黄金链路` strip showing PRJ-128, REV-441, DEL-220, and four read-only page entries.
 34. Ran final P1B browser QA for Command Center entry clicks, read-model tab switching, Chinese mock data, console errors, and 390px viewport overflow.
 35. Fixed the P2 1280px cockpit breakpoint so Risk / Approval side rail remains in the right column instead of dropping below the main panel.
+36. Added frontend-only backend read-model smoke contract notes without enabling backend, auth, tokens, uploads, downloads, or writes.
 ```
 
 ### blocked

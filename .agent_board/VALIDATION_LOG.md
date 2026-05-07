@@ -246,6 +246,22 @@ Not validated:
 - No npm test script is defined.
 Notes:
 - This is a frontend-only CSS breakpoint fix; no data, backend, dependency, or write-action boundary changed.
+
+## VALIDATION-20260507-BACKEND-SMOKE-DOCS
+
+Task: Document optional backend read-model smoke boundary.
+Commands run:
+- git diff --check
+- changed-file secret scan on README.md, COMMAND_CENTER_READONLY_API_CONTRACT_NOTE.md, and .agent_board files
+Result: passed
+Failures: none
+Fix attempted: not applicable
+Re-run result: not applicable
+Not validated:
+- npm run lint and npm run build were not required for docs-only changes.
+- No backend live integration was run.
+Notes:
+- Documentation keeps mock-first default and forbids tokens, .env edits, auth, upload/download, writes, public links, and production endpoints.
 ```
 
 ---

@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-Fix P2 cockpit 1280px side rail breakpoint
+Document optional backend read-model smoke boundary
 ```
 
 ---
@@ -58,7 +58,7 @@ Fix P2 cockpit 1280px side rail breakpoint
 ## Last Completed Task
 
 ```text
-Pushed f249a8a: aligned read-model production context
+Pushed 9b47889: fixed P2 cockpit 1280px side rail breakpoint
 ```
 
 ---
@@ -66,7 +66,7 @@ Pushed f249a8a: aligned read-model production context
 ## Last Validation
 
 ```text
-npm run lint passed; npm run build passed; 1280px browser QA shows cockpit side rail in the right column; 390px remains stacked with no horizontal overflow; console error count 0
+docs-only diff; git diff --check passed; changed-file secret scan passed
 ```
 
 ---
@@ -75,7 +75,7 @@ npm run lint passed; npm run build passed; 1280px browser QA shows cockpit side 
 
 ```text
 Branch: main
-Worktree: intentionally editing P2 cockpit breakpoint fix after pushed c1dd63f
+Worktree: intentionally editing read-model smoke contract docs after pushed 9b47889
 ```
 
 ---
@@ -123,5 +123,5 @@ not blocked
 ## Next Action
 
 ```text
-Commit/push P2 cockpit breakpoint fix, then continue with backend read-model contract notes or safe read-model component cleanup.
+Validate, commit, and push backend read-model smoke contract notes; then continue with safe read-model component cleanup.
 ```
