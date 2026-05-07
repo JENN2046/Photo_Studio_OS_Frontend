@@ -220,24 +220,42 @@ function ReadOnlyActionPair({
   );
 }
 
+function ReadModelMetricStrip({
+  ariaLabel,
+  className,
+  metrics
+}: {
+  ariaLabel: string;
+  className?: string;
+  metrics: ReadModelViewModel["metrics"];
+}) {
+  const metricClassName = ["read-model-metrics", className]
+    .filter(Boolean)
+    .join(" ");
+
+  return (
+    <section className={metricClassName} aria-label={ariaLabel}>
+      {metrics.map((metric) => (
+        <article
+          className={`read-model-metric read-model-tone-${metric.tone}`}
+          key={metric.label}
+        >
+          <span>{metric.label}</span>
+          <strong>{metric.value}</strong>
+          <small>{metric.detail}</small>
+        </article>
+      ))}
+    </section>
+  );
+}
+
 function ReadModelDashboard({ viewModel }: { viewModel: ReadModelViewModel }) {
   return (
     <section className="read-model-grid">
-      <section
-        className="read-model-metrics"
-        aria-label={`${viewModel.title} 指标面板`}
-      >
-        {viewModel.metrics.map((metric) => (
-          <article
-            className={`read-model-metric read-model-tone-${metric.tone}`}
-            key={metric.label}
-          >
-            <span>{metric.label}</span>
-            <strong>{metric.value}</strong>
-            <small>{metric.detail}</small>
-          </article>
-        ))}
-      </section>
+      <ReadModelMetricStrip
+        ariaLabel={`${viewModel.title} 指标面板`}
+        metrics={viewModel.metrics}
+      />
 
       <section className="read-model-table" aria-label={`${viewModel.title} 明细`}>
         <div className="read-model-table-head">
@@ -342,21 +360,11 @@ function AssetInboxWorkspace({
 
   return (
     <section className="asset-inbox-workspace">
-      <section
-        className="read-model-metrics asset-inbox-metrics"
-        aria-label={`${viewModel.title} 指标面板`}
-      >
-        {viewModel.metrics.map((metric) => (
-          <article
-            className={`read-model-metric read-model-tone-${metric.tone}`}
-            key={metric.label}
-          >
-            <span>{metric.label}</span>
-            <strong>{metric.value}</strong>
-            <small>{metric.detail}</small>
-          </article>
-        ))}
-      </section>
+      <ReadModelMetricStrip
+        ariaLabel={`${viewModel.title} 指标面板`}
+        className="asset-inbox-metrics"
+        metrics={viewModel.metrics}
+      />
 
       <section className="asset-inbox-console" aria-label="素材工作台">
         <header className="asset-inbox-intake">
@@ -569,21 +577,11 @@ function QcRetouchWorkspace({
 
   return (
     <section className="qc-retouch-workspace">
-      <section
-        className="read-model-metrics qc-retouch-metrics"
-        aria-label={`${viewModel.title} 指标面板`}
-      >
-        {viewModel.metrics.map((metric) => (
-          <article
-            className={`read-model-metric read-model-tone-${metric.tone}`}
-            key={metric.label}
-          >
-            <span>{metric.label}</span>
-            <strong>{metric.value}</strong>
-            <small>{metric.detail}</small>
-          </article>
-        ))}
-      </section>
+      <ReadModelMetricStrip
+        ariaLabel={`${viewModel.title} 指标面板`}
+        className="qc-retouch-metrics"
+        metrics={viewModel.metrics}
+      />
 
       <section className="qc-retouch-console" aria-label="QC 精修工作台">
         <header className="qc-retouch-summary">
@@ -765,21 +763,11 @@ function ReviewGalleryWorkspace({
 
   return (
     <section className="review-gallery-workspace">
-      <section
-        className="read-model-metrics review-gallery-metrics"
-        aria-label={`${viewModel.title} 指标面板`}
-      >
-        {viewModel.metrics.map((metric) => (
-          <article
-            className={`read-model-metric read-model-tone-${metric.tone}`}
-            key={metric.label}
-          >
-            <span>{metric.label}</span>
-            <strong>{metric.value}</strong>
-            <small>{metric.detail}</small>
-          </article>
-        ))}
-      </section>
+      <ReadModelMetricStrip
+        ariaLabel={`${viewModel.title} 指标面板`}
+        className="review-gallery-metrics"
+        metrics={viewModel.metrics}
+      />
 
       <section className="review-gallery-console" aria-label="审核画廊工作台">
         <header className="review-gallery-summary">
@@ -987,21 +975,11 @@ function DeliveryReadinessWorkspace({
 
   return (
     <section className="delivery-readiness-workspace">
-      <section
-        className="read-model-metrics delivery-readiness-metrics"
-        aria-label={`${viewModel.title} 指标面板`}
-      >
-        {viewModel.metrics.map((metric) => (
-          <article
-            className={`read-model-metric read-model-tone-${metric.tone}`}
-            key={metric.label}
-          >
-            <span>{metric.label}</span>
-            <strong>{metric.value}</strong>
-            <small>{metric.detail}</small>
-          </article>
-        ))}
-      </section>
+      <ReadModelMetricStrip
+        ariaLabel={`${viewModel.title} 指标面板`}
+        className="delivery-readiness-metrics"
+        metrics={viewModel.metrics}
+      />
 
       <section className="delivery-readiness-console" aria-label="交付就绪工作台">
         <header className="delivery-readiness-summary">

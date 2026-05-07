@@ -83,14 +83,13 @@ none
 
 ### todo
 
-Current safe queue after commit `59c04a5`.
+Current safe queue after commit `472d848`.
 
 ```text
-1. Re-scan read-model pages for one concrete shared component cleanup only if duplication is still present after the action pair extraction.
-2. Add or clarify read-only boundary states only where the UI can rehearse them locally without backend writes.
-3. Solidify the local QA runway for Command Center plus the four hash pages.
-4. Refresh the P2 completion map after the current cockpit maturation slice.
-5. Keep optional backend smoke blocked unless a local backend base URL is intentionally configured outside this repo.
+1. Add or clarify read-only boundary states only where the UI can rehearse them locally without backend writes.
+2. Solidify the local QA runway for Command Center plus the four hash pages.
+3. Refresh the P2 completion map after the current cockpit maturation slice.
+4. Keep optional backend smoke blocked unless a local backend base URL is intentionally configured outside this repo.
 ```
 
 ### done
@@ -137,6 +136,8 @@ Current safe queue after commit `59c04a5`.
 39. Ran the P2 browser-led cockpit pass at 1440px, 1024px, and 390px for Command Center and the four read-model hash pages; no console errors or horizontal overflow were observed.
 40. Fixed the 390px Command Center status bar so studio, date, time, and live dot stay in one compact line.
 41. Validated the mobile status bar batch with git diff --check, changed-file secret scan, npm run lint, npm run build, 390px screenshot inspection, overflow probe, and console error check.
+42. Extracted the repeated read-model metric panel rendering into a shared ReadModelMetricStrip component without changing fetchers or data shape.
+43. Browser-checked the four read-model hash pages at 390px after the metric strip extraction; each page retained 3 metric cards, no horizontal overflow, and console error count remained 0.
 ```
 
 ### blocked

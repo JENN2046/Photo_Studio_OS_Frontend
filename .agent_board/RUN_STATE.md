@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-Select the next P2 safe local task after the mobile status bar batch
+Select the next P2 boundary-state task after metric strip extraction
 ```
 
 ---
@@ -58,7 +58,7 @@ Select the next P2 safe local task after the mobile status bar batch
 ## Last Completed Task
 
 ```text
-Pushed 59c04a5: extracted repeated read-only action pairs
+Locally committed 472d848: tightened mobile Command Center status bar
 ```
 
 ---
@@ -66,7 +66,7 @@ Pushed 59c04a5: extracted repeated read-only action pairs
 ## Last Validation
 
 ```text
-git diff --check passed; changed-file secret scan passed; npm run lint passed; npm run build passed; 390px Command Center screenshot, overflow probe, and console error check passed
+git diff --check passed; changed-file secret scan passed; npm run lint passed; npm run build passed; 390px browser check passed for four read-model pages after metric strip extraction with 3 metric cards each, no horizontal overflow, and console error count 0
 ```
 
 ---
@@ -75,7 +75,7 @@ git diff --check passed; changed-file secret scan passed; npm run lint passed; n
 
 ```text
 Branch: main
-Worktree: validated mobile Command Center status bar CSS and .agent_board pending local commit after clean 59c04a5
+Worktree: intentionally editing ReadModelPages.tsx metric strip extraction and .agent_board after local 472d848
 ```
 
 ---
@@ -123,5 +123,5 @@ not blocked
 ## Next Action
 
 ```text
-Commit the mobile status bar batch locally if staged checks stay green, then continue to the next P2 safe task. Do not push without explicit user approval.
+Commit the metric strip batch locally if staged checks stay green, then continue to the next P2 safe task. Do not push without explicit user approval.
 ```

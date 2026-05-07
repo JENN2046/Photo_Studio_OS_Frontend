@@ -65,7 +65,9 @@ Completed the first P1 frontend v2 realization slice:
 - P2 browser-led cockpit QA passed at 1440px, 1024px, and 390px across Command Center and the four read-model hash pages.
 - The 390px Command Center topbar status has been fixed so studio, date, time, and live dot stay in one compact row.
 - Browser QA blockers from that slice were fixed: favicon 404 and 390px rail overflow.
-- All changes through 59c04a5 were pushed to origin/main; current mobile topbar status fix is validated and pending local commit.
+- All changes through 59c04a5 were pushed to origin/main.
+- 472d848 is a local commit for the mobile Command Center topbar status fix and has not been pushed.
+- Current metric strip extraction is validated; local commit is pending.
 ```
 
 ---
@@ -73,7 +75,7 @@ Completed the first P1 frontend v2 realization slice:
 ## Files Changed
 
 ```text
-src/styles/global.css
+src/features/read-models/ReadModelPages.tsx
 .agent_board/RUN_STATE.md
 .agent_board/CHECKPOINT.md
 .agent_board/HANDOFF.md
@@ -108,15 +110,14 @@ Current P2 cockpit breakpoint batch:
 Current backend smoke docs batch:
 - pushed in 11b4b5e
 
-Current mobile Command Center status bar batch:
-- Browser probe passed for Command Center plus four hash pages at 1440px, 1024px, and 390px.
-- 390px before screenshot showed the topbar status wrapping into multiple lines.
-- 390px after screenshot passed with one compact status row.
-- 390px overflow probe returned scrollWidth 390 and clientWidth 390.
+Current metric strip extraction batch:
+- npm run lint passed.
+- 390px browser checks passed for #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness.
+- Each checked page retained 3 metric cards.
+- 390px overflow probe returned no horizontal overflow.
 - Console error count is 0.
 - git diff --check passed.
 - changed-file secret scan passed.
-- npm run lint passed.
 - npm run build passed.
 ```
 
@@ -127,7 +128,7 @@ Current mobile Command Center status bar batch:
 ```text
 No npm test script is defined.
 No backend live integration request is planned for this mock-first UI batch.
-No push is authorized for the current mobile topbar batch until the user explicitly asks for push.
+No push is authorized for local commits 472d848 or the current metric strip batch until the user explicitly asks for push.
 ```
 
 ---
@@ -175,7 +176,7 @@ none for the next safe local frontend slice.
 ## Next Safe Action
 
 ```text
-Next safe local slice: local commit for the 390px Command Center topbar status fix, then continue into the next P2 task.
+Next safe local slice: local commit for the read-model metric strip extraction, then continue into the next P2 task.
 ```
 
 ---

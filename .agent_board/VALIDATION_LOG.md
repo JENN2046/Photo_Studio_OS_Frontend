@@ -312,6 +312,30 @@ Not validated:
 - No backend live integration was run; frontend remains mock-first.
 Notes:
 - This is a frontend-only CSS and local task-rail batch.
+
+## VALIDATION-20260507-READMODEL-METRIC-STRIP
+
+Task: Extract repeated read-model metric panel rendering.
+Commands run:
+- npm run lint
+- Playwright CLI 390px browser check for #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness
+- Playwright CLI console error check
+- git diff --check
+- changed-file secret scan on current diff
+- npm run build
+Result: passed
+Failures: none
+Fix attempted: none required
+Re-run result: not applicable
+Not validated:
+- No npm test script is defined.
+Notes:
+- Each of the four checked hash pages retained 3 .read-model-metric cards after the extraction.
+- 390px overflow was false on all four checked pages.
+- Console error count was 0.
+- git diff --check passed.
+- changed-file secret scan passed.
+- npm run build passed.
 ```
 
 ---

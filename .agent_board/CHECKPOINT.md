@@ -10,7 +10,7 @@ Codex should update this after each meaningful batch of local frontend work.
 
 ```text
 Status: in-progress
-Updated: 2026-05-07 11:04 +0800
+Updated: 2026-05-07 11:15 +0800
 Repo: Photo_Studio_OS_Frontend
 Mode: A4-Sustained Local Frontend Autopilot
 Mission: P2 Read-only Cockpit Maturation
@@ -25,8 +25,8 @@ Fill from actual command output.
 ```text
 Workspace: A:\Photo_Studio_OS_Frontend
 Branch: main
-Worktree: intentionally editing mobile Command Center status bar CSS and .agent_board
-Diff stat: src/styles/global.css plus .agent_board
+Worktree: intentionally editing read-model metric strip extraction and .agent_board
+Diff stat: src/features/read-models/ReadModelPages.tsx plus .agent_board
 Package manager: npm with package-lock.json
 Available scripts: dev, build, lint, preview
 ```
@@ -62,6 +62,9 @@ Pushed 59c04a5: extracted repeated read-only disabled action pairs.
 Started P2 Read-only Cockpit Maturation.
 Ran browser-led cockpit QA at 1440px, 1024px, and 390px for Command Center plus #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness.
 Fixed the 390px Command Center status bar so studio, date, time, and live dot remain one compact line.
+Locally committed 472d848: tightened mobile Command Center status bar.
+Extracted repeated read-model metric panel rendering into a shared ReadModelMetricStrip component.
+Browser-checked #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness at 390px after the metric strip extraction.
 ```
 
 ---
@@ -69,7 +72,7 @@ Fixed the 390px Command Center status bar so studio, date, time, and live dot re
 ## Changed Files
 
 ```text
-src/styles/global.css
+src/features/read-models/ReadModelPages.tsx
 .agent_board/CHECKPOINT.md
 .agent_board/RUN_STATE.md
 .agent_board/TASK_QUEUE.md
@@ -82,16 +85,14 @@ src/styles/global.css
 ## Validation Run
 
 ```text
-Current mobile Command Center status bar batch:
-- Browser probe passed across Command Center and four hash pages at 1440px, 1024px, and 390px before the fix.
-- 390px screenshot showed topbar status wrapping into multiple lines.
-- CSS fix applied under the mobile Command Center rules.
-- 390px screenshot after the fix passed.
-- Playwright CLI 390px overflow probe returned scrollWidth 390 and clientWidth 390.
+Current metric strip extraction batch:
+- npm run lint passed.
+- Playwright CLI 390px browser check passed for #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness.
+- Each checked page retained 3 .read-model-metric cards.
+- 390px overflow probe returned no horizontal overflow.
 - Playwright CLI console error check returned 0 errors.
 - git diff --check passed.
 - changed-file secret scan passed.
-- npm run lint passed.
 - npm run build passed.
 ```
 
@@ -143,7 +144,7 @@ Live backend toggle still requires configuring VITE_BACKEND_API_BASE_URL and run
 ## Next Safe Task
 
 ```text
-Locally commit the mobile status bar fix if staged checks stay green, then continue with the next P2 safe task.
+Locally commit the metric strip extraction if staged checks stay green, then continue with the next P2 safe task.
 ```
 
 ---
