@@ -8,6 +8,7 @@ import {
 } from "../../api/backendReadModels";
 import type {
   BackendAssetInbox,
+  BackendDeliveryReadiness,
   BackendQcRetouchQueue,
   BackendReviewGallery
 } from "../../api/backendReadModels";
@@ -57,6 +58,7 @@ interface ReadModelFrameProps {
 type AssetInboxItem = BackendAssetInbox["items"][number];
 type QcRetouchItem = BackendQcRetouchQueue["items"][number];
 type ReviewGalleryItem = BackendReviewGallery["items"][number];
+type DeliveryChecklistKey = keyof BackendDeliveryReadiness["checklist"];
 
 const routeLabels: Record<ReadModelRoute, string> = {
   "asset-inbox": "素材收件箱",
@@ -867,6 +869,221 @@ function ReviewGalleryWorkspace({
   );
 }
 
+const deliveryChecklistLabels: Record<DeliveryChecklistKey, string> = {
+  hasItems: "包含交付素材",
+  hasPackageKey: "交付包已生成",
+  hasManifestKey: "交付清单已生成",
+  allItemsHaveFileKey: "素材文件完整"
+};
+
+interface DeliveryArtifact {
+  id: string;
+  label: string;
+  title: string;
+  detail: string;
+  status: string;
+  tone: ReadModelTone;
+}
+
+function createDeliveryArtifacts(
+  model: BackendDeliveryReadiness
+): DeliveryArtifact[] {
+  return [
+    {
+      id: "package",
+      label: "交付包",
+      title: model.packageKey ? "交付包已生成" : "交付包待生成",
+      detail: model.packageKey ?? "暂无交付包路径",
+      status: model.checklist.hasPackageKey ? "ready" : "preparing",
+      tone: model.checklist.hasPackageKey ? "good" : "warn"
+    },
+    {
+      id: "manifest",
+      label: "Manifest",
+      title: model.manifestKey ? "交付清单已生成" : "交付清单待生成",
+      detail: model.manifestKey ?? "暂无交付清单路径",
+      status: model.checklist.hasManifestKey ? "ready" : "preparing",
+      tone: model.checklist.hasManifestKey ? "good" : "warn"
+    },
+    {
+      id: "items",
+      label: "交付素材",
+      title: `${model.itemCount} 个交付项`,
+      detail: model.checklist.allItemsHaveFileKey
+        ? "所有素材文件已关联。"
+        : "仍有素材文件需要人工复核。",
+      status: model.checklist.allItemsHaveFileKey ? "ready" : "warning",
+      tone: model.checklist.allItemsHaveFileKey ? "good" : "warn"
+    }
+  ];
+}
+
+function DeliveryReadinessWorkspace({
+  model,
+  viewModel
+}: {
+  model: BackendDeliveryReadiness;
+  viewModel: ReadModelViewModel;
+}) {
+  const artifacts = useMemo(() => createDeliveryArtifacts(model), [model]);
+  const [selectedArtifactId, setSelectedArtifactId] = useState(
+    artifacts[0]?.id ?? ""
+  );
+  const selectedArtifact =
+    artifacts.find((artifact) => artifact.id === selectedArtifactId) ??
+    artifacts[0];
+  const checklistEntries = Object.entries(model.checklist) as Array<
+    [DeliveryChecklistKey, boolean]
+  >;
+  const passedChecklistCount = checklistEntries.filter(([, value]) => value)
+    .length;
+  const selectedTone = selectedArtifact?.tone ?? "neutral";
+
+  return (
+    <section className="delivery-readiness-workspace">
+      <section
+        className="read-model-metrics delivery-readiness-metrics"
+        aria-label={`${viewModel.title} 指标面板`}
+      >
+        {viewModel.metrics.map((metric) => (
+          <article
+            className={`read-model-metric read-model-tone-${metric.tone}`}
+            key={metric.label}
+          >
+            <span>{metric.label}</span>
+            <strong>{metric.value}</strong>
+            <small>{metric.detail}</small>
+          </article>
+        ))}
+      </section>
+
+      <section className="delivery-readiness-console" aria-label="交付就绪工作台">
+        <header className="delivery-readiness-summary">
+          <div>
+            <p className="eyebrow">Delivery Outbox</p>
+            <strong>{model.deliveryId}</strong>
+            <span>
+              {formatStatus(model.status)} / 到期{" "}
+              {formatShortDateTime(model.expiresAt)}
+            </span>
+          </div>
+          <div className="delivery-readiness-summary-stats">
+            <span>
+              <b>{model.itemCount}</b>
+              交付项
+            </span>
+            <span>
+              <b>{passedChecklistCount}</b>
+              检查通过
+            </span>
+            <span>
+              <b>{model.blockers.length}</b>
+              阻断项
+            </span>
+          </div>
+        </header>
+
+        <div className="delivery-readiness-body">
+          <section className="delivery-artifact-panel" aria-label="交付包内容">
+            <div className="asset-panel-head">
+              <div>
+                <p className="eyebrow">Package Contents</p>
+                <strong>交付清单与包状态</strong>
+              </div>
+              <span>{artifacts.length} 组</span>
+            </div>
+            <div className="delivery-artifact-list">
+              {artifacts.map((artifact) => (
+                <button
+                  aria-pressed={artifact.id === selectedArtifact?.id}
+                  className={`delivery-artifact-card read-model-tone-${artifact.tone}`}
+                  key={artifact.id}
+                  onClick={() => setSelectedArtifactId(artifact.id)}
+                  type="button"
+                >
+                  <span>{artifact.label}</span>
+                  <strong>{artifact.title}</strong>
+                  <small>{artifact.detail}</small>
+                  <i>{formatStatus(artifact.status)}</i>
+                </button>
+              ))}
+            </div>
+          </section>
+
+          <section className="delivery-selected-panel" aria-label="选中交付项">
+            {selectedArtifact ? (
+              <>
+                <div
+                  className={`delivery-preview-visual read-model-tone-${selectedTone}`}
+                >
+                  <span>{formatStatus(selectedArtifact.status)}</span>
+                  <strong>{selectedArtifact.label}</strong>
+                  <small>{selectedArtifact.detail}</small>
+                </div>
+                <div className="delivery-selected-copy">
+                  <p className="eyebrow">Selected Output</p>
+                  <h2>{selectedArtifact.title}</h2>
+                  <span>{selectedArtifact.detail}</span>
+                  <span>
+                    外部访问：{model.externalAccess.enabled ? "已启用" : "未启用"}
+                  </span>
+                </div>
+                <div className="delivery-actions">
+                  <button disabled type="button">
+                    下载未开放
+                  </button>
+                  <button disabled type="button">
+                    外部交付未启用
+                  </button>
+                </div>
+              </>
+            ) : (
+              <p>暂无交付项可预览。</p>
+            )}
+          </section>
+        </div>
+      </section>
+
+      <section className="delivery-detail-grid" aria-label="交付只读详情">
+        {checklistEntries.map(([key, value]) => (
+          <article
+            className={`read-model-detail read-model-tone-${
+              value ? "good" : "danger"
+            }`}
+            key={key}
+          >
+            <span>就绪检查</span>
+            <strong>{deliveryChecklistLabels[key]}</strong>
+            <small>{value ? "已满足要求" : "仍需人工处理"}</small>
+          </article>
+        ))}
+        <article
+          className={`read-model-detail read-model-tone-${
+            model.blockers.length > 0 ? "danger" : "good"
+          }`}
+        >
+          <span>阻断项</span>
+          <strong>
+            {model.blockers[0]
+              ? formatReason(model.blockers[0].code)
+              : "暂无阻断"}
+          </strong>
+          <small>
+            {model.blockers[0]
+              ? formatReason(model.blockers[0].message)
+              : "当前交付检查均已清除。"}
+          </small>
+        </article>
+        <article className="read-model-detail read-model-tone-neutral">
+          <span>外部访问</span>
+          <strong>{model.externalAccess.enabled ? "已启用" : "未启用"}</strong>
+          <small>{formatReason(model.externalAccess.reason)}</small>
+        </article>
+      </section>
+    </section>
+  );
+}
+
 export function AssetInboxPage({ params }: ReadModelPageProps) {
   const projectId = getParam(params, "projectId");
   const state = useBackendReadModel({
@@ -988,7 +1205,8 @@ export function DeliveryReadinessPage({ params }: ReadModelPageProps) {
     >
       <ReadModelStateNotice state={state} idleLabel="请先选择 deliveryId" />
       {state.data ? (
-        <ReadModelDashboard
+        <DeliveryReadinessWorkspace
+          model={state.data}
           viewModel={createDeliveryReadinessViewModel(state.data)}
         />
       ) : null}

@@ -152,6 +152,28 @@ Not validated:
 Notes:
 - Verified visible content includes 审核画廊, 公开审核未启用, 反馈写入未启用, 标签颜色需要回到参考图, and 需返修.
 - 390px viewport reported no horizontal overflow and console error count was 0.
+
+## VALIDATION-20260507-DELIVERY-READINESS
+
+Task: Deepen #delivery-readiness into a read-only delivery outbox workspace.
+Commands run:
+- git diff --check
+- changed-file secret scan on ReadModelPages.tsx and readModelPages.css
+- npm run lint
+- npm run build
+- Playwright CLI direct hash check for #delivery-readiness
+- Playwright CLI 390px horizontal-overflow probe
+- Playwright CLI console error check
+Result: passed
+Failures: none
+Fix attempted: none required
+Re-run result: not applicable
+Not validated:
+- No npm test script is defined.
+- Full four-page browser QA remains queued for the final cross-page batch.
+Notes:
+- Verified visible content includes 交付就绪, Delivery Outbox, 下载未开放, 外部交付未启用, 缺少已通过的质检结果, and 交付清单已生成.
+- 390px viewport reported no horizontal overflow and console error count was 0.
 ```
 
 ---

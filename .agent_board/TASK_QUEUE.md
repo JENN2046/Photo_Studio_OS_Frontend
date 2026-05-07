@@ -86,10 +86,9 @@ none
 Current safe queue after commit `c19e171`.
 
 ```text
-1. Deepen #delivery-readiness into a read-only delivery outbox workspace with package/manifest summary, readiness checklist, blockers, output count, and disabled external delivery/download posture.
-2. Align cross-page selection, preview, detail, and disabled action patterns across Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness.
-3. Strengthen Command Center production navigation so the first Golden Product Loop IDs and four hash entry points remain clear.
-4. Run browser QA for all four hash pages, Command Center entry clicks, tab switching, Chinese mock data, console errors, and 390px viewport.
+1. Align cross-page selection, preview, detail, and disabled action patterns across Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness.
+2. Strengthen Command Center production navigation so the first Golden Product Loop IDs and four hash entry points remain clear.
+3. Run browser QA for all four hash pages, Command Center entry clicks, tab switching, Chinese mock data, console errors, and 390px viewport.
 ```
 
 ### done
@@ -125,6 +124,7 @@ Current safe queue after commit `c19e171`.
 28. Cleared frontend v2 browser QA blockers: favicon 404 and 390px rail overflow, pushed c19e171.
 29. Refreshed P1B/P2 completion track and pushed e529c3b.
 30. Deepened #review-gallery into a read-only client review workspace with gallery grid, selected item, client feedback/revision state, status summary, disabled public review, and disabled feedback write posture.
+31. Deepened #delivery-readiness into a read-only delivery outbox workspace with package/manifest summary, readiness checklist, blockers, output count, disabled download, and disabled external delivery posture.
 ```
 
 ### blocked

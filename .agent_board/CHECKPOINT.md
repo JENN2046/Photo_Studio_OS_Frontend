@@ -52,7 +52,8 @@ Pushed 3bbe680: deepened QC / Retouch into a read-only queue workspace.
 Pushed c19e171: cleared favicon 404 and 390px rail overflow browser QA blockers.
 Started P1B Review / Delivery realization run.
 Pushed e529c3b: refreshed the P1B/P2 gap map and task rail.
-Implemented #review-gallery as a read-only client review workspace; commit/push pending.
+Pushed da8f32b: deepened #review-gallery into a read-only client review workspace.
+Implemented #delivery-readiness as a read-only delivery outbox workspace; commit/push pending.
 ```
 
 ---
@@ -78,12 +79,12 @@ src/features/read-models/readModelPages.css
 ## Validation Run
 
 ```text
-Current Review Gallery batch:
+Current Delivery Readiness batch:
 - git diff --check passed
 - changed-file secret scan passed
 - npm run lint passed
 - npm run build passed
-- browser QA passed for #review-gallery direct hash, key Chinese content, console errors, and 390px horizontal overflow
+- browser QA passed for #delivery-readiness direct hash, key Chinese content, console errors, and 390px horizontal overflow
 - commit/push pending
 ```
 
@@ -135,7 +136,7 @@ Live backend toggle still requires configuring VITE_BACKEND_API_BASE_URL and run
 ## Next Safe Task
 
 ```text
-After Review Gallery batch is pushed, deepen Delivery Readiness as a read-only delivery outbox workspace.
+After Delivery Readiness batch is pushed, align cross-page selection/preview/read-only action patterns and strengthen Command Center navigation.
 ```
 
 ---
