@@ -124,9 +124,46 @@ function ReadModelFrame({
             ))}
           </nav>
         </section>
+        <ReadModelContextBar params={params} />
         {children}
       </main>
     </AppShell>
+  );
+}
+
+function ReadModelContextBar({ params }: { params: URLSearchParams }) {
+  const projectId = getParam(params, "projectId");
+  const reviewSessionId = getParam(params, "reviewSessionId");
+  const deliveryId = getParam(params, "deliveryId");
+  const contextItems = [
+    { label: "项目", value: projectId },
+    { label: "审核会话", value: reviewSessionId },
+    { label: "交付包", value: deliveryId }
+  ].filter((item) => item.value);
+
+  return (
+    <section className="read-model-context-bar" aria-label="生产链路上下文">
+      <div>
+        {contextItems.length > 0 ? (
+          contextItems.map((item) => (
+            <span key={item.label}>
+              <b>{item.label}</b>
+              {item.value}
+            </span>
+          ))
+        ) : (
+          <span>
+            <b>上下文</b>
+            等待选择生产对象
+          </span>
+        )}
+        <span>
+          <b>数据姿态</b>
+          mock-first / read-only
+        </span>
+      </div>
+      <a href="#">返回命令中心</a>
+    </section>
   );
 }
 

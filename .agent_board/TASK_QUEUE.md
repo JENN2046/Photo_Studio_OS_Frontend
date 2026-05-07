@@ -83,12 +83,12 @@ none
 
 ### todo
 
-Current safe queue after commit `c19e171`.
+Current safe queue after commit `4f61aa6`.
 
 ```text
-1. Align cross-page selection, preview, detail, and disabled action patterns across Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness.
-2. Strengthen Command Center production navigation so the first Golden Product Loop IDs and four hash entry points remain clear.
-3. Run browser QA for all four hash pages, Command Center entry clicks, tab switching, Chinese mock data, console errors, and 390px viewport.
+1. Strengthen Command Center production navigation so the first Golden Product Loop IDs and four hash entry points remain clear.
+2. Run browser QA for Command Center entry clicks, tab switching, Chinese mock data, console errors, and 390px viewport.
+3. Refresh the final P1B/P2 gap map after browser QA if facts changed.
 ```
 
 ### done
@@ -125,6 +125,7 @@ Current safe queue after commit `c19e171`.
 29. Refreshed P1B/P2 completion track and pushed e529c3b.
 30. Deepened #review-gallery into a read-only client review workspace with gallery grid, selected item, client feedback/revision state, status summary, disabled public review, and disabled feedback write posture.
 31. Deepened #delivery-readiness into a read-only delivery outbox workspace with package/manifest summary, readiness checklist, blockers, output count, disabled download, and disabled external delivery posture.
+32. Aligned all four read-model hash pages with a shared production context bar showing projectId, reviewSessionId, deliveryId, mock-first/read-only posture, and a return link to Command Center.
 ```
 
 ### blocked

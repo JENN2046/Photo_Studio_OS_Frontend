@@ -25,7 +25,7 @@ P1B Review / Delivery read-only realization and P2 cockpit completion track
 ## Current Phase
 
 ```text
-review-delivery-realization
+cross-page-consistency
 ```
 
 Suggested phases:
@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-Deepen Delivery Readiness read-only workspace
+Align read-model production context and Command Center return path
 ```
 
 ---
@@ -58,7 +58,7 @@ Deepen Delivery Readiness read-only workspace
 ## Last Completed Task
 
 ```text
-Pushed da8f32b: deepened Review Gallery read-only workspace
+Pushed 4f61aa6: deepened Delivery Readiness read-only workspace
 ```
 
 ---
@@ -66,7 +66,7 @@ Pushed da8f32b: deepened Review Gallery read-only workspace
 ## Last Validation
 
 ```text
-npm run lint passed; npm run build passed; git diff --check passed; changed-file secret scan passed; browser QA passed for #delivery-readiness at 1280px and 390px with console error count 0
+npm run lint passed; npm run build passed; git diff --check passed; changed-file secret scan passed; browser QA passed for #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness context bars at desktop and 390px with console error count 0
 ```
 
 ---
@@ -75,7 +75,7 @@ npm run lint passed; npm run build passed; git diff --check passed; changed-file
 
 ```text
 Branch: main
-Worktree: clean at start of P1B run; HEAD and origin/main at c19e171
+Worktree: intentionally editing read-model context bar batch after pushed 4f61aa6
 ```
 
 ---
@@ -107,7 +107,7 @@ no
 ## Ports Used
 
 ```text
-127.0.0.1:5173 used for browser QA during the previous batch and stopped after completion
+127.0.0.1:5173 reused for browser QA
 ```
 
 ---
@@ -123,5 +123,5 @@ not blocked
 ## Next Action
 
 ```text
-Batch 3: commit/push Delivery Readiness workspace, then continue to cross-page consistency and Command Center navigation.
+Batch 4: commit/push shared read-model context bar, then continue to Command Center production navigation and final browser QA.
 ```

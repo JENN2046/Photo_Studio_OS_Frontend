@@ -174,6 +174,31 @@ Not validated:
 Notes:
 - Verified visible content includes 交付就绪, Delivery Outbox, 下载未开放, 外部交付未启用, 缺少已通过的质检结果, and 交付清单已生成.
 - 390px viewport reported no horizontal overflow and console error count was 0.
+
+## VALIDATION-20260507-READ-MODEL-CONTEXT
+
+Task: Align all four read-model hash pages with shared production context and Command Center return path.
+Commands run:
+- git diff --check
+- changed-file secret scan on ReadModelPages.tsx and readModelPages.css
+- npm run lint
+- npm run build
+- in-app browser QA for #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness context bar text and console errors
+- in-app browser click check for 返回命令中心 from #qc-retouch
+- Playwright CLI 390px horizontal-overflow probe for all four hash pages
+- Playwright CLI console error check
+Result: passed
+Failures:
+- Initial browser text check used the wrong QC title label; the page itself was correct and was rechecked with 质检 / 精修队列.
+- A first temporary `npx --package playwright node -` viewport probe could not resolve the transient playwright module; no dependency files were changed, and Playwright CLI was used instead.
+Fix attempted: none required for application code
+Re-run result: not applicable
+Not validated:
+- No npm test script is defined.
+- Command Center entry-click QA remains queued for the next batch.
+Notes:
+- Verified context bar text includes 项目 PRJ-128, 审核会话 REV-441, 交付包 DEL-220, mock-first / read-only, and 返回命令中心.
+- 390px viewport reported no horizontal overflow across all four hash pages and console error count was 0.
 ```
 
 ---

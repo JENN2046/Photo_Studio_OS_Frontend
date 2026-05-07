@@ -10,7 +10,7 @@ Update this whenever work stops, pauses, blocks, or completes a meaningful batch
 
 ```text
 Status: in-progress
-Result: Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness read-only workspaces are complete; next track is cross-page consistency and Command Center navigation.
+Result: Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness read-only workspaces are complete; shared read-model context bar is implemented and validated; next track is Command Center navigation and final entry-click QA.
 ```
 
 ---
@@ -42,8 +42,8 @@ main
 ## Worktree State
 
 ```text
-Branch main was clean at start of this P1B docs batch.
-Current batch intentionally edits docs/design/FRONTEND_V2_GAP_MAP.md and .agent_board.
+Branch main was clean after pushed 4f61aa6.
+Current batch intentionally edits src/features/read-models and .agent_board for the shared read-model context bar.
 ```
 
 ---
@@ -57,8 +57,9 @@ Completed the first P1 frontend v2 realization slice:
 - #qc-retouch now has queue selection, selected preview, failure reasons, owner, due time, technical/manual checks, retouch instructions, and disabled suggested actions.
 - #review-gallery now has review grid, selected review item, client feedback/revision state, status summary, disabled public review, and disabled feedback write posture.
 - #delivery-readiness now has package/manifest summary, selected output preview, readiness checklist, blockers, disabled download, and disabled external delivery posture.
+- All four read-model hash pages now share a production context bar with projectId, reviewSessionId, deliveryId, mock-first/read-only posture, and a return link to Command Center.
 - Browser QA blockers from that slice were fixed: favicon 404 and 390px rail overflow.
-- All changes through da8f32b were pushed to origin/main; Delivery Readiness batch commit/push is pending.
+- All changes through 4f61aa6 were pushed to origin/main; shared context bar batch commit/push is pending.
 ```
 
 ---
@@ -89,11 +90,14 @@ Previous P1 slice:
 - browser QA: passed for #asset-inbox, #qc-retouch, Command Center entries, tab switching, console errors, and 390px viewport
 
 Current Delivery Readiness batch:
-- git diff --check passed
-- changed-file secret scan passed
+- pushed in 4f61aa6
+
+Current shared context bar batch:
+- git diff --check passed before board updates
+- changed-file secret scan passed before board updates
 - npm run lint passed
 - npm run build passed
-- browser QA passed for #delivery-readiness direct hash, key Chinese content, console errors, and 390px horizontal overflow
+- browser QA passed for all four hash pages, return link, console errors, and 390px horizontal overflow
 - commit/push pending
 ```
 
@@ -103,8 +107,8 @@ Current Delivery Readiness batch:
 
 ```text
 No npm test script is defined.
-No backend live integration request is planned for this docs batch.
-No browser screenshot QA is needed for docs-only batch.
+No backend live integration request is planned for this mock-first UI batch.
+No screenshot artifact was captured for the shared context batch.
 ```
 
 ---
@@ -121,7 +125,7 @@ no
 
 ```text
 Previous P1 commits were pushed after user approval.
-Current Delivery Readiness batch pending commit/push after validation.
+Current shared context bar batch pending commit/push after validation.
 ```
 
 ---
@@ -153,7 +157,7 @@ none for the next safe local frontend slice.
 ## Next Safe Action
 
 ```text
-Next safe local slice: align cross-page read-model interaction patterns and strengthen Command Center navigation.
+Next safe local slice: strengthen Command Center production navigation and run final entry-click browser QA.
 ```
 
 ---
