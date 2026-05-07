@@ -196,6 +196,7 @@ $routes = @(
 
 $viewports = @(
   @{ Name = "desktop"; Width = 1440; Height = 960 },
+  @{ Name = "tablet"; Width = 1024; Height = 768 },
   @{ Name = "mobile"; Width = 390; Height = 844 }
 )
 

@@ -95,6 +95,51 @@ function Test-Tabs {
   return $true
 }
 
+function Test-CommandCenterEntryLinks {
+  param([hashtable]$Viewport)
+
+  $targets = $ReadModelEntryTargets | ConvertTo-Json -Compress -Depth 6
+  $entryUrl = New-RouteUrl $ReadOnlyRouteHashes.CommandCenter
+  $code = "async (page) => { const targets = $targets; const consoleErrors = []; page.removeAllListeners('console'); page.on('console', (message) => { if (message.type() === 'error') consoleErrors.push(message.text()); }); const checks = []; for (const target of targets) { await page.goto('$entryUrl'); await page.waitForLoadState('domcontentloaded'); await page.waitForSelector('.production-route-links a', { timeout: 2000 }); const clickResult = await page.evaluate((target) => { const links = Array.from(document.querySelectorAll('.production-route-links a')); const link = links.find((item) => (item.getAttribute('href') || '').startsWith('#' + target.Route)); if (!link) return { route: target.Route, clicked: false, href: null }; link.click(); return { route: target.Route, clicked: true, href: link.getAttribute('href') }; }, target); await page.waitForTimeout(100); await page.waitForSelector(target.Selector, { timeout: 2000 }).catch(() => undefined); const state = await page.evaluate((target) => { const text = document.body.innerText; const root = document.documentElement; const expected = target.ExpectedEncoded.map((item) => decodeURIComponent(item)); const missing = expected.filter((item) => !text.includes(item)); const tabs = Array.from(document.querySelectorAll('.read-model-tabs a[aria-current=""page""]')).map((item) => item.getAttribute('href') || ''); const selectorCount = document.querySelectorAll(target.Selector).length; const requiredIds = ['PRJ-128', 'REV-441', 'DEL-220']; const missingIds = requiredIds.filter((item) => !text.includes(item)); return { route: target.Route, hash: location.hash, selectorCount, missing, missingIds, activeTabs: tabs, overflow: root.scrollWidth > root.clientWidth + 1, scrollWidth: root.scrollWidth, clientWidth: root.clientWidth }; }, target); checks.push(Object.assign({}, clickResult, state)); } return { viewport: '$($Viewport.Name)', checks, consoleErrorCount: consoleErrors.length, consoleErrors }; }"
+  $raw = Invoke-QaCode $code
+  $result = $raw | ConvertFrom-Json
+  $problems = @()
+  foreach ($check in $result.checks) {
+    if (-not $check.clicked) {
+      $problems += "Command Center entry missing: $($check.route)"
+    }
+    if (-not ($check.hash -like "#$($check.route)*")) {
+      $problems += "Command Center entry hash mismatch: $($check.route) => $($check.hash)"
+    }
+    if ($check.selectorCount -lt 1) {
+      $problems += "Command Center entry selector missing: $($check.route)"
+    }
+    if ($check.missing.Count -gt 0) {
+      $problems += "Command Center entry missing copy: $($check.route) => $($check.missing -join ', ')"
+    }
+    if ($check.missingIds.Count -gt 0) {
+      $problems += "Command Center entry missing Golden Loop ids: $($check.route) => $($check.missingIds -join ', ')"
+    }
+    if ($check.activeTabs.Count -ne 1 -or -not ($check.activeTabs[0] -like "#$($check.route)*")) {
+      $problems += "Command Center entry active tab mismatch: $($check.route)"
+    }
+    if ($check.overflow) {
+      $problems += "Command Center entry overflow: $($check.route) => $($check.scrollWidth) > $($check.clientWidth)"
+    }
+  }
+  if ($result.consoleErrorCount -gt 0) {
+    $problems += "console errors: $($result.consoleErrors -join ' | ')"
+  }
+
+  if ($problems.Count -gt 0) {
+    Write-Host "[FAIL] $($Viewport.Name) / command-center-entry-links: $($problems -join '; ')"
+    return $false
+  }
+
+  Write-Host "[PASS] $($Viewport.Name) / command-center-entry-links"
+  return $true
+}
+
 function Test-Workspace {
   param(
     [hashtable]$Route,
@@ -171,6 +216,7 @@ $routes = @(
 
 $viewports = @(
   @{ Name = "desktop"; Width = 1440; Height = 960 },
+  @{ Name = "tablet"; Width = 1024; Height = 768 },
   @{ Name = "mobile"; Width = 390; Height = 844 }
 )
 
@@ -200,6 +246,10 @@ try {
     Invoke-PlaywrightCli @("resize", [string]$viewport.Width, [string]$viewport.Height)
 
     if (-not (Test-Tabs -Viewport $viewport)) {
+      $allPassed = $false
+    }
+
+    if (-not (Test-CommandCenterEntryLinks -Viewport $viewport)) {
       $allPassed = $false
     }
 

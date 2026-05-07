@@ -42,6 +42,25 @@ Local helper candidates, if added and safe:
 ## Entries
 
 ```text
+## VALIDATION-20260507-1942
+
+Task: Batch B/C read-only QA matrix hardening.
+Commands run:
+- powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-interactions.ps1
+- powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-all.ps1
+- powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1
+Result: passed
+Failures: none
+Fix attempted: none required
+Re-run result: not applicable
+Coverage:
+- Interaction QA covered tabs, Command Center 黄金链路 entry clicks, local selection, and disabled read-only actions at 1440x960, 1024x768, and 390x844.
+- Route QA covered 14 routes at 1440x960, 1024x768, and 390x844.
+- Boundary-state QA covered 16 read-model cases at 1024x768 and 390x844.
+- validate-local covered lint, build, git diff --check, and changed-file secret scan.
+Not validated: npm test is not defined; no backend live integration; no push/deploy validation
+Notes: The Command Center entry-click check verifies the target read-model page, active tab, Golden Loop IDs, console errors, and horizontal overflow while remaining mock-first/read-only.
+
 ## VALIDATION-20260507-1915
 
 Task: Batch A P3.3/P3.4/P3.5 runtime QA consolidation.

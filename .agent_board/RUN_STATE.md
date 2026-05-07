@@ -17,7 +17,7 @@ A4-Sustained Local Frontend Autopilot
 ## Current Mission
 
 ```text
-P3.3/P3.4/P3.5 Runtime QA Consolidation Batch
+P3.6/P3.7 Read-only QA Matrix Hardening Batch
 ```
 
 ---
@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-Batch A runtime QA consolidation complete candidate
+Batch B/C read-only QA matrix hardening complete candidate
 ```
 
 ---
@@ -58,7 +58,7 @@ Batch A runtime QA consolidation complete candidate
 ## Last Completed Task
 
 ```text
-scripts/qa-readonly-all.ps1 passed after shared runtime chip renderer and QA fixture consolidation
+scripts/qa-readonly-all.ps1 passed after Command Center entry-click and 1024px QA expansion
 ```
 
 ---
@@ -66,7 +66,7 @@ scripts/qa-readonly-all.ps1 passed after shared runtime chip renderer and QA fix
 ## Last Validation
 
 ```text
-scripts/validate-local.ps1 passed with lint/build/whitespace/changed-file secret scan after an elevated rerun for the known Vite/esbuild spawn EPERM sandbox limitation; scripts/qa-readonly-all.ps1 passed route, boundary-state, and interaction matrices, including 14-route invalid fallback coverage.
+scripts/qa-readonly-interactions.ps1 passed; scripts/qa-readonly-all.ps1 passed route, boundary-state, and interaction matrices; scripts/validate-local.ps1 passed lint/build/whitespace/changed-file secret scan. Route QA covers 14 routes at 1440x960, 1024x768, and 390x844; interaction QA covers tabs, Command Center 黄金链路 entry clicks, local selection, and disabled actions at the same three viewports.
 ```
 
 ---
@@ -75,7 +75,7 @@ scripts/validate-local.ps1 passed with lint/build/whitespace/changed-file secret
 
 ```text
 Branch: main
-Worktree: intentionally editing Batch A source/docs/scripts/.agent_board after local aad1371; ready for local commit
+Worktree: intentionally editing Batch B/C docs/scripts/.agent_board after local 07e0e08; ready for local commit
 ```
 
 ---
@@ -115,7 +115,7 @@ no
 ## Current Stop Status
 
 ```text
-Batch A validation green; local commit allowed, then stop at remote push boundary
+Batch B/C validation green; local commit allowed, then stop at remote push boundary
 ```
 
 ---

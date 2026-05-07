@@ -10,7 +10,7 @@ It does not authorize remote writes, commits, pushes, deployments, backend chang
 ## Current Mission
 
 ```text
-P3.3/P3.4/P3.5 Runtime QA Consolidation Batch
+P3.6/P3.7 Read-only QA Matrix Hardening Batch
 ```
 
 Mode:
@@ -22,7 +22,7 @@ A4-Sustained Local Frontend Autopilot
 Goal:
 
 ```text
-Share runtime chip rendering, centralize read-only QA fixtures, and harden invalid DEV debug-state fallback coverage without enabling writes, backend mutations, uploads, downloads, auth, storage, or production links.
+Refresh post-commit board facts and harden the read-only browser QA matrix with Command Center Golden Loop entry-click checks plus 1024px middle viewport coverage.
 ```
 
 ---
@@ -83,7 +83,7 @@ none
 
 ### todo
 
-Current safe queue after starting Batch A runtime QA consolidation.
+Current safe queue after starting Batch B/C read-only QA matrix hardening.
 
 ```text
 none
@@ -254,6 +254,14 @@ none
 160. Extended route QA with invalid commandCenterState and readModelState fallback coverage.
 161. Refreshed README.md, FRONTEND_V2_GAP_MAP.md, and .agent_board for Batch A.
 162. Validated Batch A with scripts/validate-local.ps1 and scripts/qa-readonly-all.ps1.
+163. Locally committed 07e0e08: refactor: consolidate runtime qa fixtures.
+164. Started Batch B/C from clean local commit 07e0e08.
+165. Corrected .agent_board post-commit facts so Batch A is no longer described as pending commit.
+166. Added shared QA fixture targets for the four Command Center 黄金链路 entry clicks.
+167. Extended read-only route QA to include a 1024x768 middle viewport.
+168. Extended read-model interaction QA to click Command Center 黄金链路 entries and verify target page, active tab, Golden Loop IDs, console errors, and horizontal overflow across 1440px, 1024px, and 390px.
+169. Validated Batch B/C browser QA with scripts/qa-readonly-interactions.ps1 and scripts/qa-readonly-all.ps1.
+170. Validated Batch B/C local gates with scripts/validate-local.ps1.
 ```
 
 ### blocked

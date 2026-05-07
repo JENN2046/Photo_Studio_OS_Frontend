@@ -10,7 +10,7 @@ Update this whenever work stops, pauses, blocks, or completes a meaningful batch
 
 ```text
 Status: complete-candidate
-Result: Batch A P3.3/P3.4/P3.5 is validated locally. Runtime chips now share one renderer, read-model route helpers are centralized, QA scripts share one Golden Product Loop fixture, and route QA covers invalid DEV debug-state fallback.
+Result: Batch B/C is browser-validated locally. Batch A was committed as 07e0e08. Current work refreshes board facts and hardens the read-only QA matrix with Command Center Golden Loop entry-click checks plus 1024px middle viewport coverage.
 ```
 
 ---
@@ -57,7 +57,8 @@ Branch main was clean after local commit 6605681.
 Branch main was clean after local commit 320b086.
 Branch main was clean after local commit 8c6b37d.
 Branch main was clean after local commit aad1371.
-Current batch intentionally edits Batch A runtime QA consolidation source/docs/scripts/.agent_board after local commit aad1371.
+Branch main was clean after local commit 07e0e08.
+Current batch intentionally edits Batch B/C docs/scripts/.agent_board after local commit 07e0e08.
 ```
 
 ---
@@ -146,6 +147,11 @@ Completed the first P1 frontend v2 realization slice:
 - Read-model route IDs, labels, shared query preservation, and Command Center read-model href construction now live in readModelRoutes.ts.
 - QA scripts now reuse scripts/qa-readonly-fixtures.ps1 for Golden Product Loop IDs and route hashes.
 - Route QA now includes invalid commandCenterState and readModelState fallback checks.
+- 07e0e08 locally committed Batch A.
+- Batch B/C corrected post-commit board facts.
+- Batch C adds shared QA fixture targets for Command Center Golden Loop entry-click checks.
+- Route QA now includes 1024x768 in addition to 1440x960 and 390x844.
+- Interaction QA now clicks all four Command Center 黄金链路 entries and verifies target page, active tab, Golden Loop IDs, no console errors, and no horizontal overflow.
 ```
 
 ---
@@ -160,15 +166,8 @@ docs/design/FRONTEND_V2_GAP_MAP.md
 .agent_board/VALIDATION_LOG.md
 .agent_board/HANDOFF.md
 README.md
-src/components/panels/RuntimeChipList.tsx
-src/features/command-center/CommandCenter.tsx
-src/features/read-models/ReadModelPages.tsx
-src/features/read-models/readModelRoutes.ts
-src/features/read-models/readModelPages.css
-src/styles/global.css
 scripts/qa-readonly-fixtures.ps1
 scripts/qa-readonly-routes.ps1
-scripts/qa-readonly-boundary-states.ps1
 scripts/qa-readonly-interactions.ps1
 ```
 
@@ -359,6 +358,13 @@ Current Batch A runtime QA consolidation:
 - scripts/validate-local.ps1 passed after an elevated rerun for the known Vite/esbuild spawn EPERM sandbox limitation.
 - scripts/qa-readonly-all.ps1 passed route, boundary-state, and interaction matrices.
 - Route QA covered 14 routes at 1440x960 and 390x844, including invalid commandCenterState and readModelState fallback checks.
+
+Current Batch B/C QA hardening:
+- scripts/qa-readonly-interactions.ps1 passed at 1440x960, 1024x768, and 390x844.
+- scripts/qa-readonly-all.ps1 passed.
+- scripts/validate-local.ps1 passed with lint, build, git diff --check, and changed-file secret scan.
+- Route QA covered 14 routes at 1440x960, 1024x768, and 390x844.
+- Interaction QA covered tabs, Command Center 黄金链路 entry clicks, local selection, and disabled actions at 1440x960, 1024x768, and 390x844.
 ```
 
 ---
@@ -369,7 +375,7 @@ Current Batch A runtime QA consolidation:
 No npm test script is defined.
 No backend live integration request is planned for this mock-first UI batch.
 Full Bash helper validation awaits a compatible bash/WSL Node 20.19+ or 22.12+ environment and Rollup optional native package availability; the helper now reports that blocker before npm gates.
-No push is authorized for local commits after the last explicit push, including aad1371 and the current Batch A work, until the user explicitly asks for push.
+No push is authorized for local commits after the last explicit push, including 07e0e08 and the current Batch B/C work, until the user explicitly asks for push.
 ```
 
 ---
@@ -417,7 +423,7 @@ none for the next safe local frontend slice.
 ## Next Safe Action
 
 ```text
-Next safe action: commit Batch A locally if final staged checks remain green, then wait for explicit push approval.
+Next safe action: run validation, commit Batch B/C locally if final staged checks remain green, then wait for explicit push approval.
 ```
 
 ---
@@ -429,7 +435,7 @@ Next safe action: commit Batch A locally if final staged checks remain green, th
 
 读取 AGENTS.md 和 .agent_board/*。
 继续 A4-Sustained Local Frontend Autopilot。
-先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的 Batch A runtime QA consolidation 队列继续。
+先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的 Batch B/C read-only QA matrix hardening 队列继续。
 保持 mock-first/read-only，不碰 backend、root control repo、依赖、.env、deploy、生产服务、上传/下载/auth/storage/write actions。
 按当前持续推进节奏，小批次验证后可以本地 commit；push 只有用户明确说 push 才执行。
 用中文汇报。

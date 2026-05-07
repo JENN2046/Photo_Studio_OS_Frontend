@@ -10,10 +10,10 @@ Codex should update this after each meaningful batch of local frontend work.
 
 ```text
 Status: complete-candidate
-Updated: 2026-05-07 19:15 +0800
+Updated: 2026-05-07 19:42 +0800
 Repo: Photo_Studio_OS_Frontend
 Mode: A4-Sustained Local Frontend Autopilot
-Mission: P3.3/P3.4/P3.5 Runtime QA Consolidation Batch
+Mission: P3.6/P3.7 Read-only QA Matrix Hardening Batch
 ```
 
 ---
@@ -25,8 +25,8 @@ Fill from actual command output.
 ```text
 Workspace: A:\Photo_Studio_OS_Frontend
 Branch: main
-Worktree: intentionally editing Batch A source/docs/scripts/.agent_board after local aad1371; final validation and local commit pending
-Diff stat: RuntimeChipList.tsx, CommandCenter.tsx, ReadModelPages.tsx, readModelRoutes.ts, global.css, readModelPages.css, QA scripts, README.md, FRONTEND_V2_GAP_MAP.md, and .agent_board
+Worktree: intentionally editing Batch B/C docs/scripts/.agent_board after local 07e0e08
+Diff stat: QA fixture/scripts, README.md, FRONTEND_V2_GAP_MAP.md, and .agent_board
 Package manager: npm with package-lock.json
 Available scripts: dev, build, lint, preview
 ```
@@ -158,6 +158,12 @@ Moved read-model route IDs, labels, shared query preservation, and Command Cente
 Centralized Golden Product Loop QA IDs and read-model route hashes in scripts/qa-readonly-fixtures.ps1.
 Updated route, boundary-state, and interaction QA scripts to reuse the shared fixture.
 Extended route QA to verify invalid commandCenterState and readModelState values fall back to the normal mock-first ready path.
+Locally committed 07e0e08: refactor: consolidate runtime qa fixtures.
+Started Batch B/C from clean local commit 07e0e08.
+Corrected post-Batch-A board facts so the local commit is recorded as complete instead of pending.
+Added Command Center Golden Loop entry-click targets to the shared read-only QA fixture.
+Extended route QA to include a 1024x768 middle viewport.
+Extended interaction QA to click the four Command Center 黄金链路 entries and verify the target read-model page, active tab, Golden Loop IDs, console posture, and horizontal overflow at desktop/tablet/mobile.
 ```
 
 ---
@@ -172,15 +178,8 @@ docs/design/FRONTEND_V2_GAP_MAP.md
 .agent_board/VALIDATION_LOG.md
 .agent_board/HANDOFF.md
 README.md
-src/components/panels/RuntimeChipList.tsx
-src/features/command-center/CommandCenter.tsx
-src/features/read-models/ReadModelPages.tsx
-src/features/read-models/readModelRoutes.ts
-src/features/read-models/readModelPages.css
-src/styles/global.css
 scripts/qa-readonly-fixtures.ps1
 scripts/qa-readonly-routes.ps1
-scripts/qa-readonly-boundary-states.ps1
 scripts/qa-readonly-interactions.ps1
 ```
 
@@ -359,6 +358,14 @@ Current Batch A runtime QA consolidation:
 - Route QA covered 14 routes at 1440x960 and 390x844, including invalid commandCenterState and readModelState fallback checks.
 - Boundary-state QA covered 16 read-model cases at 1024x768 and 390x844.
 - Interaction QA covered read-model tabs, local selection, and disabled actions at 1440x960 and 390x844.
+
+Current Batch B/C QA hardening:
+- scripts/qa-readonly-interactions.ps1 passed at 1440x960, 1024x768, and 390x844.
+- scripts/qa-readonly-all.ps1 passed.
+- scripts/validate-local.ps1 passed with lint, build, git diff --check, and changed-file secret scan.
+- Route QA covered 14 routes at 1440x960, 1024x768, and 390x844.
+- Boundary-state QA covered 16 read-model cases at 1024x768 and 390x844.
+- Interaction QA covered tabs, Command Center 黄金链路 entry clicks, local selection, and disabled actions at 1440x960, 1024x768, and 390x844.
 ```
 
 ---
@@ -385,7 +392,7 @@ bash scripts/validate-local.sh cannot complete full validation in the current ba
 ## Remaining Safe Tasks
 
 ```text
-Next safe local P3 slice can continue after committing Batch A.
+Next safe local P3 slice can continue after committing Batch B/C.
 ```
 
 ---
@@ -414,7 +421,7 @@ The Bash validation helper source is updated, but full Bash execution is environ
 ## Next Safe Task
 
 ```text
-Run final validation; commit Batch A locally if final staged checks are green, then stop at remote push boundary.
+Run final validation; commit Batch B/C locally if checks are green, then stop at remote push boundary.
 ```
 
 ---
