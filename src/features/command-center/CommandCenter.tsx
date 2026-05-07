@@ -510,6 +510,17 @@ export function CommandCenter() {
     projectId: primaryProjectId,
     reviewSessionId: primaryReviewSessionId
   });
+  const productionContext = [
+    { label: "项目", value: primaryProjectId ?? "待选择" },
+    { label: "审核", value: primaryReviewSessionId ?? "待选择" },
+    { label: "交付", value: primaryDeliveryId ?? "待选择" }
+  ] as const;
+  const productionRoutes = [
+    { label: "素材", href: assetInboxHref },
+    { label: "质检", href: qcRetouchHref },
+    { label: "审核", href: reviewGalleryHref },
+    { label: "交付", href: deliveryReadinessHref }
+  ] as const;
 
   return (
     <AppShell>
@@ -534,6 +545,30 @@ export function CommandCenter() {
                   </p>
                   <a href={assetInboxHref}>素材收件箱</a>
                 </div>
+                <section
+                  className="production-route-strip"
+                  aria-label="黄金生产链路入口"
+                >
+                  <div className="production-route-context">
+                    <span className="production-route-kicker">黄金链路</span>
+                    {productionContext.map((item) => (
+                      <span key={item.label}>
+                        <b>{item.label}</b>
+                        {item.value}
+                      </span>
+                    ))}
+                  </div>
+                  <nav
+                    className="production-route-links"
+                    aria-label="只读生产链路页面"
+                  >
+                    {productionRoutes.map((route) => (
+                      <a href={route.href} key={route.label}>
+                        {route.label}
+                      </a>
+                    ))}
+                  </nav>
+                </section>
                 <div
                   className="project-table"
                   role="table"

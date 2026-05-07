@@ -10,7 +10,7 @@ Update this whenever work stops, pauses, blocks, or completes a meaningful batch
 
 ```text
 Status: in-progress
-Result: Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness read-only workspaces are complete; shared read-model context bar is implemented and validated; next track is Command Center navigation and final entry-click QA.
+Result: P1B read-only production loop is complete candidate: four read-model workspaces, shared context bar, Command Center 黄金链路 entries, and browser QA are green. Next track is P2 cockpit polish.
 ```
 
 ---
@@ -42,8 +42,8 @@ main
 ## Worktree State
 
 ```text
-Branch main was clean after pushed 4f61aa6.
-Current batch intentionally edits src/features/read-models and .agent_board for the shared read-model context bar.
+Branch main was clean after pushed f249a8a.
+Current batch intentionally edits Command Center, global styles, gap map, and .agent_board for P1B closeout.
 ```
 
 ---
@@ -58,8 +58,9 @@ Completed the first P1 frontend v2 realization slice:
 - #review-gallery now has review grid, selected review item, client feedback/revision state, status summary, disabled public review, and disabled feedback write posture.
 - #delivery-readiness now has package/manifest summary, selected output preview, readiness checklist, blockers, disabled download, and disabled external delivery posture.
 - All four read-model hash pages now share a production context bar with projectId, reviewSessionId, deliveryId, mock-first/read-only posture, and a return link to Command Center.
+- Command Center now shows a compact 黄金链路 strip with PRJ-128, REV-441, DEL-220, and four read-only entries.
 - Browser QA blockers from that slice were fixed: favicon 404 and 390px rail overflow.
-- All changes through 4f61aa6 were pushed to origin/main; shared context bar batch commit/push is pending.
+- All changes through f249a8a were pushed to origin/main; Command Center 黄金链路 / docs closeout batch commit/push is pending.
 ```
 
 ---
@@ -93,11 +94,14 @@ Current Delivery Readiness batch:
 - pushed in 4f61aa6
 
 Current shared context bar batch:
+- pushed in f249a8a
+
+Current Command Center 黄金链路 batch:
 - git diff --check passed before board updates
 - changed-file secret scan passed before board updates
 - npm run lint passed
 - npm run build passed
-- browser QA passed for all four hash pages, return link, console errors, and 390px horizontal overflow
+- browser QA passed for Command Center entry clicks, read-model tab switching, console errors, and 390px horizontal overflow
 - commit/push pending
 ```
 
@@ -157,7 +161,7 @@ none for the next safe local frontend slice.
 ## Next Safe Action
 
 ```text
-Next safe local slice: strengthen Command Center production navigation and run final entry-click browser QA.
+Next safe local slice: P2 cockpit polish with a narrow browser-led pass on text fit, panel density, and narrow viewport comfort.
 ```
 
 ---

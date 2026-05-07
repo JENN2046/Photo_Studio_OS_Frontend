@@ -83,12 +83,12 @@ none
 
 ### todo
 
-Current safe queue after commit `4f61aa6`.
+Current safe queue after commit `f249a8a`.
 
 ```text
-1. Strengthen Command Center production navigation so the first Golden Product Loop IDs and four hash entry points remain clear.
-2. Run browser QA for Command Center entry clicks, tab switching, Chinese mock data, console errors, and 390px viewport.
-3. Refresh the final P1B/P2 gap map after browser QA if facts changed.
+1. Start P2 cockpit polish with a narrow browser-led pass on text fit, panel density, and narrow viewport comfort.
+2. Add or refine frontend-only contract notes for optional backend read-model smoke testing when VITE_BACKEND_API_BASE_URL is configured.
+3. Re-scan read-model pages for duplicated presentational patterns that can be safely extracted without broad refactor.
 ```
 
 ### done
@@ -126,6 +126,8 @@ Current safe queue after commit `4f61aa6`.
 30. Deepened #review-gallery into a read-only client review workspace with gallery grid, selected item, client feedback/revision state, status summary, disabled public review, and disabled feedback write posture.
 31. Deepened #delivery-readiness into a read-only delivery outbox workspace with package/manifest summary, readiness checklist, blockers, output count, disabled download, and disabled external delivery posture.
 32. Aligned all four read-model hash pages with a shared production context bar showing projectId, reviewSessionId, deliveryId, mock-first/read-only posture, and a return link to Command Center.
+33. Strengthened Command Center production navigation with a `黄金链路` strip showing PRJ-128, REV-441, DEL-220, and four read-only page entries.
+34. Ran final P1B browser QA for Command Center entry clicks, read-model tab switching, Chinese mock data, console errors, and 390px viewport overflow.
 ```
 
 ### blocked

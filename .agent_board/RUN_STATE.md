@@ -25,7 +25,7 @@ P1B Review / Delivery read-only realization and P2 cockpit completion track
 ## Current Phase
 
 ```text
-cross-page-consistency
+p2-cockpit-polish
 ```
 
 Suggested phases:
@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-Align read-model production context and Command Center return path
+Refresh P1B completion facts and queue P2 cockpit polish
 ```
 
 ---
@@ -58,7 +58,7 @@ Align read-model production context and Command Center return path
 ## Last Completed Task
 
 ```text
-Pushed 4f61aa6: deepened Delivery Readiness read-only workspace
+Pushed f249a8a: aligned read-model production context
 ```
 
 ---
@@ -66,7 +66,7 @@ Pushed 4f61aa6: deepened Delivery Readiness read-only workspace
 ## Last Validation
 
 ```text
-npm run lint passed; npm run build passed; git diff --check passed; changed-file secret scan passed; browser QA passed for #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness context bars at desktop and 390px with console error count 0
+npm run lint passed; npm run build passed; git diff --check passed; changed-file secret scan passed; browser QA passed for Command Center 黄金链路 entries, all four hash pages, read-model tab switching, Chinese mock IDs, console errors, and 390px overflow
 ```
 
 ---
@@ -75,7 +75,7 @@ npm run lint passed; npm run build passed; git diff --check passed; changed-file
 
 ```text
 Branch: main
-Worktree: intentionally editing read-model context bar batch after pushed 4f61aa6
+Worktree: intentionally editing Command Center 黄金链路 plus gap map / board after pushed f249a8a
 ```
 
 ---
@@ -123,5 +123,5 @@ not blocked
 ## Next Action
 
 ```text
-Batch 4: commit/push shared read-model context bar, then continue to Command Center production navigation and final browser QA.
+Batch 5: commit/push Command Center 黄金链路 and P1B docs/board refresh, then continue with P2 cockpit polish.
 ```

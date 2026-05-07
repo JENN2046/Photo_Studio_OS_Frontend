@@ -10,7 +10,7 @@ Codex should update this after each meaningful batch of local frontend work.
 
 ```text
 Status: in-progress
-Updated: 2026-05-07 10:13 +0800
+Updated: 2026-05-07 10:19 +0800
 Repo: Photo_Studio_OS_Frontend
 Mode: A4-Sustained Local Frontend Autopilot
 Mission: P1B Review / Delivery read-only realization and P2 cockpit completion track
@@ -25,8 +25,8 @@ Fill from actual command output.
 ```text
 Workspace: A:\Photo_Studio_OS_Frontend
 Branch: main
-Worktree: intentionally editing shared read-model context bar batch
-Diff stat: src/features/read-models plus .agent_board
+Worktree: intentionally editing Command Center 黄金链路, gap map, and .agent_board
+Diff stat: CommandCenter.tsx, global.css, docs/design/FRONTEND_V2_GAP_MAP.md, and .agent_board
 Package manager: npm with package-lock.json
 Available scripts: dev, build, lint, preview
 ```
@@ -54,7 +54,8 @@ Started P1B Review / Delivery realization run.
 Pushed e529c3b: refreshed the P1B/P2 gap map and task rail.
 Pushed da8f32b: deepened #review-gallery into a read-only client review workspace.
 Pushed 4f61aa6: deepened #delivery-readiness into a read-only delivery outbox workspace.
-Implemented a shared read-model context bar for #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness; commit/push pending.
+Pushed f249a8a: implemented a shared read-model context bar for #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness.
+Implemented Command Center 黄金链路 strip and refreshed P1B completion docs/board; commit/push pending.
 ```
 
 ---
@@ -65,6 +66,8 @@ Implemented a shared read-model context bar for #asset-inbox, #qc-retouch, #revi
 docs/design/FRONTEND_V2_GAP_MAP.md
 src/features/read-models/ReadModelPages.tsx
 src/features/read-models/readModelPages.css
+src/features/command-center/CommandCenter.tsx
+src/styles/global.css
 .agent_board/CHECKPOINT.md
 .agent_board/RUN_STATE.md
 .agent_board/TASK_QUEUE.md
@@ -82,13 +85,13 @@ src/features/read-models/readModelPages.css
 ## Validation Run
 
 ```text
-Current read-model context batch:
+Current Command Center navigation / P1B closeout batch:
 - git diff --check passed
 - changed-file secret scan passed before board updates
 - npm run lint passed
 - npm run build passed
-- in-app browser QA passed for all four hash pages: context bar present, Chinese page content present, return link routes to Command Center hash, console error count 0
-- Playwright CLI 390px QA passed for all four hash pages: titles visible, context bar text present, no horizontal overflow, console error count 0
+- in-app browser QA passed for Command Center 黄金链路 strip, all four entry clicks, read-model context text, and tab switching back to 素材收件箱
+- Playwright CLI 390px QA passed for Command Center: 黄金链路 and IDs visible, no horizontal overflow, console error count 0
 - commit/push pending
 ```
 
@@ -140,7 +143,7 @@ Live backend toggle still requires configuring VITE_BACKEND_API_BASE_URL and run
 ## Next Safe Task
 
 ```text
-After context bar batch is pushed, strengthen Command Center production navigation and run final entry-click browser QA.
+After Command Center navigation batch is pushed, start P2 cockpit polish with a narrow browser-led pass.
 ```
 
 ---

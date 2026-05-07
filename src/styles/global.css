@@ -2398,6 +2398,61 @@ body {
   gap: 0;
 }
 
+.production-route-strip {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding: 9px;
+  border: 1px solid rgba(242, 247, 255, 0.1);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.production-route-context,
+.production-route-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+.production-route-context span,
+.production-route-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 27px;
+  padding: 5px 7px;
+  border: 1px solid rgba(242, 247, 255, 0.1);
+  border-radius: 4px;
+  color: rgba(220, 230, 239, 0.82);
+  font-size: 0.68rem;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.production-route-context span {
+  gap: 6px;
+}
+
+.production-route-context b {
+  color: rgba(165, 178, 191, 0.82);
+  font-weight: 500;
+}
+
+.production-route-kicker {
+  color: rgba(255, 78, 52, 0.88);
+  text-transform: uppercase;
+}
+
+.production-route-links {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.production-route-links a {
+  justify-content: center;
+}
+
 .table-row {
   grid-template-columns: minmax(160px, 1.25fr) minmax(90px, 0.7fr) 54px 62px;
   min-height: 46px;

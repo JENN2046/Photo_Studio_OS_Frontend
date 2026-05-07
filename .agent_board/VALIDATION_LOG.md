@@ -199,6 +199,30 @@ Not validated:
 Notes:
 - Verified context bar text includes 项目 PRJ-128, 审核会话 REV-441, 交付包 DEL-220, mock-first / read-only, and 返回命令中心.
 - 390px viewport reported no horizontal overflow across all four hash pages and console error count was 0.
+
+## VALIDATION-20260507-COMMAND-CENTER-LINKS
+
+Task: Strengthen Command Center production navigation and close P1B browser QA.
+Commands run:
+- git diff --check
+- changed-file secret scan on CommandCenter.tsx and global.css
+- npm run lint
+- npm run build
+- in-app browser QA for Command Center 黄金链路 strip and four entry clicks
+- in-app browser QA for read-model tab switching back to 素材收件箱
+- Playwright CLI 390px Command Center horizontal-overflow probe
+- Playwright CLI console error check
+Result: passed
+Failures: none
+Fix attempted: none required
+Re-run result: not applicable
+Not validated:
+- No npm test script is defined.
+- No backend live integration was run; frontend remains mock-first unless VITE_BACKEND_API_BASE_URL is configured.
+Notes:
+- Verified Command Center displays 黄金链路 plus PRJ-128, REV-441, DEL-220.
+- Verified 黄金链路 entries navigate to #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness with the expected read-model context.
+- 390px viewport reported no horizontal overflow and console error count was 0.
 ```
 
 ---
