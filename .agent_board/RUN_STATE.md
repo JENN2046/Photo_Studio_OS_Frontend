@@ -17,7 +17,7 @@ A4-Sustained Local Frontend Autopilot
 ## Current Mission
 
 ```text
-P2.12 Read-model Workspace Component Split
+P2.13 Read-only Route QA Matrix Automation
 ```
 
 ---
@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-P2.12 read-model workspace component split complete candidate
+P2.13 scripted read-only route QA complete candidate
 ```
 
 ---
@@ -58,7 +58,7 @@ P2.12 read-model workspace component split complete candidate
 ## Last Completed Task
 
 ```text
-Committed e3bd271: derived read-model workspace details from the view-model layer
+Committed 25110ed: split read-model workspace components
 ```
 
 ---
@@ -66,7 +66,7 @@ Committed e3bd271: derived read-model workspace details from the view-model laye
 ## Last Validation
 
 ```text
-git diff --check, changed-file secret scan, npm run lint, npm run build, in-app browser route QA, and Playwright CLI 390px matrix passed for P2.12
+scripts/qa-readonly-routes.ps1, git diff --check, changed-file secret scan, npm run lint, and npm run build passed for P2.13
 ```
 
 ---
@@ -75,7 +75,7 @@ git diff --check, changed-file secret scan, npm run lint, npm run build, in-app 
 
 ```text
 Branch: main
-Worktree: intentionally editing P2.12 source/docs/.agent_board after local e3bd271
+Worktree: intentionally editing P2.13 QA script/docs/.agent_board after local 25110ed
 ```
 
 ---
@@ -115,7 +115,7 @@ no
 ## Current Stop Status
 
 ```text
-stop at remote push boundary after local P2.12 commit
+continue local P2.13 validation, local commit if green, and stop at remote push boundary
 ```
 
 ---
@@ -123,5 +123,5 @@ stop at remote push boundary after local P2.12 commit
 ## Next Action
 
 ```text
-Commit P2.12 locally without push.
+Finish P2.13 docs/board updates, run validation, and commit locally without push.
 ```

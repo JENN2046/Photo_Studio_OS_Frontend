@@ -10,7 +10,7 @@ It does not authorize remote writes, commits, pushes, deployments, backend chang
 ## Current Mission
 
 ```text
-P2.12 Read-model Workspace Component Split
+P2.13 Read-only Route QA Matrix Automation
 ```
 
 Mode:
@@ -22,7 +22,7 @@ A4-Sustained Local Frontend Autopilot
 Goal:
 
 ```text
-Keep ReadModelPages.tsx focused on routing, params, mock-first read state, and page shell by moving the four large workspace components into a dedicated component module.
+Make the post-RC read-only browser route checks repeatable through a local script that covers Command Center scenes and the four read-model workspaces without adding project dependencies or enabling backend/write behavior.
 ```
 
 ---
@@ -83,7 +83,7 @@ none
 
 ### todo
 
-Current safe queue after starting P2.12 read-model component split.
+Current safe queue after starting P2.13 scripted route QA.
 
 ```text
 none
@@ -191,6 +191,14 @@ none
 97. Browser-validated #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness in the in-app browser after the workspace component split.
 98. Playwright CLI validated the four read-model hash pages at 390px with no horizontal overflow or console errors.
 99. Validated P2.12 with git diff --check, changed-file secret scan, npm run lint, and npm run build.
+100. Started P2.13 Read-only Route QA Matrix Automation from clean local commit 25110ed.
+101. Added scripts/qa-readonly-routes.ps1 as a local Playwright CLI matrix runner without changing package.json or package-lock.json.
+102. Covered #, #risk, #projects, #approvals, #activity, #inspections, #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness.
+103. Added desktop 1440x960 and mobile 390x844 checks for required selectors, expected Chinese copy, Command Center rail aria-current state, console errors, and horizontal overflow.
+104. Fixed the route QA harness to use a temporary Playwright CLI filename so PowerShell native argument quoting does not strip JavaScript string quotes.
+105. Added a short selector wait after hash navigation so React hash-scene updates are checked after render instead of racing the route transition.
+106. Ran scripts/qa-readonly-routes.ps1 successfully across all 20 route/viewport checks.
+107. Validated P2.13 with scripts/qa-readonly-routes.ps1, git diff --check, changed-file secret scan, npm run lint, and npm run build.
 ```
 
 ### blocked

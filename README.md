@@ -93,16 +93,33 @@ Use the local Vite server only:
 npm run dev
 ```
 
+Automated read-only route matrix:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-routes.ps1
+```
+
+The script uses transient `npx --package @playwright/cli` execution without
+changing `package.json` or `package-lock.json`. It checks Command Center scenes
+plus the four read-model hash pages at `1440x960` and `390x844` for expected
+Chinese copy, required workspace selectors, Command Center `aria-current`
+state, console errors, and horizontal overflow.
+
 Baseline cockpit routes:
 
 - `http://127.0.0.1:5173/#`
+- `http://127.0.0.1:5173/#risk`
+- `http://127.0.0.1:5173/#projects`
+- `http://127.0.0.1:5173/#approvals`
+- `http://127.0.0.1:5173/#activity`
+- `http://127.0.0.1:5173/#inspections`
 - `http://127.0.0.1:5173/#asset-inbox?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220`
 - `http://127.0.0.1:5173/#qc-retouch?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220`
 - `http://127.0.0.1:5173/#review-gallery?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220`
 - `http://127.0.0.1:5173/#delivery-readiness?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220`
 
-For browser QA, check the four read-model pages and Command Center at desktop,
-tablet, and 390px widths. Confirm Chinese mock content, tab navigation,
+For manual browser QA, check the four read-model pages and Command Center at
+desktop, tablet, and 390px widths. Confirm Chinese mock content, tab navigation,
 Command Center entry links, no console errors, and no horizontal overflow.
 
 Keyboard QA:

@@ -650,6 +650,34 @@ Notes:
 - Backend fetchers, mock fixture data, CSS, dependencies, .env, upload/download/auth/storage/write behavior, and production links were not changed.
 ```
 
+```text
+## VALIDATION-20260507-READONLY-ROUTE-QA-SCRIPT
+
+Task: Add a repeatable local read-only route QA matrix script.
+Commands run:
+- powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-routes.ps1
+- git diff --check
+- changed-file secret scan on current diff
+- npm run lint
+- npm run build
+Result: passed
+Failures:
+- First script run failed because inline JavaScript passed through Windows PowerShell native arguments lost string quotes before reaching playwright-cli.
+- A later run initially failed desktop Asset Inbox because the check evaluated immediately after hash navigation before React finished rendering the read-model route.
+Fix attempted:
+- Wrote the Playwright run-code function to a temporary file under .playwright-cli and invoked it with --filename.
+- Added a short wait for the target selector after hash navigation before evaluating route assertions.
+Re-run result:
+- Passed across 10 routes at 1440x960 and 390x844.
+Not validated:
+- No npm test script is defined.
+- No backend live integration was run; frontend remains mock-first unless VITE_BACKEND_API_BASE_URL is configured.
+Notes:
+- The script covers #, #risk, #projects, #approvals, #activity, #inspections, #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness.
+- Checks include expected Chinese copy, required selectors, Command Center rail aria-current state, console errors, and horizontal overflow.
+- No package manifest or lockfile changed.
+```
+
 ---
 
 ## Entry Template

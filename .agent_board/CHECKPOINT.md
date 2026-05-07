@@ -229,6 +229,18 @@ Current P2.12 read-model workspace component split:
 - changed-file secret scan passed.
 - npm run lint passed.
 - npm run build passed.
+
+Current P2.13 read-only route QA matrix automation:
+- Added scripts/qa-readonly-routes.ps1 as a local Playwright CLI route matrix without adding project dependencies.
+- The script covers #, #risk, #projects, #approvals, #activity, #inspections, #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness.
+- The script checks 1440x960 and 390x844 for expected Chinese copy, required selectors, Command Center rail aria-current state, console errors, and horizontal overflow.
+- First run exposed a harness quoting issue with inline JavaScript passed through Windows PowerShell native arguments; fixed by using a temporary Playwright CLI filename.
+- Second run exposed a hash navigation race on desktop Asset Inbox; fixed by waiting briefly for the target selector after hash navigation.
+- scripts/qa-readonly-routes.ps1 passed across all 20 route/viewport checks.
+- git diff --check passed.
+- changed-file secret scan passed.
+- npm run lint passed.
+- npm run build passed.
 ```
 
 ---
@@ -272,6 +284,7 @@ none
 ```text
 No known uncommitted user-owned changes at the start of this run.
 Live backend toggle still requires configuring VITE_BACKEND_API_BASE_URL and running the backend stack.
+The QA script uses transient npx @playwright/cli execution and does not change dependency manifests.
 ```
 
 ---
@@ -279,7 +292,7 @@ Live backend toggle still requires configuring VITE_BACKEND_API_BASE_URL and run
 ## Next Safe Task
 
 ```text
-Commit the local P2.12 workspace split, then stop at remote push boundary.
+Finish P2.13 validation, commit locally if green, then stop at remote push boundary.
 ```
 
 ---

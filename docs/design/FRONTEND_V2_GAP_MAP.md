@@ -38,8 +38,9 @@ As of the current Frontend v2 local state, the read-only production loop has mov
 - P2.9 Command Center side-detail helpers now live in the view-model layer, using stable risk IDs plus approval type/state instead of component-local copy guessing.
 - P2.11 read-model workspace helpers now live in `readModelViewModels.ts`: asset labels/tone, QC result labels, review item tone, delivery checklist labels, and delivery artifact derivation are no longer component-local.
 - P2.12 read-model workspace components now live in `readModelWorkspaces.tsx`, while `ReadModelPages.tsx` owns route params, read-model state, mock-first loading, and page shell only.
+- P2.13 read-only route QA is now scripted through `scripts/qa-readonly-routes.ps1`, covering Command Center plus six promoted hash scenes and the four read-model pages at 1440px and 390px.
 - `--ps-*` token aliases and text-color compatibility aliases exist in `src/styles/tokens.css`.
-- Current long-track focus is post-RC read-only UX tightening and optional backend read-model smoke testing only when a local backend base URL is explicitly configured.
+- Current long-track focus is post-RC read-only UX tightening, reusable local QA, and optional backend read-model smoke testing only when a local backend base URL is explicitly configured.
 
 ## Source Files Used
 
@@ -83,7 +84,7 @@ Image references:
 | Labels | Command Center and read-model visible copy are Chinese-first; technical IDs such as `SKU`, `QC`, `CR3`, and backend query names remain intentional. | `src/features/command-center/commandCenterViewModel.ts`, `src/features/read-models/readModelViewModels.ts` |
 | Visual tokens | `--ps-*` bridge tokens and read-model text aliases are available for new v2 work. | `src/styles/tokens.css` |
 | Dedicated pages | Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness are dedicated read-only hash scenes with mock-first fallback. | `src/features/read-models/ReadModelPages.tsx` |
-| RC QA posture | Command Center entry clicks, keyboard focus visibility, five-page responsive matrix, and read-model boundary states have current browser evidence. | `.agent_board/VALIDATION_LOG.md` |
+| RC QA posture | Command Center entry clicks, keyboard focus visibility, five-page responsive matrix, read-model boundary states, and scripted read-only route QA have current browser evidence. | `.agent_board/VALIDATION_LOG.md`, `scripts/qa-readonly-routes.ps1` |
 
 ## Overall Gaps
 
@@ -110,6 +111,7 @@ Image references:
 | Command Center side-detail view model. | Risk detail and approval detail derivation moved out of the component and into `commandCenterViewModel.ts`. | Extend stable mapping in the view-model layer when adding risk IDs or approval types. | P2.9 done |
 | Read-model workspace view model cleanup. | Asset label/tone, QC result label/value, review tone, delivery checklist labels, and delivery artifact derivation moved out of `ReadModelPages.tsx`. | Keep page components focused on local selection state and rendering; add future read-model derivation to `readModelViewModels.ts`. | P2.11 done |
 | Read-model workspace component split. | Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness workspace components moved out of `ReadModelPages.tsx` into `readModelWorkspaces.tsx`. | Keep route/data-state orchestration in `ReadModelPages.tsx`; add future workspace-only UI changes in `readModelWorkspaces.tsx`. | P2.12 done |
+| Scripted read-only route QA. | Local QA script checks 10 hash routes across desktop and 390px for Chinese copy, required selectors, rail active state, console errors, and horizontal overflow. | Run `scripts/qa-readonly-routes.ps1` after route, layout, rail, or read-model page changes while the Vite server is running. | P2.13 done |
 | Optional backend read-model smoke. | Still intentionally not run in this frontend-only mock-first batch. | Run only with a deliberately configured local `VITE_BACKEND_API_BASE_URL` outside this repo. | P2 blocked |
 
 ## Command Center Gap Table
@@ -248,8 +250,9 @@ Use this as the first copy alignment pass before creating more pages.
 18. Completed: P2.10 Command Center gap table fact refresh.
 19. Completed: P2.11 read-model workspace helper derivation into `readModelViewModels.ts`.
 20. Completed: P2.12 read-model workspace component split into `readModelWorkspaces.tsx`.
-21. Next: optional backend read-model smoke remains blocked until a local backend base URL is intentionally configured outside this repo.
-22. Always run `npm run lint` and `npm run build` after code/style changes.
+21. Completed: P2.13 scripted read-only route QA for Command Center scenes plus four read-model pages at 1440px and 390px.
+22. Next: optional backend read-model smoke remains blocked until a local backend base URL is intentionally configured outside this repo.
+23. Always run `npm run lint`, `npm run build`, and the scripted read-only route QA after route/layout/read-model changes.
 
 ## Stop Conditions
 
