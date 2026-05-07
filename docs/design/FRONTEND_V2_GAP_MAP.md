@@ -114,16 +114,16 @@ v2 target references: A + C visual anchors, UI/UX principles, information archit
 
 | Dimension | Current frontend | v2 target | Gap | Copy alignment | Priority |
 |---|---|---|---|---|---|
-| Left navigation | Rail uses abbreviations and English titles: `Risk`, `Approvals`, `Projects`, `SKUs`, `Assets`, `Reviews`, `Activity`, `AI`, `Deliveries`. | Left Chinese navigation should clearly expose production scenes. | Structure exists, but the user-facing nav is not Chinese and scene naming is generic. | `风险雷达`, `审批队列`, `项目执行`, `SKU 覆盖`, `素材收件箱`, `审核返修`, `活动时间线`, `Agent 巡检`, `交付包`. | P0 |
-| Top bar | `Command Center Alpha / mock read-only cockpit`, date/time, studio name. | Project switcher / search / risk summary / Agent status. Calm Chinese operator wording. | Good shell, but no search placeholder, risk summary, or Agent status copy. | `命令中心 Alpha / 只读模拟驾驶舱`, `当前项目`, `风险摘要`, `Agent 巡检在线`. | P1 |
+| Left navigation | Rail exposes five unique Chinese hash scenes: `风险雷达`, `项目执行`, `审批队列`, `活动时间线`, and `Agent 巡检`. | Left Chinese navigation should clearly expose production scenes without duplicate active targets. | Done for current Command Center scenes; Asset/QC/Review/Delivery stay in the `黄金链路` strip for this stage. | Keep future rail additions unique and Chinese-first. | P2.7 done |
+| Top bar | Compact Chinese studio/date/time status line is visible and 390px browser-checked. | Project switcher / search / risk summary / Agent status can become later operator controls. | Current stage keeps topbar read-only; no search or write-capable controls are implemented. | `布鲁克林影棚 A`, date, time, live dot. | P2 done |
 | Visual tone | Premium dark cockpit is already close to approved direction. | Near-black cold blue, cold white text, restrained border, no cyberpunk, no SaaS table feeling. | Keep current direction; migrate new work to v2 token names and avoid extra saturated colors. | No visible copy change. | P0 |
-| Main overview | Three-gauge cluster shows `SKU Coverage`, `Studio Readiness`, `QC Health`. | Keep the three operational gauges as the main anchor. | Visual anchor matches, but gauge labels and captions are English. | `SKU 覆盖率`, `工作室就绪度`, `质检健康度`, `已覆盖`, `待质检`. | P0 |
-| Studio context | `Studio Context`, `Operator`, `Mode`, `Assets`, `Delivery Set`. | Owner/operator should see project health, today focus, risk, next action. | Context is useful but too generic; no "today's action" or delivery pressure language. | `工作室概况`, `负责人`, `运行模式`, `素材数`, `交付集`, `今日优先处理`. | P1 |
+| Main overview | Three-gauge cluster shows Chinese labels: `SKU 覆盖率`, `工作室就绪度`, and `质检健康度`. | Keep the three operational gauges as the main anchor. | Done for current read-only cockpit; do not replace gauges with generic charts. | Preserve current Chinese labels and readouts. | P0 done |
+| Studio context | Command Center exposes project progress, golden loop IDs, risk/approval rail, activity, and Agent inspection context. | Owner/operator should see project health, today focus, risk, next action. | Done for read-only Alpha context; richer operator controls remain future work. | `黄金链路`, `项目`, `审核`, `交付`, `打开质检 / 精修`. | P1B done |
 | Golden Path | Command Center exposes a compact `黄金链路` strip for the first fixture IDs and links to Asset / QC / Review / Delivery. | Golden Product Loop should expose client -> project -> SKU -> shot -> asset -> retouch -> QC -> review -> delivery. | P1B cockpit entry is done; deeper client/SKU/shot drilldown can remain P2. | `客户接入`, `拍摄`, `素材入库`, `精修`, `质检`, `客户审核`, `交付`. | P1B done |
-| Right rail risk | `Risk Pulse` exists with high/medium/low. | Right side should show intelligent inspection, risk, pending work. Risk uses orange-red only. | Layout matches; copy should become calmer Chinese; include specific risk consequence. | `风险雷达`, `高风险`, `需关注`, `低风险`, `可能影响交付`. | P0 |
-| Approval queue | `Approval Queue` exists with review/qc/delivery/retouch types. | Approval UI should show risk label, consequence, approval state, request id, activity link for L3/L4 later. | Queue exists, but lacks `request_id`, payload preview/hash, and plain-language consequence. Keep disabled/read-only. | `审批队列`, `待处理`, `已清除`, `阻塞`, `审批编号`, `影响说明`. | P1 |
-| Activity timeline | Present in lower layer. | Bottom timeline should be visible and curated, not raw logs. | Exists, but English and visually secondary; OK for alpha. | `活动时间线`, `素材导入`, `质检失败`, `精修完成`, `交付包已准备`. | P0 |
-| Agent inspection | `AI Inspection Feed` exists. | Agent is an inspector, not an unauthorized operator. | Label says AI, while v2 prefers Agent Inspector / Agent 巡检 language and safe suggestions. | `Agent 巡检`, `发现问题`, `建议动作`, `只读预览`, `不会自动执行`. | P0 |
+| Right rail risk | `风险雷达` exists with high/medium/low signals plus read-only impact, owner, and suggested action details. | Right side should show intelligent inspection, risk, pending work. Risk uses orange-red only. | Done for current read-only side rail; details are view-model derived. | `风险雷达`, `负责人`, `建议`, `打开质检 / 精修`. | P2.9 done |
+| Approval queue | `审批队列` exists with request IDs, type/state labels, consequence, and read-only next step details. | Approval UI should show risk label, consequence, approval state, request id, activity link for L3/L4 later. | Done for current read-only side rail; no approval writes or payload mutation are implemented. | `审批队列`, `待处理`, `已清除`, `阻塞`, `下一步`. | P2.9 done |
+| Activity timeline | Chinese curated activity timeline is visible in the lower execution panel and can be promoted by `#activity`. | Bottom timeline should be visible and curated, not raw logs. | Done for current Alpha. | `活动时间线`, `拍摄完成`, `质检通过`, `精修完成`. | P2.7 done |
+| Agent inspection | `Agent 巡检` feed is visible and can be promoted by `#inspections`. | Agent is an inspector, not an unauthorized operator. | Done for read-only Alpha; suggestions remain non-mutating. | `Agent 巡检`, `巡检预警`, `打开质检 / 精修`. | P2.7 done |
 
 ## Asset Inbox / QC Gap Table
 
@@ -241,8 +241,9 @@ Use this as the first copy alignment pass before creating more pages.
 15. Completed: P2.7 command rail scene hygiene for unique rail entries and hash-aware active state.
 16. Completed: P2.8 Risk / Approval scene depth with direct hash stabilization and browser QA.
 17. Completed: P2.9 Command Center side-detail view-model consolidation.
-18. Next: optional backend read-model smoke remains blocked until a local backend base URL is intentionally configured outside this repo.
-19. Always run `npm run lint` and `npm run build` after code/style changes.
+18. Completed: P2.10 Command Center gap table fact refresh.
+19. Next: optional backend read-model smoke remains blocked until a local backend base URL is intentionally configured outside this repo.
+20. Always run `npm run lint` and `npm run build` after code/style changes.
 
 ## Stop Conditions
 

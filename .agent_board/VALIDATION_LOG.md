@@ -578,6 +578,24 @@ Notes:
 - 390px direct hash checks reported no horizontal overflow and console error count 0.
 ```
 
+```text
+## VALIDATION-20260507-GAP-TABLE-FACT-REFRESH
+
+Task: Refresh stale Command Center gap table facts.
+Commands run:
+- git diff --check
+- changed-file secret scan on current diff
+Result: passed
+Failures: none
+Fix attempted: not applicable
+Re-run result: not applicable
+Not validated:
+- npm run lint and npm run build were not required for docs-only changes.
+- No browser QA was needed for docs-only changes.
+Notes:
+- FRONTEND_V2_GAP_MAP.md now reflects current Chinese Command Center rail, topbar, gauges, golden loop, risk/approval detail, activity, and Agent inspection state.
+```
+
 ---
 
 ## Entry Template

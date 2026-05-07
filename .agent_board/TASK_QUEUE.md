@@ -10,7 +10,7 @@ It does not authorize remote writes, commits, pushes, deployments, backend chang
 ## Current Mission
 
 ```text
-P2.9 Command Center Side-detail View Model
+P2.10 Command Center Gap Table Fact Refresh
 ```
 
 Mode:
@@ -22,7 +22,7 @@ A4-Sustained Local Frontend Autopilot
 Goal:
 
 ```text
-Keep Command Center side-detail copy stable and maintainable by deriving risk and approval details from the view-model layer instead of component-local copy guessing.
+Keep the Frontend v2 gap map aligned with current Command Center reality so future sessions do not chase completed English-copy or scene-navigation gaps.
 ```
 
 ---
@@ -176,6 +176,9 @@ none
 82. Moved risk detail and approval detail derivation into src/features/command-center/commandCenterViewModel.ts.
 83. Kept CommandCenter.tsx focused on rendering the read-only detail cards.
 84. Browser-validated #risk and #approvals in the in-app browser and at 390px after the view-model extraction.
+85. Locally committed 6d33e17: refactor: derive command center side details.
+86. Started P2.10 Command Center Gap Table Fact Refresh from clean local commit 6d33e17.
+87. Refreshed the Command Center gap table to reflect current Chinese rail, topbar, gauges, golden loop, risk/approval details, activity, and Agent inspection state.
 ```
 
 ### blocked

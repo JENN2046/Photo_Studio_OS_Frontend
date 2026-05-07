@@ -17,7 +17,7 @@ A4-Sustained Local Frontend Autopilot
 ## Current Mission
 
 ```text
-P2.9 Command Center Side-detail View Model
+P2.10 Command Center Gap Table Fact Refresh
 ```
 
 ---
@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-Command Center side-detail view-model cleanup complete candidate
+Command Center gap table fact refresh complete candidate
 ```
 
 ---
@@ -58,7 +58,7 @@ Command Center side-detail view-model cleanup complete candidate
 ## Last Completed Task
 
 ```text
-Moved Command Center risk and approval detail derivation into the view-model layer
+Refreshed stale Command Center gap table facts after P2.9
 ```
 
 ---
@@ -66,7 +66,7 @@ Moved Command Center risk and approval detail derivation into the view-model lay
 ## Last Validation
 
 ```text
-In-app browser confirmed #risk and #approvals still show the expected details after view-model extraction; Playwright CLI confirmed direct #risk and #approvals loads at 390px still reveal the matching detail list with no horizontal overflow and console errors
+Docs-only refresh after P2.9; Command Center gap table now matches the current Chinese rail, topbar, gauge, risk, approval, activity, and Agent inspection state
 ```
 
 ---
@@ -75,7 +75,7 @@ In-app browser confirmed #risk and #approvals still show the expected details af
 
 ```text
 Branch: main
-Worktree: intentionally editing P2.9 Command Center side-detail source, docs, and .agent_board after local 96ef6ad
+Worktree: intentionally editing P2.10 docs and .agent_board after local 6d33e17
 ```
 
 ---
@@ -115,7 +115,7 @@ no
 ## Current Stop Status
 
 ```text
-stop at remote push boundary after local P2.9 commit
+stop at remote push boundary after local P2.10 commit
 ```
 
 ---
@@ -123,5 +123,5 @@ stop at remote push boundary after local P2.9 commit
 ## Next Action
 
 ```text
-Run final guarded validation, commit the P2.9 side-detail view-model pass locally, then wait for explicit push approval.
+Run docs-only guarded validation, commit the P2.10 gap table fact refresh locally, then wait for explicit push approval.
 ```
