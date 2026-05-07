@@ -10,10 +10,10 @@ Codex should update this after each meaningful batch of local frontend work.
 
 ```text
 Status: in-progress
-Updated: 2026-05-07 11:26 +0800
+Updated: 2026-05-07 11:41 +0800
 Repo: Photo_Studio_OS_Frontend
 Mode: A4-Sustained Local Frontend Autopilot
-Mission: P2 Read-only Cockpit Maturation
+Mission: P2.5 Frontend v2 Read-only RC Hardening
 ```
 
 ---
@@ -25,8 +25,8 @@ Fill from actual command output.
 ```text
 Workspace: A:\Photo_Studio_OS_Frontend
 Branch: main
-Worktree: intentionally editing P2 completion map and .agent_board
-Diff stat: docs/design/FRONTEND_V2_GAP_MAP.md plus .agent_board
+Worktree: intentionally editing keyboard focus visibility CSS and .agent_board
+Diff stat: src/styles/global.css, src/features/read-models/readModelPages.css, plus .agent_board
 Package manager: npm with package-lock.json
 Available scripts: dev, build, lint, preview
 ```
@@ -73,6 +73,11 @@ Locally committed f7b1b8f: rehearsed read-model boundary states.
 Documented the local Frontend v2 QA runway in README.md.
 Locally committed 1265584: documented frontend v2 QA runway.
 Refreshed FRONTEND_V2_GAP_MAP.md with P2 completion facts and optional backend smoke blocker status.
+Locally committed 27ba2b5: refreshed P2 frontend completion map.
+Started P2.5 RC hardening from a clean worktree.
+Browser-clicked Command Center 黄金链路 entries into all four read-model hash pages.
+Hardened keyboard focus visibility across Command Center rail/production/side links and read-model tabs/context/state/selectable cards.
+Ran the RC browser matrix at 1440px, 1024px, and 390px across Command Center plus four read-model pages.
 ```
 
 ---
@@ -80,7 +85,8 @@ Refreshed FRONTEND_V2_GAP_MAP.md with P2 completion facts and optional backend s
 ## Changed Files
 
 ```text
-docs/design/FRONTEND_V2_GAP_MAP.md
+src/styles/global.css
+src/features/read-models/readModelPages.css
 .agent_board/CHECKPOINT.md
 .agent_board/RUN_STATE.md
 .agent_board/TASK_QUEUE.md
@@ -93,11 +99,14 @@ docs/design/FRONTEND_V2_GAP_MAP.md
 ## Validation Run
 
 ```text
-Current P2 completion map batch:
-- FRONTEND_V2_GAP_MAP.md records completed P2 cockpit responsive fixes, shared read-model UI, boundary-state rehearsal, README QA runway, and optional backend smoke blocker status.
+Current focus hardening batch:
+- npm run lint passed.
+- Command Center scoped 黄金链路 entry clicks passed for Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness.
+- RC browser matrix passed at 1440px, 1024px, and 390px across Command Center plus four read-model pages.
+- Focus smoke confirmed selectable read-model cards use 2px solid focus ring.
+- Console error count was 0.
 - git diff --check passed.
 - changed-file secret scan passed.
-- npm run lint passed.
 - npm run build passed.
 ```
 
@@ -149,7 +158,7 @@ Live backend toggle still requires configuring VITE_BACKEND_API_BASE_URL and run
 ## Next Safe Task
 
 ```text
-Locally commit the P2 completion map if staged checks stay green, then stop at the remote push boundary.
+Locally commit the focus hardening batch, then continue with P2.5 boundary-state matrix.
 ```
 
 ---

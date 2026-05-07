@@ -56,6 +56,14 @@
   background: rgba(255, 255, 255, 0.07);
 }
 
+.read-model-tabs a:focus-visible,
+.read-model-context-bar a:focus-visible,
+.read-model-state button:focus-visible {
+  outline: 2px solid rgba(159, 211, 223, 0.58);
+  outline-offset: 2px;
+  border-color: rgba(159, 211, 223, 0.62);
+}
+
 .read-model-context-bar {
   display: flex;
   justify-content: space-between;
@@ -438,6 +446,14 @@
 .asset-thumbnail[aria-pressed="true"] {
   border-color: color-mix(in srgb, var(--read-model-tone), transparent 36%);
   background: color-mix(in srgb, var(--read-model-tone), transparent 93%);
+}
+
+.asset-thumbnail:focus-visible,
+.qc-queue-card:focus-visible,
+.review-card:focus-visible,
+.delivery-artifact-card:focus-visible {
+  outline: 2px solid rgba(159, 211, 223, 0.58);
+  outline-offset: 2px;
 }
 
 .asset-thumbnail-visual {

@@ -17,7 +17,7 @@ A4-Sustained Local Frontend Autopilot
 ## Current Mission
 
 ```text
-P2 Read-only Cockpit Maturation
+P2.5 Frontend v2 Read-only RC Hardening
 ```
 
 ---
@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-Validate and commit P2 completion map refresh
+Validate and commit keyboard focus visibility hardening
 ```
 
 ---
@@ -58,7 +58,7 @@ Validate and commit P2 completion map refresh
 ## Last Completed Task
 
 ```text
-Locally committed 1265584: documented frontend v2 QA runway
+Locally committed 27ba2b5: refreshed P2 frontend completion map
 ```
 
 ---
@@ -66,7 +66,7 @@ Locally committed 1265584: documented frontend v2 QA runway
 ## Last Validation
 
 ```text
-git diff --check passed; changed-file secret scan passed; npm run lint passed; npm run build passed for P2 completion map batch
+npm run lint passed; npm run build passed; git diff --check passed; changed-file secret scan passed; Command Center entry clicks passed; RC browser matrix passed at 1440px / 1024px / 390px across Command Center and four read-model pages with console error count 0
 ```
 
 ---
@@ -75,7 +75,7 @@ git diff --check passed; changed-file secret scan passed; npm run lint passed; n
 
 ```text
 Branch: main
-Worktree: intentionally editing P2 completion map and .agent_board after local 1265584
+Worktree: intentionally editing keyboard focus visibility CSS and .agent_board after local 27ba2b5
 ```
 
 ---
@@ -123,5 +123,5 @@ not blocked
 ## Next Action
 
 ```text
-Commit the completion map batch locally if staged checks stay green, then stop at remote push boundary. Do not push without explicit user approval.
+Commit the focus hardening batch locally, then continue P2.5 boundary-state matrix. Do not push without explicit user approval.
 ```

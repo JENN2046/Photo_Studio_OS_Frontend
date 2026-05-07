@@ -396,6 +396,34 @@ Not validated:
 - No npm test script is defined.
 Notes:
 - FRONTEND_V2_GAP_MAP.md now records P2 cockpit responsive fixes, shared read-model UI, boundary-state rehearsal, local QA runway, and optional backend smoke blocker status.
+
+## VALIDATION-20260507-RC-FOCUS-HARDENING
+
+Task: Harden P2.5 read-only RC keyboard focus visibility and browser baseline.
+Commands run:
+- npm run lint
+- in-app browser scoped Command Center entry-click QA for Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness
+- Playwright CLI focus smoke for read-model tabs/cards
+- Playwright CLI RC browser matrix at 1440px, 1024px, and 390px for Command Center, #asset-inbox, #qc-retouch, #review-gallery, and #delivery-readiness
+- Playwright CLI console error check
+Result: passed
+Failures:
+- Initial broad href selector overmatched repeated page links; the scoped .production-route-links selector passed and did not require app code changes.
+- Early browser-tool keypress/screenshot attempts and two PowerShell interpolation probes failed as validation harness issues; Playwright CLI fallback passed.
+Fix attempted:
+- Added focus-visible outlines for Command Center links and read-model interactive/selectable controls.
+Re-run result:
+- Focus smoke confirmed selectable read-model cards use a 2px solid focus ring.
+- RC browser matrix reported no horizontal overflow across all checked routes and viewports.
+- Console error count was 0.
+Not validated:
+- No npm test script is defined.
+- No backend live integration was run; frontend remains mock-first.
+Notes:
+- git diff --check passed.
+- changed-file secret scan passed.
+- npm run build passed.
+- This is frontend-only CSS and local task-rail work. It does not change backend fetchers, data shapes, auth, upload/download, writes, dependencies, or .env.
 ```
 
 ---

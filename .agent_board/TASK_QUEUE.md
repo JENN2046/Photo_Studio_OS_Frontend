@@ -10,7 +10,7 @@ It does not authorize remote writes, commits, pushes, deployments, backend chang
 ## Current Mission
 
 ```text
-P2 Read-only Cockpit Maturation
+P2.5 Frontend v2 Read-only RC Hardening
 ```
 
 Mode:
@@ -22,7 +22,7 @@ A4-Sustained Local Frontend Autopilot
 Goal:
 
 ```text
-Mature the read-only cockpit after the P1B production loop: browser-led Command Center QA, focused component consolidation, boundary states, local QA runway, and completion map updates.
+Harden the read-only Frontend v2 release candidate: full browser QA, keyboard focus visibility, read-only semantics, boundary-state matrix, QA documentation, and completion-map closure.
 ```
 
 ---
@@ -83,10 +83,12 @@ none
 
 ### todo
 
-Current safe queue after local commit `1265584`.
+Current safe queue after local commit `27ba2b5`.
 
 ```text
-1. Keep optional backend smoke blocked unless a local backend base URL is intentionally configured outside this repo.
+1. Re-run boundary-state matrix and patch only concrete defects.
+2. Refresh QA runway / gap map / handoff for P2.5 RC hardening.
+3. Keep optional backend smoke blocked unless a local backend base URL is intentionally configured outside this repo.
 ```
 
 ### done
@@ -140,6 +142,11 @@ Current safe queue after local commit `1265584`.
 46. Browser-checked loading, error, missing-config, and idle states at 390px with no horizontal overflow and console error count 0.
 47. Documented the local Frontend v2 QA runway in README.md, including Command Center, four read-model hash routes, 390px expectations, and DEV-only readModelState rehearsals.
 48. Refreshed docs/design/FRONTEND_V2_GAP_MAP.md with P2 cockpit polish, component consolidation, boundary-state rehearsal, local QA runway, and optional backend smoke blocker status.
+49. Started P2.5 Frontend v2 Read-only RC Hardening from clean local commit 27ba2b5.
+50. Browser-clicked Command Center 黄金链路 entries into Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness; all headings and URLs were correct with console error count 0.
+51. Hardened keyboard focus visibility for Command Center rail/production links/side links and read-model tabs/context/state/selectable cards.
+52. Ran RC browser matrix at 1440px, 1024px, and 390px across Command Center plus four read-model pages; no horizontal overflow or console errors were observed.
+53. Validated the focus hardening batch with git diff --check, changed-file secret scan, npm run lint, and npm run build.
 ```
 
 ### blocked

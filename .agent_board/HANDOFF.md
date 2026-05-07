@@ -10,7 +10,7 @@ Update this whenever work stops, pauses, blocks, or completes a meaningful batch
 
 ```text
 Status: in-progress
-Result: P1B read-only production loop is complete candidate. P2 cockpit maturation is in progress; 1280px side rail and 390px topbar status have both been fixed and browser-checked.
+Result: P2.5 read-only RC hardening is in progress. Command Center entry clicks, keyboard focus visibility, and the five-page RC browser matrix have been browser-checked; the focus hardening batch is fully validated and ready for local commit.
 ```
 
 ---
@@ -42,8 +42,8 @@ main
 ## Worktree State
 
 ```text
-Branch main was clean after pushed 11b4b5e.
-Current batch intentionally edits mobile Command Center status bar CSS and .agent_board after clean 59c04a5.
+Branch main was clean after local commit 27ba2b5.
+Current batch intentionally edits keyboard focus visibility CSS and .agent_board for P2.5 RC hardening.
 ```
 
 ---
@@ -70,7 +70,11 @@ Completed the first P1 frontend v2 realization slice:
 - 078f894 is a local commit for the shared read-model metric strip and has not been pushed.
 - f7b1b8f is a local commit for read-model boundary-state rehearsal and has not been pushed.
 - 1265584 is a local commit for the README local QA runway and has not been pushed.
-- Current P2 completion map batch is validated and pending local commit.
+- 27ba2b5 is a local commit for the P2 frontend completion map and has not been pushed.
+- P2.5 RC hardening started from a clean worktree after 27ba2b5.
+- Command Center 黄金链路 entries were browser-clicked into Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness with correct headings and URLs.
+- Keyboard focus visibility was hardened across Command Center rail links, production links, side links, read-model tabs/context links, state buttons, and selectable read-model cards.
+- RC browser matrix passed at 1440px, 1024px, and 390px across Command Center plus the four read-model hash pages, with no horizontal overflow or console errors observed.
 ```
 
 ---
@@ -78,12 +82,13 @@ Completed the first P1 frontend v2 realization slice:
 ## Files Changed
 
 ```text
-docs/design/FRONTEND_V2_GAP_MAP.md
-.agent_board/RUN_STATE.md
+src/styles/global.css
+src/features/read-models/readModelPages.css
 .agent_board/CHECKPOINT.md
+.agent_board/RUN_STATE.md
+.agent_board/TASK_QUEUE.md
 .agent_board/HANDOFF.md
 .agent_board/VALIDATION_LOG.md
-.agent_board/TASK_QUEUE.md
 ```
 
 ---
@@ -113,11 +118,14 @@ Current P2 cockpit breakpoint batch:
 Current backend smoke docs batch:
 - pushed in 11b4b5e
 
-Current P2 completion map batch:
-- FRONTEND_V2_GAP_MAP.md records P2 cockpit polish, shared read-model UI, boundary-state rehearsal, README QA runway, and optional backend smoke blocker status.
+Current P2.5 focus hardening batch:
+- npm run lint passed.
+- Command Center scoped 黄金链路 entry clicks passed for Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness.
+- Focus smoke confirmed selectable read-model cards expose a 2px solid focus ring.
+- RC browser matrix passed at 1440px, 1024px, and 390px across Command Center plus four read-model pages.
+- Console error count was 0.
 - git diff --check passed.
 - changed-file secret scan passed.
-- npm run lint passed.
 - npm run build passed.
 ```
 
@@ -128,7 +136,7 @@ Current P2 completion map batch:
 ```text
 No npm test script is defined.
 No backend live integration request is planned for this mock-first UI batch.
-No push is authorized for local commits 472d848, 078f894, f7b1b8f, 1265584, or the current completion-map batch until the user explicitly asks for push.
+No push is authorized for local commits 472d848, 078f894, f7b1b8f, 1265584, 27ba2b5, or the current focus hardening batch until the user explicitly asks for push.
 ```
 
 ---
@@ -176,7 +184,7 @@ none for the next safe local frontend slice.
 ## Next Safe Action
 
 ```text
-Next safe local slice: locally commit the P2 completion map, then stop at remote push boundary.
+Next safe local slice: locally commit the P2.5 focus hardening batch, then continue the boundary-state matrix. Stop at remote push boundary.
 ```
 
 ---
@@ -188,7 +196,7 @@ Next safe local slice: locally commit the P2 completion map, then stop at remote
 
 读取 AGENTS.md 和 .agent_board/*。
 继续 A4-Sustained Local Frontend Autopilot。
-先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的 P1B Review / Delivery 队列继续。
+先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的 P2.5 RC hardening 队列继续。
 保持 mock-first/read-only，不碰 backend、root control repo、依赖、.env、deploy、生产服务、上传/下载/auth/storage/write actions。
 按当前持续推进节奏，小批次验证后可以本地 commit；push 只有用户明确说 push 才执行。
 用中文汇报。

@@ -77,6 +77,11 @@ a {
   background: rgba(242, 247, 255, 0.045);
 }
 
+.command-rail a:focus-visible {
+  outline: 2px solid rgba(159, 211, 223, 0.5);
+  outline-offset: 2px;
+}
+
 .rail-brand {
   position: relative;
   overflow: hidden;
@@ -2451,6 +2456,14 @@ body {
 
 .production-route-links a {
   justify-content: center;
+}
+
+.production-route-links a:focus-visible,
+.panel-link:focus-visible,
+.side-status-card:focus-visible {
+  outline: 2px solid rgba(159, 211, 223, 0.5);
+  outline-offset: 2px;
+  border-color: rgba(159, 211, 223, 0.48);
 }
 
 .table-row {
