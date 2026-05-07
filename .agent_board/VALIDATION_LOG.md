@@ -849,6 +849,27 @@ Notes:
 - Full browser QA passed: 10 route checks at 1440x960 and 390x844, 32 boundary-state checks at 1024x768 and 390x844, and read-model tab/selection/disabled-action checks at 1440x960 and 390x844.
 ```
 
+```text
+## VALIDATION-20260507-COMMAND-CENTER-RUNTIME-SURFACE
+
+Task: Add visible Command Center runtime state surface.
+Commands run:
+- powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1
+- powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-all.ps1
+Result: passed
+Failures: none
+Fix attempted: not applicable
+Re-run result: not applicable
+Not validated:
+- No npm test script is defined.
+- No backend live integration was run; frontend remains mock-first unless VITE_BACKEND_API_BASE_URL is configured.
+Notes:
+- useCommandCenterSnapshot now exposes frontend-only runtime view metadata.
+- Command Center ready/loading/error states show read source, runtime status, transport posture, and mock-first/read-only write boundary chips.
+- scripts/qa-readonly-routes.ps1 now checks Command Center ready, commandCenterState=loading, and commandCenterState=error runtime chip copy.
+- Full browser QA passed: 12 route checks at 1440x960 and 390x844, 32 read-model boundary-state checks at 1024x768 and 390x844, and read-model tab/selection/disabled-action checks at 1440x960 and 390x844.
+```
+
 ---
 
 ## Entry Template

@@ -5,7 +5,12 @@ import {
   getCommandCenterApprovalDetail,
   getCommandCenterRiskDetail
 } from "./commandCenterViewModel";
-import { useCommandCenterSnapshot } from "./useCommandCenterSnapshot";
+import {
+  useCommandCenterSnapshot,
+  type CommandCenterDebugState,
+  type CommandCenterRuntimeView,
+  type CommandCenterSnapshotStatus
+} from "./useCommandCenterSnapshot";
 
 const loadingStatusLanes = [
   {
@@ -53,24 +58,34 @@ const commandCenterSceneIds = [
 
 type CommandCenterScene = (typeof commandCenterSceneIds)[number];
 
-function getDebugStateLabel(debugState: "live" | "loading" | "error") {
+function getDebugStateLabel(debugState: CommandCenterDebugState) {
   const labels = {
     live: "实时态",
     loading: "加载态",
     error: "错误态"
-  } satisfies Record<typeof debugState, string>;
+  } satisfies Record<CommandCenterDebugState, string>;
 
   return labels[debugState];
 }
 
-function getDebugModeLabel(debugState: "live" | "loading" | "error") {
+function getDebugModeLabel(debugState: CommandCenterDebugState) {
   return debugState === "live"
     ? "模拟适配器"
     : `内部调试 / ${getDebugStateLabel(debugState)}`;
 }
 
-function getDebugClientLabel(debugState: "live" | "loading" | "error") {
+function getDebugClientLabel(debugState: CommandCenterDebugState) {
   return debugState === "live" ? "模拟适配器" : "调试覆盖";
+}
+
+function getCommandCenterStatusLabel(status: CommandCenterSnapshotStatus) {
+  const labels = {
+    loading: "读取中",
+    ready: "已就绪",
+    error: "读取失败"
+  } satisfies Record<CommandCenterSnapshotStatus, string>;
+
+  return labels[status];
 }
 
 function formatCommandDate(value: string) {
@@ -136,7 +151,7 @@ function getApprovalSeverity(state: "waiting" | "blocked" | "cleared") {
 }
 
 function getRecoveryStateLabel(
-  debugState: "live" | "loading" | "error",
+  debugState: CommandCenterDebugState,
   canRetry: boolean
 ) {
   if (!canRetry) {
@@ -291,18 +306,62 @@ function useCommandCenterAnchorScroll(status: "loading" | "ready" | "error") {
   }, [status]);
 }
 
+function CommandCenterRuntimeStrip({
+  runtime,
+  status,
+  debugState,
+  variant = "default"
+}: {
+  runtime: CommandCenterRuntimeView;
+  status: CommandCenterSnapshotStatus;
+  debugState: CommandCenterDebugState;
+  variant?: "default" | "status";
+}) {
+  return (
+    <section
+      className={`command-runtime-strip command-runtime-strip-${variant}`}
+      aria-label="命令中心只读运行状态"
+    >
+      <span data-runtime-source={runtime.source}>
+        <b>读取源</b>
+        {runtime.sourceLabel}
+      </span>
+      <span data-runtime-source={runtime.source}>
+        <b>运行状态</b>
+        {getCommandCenterStatusLabel(status)}
+      </span>
+      <span>
+        <b>传输</b>
+        {runtime.transportLabel}
+      </span>
+      <span data-runtime-source="readonly">
+        <b>写入边界</b>
+        {runtime.boundaryLabel}
+      </span>
+      {debugState !== "live" ? (
+        <span data-runtime-source="debug">
+          <b>调试</b>
+          {getDebugStateLabel(debugState)}
+        </span>
+      ) : null}
+    </section>
+  );
+}
+
 function CommandCenterStateSurface({
   status,
   message,
   onRetry,
   debugState,
-  canRetry
+  canRetry,
+  runtime
 }: {
   status: "loading" | "error";
   message: string;
   onRetry: () => void;
-  debugState: "live" | "loading" | "error";
+  debugState: CommandCenterDebugState;
   canRetry: boolean;
+  runtime: CommandCenterRuntimeView;
 }) {
   const isLoading = status === "loading";
   const eyebrow = isLoading ? "遥测同步" : "快照停机";
@@ -407,6 +466,13 @@ function CommandCenterStateSurface({
                   <strong>{message}</strong>
                 </div>
 
+                <CommandCenterRuntimeStrip
+                  debugState={debugState}
+                  runtime={runtime}
+                  status={status}
+                  variant="status"
+                />
+
                 <div className="status-dial-row" aria-label="状态对齐">
                   <article className="status-dial-card">
                     <div className="status-dial status-dial-left">
@@ -504,7 +570,7 @@ function CommandCenterStateSurface({
 }
 
 export function CommandCenter() {
-  const { snapshot, status, errorMessage, debugState, canRetry, retry } =
+  const { snapshot, status, errorMessage, debugState, canRetry, retry, runtime } =
     useCommandCenterSnapshot();
   const activeScene = useCommandCenterScene();
   useCommandCenterAnchorScroll(status);
@@ -516,6 +582,7 @@ export function CommandCenter() {
         canRetry={canRetry}
         message="快照闸门对齐中。"
         onRetry={retry}
+        runtime={runtime}
         status="loading"
       />
     );
@@ -528,6 +595,7 @@ export function CommandCenter() {
         canRetry={canRetry}
         message={errorMessage ?? "未返回命令中心快照"}
         onRetry={retry}
+        runtime={runtime}
         status="error"
       />
     );
@@ -581,6 +649,12 @@ export function CommandCenter() {
               coverage={snapshot.coverage}
               qc={snapshot.qc}
               studio={snapshot.studio}
+            />
+
+            <CommandCenterRuntimeStrip
+              debugState={debugState}
+              runtime={runtime}
+              status={status}
             />
 
             <section className="execution-grid" aria-label="只读执行面板">

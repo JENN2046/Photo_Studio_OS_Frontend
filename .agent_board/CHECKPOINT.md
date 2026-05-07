@@ -10,10 +10,10 @@ Codex should update this after each meaningful batch of local frontend work.
 
 ```text
 Status: complete-candidate
-Updated: 2026-05-07 17:25 +0800
+Updated: 2026-05-07 18:29 +0800
 Repo: Photo_Studio_OS_Frontend
 Mode: A4-Sustained Local Frontend Autopilot
-Mission: P3.1 Read-model Runtime State Surface
+Mission: P3.2 Command Center Runtime State Surface
 ```
 
 ---
@@ -25,8 +25,8 @@ Fill from actual command output.
 ```text
 Workspace: A:\Photo_Studio_OS_Frontend
 Branch: main
-Worktree: intentionally editing P3.1 read-model runtime state source/docs/.agent_board after local 320b086
-Diff stat: useBackendReadModel.ts, ReadModelPages.tsx, readModelPages.css, README.md, FRONTEND_V2_GAP_MAP.md, and .agent_board
+Worktree: intentionally editing P3.2 Command Center runtime state source/docs/scripts/.agent_board after local 8c6b37d; ready for local commit
+Diff stat: useCommandCenterSnapshot.ts, CommandCenter.tsx, global.css, qa-readonly-routes.ps1, README.md, FRONTEND_V2_GAP_MAP.md, and .agent_board
 Package manager: npm with package-lock.json
 Available scripts: dev, build, lint, preview
 ```
@@ -144,6 +144,13 @@ Started P3.1 Read-model Runtime State Surface from clean local commit 320b086.
 Extended useBackendReadModel with frontend-only runtime view metadata.
 Updated all four read-model context bars to show read source, runtime status, transport posture, and mock-first/read-only write boundary.
 Added restrained runtime chip styling for mock, backend, debug, missing-config, and read-only states.
+Committed 8c6b37d: exposed read model runtime state.
+Started P3.2 Command Center Runtime State Surface from clean local commit 8c6b37d.
+Extended useCommandCenterSnapshot with frontend-only runtime view metadata.
+Rendered Command Center runtime chips in ready/loading/error states for read source, runtime status, transport posture, and mock-first/read-only write boundary.
+Added restrained Command Center runtime chip styling while preserving the three-gauge cockpit anchor.
+Updated README.md and FRONTEND_V2_GAP_MAP.md with P3.2 facts.
+Extended scripts/qa-readonly-routes.ps1 to assert Command Center runtime chip copy across ready/loading/error states.
 ```
 
 ---
@@ -158,9 +165,10 @@ docs/design/FRONTEND_V2_GAP_MAP.md
 .agent_board/VALIDATION_LOG.md
 .agent_board/HANDOFF.md
 README.md
-src/features/read-models/useBackendReadModel.ts
-src/features/read-models/ReadModelPages.tsx
-src/features/read-models/readModelPages.css
+src/features/command-center/useCommandCenterSnapshot.ts
+src/features/command-center/CommandCenter.tsx
+src/styles/global.css
+scripts/qa-readonly-routes.ps1
 ```
 
 ---
@@ -323,6 +331,13 @@ Current P3.1 read-model runtime state surface:
 - scripts/qa-readonly-all.ps1 passed route, boundary-state, and interaction matrices.
 - git diff --check passed.
 - changed-file secret scan passed.
+
+Current P3.2 Command Center runtime state surface:
+- scripts/validate-local.ps1 passed with Node.js 22.22.0, npm run lint, npm run build, git diff --check, and changed-file secret scan.
+- scripts/qa-readonly-all.ps1 passed.
+- Route QA covered 12 routes at 1440x960 and 390x844, including Command Center ready/loading/error runtime chip checks.
+- Boundary-state QA covered 16 read-model cases at 1024x768 and 390x844.
+- Interaction QA covered read-model tabs, local selection, and disabled actions at 1440x960 and 390x844.
 ```
 
 ---
@@ -349,7 +364,7 @@ bash scripts/validate-local.sh cannot complete full validation in the current ba
 ## Remaining Safe Tasks
 
 ```text
-See .agent_board/TASK_QUEUE.md.
+Next safe local P3 slice can continue after committing P3.2.
 ```
 
 ---
@@ -377,7 +392,7 @@ The Bash validation helper source is updated, but full Bash execution is environ
 ## Next Safe Task
 
 ```text
-Run targeted validation, commit locally if green, then stop at remote push boundary.
+Commit locally if final staged checks are green, then stop at remote push boundary.
 ```
 
 ---

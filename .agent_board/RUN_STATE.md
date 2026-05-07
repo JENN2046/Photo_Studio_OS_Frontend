@@ -17,7 +17,7 @@ A4-Sustained Local Frontend Autopilot
 ## Current Mission
 
 ```text
-P3.1 Read-model Runtime State Surface
+P3.2 Command Center Runtime State Surface
 ```
 
 ---
@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-P3.1 read-model runtime state surface complete candidate
+P3.2 Command Center runtime state surface complete candidate
 ```
 
 ---
@@ -58,7 +58,7 @@ P3.1 read-model runtime state surface complete candidate
 ## Last Completed Task
 
 ```text
-Committed 320b086: aggregated read-only browser QA
+Committed 8c6b37d: exposed read model runtime state
 ```
 
 ---
@@ -66,7 +66,7 @@ Committed 320b086: aggregated read-only browser QA
 ## Last Validation
 
 ```text
-scripts/validate-local.ps1 passed; scripts/qa-readonly-all.ps1 passed route, boundary-state, and interaction matrices; git diff --check and changed-file secret scan passed.
+scripts/validate-local.ps1 passed; scripts/qa-readonly-all.ps1 passed route, boundary-state, and interaction matrices, including Command Center ready/loading/error runtime chip checks; git diff --check and changed-file secret scan passed.
 ```
 
 ---
@@ -75,7 +75,7 @@ scripts/validate-local.ps1 passed; scripts/qa-readonly-all.ps1 passed route, bou
 
 ```text
 Branch: main
-Worktree: intentionally editing P3.1 read-model runtime state source/docs/.agent_board after local 320b086
+Worktree: intentionally editing P3.2 Command Center runtime state source/docs/scripts/.agent_board after local 8c6b37d; ready for local commit
 ```
 
 ---
@@ -107,7 +107,7 @@ no
 ## Ports Used
 
 ```text
-127.0.0.1:5173 reused for browser QA
+127.0.0.1:5173 checked/reused for browser QA; temporary dev-server job stopped if this session started it
 ```
 
 ---
@@ -115,7 +115,7 @@ no
 ## Current Stop Status
 
 ```text
-continue local P3.1 validation, local commit if green, and stop at remote push boundary
+P3.2 validation green; local commit allowed, then stop at remote push boundary
 ```
 
 ---
@@ -123,5 +123,5 @@ continue local P3.1 validation, local commit if green, and stop at remote push b
 ## Next Action
 
 ```text
-Run targeted validation, update evidence, and commit locally without push.
+Commit locally without push.
 ```

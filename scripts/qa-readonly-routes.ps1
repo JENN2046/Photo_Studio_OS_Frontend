@@ -105,7 +105,19 @@ $routes = @(
     Name = "command-center"
     Hash = "#"
     Selector = ".cockpit-command-center"
-    ExpectedEncoded = @("SKU%20%E8%A6%86%E7%9B%96%E7%8E%87", "%E5%B7%A5%E4%BD%9C%E5%AE%A4%E5%B0%B1%E7%BB%AA%E5%BA%A6", "%E9%BB%84%E9%87%91%E9%93%BE%E8%B7%AF", "Agent%20%E5%B7%A1%E6%A3%80")
+    ExpectedEncoded = @("SKU%20%E8%A6%86%E7%9B%96%E7%8E%87", "%E5%B7%A5%E4%BD%9C%E5%AE%A4%E5%B0%B1%E7%BB%AA%E5%BA%A6", "%E9%BB%84%E9%87%91%E9%93%BE%E8%B7%AF", "Agent%20%E5%B7%A1%E6%A3%80", "%E8%AF%BB%E5%8F%96%E6%BA%90", "%E8%BF%90%E8%A1%8C%E7%8A%B6%E6%80%81", "%E4%BC%A0%E8%BE%93", "%E5%86%99%E5%85%A5%E8%BE%B9%E7%95%8C", "mock-first%20%2F%20read-only")
+  },
+  @{
+    Name = "command-center-loading"
+    Hash = "?commandCenterState=loading#"
+    Selector = ".status-command-loading"
+    ExpectedEncoded = @("%E9%81%A5%E6%B5%8B%E5%AF%B9%E9%BD%90%E4%B8%AD", "%E8%AF%BB%E5%8F%96%E6%BA%90", "%E8%BF%90%E8%A1%8C%E7%8A%B6%E6%80%81", "DEV%20%E8%B0%83%E8%AF%95", "%E5%91%BD%E4%BB%A4%E4%B8%AD%E5%BF%83%E8%BE%B9%E7%95%8C%E6%80%81%E6%BC%94%E7%BB%83", "mock-first%20%2F%20read-only")
+  },
+  @{
+    Name = "command-center-error"
+    Hash = "?commandCenterState=error#"
+    Selector = ".status-command-error"
+    ExpectedEncoded = @("%E5%8F%AA%E8%AF%BB%E4%BF%9D%E7%95%99%E6%80%81", "%E8%AF%BB%E5%8F%96%E6%BA%90", "%E8%BF%90%E8%A1%8C%E7%8A%B6%E6%80%81", "DEV%20%E8%B0%83%E8%AF%95", "%E5%91%BD%E4%BB%A4%E4%B8%AD%E5%BF%83%E8%BE%B9%E7%95%8C%E6%80%81%E6%BC%94%E7%BB%83", "mock-first%20%2F%20read-only")
   },
   @{
     Name = "command-risk"

@@ -110,6 +110,8 @@ Recent local validation:
 - The four read-model pages expose visible runtime chips for read source,
   request state, transport posture, and the `mock-first / read-only` write
   boundary.
+- Command Center exposes matching runtime chips for read source, request state,
+  transport posture, and the `mock-first / read-only` write boundary.
 
 ## Frontend v2 Local QA Runway
 
@@ -147,8 +149,8 @@ The QA scripts use transient `npx --package @playwright/cli` execution without
 changing `package.json` or `package-lock.json`. The full QA script runs the
 route, boundary-state, and interaction matrices in sequence. The route matrix
 checks Command Center scenes plus the four read-model hash pages at `1440x960` and `390x844`
-for expected Chinese copy, required workspace selectors, Command Center
-`aria-current` state, console errors, and horizontal overflow. The boundary
+for expected Chinese copy, Command Center runtime chips, required workspace
+selectors, Command Center `aria-current` state, console errors, and horizontal overflow. The boundary
 matrix checks loading, error, missing-config, and missing-id idle states for all
 four read-model pages at `1024x768` and `390x844`. The interaction matrix checks
 read-model tab switching, local selection state, and disabled read-only action
@@ -203,6 +205,13 @@ DEV-only read-model boundary rehearsals:
 
 These rehearsals are local UI states. They do not enable uploads, downloads,
 public links, auth, storage, backend writes, or production access.
+
+DEV-only Command Center boundary rehearsals:
+
+- Add `commandCenterState=loading` to rehearse the Command Center loading state.
+- Add `commandCenterState=error` to rehearse the Command Center read-boundary error state.
+- The Command Center runtime chips should remain visible in ready, loading, and error states.
+- `scripts\qa-readonly-routes.ps1` checks the ready, loading, and error runtime chip copy.
 
 ## Read-only Contract
 

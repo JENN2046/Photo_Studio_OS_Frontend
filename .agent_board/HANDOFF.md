@@ -10,7 +10,7 @@ Update this whenever work stops, pauses, blocks, or completes a meaningful batch
 
 ```text
 Status: complete-candidate
-Result: P3.1 Read-model Runtime State Surface is in progress. Four read-model pages now expose read source, runtime status, transport posture, and mock-first/read-only boundary chips.
+Result: P3.2 Command Center Runtime State Surface is validated locally. Command Center now exposes read source, runtime status, transport posture, and mock-first/read-only boundary chips in ready/loading/error states.
 ```
 
 ---
@@ -55,7 +55,8 @@ Branch main was clean after local commit 1184d7d.
 Branch main was clean after local commit fc6b2a0.
 Branch main was clean after local commit 6605681.
 Branch main was clean after local commit 320b086.
-Current batch intentionally edits P3.1 read-model runtime state source/docs/.agent_board after local commit 320b086.
+Branch main was clean after local commit 8c6b37d.
+Current batch intentionally edits P3.2 Command Center runtime state source/docs/.agent_board after local commit 8c6b37d.
 ```
 
 ---
@@ -136,6 +137,10 @@ Completed the first P1 frontend v2 realization slice:
 - scripts/validate-local.ps1 and scripts/validate-local.sh browser-QA mode now call the aggregate script.
 - P3.1 added frontend-only runtime view metadata to useBackendReadModel.
 - All four read-model context bars now show read source, runtime status, transport posture, and mock-first/read-only write boundary.
+- 8c6b37d is a local commit for the P3.1 read-model runtime state surface and has not been pushed.
+- P3.2 added frontend-only runtime view metadata to useCommandCenterSnapshot.
+- Command Center now shows runtime chips for read source, runtime status, transport posture, and mock-first/read-only write boundary in ready/loading/error states.
+- Route QA now asserts the Command Center runtime chip copy across ready/loading/error states.
 ```
 
 ---
@@ -150,8 +155,10 @@ docs/design/FRONTEND_V2_GAP_MAP.md
 .agent_board/VALIDATION_LOG.md
 .agent_board/HANDOFF.md
 README.md
-scripts/validate-local.ps1
-scripts/validate-local.sh
+src/features/command-center/useCommandCenterSnapshot.ts
+src/features/command-center/CommandCenter.tsx
+src/styles/global.css
+scripts/qa-readonly-routes.ps1
 ```
 
 ---
@@ -330,6 +337,11 @@ Current P3.1 read-model runtime state surface:
 - scripts/qa-readonly-all.ps1 passed route, boundary-state, and interaction matrices.
 - git diff --check passed.
 - changed-file secret scan passed.
+
+Current P3.2 Command Center runtime state surface:
+- scripts/validate-local.ps1 passed with lint/build/whitespace/changed-file secret scan.
+- scripts/qa-readonly-all.ps1 passed route, boundary-state, and interaction matrices.
+- Route QA now covers 12 routes at 1440x960 and 390x844, including Command Center ready/loading/error runtime chip checks.
 ```
 
 ---
@@ -340,7 +352,7 @@ Current P3.1 read-model runtime state surface:
 No npm test script is defined.
 No backend live integration request is planned for this mock-first UI batch.
 Full Bash helper validation awaits a compatible bash/WSL Node 20.19+ or 22.12+ environment and Rollup optional native package availability; the helper now reports that blocker before npm gates.
-No push is authorized for local commits 472d848, 078f894, f7b1b8f, 1265584, 27ba2b5, 6f1666b, 4cc1539, ea67bc1, d68fdcf, ab11292, 96ef6ad, 6d33e17, 32ab2f6, e3bd271, 25110ed, 699a71c, 7eafcc8, 60b74a1, or the current P2.16/P2.17 cleanup until the user explicitly asks for push.
+No push is authorized for local commits after the last explicit push, including 8c6b37d and the current P3.2 batch, until the user explicitly asks for push.
 ```
 
 ---
@@ -388,7 +400,7 @@ none for the next safe local frontend slice.
 ## Next Safe Action
 
 ```text
-Next safe action: run final P3.1 validation, commit locally if green, then wait for explicit push approval.
+Next safe action: commit P3.2 locally if final staged checks remain green, then wait for explicit push approval.
 ```
 
 ---
@@ -400,7 +412,7 @@ Next safe action: run final P3.1 validation, commit locally if green, then wait 
 
 读取 AGENTS.md 和 .agent_board/*。
 继续 A4-Sustained Local Frontend Autopilot。
-先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的 P3.1 Read-model Runtime State Surface 队列继续。
+先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的 P3.2 Command Center Runtime State Surface 队列继续。
 保持 mock-first/read-only，不碰 backend、root control repo、依赖、.env、deploy、生产服务、上传/下载/auth/storage/write actions。
 按当前持续推进节奏，小批次验证后可以本地 commit；push 只有用户明确说 push 才执行。
 用中文汇报。

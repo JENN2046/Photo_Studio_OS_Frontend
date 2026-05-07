@@ -10,7 +10,7 @@ It does not authorize remote writes, commits, pushes, deployments, backend chang
 ## Current Mission
 
 ```text
-P3.1 Read-model Runtime State Surface
+P3.2 Command Center Runtime State Surface
 ```
 
 Mode:
@@ -22,7 +22,7 @@ A4-Sustained Local Frontend Autopilot
 Goal:
 
 ```text
-Make read-model runtime posture visible across Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness without enabling writes or backend mutations.
+Make Command Center runtime posture visible in the main cockpit without enabling writes, backend mutations, uploads, downloads, auth, storage, or production links.
 ```
 
 ---
@@ -83,7 +83,7 @@ none
 
 ### todo
 
-Current safe queue after starting P3.1 read-model runtime state surface.
+Current safe queue after starting P3.2 Command Center runtime state surface.
 
 ```text
 none
@@ -240,6 +240,12 @@ none
 146. Added restrained runtime chip styling for mock, backend, debug, missing-config, and read-only states.
 147. Documented P3.1 runtime state surface in README.md and FRONTEND_V2_GAP_MAP.md.
 148. Validated P3.1 with scripts/validate-local.ps1, scripts/qa-readonly-all.ps1, git diff --check, and changed-file secret scan.
+149. Started P3.2 from clean local commit 8c6b37d.
+150. Extended useCommandCenterSnapshot with frontend-only runtime view metadata for initializing, mock, backend, error, and DEV debug states.
+151. Rendered Command Center runtime chips for read source, runtime status, transport posture, and mock-first/read-only write boundary in ready/loading/error states.
+152. Added restrained Command Center runtime chip styling without changing the three-gauge visual anchor.
+153. Refreshed README.md and FRONTEND_V2_GAP_MAP.md with P3.2 runtime state facts.
+154. Extended read-only route QA to assert Command Center runtime chip copy across ready/loading/error states.
 ```
 
 ### blocked

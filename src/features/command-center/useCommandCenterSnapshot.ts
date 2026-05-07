@@ -2,15 +2,30 @@ import { useEffect, useState } from "react";
 import { commandCenterClient } from "../../api/client";
 import type { CommandCenterSnapshot } from "../../api/types";
 
-type SnapshotStatus = "loading" | "ready" | "error";
-type CommandCenterDebugState = "live" | "loading" | "error";
+export type CommandCenterSnapshotStatus = "loading" | "ready" | "error";
+export type CommandCenterDebugState = "live" | "loading" | "error";
+export type CommandCenterRuntimeSource =
+  | "initializing"
+  | "mock"
+  | "mock-error"
+  | "backend"
+  | "backend-error"
+  | "debug";
+
+export interface CommandCenterRuntimeView {
+  source: CommandCenterRuntimeSource;
+  sourceLabel: string;
+  transportLabel: string;
+  boundaryLabel: string;
+}
 
 interface CommandCenterSnapshotState {
   snapshot: CommandCenterSnapshot | null;
-  status: SnapshotStatus;
+  status: CommandCenterSnapshotStatus;
   errorMessage: string | null;
   debugState: CommandCenterDebugState;
   canRetry: boolean;
+  runtime: CommandCenterRuntimeView;
   retry: () => void;
 }
 
@@ -21,8 +36,66 @@ const baseLoadingState: CommandCenterSnapshotDataState = {
   status: "loading",
   errorMessage: null,
   debugState: "live",
-  canRetry: import.meta.env.DEV
+  canRetry: import.meta.env.DEV,
+  runtime: createLiveRuntimeView("loading")
 };
+
+function hasBackendRuntime(): boolean {
+  return Boolean(import.meta.env.VITE_BACKEND_API_BASE_URL?.trim());
+}
+
+function createRuntimeView({
+  source,
+  sourceLabel,
+  transportLabel
+}: {
+  source: CommandCenterRuntimeSource;
+  sourceLabel: string;
+  transportLabel: string;
+}): CommandCenterRuntimeView {
+  return {
+    source,
+    sourceLabel,
+    transportLabel,
+    boundaryLabel: "mock-first / read-only"
+  };
+}
+
+function createLiveRuntimeView(
+  status: CommandCenterSnapshotStatus
+): CommandCenterRuntimeView {
+  const hasBackend = hasBackendRuntime();
+
+  if (status === "error") {
+    return createRuntimeView({
+      source: hasBackend ? "backend-error" : "mock-error",
+      sourceLabel: hasBackend ? "后端只读" : "本地模拟",
+      transportLabel: hasBackend ? "请求失败" : "模拟读取失败"
+    });
+  }
+
+  if (hasBackend) {
+    return createRuntimeView({
+      source: "backend",
+      sourceLabel: "后端只读",
+      transportLabel: status === "ready" ? "已连接" : "请求中"
+    });
+  }
+
+  return createRuntimeView({
+    source: status === "loading" ? "initializing" : "mock",
+    sourceLabel: status === "loading" ? "初始化" : "本地模拟",
+    transportLabel: status === "loading" ? "准备模拟快照" : "后端未配置"
+  });
+}
+
+function createDebugRuntimeView(): CommandCenterRuntimeView {
+  return createRuntimeView({
+    source: "debug",
+    sourceLabel: "DEV 调试",
+    transportLabel: "命令中心边界态演练"
+  });
+}
 
 function getDebugState(): CommandCenterDebugState {
   if (typeof window === "undefined" || !import.meta.env.DEV) {
@@ -60,7 +133,8 @@ export function useCommandCenterSnapshot(): CommandCenterSnapshotState {
         status: "loading",
         errorMessage: null,
         debugState,
-        canRetry: true
+        canRetry: true,
+        runtime: createDebugRuntimeView()
       });
 
       return () => {
@@ -74,7 +148,8 @@ export function useCommandCenterSnapshot(): CommandCenterSnapshotState {
         status: "error",
         errorMessage: "Simulated read boundary fault for internal debug",
         debugState,
-        canRetry: true
+        canRetry: true,
+        runtime: createDebugRuntimeView()
       });
 
       return () => {
@@ -94,7 +169,8 @@ export function useCommandCenterSnapshot(): CommandCenterSnapshotState {
           status: "ready",
           errorMessage: null,
           debugState,
-          canRetry: import.meta.env.DEV
+          canRetry: import.meta.env.DEV,
+          runtime: createLiveRuntimeView("ready")
         });
       })
       .catch((error: unknown) => {
@@ -110,7 +186,8 @@ export function useCommandCenterSnapshot(): CommandCenterSnapshotState {
               ? error.message
               : "Unable to load command center snapshot",
           debugState,
-          canRetry: import.meta.env.DEV
+          canRetry: import.meta.env.DEV,
+          runtime: createLiveRuntimeView("error")
         });
       });
 
