@@ -83,7 +83,7 @@ none
 
 ### todo
 
-Current safe queue after P2.5 RC hardening validation.
+Current safe queue after Command Center rail scene-click validation.
 
 ```text
 none
@@ -149,6 +149,10 @@ none
 55. Re-ran the boundary-state matrix at 1024px and 390px for loading, error, missing-config, and missing-id idle states; no missing copy, horizontal overflow, or console errors were observed.
 56. Refreshed README.md, FRONTEND_V2_GAP_MAP.md, and .agent_board with P2.5 RC hardening evidence.
 57. Validated the P2.5 RC closeout docs batch with git diff --check, changed-file secret scan, npm run lint, and npm run build.
+58. Fixed Command Center rail scene clicks so #projects, #activity, and #inspections visibly promote their target panel to the desktop first viewport.
+59. Added active rail highlighting for #projects, #activity, #inspections, #risk, and #approvals.
+60. Browser-validated rail scene clicks at 1513px and 390px with no horizontal overflow or console errors.
+61. Validated the rail scene-click fix with git diff --check, changed-file secret scan, npm run lint, and npm run build.
 ```
 
 ### blocked

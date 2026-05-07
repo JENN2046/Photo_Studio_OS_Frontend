@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-P2.5 RC hardening complete candidate; stop at remote push boundary
+Command Center rail scene-click fix complete candidate
 ```
 
 ---
@@ -58,7 +58,7 @@ P2.5 RC hardening complete candidate; stop at remote push boundary
 ## Last Completed Task
 
 ```text
-Validated P2.5 RC documentation / task-rail closeout
+Fixed Command Center rail scene clicks so selected scenes visibly switch focus
 ```
 
 ---
@@ -66,7 +66,7 @@ Validated P2.5 RC documentation / task-rail closeout
 ## Last Validation
 
 ```text
-npm run lint passed; npm run build passed; git diff --check passed; changed-file secret scan passed; Command Center entry clicks passed; RC browser matrix passed at 1440px / 1024px / 390px; boundary-state matrix passed at 1024px / 390px with console error count 0
+Command rail click QA passed at 1513px and 390px for #projects, #activity, #inspections, #risk, and #approvals; console error count 0; git diff --check, changed-file secret scan, npm run lint, and npm run build passed
 ```
 
 ---
@@ -75,7 +75,7 @@ npm run lint passed; npm run build passed; git diff --check passed; changed-file
 
 ```text
 Branch: main
-Worktree: P2.5 RC closeout docs validated and pending local commit after 6f1666b
+Worktree: command rail scene-click fix validated and ready for local commit after 4cc1539
 ```
 
 ---
@@ -115,7 +115,7 @@ no
 ## Current Stop Status
 
 ```text
-stopped at remote push boundary after local closeout commit
+stop at remote push boundary after local commit
 ```
 
 ---
@@ -123,5 +123,5 @@ stopped at remote push boundary after local closeout commit
 ## Next Action
 
 ```text
-Commit the P2.5 RC closeout docs batch locally, then wait for explicit push approval. Optional backend smoke remains blocked unless a local backend base URL is configured outside this repo.
+Wait for explicit push approval after the local command rail scene-click fix commit.
 ```

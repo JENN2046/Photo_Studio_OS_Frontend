@@ -10,7 +10,7 @@ Codex should update this after each meaningful batch of local frontend work.
 
 ```text
 Status: complete-candidate
-Updated: 2026-05-07 11:52 +0800
+Updated: 2026-05-07 12:04 +0800
 Repo: Photo_Studio_OS_Frontend
 Mode: A4-Sustained Local Frontend Autopilot
 Mission: P2.5 Frontend v2 Read-only RC Hardening
@@ -25,8 +25,8 @@ Fill from actual command output.
 ```text
 Workspace: A:\Photo_Studio_OS_Frontend
 Branch: main
-Worktree: intentionally editing P2.5 RC documentation and .agent_board after local 6f1666b
-Diff stat: README.md, docs/design/FRONTEND_V2_GAP_MAP.md, plus .agent_board
+Worktree: intentionally editing command rail scene-click CSS and .agent_board after local 4cc1539
+Diff stat: src/styles/global.css plus .agent_board
 Package manager: npm with package-lock.json
 Available scripts: dev, build, lint, preview
 ```
@@ -81,6 +81,9 @@ Ran the RC browser matrix at 1440px, 1024px, and 390px across Command Center plu
 Locally committed 6f1666b: improved RC keyboard focus visibility.
 Re-ran the boundary-state matrix at 1024px and 390px for loading, error, missing-config, and missing-id idle states.
 Refreshed README.md, FRONTEND_V2_GAP_MAP.md, and .agent_board with P2.5 RC hardening evidence.
+Locally committed 4cc1539: closed the P2.5 RC hardening runway.
+Fixed Command Center rail scene clicks so selected command scenes visibly switch focus instead of only changing the hash.
+Browser-validated rail clicks at 1513px and 390px for #projects, #activity, #inspections, #risk, and #approvals.
 ```
 
 ---
@@ -88,12 +91,10 @@ Refreshed README.md, FRONTEND_V2_GAP_MAP.md, and .agent_board with P2.5 RC harde
 ## Changed Files
 
 ```text
-README.md
-docs/design/FRONTEND_V2_GAP_MAP.md
+src/styles/global.css
 .agent_board/CHECKPOINT.md
 .agent_board/RUN_STATE.md
 .agent_board/TASK_QUEUE.md
-.agent_board/HANDOFF.md
 .agent_board/VALIDATION_LOG.md
 ```
 
@@ -115,6 +116,17 @@ Current focus hardening batch:
 Current P2.5 RC closeout docs batch:
 - Boundary-state matrix passed at 1024px and 390px for loading, error, missing-config, and missing-id idle states.
 - No missing expected copy, horizontal overflow, or console errors were observed.
+- git diff --check passed.
+- changed-file secret scan passed.
+- npm run lint passed.
+- npm run build passed.
+
+Current rail scene-click fix:
+- 1513px rail clicks passed for #projects, #activity, #inspections, #risk, and #approvals.
+- #projects, #activity, and #inspections promote the selected panel to the desktop first viewport.
+- #risk and #approvals expand/highlight the right-side target panel.
+- 390px rail clicks scroll to the target scene with no horizontal overflow.
+- Console error count was 0.
 - git diff --check passed.
 - changed-file secret scan passed.
 - npm run lint passed.
@@ -169,7 +181,7 @@ Live backend toggle still requires configuring VITE_BACKEND_API_BASE_URL and run
 ## Next Safe Task
 
 ```text
-Locally commit the P2.5 RC closeout docs batch, then stop at remote push boundary.
+Stop at remote push boundary after the local command rail scene-click fix commit.
 ```
 
 ---

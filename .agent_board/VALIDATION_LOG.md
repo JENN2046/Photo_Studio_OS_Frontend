@@ -446,6 +446,28 @@ Notes:
 - npm run lint passed.
 - npm run build passed.
 - This batch remains frontend-only, mock-first, and read-only.
+
+## VALIDATION-20260507-RAIL-SCENE-CLICKS
+
+Task: Make Command Center rail scene clicks visibly switch the selected command scene.
+Commands run:
+- Playwright CLI rail click QA at 1513px and 390px for #projects, #activity, #inspections, #risk, and #approvals
+- git diff --check
+- changed-file secret scan on current diff
+- npm run lint
+- npm run build
+Result: passed
+Failures: none
+Fix attempted: none required after CSS patch
+Re-run result: not applicable
+Not validated:
+- No npm test script is defined.
+- No backend live integration was run; frontend remains mock-first.
+Notes:
+- At 1513px, #projects, #activity, and #inspections hide the gauge cluster and promote the selected panel to the first viewport.
+- #risk and #approvals expand/highlight the right-side target panel.
+- At 390px, rail clicks scroll to the target scene without horizontal overflow.
+- Console error count was 0.
 ```
 
 ---
