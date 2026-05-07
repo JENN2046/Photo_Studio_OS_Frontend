@@ -17,7 +17,7 @@ A4-Sustained Local Frontend Autopilot
 ## Current Mission
 
 ```text
-P2.6 Read-only Click Affordance Pass
+P2.7 Command Rail Scene Hygiene
 ```
 
 ---
@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-Read-only click affordance pass complete candidate
+Command rail scene hygiene complete candidate
 ```
 
 ---
@@ -58,7 +58,7 @@ Read-only click affordance pass complete candidate
 ## Last Completed Task
 
 ```text
-Clarified clickable-looking actions so they navigate, select locally, or show disabled read-only posture
+Made Command Center rail scene entries unique and hash-aware
 ```
 
 ---
@@ -66,7 +66,7 @@ Clarified clickable-looking actions so they navigate, select locally, or show di
 ## Last Validation
 
 ```text
-In-app browser confirmed Command Center heading actions navigate to #inspections and #risk; Playwright CLI confirmed read-model selection and disabled action semantics across the four read-model pages; 10-route desktop/mobile matrix passed with console error count 0 and no horizontal overflow; git diff --check, changed-file secret scan, npm run lint, and npm run build passed
+In-app browser confirmed five unique rail scene links and one aria-current state after clicking #risk, #projects, #approvals, #activity, and #inspections; Playwright CLI confirmed # plus five rail scenes at 1513px and 390px with five unique links, one active state, no horizontal overflow, and no console errors; git diff --check, changed-file secret scan, npm run lint, and npm run build passed
 ```
 
 ---
@@ -75,7 +75,7 @@ In-app browser confirmed Command Center heading actions navigate to #inspections
 
 ```text
 Branch: main
-Worktree: P2.6 click affordance pass validated and ready for local commit after ea67bc1
+Worktree: P2.7 command rail scene hygiene validated and ready for local commit after d68fdcf
 ```
 
 ---
@@ -115,7 +115,7 @@ no
 ## Current Stop Status
 
 ```text
-stop at remote push boundary after local P2.6 commit
+stop at remote push boundary after local P2.7 commit
 ```
 
 ---
@@ -123,5 +123,5 @@ stop at remote push boundary after local P2.6 commit
 ## Next Action
 
 ```text
-Commit the P2.6 click affordance pass, then wait for explicit push approval.
+Commit the P2.7 command rail scene hygiene pass, then wait for explicit push approval.
 ```

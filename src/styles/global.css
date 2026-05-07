@@ -82,6 +82,7 @@ a {
   outline-offset: 2px;
 }
 
+.command-rail a[aria-current="page"],
 .app-shell:has(#risk:target) .command-rail a[href="#risk"],
 .app-shell:has(#approvals:target) .command-rail a[href="#approvals"],
 .app-shell:has(#projects:target) .command-rail a[href="#projects"],

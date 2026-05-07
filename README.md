@@ -117,6 +117,10 @@ Click affordance QA:
 
 - Visible Command Center text actions should navigate to the matching hash scene
   or use a normal link style.
+- The Command Center rail should expose one scene entry per hash target:
+  `#risk`, `#projects`, `#approvals`, `#activity`, and `#inspections`.
+- Only one Command Center rail entry should expose `aria-current="page"` after
+  a scene click.
 - Read-model cards may update local selected detail state only.
 - Disabled upload, download, public review, delivery, and write-action buttons
   must remain disabled and expose clear read-only posture.

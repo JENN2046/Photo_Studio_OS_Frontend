@@ -10,10 +10,10 @@ Codex should update this after each meaningful batch of local frontend work.
 
 ```text
 Status: complete-candidate
-Updated: 2026-05-07 12:18 +0800
+Updated: 2026-05-07 13:49 +0800
 Repo: Photo_Studio_OS_Frontend
 Mode: A4-Sustained Local Frontend Autopilot
-Mission: P2.6 Read-only Click Affordance Pass
+Mission: P2.7 Command Rail Scene Hygiene
 ```
 
 ---
@@ -25,8 +25,8 @@ Fill from actual command output.
 ```text
 Workspace: A:\Photo_Studio_OS_Frontend
 Branch: main
-Worktree: intentionally editing P2.6 click affordance source, docs, and .agent_board after local ea67bc1
-Diff stat: CommandCenter.tsx, ReadModelPages.tsx, readModelPages.css, global.css, docs, README, and .agent_board
+Worktree: intentionally editing command rail scene hygiene source, docs, and .agent_board after local d68fdcf
+Diff stat: AppShell.tsx, global.css, docs, README, and .agent_board
 Package manager: npm with package-lock.json
 Available scripts: dev, build, lint, preview
 ```
@@ -91,6 +91,12 @@ Added explicit disabled title/aria/cursor semantics to shared read-only action b
 Browser-clicked heading actions in the in-app browser and verified navigation to #inspections and #risk.
 Browser-validated read-model local selection and disabled action semantics across Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness.
 Browser-validated the 10-route desktop/mobile matrix with no horizontal overflow or console errors.
+Locally committed d68fdcf: clarified read-only click affordances.
+Started P2.7 Command Rail Scene Hygiene.
+Reduced Command Center rail to five unique hash scene entries.
+Added hash-aware aria-current state in AppShell.
+Browser-clicked all five rail scene entries in the in-app browser with one unique active state after each click.
+Browser-validated # plus five rail scenes at 1513px and 390px with no horizontal overflow or console errors.
 ```
 
 ---
@@ -98,9 +104,7 @@ Browser-validated the 10-route desktop/mobile matrix with no horizontal overflow
 ## Changed Files
 
 ```text
-src/features/command-center/CommandCenter.tsx
-src/features/read-models/ReadModelPages.tsx
-src/features/read-models/readModelPages.css
+src/components/layout/AppShell.tsx
 src/styles/global.css
 README.md
 docs/design/FRONTEND_V2_GAP_MAP.md
@@ -155,6 +159,17 @@ Current P2.6 click affordance pass:
 - changed-file secret scan passed.
 - npm run lint passed.
 - npm run build passed.
+
+Current P2.7 command rail scene hygiene:
+- In-app browser verified the rail has 5 scene links.
+- In-app browser clicked #risk, #projects, #approvals, #activity, and #inspections; each target had exactly one matching link and one aria-current state.
+- Playwright CLI verified # plus five rail scenes at 1513px and 390px.
+- Each checked route retained 5 rail links, one link for each scene hash, one active state, no horizontal overflow, and no console errors.
+- npm run lint passed before board update.
+- git diff --check passed.
+- changed-file secret scan passed.
+- npm run lint passed.
+- npm run build passed.
 ```
 
 ---
@@ -205,7 +220,7 @@ Live backend toggle still requires configuring VITE_BACKEND_API_BASE_URL and run
 ## Next Safe Task
 
 ```text
-Stop at remote push boundary after the local P2.6 click affordance commit.
+Stop at remote push boundary after the local P2.7 command rail scene hygiene commit.
 ```
 
 ---

@@ -10,7 +10,7 @@ It does not authorize remote writes, commits, pushes, deployments, backend chang
 ## Current Mission
 
 ```text
-P2.6 Read-only Click Affordance Pass
+P2.7 Command Rail Scene Hygiene
 ```
 
 Mode:
@@ -22,7 +22,7 @@ A4-Sustained Local Frontend Autopilot
 Goal:
 
 ```text
-Make the read-only cockpit feel honest under inspection: visible actions either navigate, select local UI state, or clearly communicate disabled read-only posture.
+Keep the command rail unambiguous under browser inspection: one visible entry per Command Center hash scene, one active state, and stable accessible current-page semantics.
 ```
 
 ---
@@ -159,6 +159,12 @@ none
 65. Browser-clicked Command Center heading actions in the in-app browser and verified they navigate to #inspections and #risk.
 66. Browser-validated read-model local selection and disabled action semantics across Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness.
 67. Browser-validated a 10-route desktop/mobile matrix with no horizontal overflow or console errors.
+68. Locally committed d68fdcf: clarified read-only click affordances.
+69. Started P2.7 Command Rail Scene Hygiene from clean local commit d68fdcf.
+70. Reduced the Command Center rail to five unique hash scene entries: #risk, #projects, #approvals, #activity, and #inspections.
+71. Added hash-aware aria-current state in AppShell so exactly one Command Center rail target is exposed as the current page.
+72. Browser-clicked all five rail scene entries in the in-app browser and verified one unique active state after each click.
+73. Browser-validated # plus five rail scenes at 1513px and 390px with unique rail links, one active state, no horizontal overflow, and no console errors.
 ```
 
 ### blocked

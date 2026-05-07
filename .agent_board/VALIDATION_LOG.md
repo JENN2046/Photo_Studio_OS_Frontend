@@ -496,6 +496,34 @@ Notes:
 - No horizontal overflow or console errors were observed in the 10-route desktop/mobile matrix.
 ```
 
+```text
+## VALIDATION-20260507-COMMAND-RAIL-SCENE-HYGIENE
+
+Task: Make Command Center rail scene entries unique and hash-aware.
+Commands run:
+- npm run lint
+- in-app browser rail count and aria-current check at #inspections
+- in-app browser click QA for #risk, #projects, #approvals, #activity, and #inspections
+- Playwright CLI # plus five rail scenes matrix at 1513px and 390px
+- git diff --check
+- changed-file secret scan on current diff
+- npm run build
+Result: passed
+Failures:
+- First Playwright CLI run-code attempts used the wrong command shape; no application code changed for that harness issue.
+Fix attempted:
+- Re-ran Playwright CLI with the expected page function argument.
+Re-run result: passed
+Not validated:
+- No npm test script is defined.
+- No backend live integration was run; frontend remains mock-first.
+Notes:
+- The rail now exposes 5 scene links.
+- Each scene hash appears exactly once in the rail.
+- #, #risk, #projects, #approvals, #activity, and #inspections each had exactly one aria-current active state.
+- No horizontal overflow or console errors were observed in the desktop/mobile matrix.
+```
+
 ---
 
 ## Entry Template
