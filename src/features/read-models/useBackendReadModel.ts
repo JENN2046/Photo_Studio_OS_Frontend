@@ -1,11 +1,17 @@
 import { useEffect, useState, type DependencyList } from "react";
 import type { BackendReadModelRequestOptions } from "../../api/backendReadModels";
+import { ReadModelHttpError } from "../../api/backendReadModels";
 
 export type BackendReadModelStatus =
   | "missing-config"
   | "idle"
   | "loading"
   | "ready"
+  | "empty"
+  | "partial"
+  | "stale"
+  | "forbidden"
+  | "invalid-id"
   | "error";
 
 export type BackendReadModelSource =
@@ -15,6 +21,7 @@ export type BackendReadModelSource =
   | "missing-config"
   | "backend"
   | "backend-error"
+  | "backend-forbidden"
   | "debug";
 
 export interface BackendReadModelRuntimeView {
@@ -217,20 +224,40 @@ export function useBackendReadModel<T>({
           return;
         }
 
+        const statusCode =
+          error instanceof ReadModelHttpError ? error.statusCode : 0;
+        let status: BackendReadModelStatus;
+        let message: string;
+        let source: BackendReadModelSource;
+        let transportLabel: string;
+
+        if (statusCode === 403) {
+          status = "forbidden";
+          message = "权限不足，无法访问该只读模型。";
+          source = "backend-forbidden";
+          transportLabel = "权限不足";
+        } else if (statusCode === 404) {
+          status = "invalid-id";
+          message = "请求的 ID 未找到或不属于当前工作区。";
+          source = "backend-error";
+          transportLabel = "ID 未找到";
+        } else {
+          status = "error";
+          message = "只读模型请求失败。";
+          source = "backend-error";
+          transportLabel = "请求失败";
+        }
+
         setState({
           data: null,
-          status: "error",
-          message: "只读模型请求失败。",
+          status,
+          message,
           errorMessage:
             error instanceof Error
               ? error.message
               : "未知的只读模型错误",
           canRetry: true,
-          runtime: createRuntimeView({
-            source: "backend-error",
-            sourceLabel: "后端只读",
-            transportLabel: "请求失败"
-          }),
+          runtime: createRuntimeView({ source, sourceLabel: "后端只读", transportLabel }),
           retry
         });
       });

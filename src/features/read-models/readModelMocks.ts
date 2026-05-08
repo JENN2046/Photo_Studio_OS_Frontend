@@ -460,3 +460,186 @@ export function createMockDeliveryReadiness(
     }
   };
 }
+
+// ── Empty mock factories ──
+
+export function createMockEmptyAssetInbox(
+  projectId: string
+): BackendAssetInbox {
+  return {
+    projectId,
+    page: 1,
+    limit: 24,
+    total: 0,
+    intake: {
+      source: "capture_one_placeholder",
+      status: "not_configured",
+      message: "capture_one_export"
+    },
+    items: []
+  };
+}
+
+export function createMockEmptyQcRetouchQueue(
+  projectId: string
+): BackendQcRetouchQueue {
+  return {
+    projectId,
+    page: 1,
+    limit: 24,
+    total: 0,
+    items: []
+  };
+}
+
+export function createMockEmptyReviewGallery(
+  reviewSessionId: string
+): BackendReviewGallery {
+  return {
+    reviewSessionId,
+    title: "空审核会话",
+    status: "draft",
+    items: [],
+    summary: { pending: 0, approved: 0, revisionRequested: 0, withdrawn: 0 },
+    publicAccess: {
+      enabled: false,
+      reason: "storage_auth_and_public_review_not_approved"
+    }
+  };
+}
+
+export function createMockEmptyDeliveryReadiness(
+  deliveryId: string
+): BackendDeliveryReadiness {
+  return {
+    deliveryId,
+    status: "preparing",
+    itemCount: 0,
+    checklist: {
+      hasItems: false,
+      hasPackageKey: false,
+      hasManifestKey: false,
+      allItemsHaveFileKey: false
+    },
+    blockers: [],
+    externalAccess: {
+      enabled: false,
+      reason: "storage_auth_and_public_delivery_not_approved"
+    }
+  };
+}
+
+// ── Partial mock factories ──
+
+export function createMockPartialAssetInbox(
+  projectId: string
+): BackendAssetInbox {
+  const [first, second] = assetTemplates;
+  if (!first || !second) {
+    return createMockEmptyAssetInbox(projectId);
+  }
+
+  return {
+    projectId,
+    page: 1,
+    limit: 24,
+    total: 2,
+    intake: {
+      source: "capture_one_placeholder",
+      status: "warning",
+      message: "capture_one_export"
+    },
+    selectedAssetId: first.assetId,
+    items: [
+      { ...first, projectId },
+      {
+        ...second,
+        projectId,
+        binding: {
+          status: "unbound",
+          matchStatus: "failed",
+          confidence: 0,
+          reason: "shot_requirement_missing"
+        },
+        latestQc: undefined
+      }
+    ]
+  };
+}
+
+export function createMockPartialQcRetouchQueue(
+  projectId: string
+): BackendQcRetouchQueue {
+  return {
+    projectId,
+    page: 1,
+    limit: 24,
+    total: 1,
+    items: [
+      {
+        assetId: "AST-9012",
+        assetVersionId: "AST-9012-V2",
+        previewKey: "mock/aur-chair-hero-preview",
+        sku: auroraSku,
+        shotRequirement: shotRequirements[0],
+        qc: {
+          latestStatus: "warning",
+          failedReasons: ["focus_left_edge"],
+          technicalResults: { focus: "warning" },
+          manualResults: {},
+          nextAction: "send_back_to_retouch"
+        },
+        retouch: undefined
+      }
+    ]
+  };
+}
+
+export function createMockPartialReviewGallery(
+  reviewSessionId: string
+): BackendReviewGallery {
+  return {
+    reviewSessionId,
+    title: "部分内容审核",
+    status: "published",
+    items: [
+      {
+        reviewItemId: "RVI-9091",
+        assetId: "AST-9091",
+        previewKey: "mock/fragrance-label-preview",
+        sku: fragranceSku,
+        shotRequirement: shotRequirements[7],
+        status: "revision_requested",
+        clientComment: "标签颜色需要回到参考图。"
+      }
+    ],
+    publicAccess: {
+      enabled: false,
+      reason: "storage_auth_and_public_review_not_approved"
+    }
+  };
+}
+
+export function createMockPartialDeliveryReadiness(
+  deliveryId: string
+): BackendDeliveryReadiness {
+  return {
+    deliveryId,
+    status: "preparing",
+    itemCount: 3,
+    checklist: {
+      hasItems: true,
+      hasPackageKey: false,
+      hasManifestKey: false,
+      allItemsHaveFileKey: false
+    },
+    blockers: [
+      { code: "missing_approved_qc", message: "missing_approved_qc" },
+      { code: "missing_delivery_manifest", message: "missing_delivery_manifest" }
+    ],
+    externalAccess: {
+      enabled: false,
+      reason: "storage_auth_and_public_delivery_not_approved"
+    }
+  };
+}

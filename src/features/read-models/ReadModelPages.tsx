@@ -30,6 +30,14 @@ import {
 import {
   createMockAssetInbox,
   createMockDeliveryReadiness,
+  createMockEmptyAssetInbox,
+  createMockEmptyDeliveryReadiness,
+  createMockEmptyQcRetouchQueue,
+  createMockEmptyReviewGallery,
+  createMockPartialAssetInbox,
+  createMockPartialDeliveryReadiness,
+  createMockPartialQcRetouchQueue,
+  createMockPartialReviewGallery,
   createMockQcRetouchQueue,
   createMockReviewGallery
 } from "./readModelMocks";
@@ -45,7 +53,16 @@ export interface ReadModelPageProps {
   params: URLSearchParams;
 }
 
-type ReadModelDebugState = "live" | "loading" | "error" | "missing-config";
+type ReadModelDebugState =
+  | "live"
+  | "loading"
+  | "error"
+  | "missing-config"
+  | "empty"
+  | "partial"
+  | "stale"
+  | "forbidden"
+  | "invalid-id";
 
 interface ReadModelFrameProps {
   activeRoute: ReadModelRoute;
@@ -72,12 +89,32 @@ function getReadModelDebugState(params: URLSearchParams): ReadModelDebugState {
   if (
     debugState === "loading" ||
     debugState === "error" ||
-    debugState === "missing-config"
+    debugState === "missing-config" ||
+    debugState === "empty" ||
+    debugState === "partial" ||
+    debugState === "stale" ||
+    debugState === "forbidden" ||
+    debugState === "invalid-id"
   ) {
     return debugState;
   }
 
   return "live";
+}
+
+function selectDebugMock<T>(
+  id: string | undefined,
+  debugState: ReadModelDebugState,
+  factories: {
+    empty: (id: string) => T;
+    partial: (id: string) => T;
+    normal: (id: string) => T;
+  }
+): T | undefined {
+  if (!id) return undefined;
+  if (debugState === "empty") return factories.empty(id);
+  if (debugState === "partial") return factories.partial(id);
+  return factories.normal(id);
 }
 
 function applyReadModelDebugState<T>({
@@ -122,6 +159,58 @@ function applyReadModelDebugState<T>({
       status: "missing-config",
       message: "内部调试：模拟后端只读模型未配置。",
       errorMessage: null,
+      canRetry: false
+    };
+  }
+
+  if (debugState === "empty") {
+    return {
+      ...baseState,
+      status: "empty",
+      message: `内部调试：${label} 只读模型返回空数据。`,
+      errorMessage: null,
+      canRetry: false
+    };
+  }
+
+  if (debugState === "partial") {
+    return {
+      ...baseState,
+      status: "partial",
+      message: `内部调试：${label} 只读模型返回不完整数据。`,
+      errorMessage: null,
+      canRetry: false
+    };
+  }
+
+  if (debugState === "stale") {
+    return {
+      ...baseState,
+      status: "stale",
+      message: `内部调试：${label} 数据已过期，需要刷新。`,
+      errorMessage: null,
+      canRetry: true
+    };
+  }
+
+  if (debugState === "forbidden") {
+    return {
+      ...baseState,
+      status: "forbidden",
+      data: null,
+      message: "内部调试：当前角色无权访问该只读模型。",
+      errorMessage: `Simulated ${label} access denied`,
+      canRetry: false
+    };
+  }
+
+  if (debugState === "invalid-id") {
+    return {
+      ...baseState,
+      status: "invalid-id",
+      data: null,
+      message: "内部调试：请求的 ID 未找到或不属于当前工作区。",
+      errorMessage: `Simulated ${label} invalid context id`,
       canRetry: false
     };
   }
@@ -201,6 +290,11 @@ function ReadModelContextBar({
     idle: "等待上下文",
     loading: "读取中",
     ready: "已就绪",
+    empty: "数据为空",
+    partial: "部分数据",
+    stale: "数据过期",
+    forbidden: "权限不足",
+    "invalid-id": "ID 无效",
     error: "读取失败"
   };
   const chips: RuntimeChip[] = [
@@ -266,12 +360,22 @@ function ReadModelStateNotice<T>({
     "missing-config": "后端只读模型未配置",
     idle: idleLabel,
     loading: "只读模型加载中",
+    empty: "该视图暂无数据",
+    partial: "该视图仅加载了部分数据",
+    stale: "数据可能已过期",
+    forbidden: "无权访问该只读模型",
+    "invalid-id": "请求的 ID 无效或未找到",
     error: "只读模型不可用"
   } satisfies Record<Exclude<typeof state.status, "ready">, string>;
   const statusLabelByStatus = {
     "missing-config": "后端未配置",
     idle: "等待上下文",
     loading: "读取中",
+    empty: "数据为空",
+    partial: "部分数据",
+    stale: "数据过期",
+    forbidden: "权限不足",
+    "invalid-id": "ID 无效",
     error: "读取失败"
   } satisfies Record<Exclude<typeof state.status, "ready">, string>;
 
@@ -298,12 +402,18 @@ function ReadModelStateNotice<T>({
 
 export function AssetInboxPage({ params }: ReadModelPageProps) {
   const projectId = getParam(params, "projectId");
+  const debugState = getReadModelDebugState(params);
+  const mockData = selectDebugMock(projectId, debugState, {
+    empty: createMockEmptyAssetInbox,
+    partial: createMockPartialAssetInbox,
+    normal: createMockAssetInbox
+  });
   const baseState = useBackendReadModel({
     enabled: Boolean(projectId),
     idleMessage: "请先选择 projectId 加载素材收件箱。",
     load: ({ baseUrl, options }) =>
       fetchAssetInboxReadModel(baseUrl, projectId, { limit: 24 }, options),
-    mockData: projectId ? createMockAssetInbox(projectId) : undefined,
+    mockData,
     deps: [projectId]
   });
   const state = applyReadModelDebugState({
@@ -335,12 +445,18 @@ export function AssetInboxPage({ params }: ReadModelPageProps) {
 
 export function QcRetouchQueuePage({ params }: ReadModelPageProps) {
   const projectId = getParam(params, "projectId");
+  const debugState = getReadModelDebugState(params);
+  const mockData = selectDebugMock(projectId, debugState, {
+    empty: createMockEmptyQcRetouchQueue,
+    partial: createMockPartialQcRetouchQueue,
+    normal: createMockQcRetouchQueue
+  });
   const baseState = useBackendReadModel({
     enabled: Boolean(projectId),
     idleMessage: "请先选择 projectId 加载质检 / 精修队列。",
     load: ({ baseUrl, options }) =>
       fetchQcRetouchQueueReadModel(baseUrl, projectId, { limit: 24 }, options),
-    mockData: projectId ? createMockQcRetouchQueue(projectId) : undefined,
+    mockData,
     deps: [projectId]
   });
   const state = applyReadModelDebugState({
@@ -372,14 +488,18 @@ export function QcRetouchQueuePage({ params }: ReadModelPageProps) {
 
 export function ReviewGalleryPage({ params }: ReadModelPageProps) {
   const reviewSessionId = getParam(params, "reviewSessionId");
+  const debugState = getReadModelDebugState(params);
+  const mockData = selectDebugMock(reviewSessionId, debugState, {
+    empty: createMockEmptyReviewGallery,
+    partial: createMockPartialReviewGallery,
+    normal: createMockReviewGallery
+  });
   const baseState = useBackendReadModel({
     enabled: Boolean(reviewSessionId),
     idleMessage: "请先选择 reviewSessionId 加载审核画廊。",
     load: ({ baseUrl, options }) =>
       fetchReviewGalleryReadModel(baseUrl, reviewSessionId, options),
-    mockData: reviewSessionId
-      ? createMockReviewGallery(reviewSessionId)
-      : undefined,
+    mockData,
     deps: [reviewSessionId]
   });
   const state = applyReadModelDebugState({
@@ -414,14 +534,18 @@ export function ReviewGalleryPage({ params }: ReadModelPageProps) {
 
 export function DeliveryReadinessPage({ params }: ReadModelPageProps) {
   const deliveryId = getParam(params, "deliveryId");
+  const debugState = getReadModelDebugState(params);
+  const mockData = selectDebugMock(deliveryId, debugState, {
+    empty: createMockEmptyDeliveryReadiness,
+    partial: createMockPartialDeliveryReadiness,
+    normal: createMockDeliveryReadiness
+  });
   const baseState = useBackendReadModel({
     enabled: Boolean(deliveryId),
     idleMessage: "请先选择 deliveryId 加载交付就绪。",
     load: ({ baseUrl, options }) =>
       fetchDeliveryReadinessReadModel(baseUrl, deliveryId, options),
-    mockData: deliveryId
-      ? createMockDeliveryReadiness(deliveryId)
-      : undefined,
+    mockData,
     deps: [deliveryId]
   });
   const state = applyReadModelDebugState({

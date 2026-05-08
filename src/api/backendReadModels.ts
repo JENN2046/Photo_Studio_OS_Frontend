@@ -8,6 +8,16 @@ import type {
   WorkflowStatus
 } from "./types";
 
+export class ReadModelHttpError extends Error {
+  constructor(
+    message: string,
+    public readonly statusCode: number
+  ) {
+    super(message);
+    this.name = "ReadModelHttpError";
+  }
+}
+
 interface ApiEnvelope<T> {
   data: T;
   meta?: {
@@ -382,10 +392,21 @@ async function fetchReadModel<T>(
   });
 
   if (!response.ok) {
-    throw new Error(`Frontend v2 read-model request failed: ${response.status}`);
+    throw new ReadModelHttpError(
+      `Frontend v2 read-model request failed: ${response.status}`,
+      response.status
+    );
   }
 
-  const envelope = (await response.json()) as ApiEnvelope<T>;
+  let envelope: ApiEnvelope<T>;
+  try {
+    envelope = (await response.json()) as ApiEnvelope<T>;
+  } catch {
+    throw new ReadModelHttpError(
+      "Frontend v2 read-model response could not be parsed",
+      0
+    );
+  }
   return envelope.data;
 }
 
