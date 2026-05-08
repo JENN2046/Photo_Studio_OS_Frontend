@@ -49,7 +49,7 @@ Use these companion documents before handing production implementation to a new 
 |---|---|---|---|---|
 | S0 | Read-only QA baseline | Current mock-first cockpit and read-model workspaces are tagged and reproducible. | Low | Existing local QA remains green. |
 | S1 | Contract freeze — 完成 | Frontend/backend read-model contracts are documented, fixture-aligned, and versioned. | Medium | Backend confirms response shapes and null/error semantics. |
-| S2 | Backend read integration | Frontend can run against backend read models without losing mock-first fallback. | Medium | Local/staging backend smoke passes with no writes. |
+| S2 | Backend read integration — 前端就绪 | Frontend can run against backend read models without losing mock-first fallback. Blocked on backend availability. | Medium | Local/staging backend smoke passes with no writes. |
 | S3 | Auth and roles — 前端完成 | Frontend has mock-first auth state machine, role matrix, session gates, and DEV debug rehearsal. Backend auth provider pending. | High | Auth is owned by backend/platform and verified in staging. |
 | S4 | Upload/download foundation | Asset ingest and delivery download are designed and implemented through approved storage APIs. | High | Storage, scan, audit, permission, quota, and failure handling pass. |
 | S5 | Review/delivery flows | Public or client-facing review/delivery experiences are secure, expirable, audited, and observable. | High | Token/link model and external access rules pass security review. |
@@ -111,11 +111,24 @@ Stop gates:
 - Do not introduce write APIs.
 - Do not hardcode production URLs.
 
-## S2: Backend Read Integration
+## S2: Backend Read Integration — 前端就绪，等待后端
+
+Status: Frontend infrastructure complete. Blocked on backend read endpoint availability.
+
+Frontend-side deliverables (done):
+- Five read-model fetchers (`backendReadModels.ts`) with typed contracts
+- Mock-first client switching (`client.ts`) via `VITE_BACKEND_API_BASE_URL`
+- Runtime state surface with source/status/transport chips
+- Complete error handling: loading / error / forbidden / invalid-id states
+- Debug state rehearsal via `?readModelState=`
+
+Backend-side deliverables (pending):
+- Read endpoint ownership and availability
+- Response examples matching frozen contracts
+- Error envelope verification
+- Stale/cache metadata
 
 Goal:
-
-Allow operators to run the same frontend against real backend read models while preserving mock-first fallback.
 
 Scope:
 
