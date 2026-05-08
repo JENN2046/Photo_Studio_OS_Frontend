@@ -94,8 +94,8 @@ export function AppShell({ children }: AppShellProps) {
         <header className="topbar">
           <div className="topbar-status" aria-label="只读运行状态">
             <span>布鲁克林影棚 A</span>
-            <span>2025-05-19</span>
-            <span>10:42</span>
+            <span>2026-05-05</span>
+            <span>09:30</span>
             <i aria-hidden="true" />
           </div>
         </header>
