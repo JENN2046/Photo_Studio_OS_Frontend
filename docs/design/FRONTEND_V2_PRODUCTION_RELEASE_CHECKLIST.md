@@ -80,6 +80,19 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-all.ps1
 
 Trigger via `readModelState=` query param. Existing boundary states (loading, error, missing-config, idle) are covered by `scripts/qa-readonly-boundary-states.ps1`.
 
+### Auth State Matrix (6 states × 2 viewports)
+
+| State | 1024x768 | 390x844 |
+|---|---|---|
+| signed-out (未登录) | | |
+| expired (会话过期) | | |
+| loading (认证中) | | |
+| error (认证故障) | | |
+| forbidden (权限不足) | | |
+| signed-in with content (已登录) | | |
+
+Trigger via `?authState=` query param on Command Center (`#`) and Asset Inbox (`#asset-inbox?...&authState=signed-in`). Covered by `scripts/qa-readonly-auth-states.ps1`.
+
 ### Interaction Matrix (6 checks × 3 viewports)
 
 | Check | 1440x960 | 1024x768 | 390x844 |

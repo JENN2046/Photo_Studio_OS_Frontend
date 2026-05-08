@@ -30,6 +30,11 @@ $matrices = @(
     Name = "read-model interaction QA"
     Script = "scripts\qa-readonly-interactions.ps1"
     SessionName = "$SessionNamePrefix-interactions"
+  },
+  @{
+    Name = "auth state boundary QA"
+    Script = "scripts\qa-readonly-auth-states.ps1"
+    SessionName = "$SessionNamePrefix-auth"
   }
 )
 
