@@ -148,18 +148,25 @@ Automated read-model interaction matrix:
 powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-interactions.ps1
 ```
 
+Automated auth state boundary matrix:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-auth-states.ps1
+```
+
 The QA scripts use transient `npx --package @playwright/cli` execution without
 changing `package.json` or `package-lock.json`. The full QA script runs the
-route, boundary-state, and interaction matrices in sequence. The route matrix
-checks Command Center scenes plus the four read-model hash pages at `1440x960`,
-`1024x768`, and `390x844` for expected Chinese copy, runtime chips, invalid debug-state
-fallbacks, required workspace selectors, Command Center `aria-current` state,
-console errors, and horizontal overflow. The boundary
+route, boundary-state, interaction, and auth-state matrices in sequence. The route
+matrix checks Command Center scenes plus the four read-model hash pages at
+`1440x960`, `1024x768`, and `390x844` for expected Chinese copy, runtime chips,
+invalid debug-state fallbacks, required workspace selectors, Command Center
+`aria-current` state, console errors, and horizontal overflow. The boundary
 matrix checks loading, error, missing-config, and missing-id idle states for all
 four read-model pages at `1024x768` and `390x844`. The interaction matrix checks
 Command Center `黄金链路` entry clicks, read-model tab switching, local selection
 state, and disabled read-only action posture at `1440x960`, `1024x768`, and
-`390x844`.
+`390x844`. The auth-state matrix checks signed-out, expired, loading, error,
+forbidden, and signed-in auth gate states at `1024x768` and `390x844`.
 
 Baseline cockpit routes:
 
@@ -211,6 +218,24 @@ DEV-only read-model boundary rehearsals:
   ready path.
 - Omit the required id such as `deliveryId` on `#delivery-readiness` to check idle context handling.
 - Run `scripts\qa-readonly-boundary-states.ps1` to verify these states across the four read-model pages.
+
+DEV-only auth state boundary rehearsals:
+
+- Add `authState=signed-out` to the hash query to rehearse the signed-out gate.
+- Add `authState=expired` to rehearse the expired-session gate.
+- Add `authState=loading` to rehearse the auth loading gate.
+- Add `authState=error` to rehearse the auth error gate.
+- Add `authState=forbidden` to rehearse the forbidden (no page access) gate.
+- Add `authState=insufficient-role` to rehearse the partial-access overlay.
+- Add `authState=signed-in` with a page hash to confirm signed-in content renders.
+- Run `scripts\qa-readonly-auth-states.ps1` to verify these states across Command
+  Center and Asset Inbox at tablet and mobile widths.
+- Set `VITE_BACKEND_USER_ROLE` env var (e.g. `photographer`, `retoucher`) to
+  simulate a specific role in live (non-debug) mode.
+
+The default role is `operator` (full access). Auth gates are display-only; they
+do not implement production authentication, store tokens, or replace backend
+authorization.
 
 These rehearsals are local UI states. They do not enable uploads, downloads,
 public links, auth, storage, backend writes, or production access.
