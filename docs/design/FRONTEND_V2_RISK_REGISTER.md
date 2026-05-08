@@ -32,10 +32,10 @@ Status:
 
 | ID | Risk | Severity | Likelihood | Status | Mitigation |
 |---|---|---|---|---|---|
-| R01 | Mock fixtures drift from backend read-model truth. | High | Medium | Open | Freeze contracts before broad backend integration; keep fixtures aligned with approved examples. |
+| R01 | Mock fixtures drift from backend read-model truth. | High | Medium | Watching | S1 contract freeze complete; fixtures aligned with frozen types. Recheck when backend examples arrive in S2. |
 | R02 | Backend read integration breaks mock-first local development. | High | Medium | Open | Keep backend reads behind `VITE_BACKEND_API_BASE_URL`; validate with no backend config. |
 | R03 | Frontend starts treating display-derived values as business truth. | High | Medium | Open | Keep durable facts backend-owned; keep view-model derivations presentation-only. |
-| R04 | Production auth is added without a clear role and session model. | Critical | Medium | Blocked | Require auth provider, session, role, expiry, and forbidden-state design before implementation. |
+| R04 | Production auth is added without a clear role and session model. | Critical | Medium | Watching | S3 mock-first auth gates, role matrix, and session state machine implemented. Auth provider integration still blocked. |
 | R05 | Token or secret values leak into source, docs, logs, screenshots, or mocks. | Critical | Medium | Open | Keep `.env` unmodified; run changed-file secret scans; never document real values. |
 | R06 | Upload implementation bypasses storage, scan, audit, or permission review. | Critical | Medium | Blocked | Do not implement real upload before storage signing, scan, audit, quota, and permission contracts exist. |
 | R07 | Download implementation exposes unpublished or unauthorized delivery files. | Critical | Medium | Blocked | Require signed/permissioned download endpoints, expiry, audit, and server-side authorization. |
@@ -57,16 +57,16 @@ Status:
 
 ### S1 Contract Freeze
 
-Watch:
+Status: **Complete** — see `FRONTEND_V2_S1_CONTRACT_FREEZE.md`.
 
-- Field ownership ambiguity.
-- Missing null/empty/partial semantics.
-- Backend labels vs frontend labels.
-- Pagination and item-limit assumptions.
+Watched and resolved:
 
-Required control:
+- Field ownership documented per surface.
+- null/empty/partial semantics defined.
+- Backend labels (codes) vs frontend labels (Chinese) explicitly separated.
+- Pagination and item-limit assumptions frozen.
 
-- `FRONTEND_V2_CONTRACT_REVIEW.md` must be updated before implementation starts.
+Recheck during S2 backend read integration when real response examples arrive.
 
 ### S2 Backend Read Integration
 

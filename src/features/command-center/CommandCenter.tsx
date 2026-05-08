@@ -5,6 +5,7 @@ import {
   RuntimeChipList,
   type RuntimeChip
 } from "../../components/panels/RuntimeChipList";
+import type { AuthRuntimeView } from "../auth/useAuthState";
 import { createReadModelHref } from "../read-models/readModelRoutes";
 import {
   getCommandCenterApprovalDetail,
@@ -299,11 +300,13 @@ function CommandCenterRuntimeStrip({
   runtime,
   status,
   debugState,
+  authRuntime,
   variant = "default"
 }: {
   runtime: CommandCenterRuntimeView;
   status: CommandCenterSnapshotStatus;
   debugState: CommandCenterDebugState;
+  authRuntime: AuthRuntimeView;
   variant?: "default" | "status";
 }) {
   const chips: RuntimeChip[] = [
@@ -323,6 +326,16 @@ function CommandCenterRuntimeStrip({
       key: "transport",
       label: "传输",
       value: runtime.transportLabel
+    },
+    {
+      key: "auth-session",
+      label: "会话",
+      value: authRuntime.sessionLabel
+    },
+    {
+      key: "auth-role",
+      label: "角色",
+      value: authRuntime.roleLabel
     },
     {
       key: "boundary",
@@ -357,7 +370,8 @@ function CommandCenterStateSurface({
   onRetry,
   debugState,
   canRetry,
-  runtime
+  runtime,
+  authRuntime
 }: {
   status: "loading" | "error";
   message: string;
@@ -365,6 +379,7 @@ function CommandCenterStateSurface({
   debugState: CommandCenterDebugState;
   canRetry: boolean;
   runtime: CommandCenterRuntimeView;
+  authRuntime: AuthRuntimeView;
 }) {
   const isLoading = status === "loading";
   const eyebrow = isLoading ? "遥测同步" : "快照停机";
@@ -470,6 +485,7 @@ function CommandCenterStateSurface({
                 </div>
 
                 <CommandCenterRuntimeStrip
+                  authRuntime={authRuntime}
                   debugState={debugState}
                   runtime={runtime}
                   status={status}
@@ -572,7 +588,11 @@ function CommandCenterStateSurface({
   );
 }
 
-export function CommandCenter() {
+export function CommandCenter({
+  authRuntime
+}: {
+  authRuntime: AuthRuntimeView;
+}) {
   const { snapshot, status, errorMessage, debugState, canRetry, retry, runtime } =
     useCommandCenterSnapshot();
   const activeScene = useCommandCenterScene();
@@ -581,6 +601,7 @@ export function CommandCenter() {
   if (status === "loading") {
     return (
       <CommandCenterStateSurface
+        authRuntime={authRuntime}
         debugState={debugState}
         canRetry={canRetry}
         message="快照闸门对齐中。"
@@ -594,6 +615,7 @@ export function CommandCenter() {
   if (!snapshot) {
     return (
       <CommandCenterStateSurface
+        authRuntime={authRuntime}
         debugState={debugState}
         canRetry={canRetry}
         message={errorMessage ?? "未返回命令中心快照"}
@@ -655,6 +677,7 @@ export function CommandCenter() {
             />
 
             <CommandCenterRuntimeStrip
+              authRuntime={authRuntime}
               debugState={debugState}
               runtime={runtime}
               status={status}

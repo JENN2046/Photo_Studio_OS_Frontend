@@ -1,4 +1,8 @@
 import { useEffect, useState } from "react";
+import { AuthGate } from "./features/auth/AuthGate";
+import type { AppRoute } from "./features/auth/authTypes";
+import { getPageAccess } from "./features/auth/authTypes";
+import { useAuthState } from "./features/auth/useAuthState";
 import { CommandCenter } from "./features/command-center/CommandCenter";
 import {
   AssetInboxPage,
@@ -6,13 +10,6 @@ import {
   QcRetouchQueuePage,
   ReviewGalleryPage
 } from "./features/read-models/ReadModelPages";
-
-type AppRoute =
-  | "command-center"
-  | "asset-inbox"
-  | "qc-retouch"
-  | "review-gallery"
-  | "delivery-readiness";
 
 interface ParsedAppRoute {
   route: AppRoute;
@@ -68,22 +65,36 @@ function useAppRoute(): ParsedAppRoute {
 
 export default function App() {
   const { route, params } = useAppRoute();
+  const { auth, runtime } = useAuthState(params);
+  const access = getPageAccess(route, auth.role);
+  const effectiveSession =
+    auth.session === "signed-in" && access === "none"
+      ? "forbidden"
+      : auth.session;
 
-  if (route === "asset-inbox") {
-    return <AssetInboxPage params={params} />;
-  }
+  const children = () => {
+    if (route === "asset-inbox") {
+      return <AssetInboxPage params={params} authRuntime={runtime} />;
+    }
+    if (route === "qc-retouch") {
+      return <QcRetouchQueuePage params={params} authRuntime={runtime} />;
+    }
+    if (route === "review-gallery") {
+      return <ReviewGalleryPage params={params} authRuntime={runtime} />;
+    }
+    if (route === "delivery-readiness") {
+      return <DeliveryReadinessPage params={params} authRuntime={runtime} />;
+    }
+    return <CommandCenter authRuntime={runtime} />;
+  };
 
-  if (route === "qc-retouch") {
-    return <QcRetouchQueuePage params={params} />;
-  }
-
-  if (route === "review-gallery") {
-    return <ReviewGalleryPage params={params} />;
-  }
-
-  if (route === "delivery-readiness") {
-    return <DeliveryReadinessPage params={params} />;
-  }
-
-  return <CommandCenter />;
+  return (
+    <AuthGate
+      auth={{ ...auth, session: effectiveSession }}
+      currentRoute={route}
+      runtime={runtime}
+    >
+      {children()}
+    </AuthGate>
+  );
 }

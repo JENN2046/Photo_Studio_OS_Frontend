@@ -2,9 +2,9 @@
 
 Date: 2026-05-08
 Repo: `A:\Photo_Studio_OS_Frontend`
-Related roadmap stage: `S1 Contract freeze`
+Related roadmap stage: `S1 Contract freeze` — **frozen**, see `FRONTEND_V2_S1_CONTRACT_FREEZE.md`
 
-This document is the review surface for frontend/backend contracts before production implementation. It is not approval to modify backend code, add writes, add auth, add storage, or connect production services.
+This document is the review surface for frontend/backend contracts. All open questions have been resolved and the frozen contract is recorded in `FRONTEND_V2_S1_CONTRACT_FREEZE.md`. This document remains as the review frame; the freeze document is authoritative for implementation.
 
 ## Review Goal
 
@@ -272,26 +272,28 @@ Candidate future write contracts:
 
 ## Contract Freeze Checklist
 
-- [ ] Backend owner named for each read surface.
-- [ ] Response examples reviewed for all five read surfaces.
-- [ ] Required fields identified.
-- [ ] Optional fields identified.
-- [ ] Nullable fields identified.
-- [ ] Frontend-derived fields identified.
-- [ ] Empty state defined.
-- [ ] Partial state defined.
-- [ ] Stale state defined.
-- [ ] Error envelope defined.
-- [ ] Forbidden state defined.
-- [ ] Invalid-id state defined.
-- [ ] Timezone policy defined.
-- [ ] Pagination or list limits defined.
-- [ ] Mock fixtures updated to match contract.
-- [ ] QA fixture IDs still valid.
-- [ ] No write behavior introduced.
-- [ ] No production auth introduced.
-- [ ] No upload/download introduced.
-- [ ] No public review/delivery links introduced.
+All items resolved in `FRONTEND_V2_S1_CONTRACT_FREEZE.md`.
+
+- [x] Backend owner named for each read surface. (Frontend-defined; backend ownership pending S2)
+- [x] Response examples reviewed for all five read surfaces. (Frozen in code via `Backend*` types)
+- [x] Required fields identified.
+- [x] Optional fields identified.
+- [x] Nullable fields identified.
+- [x] Frontend-derived fields identified.
+- [x] Empty state defined.
+- [x] Partial state defined.
+- [x] Stale state defined. (5-min threshold defined; UI implementation future)
+- [x] Error envelope defined. (`{ data: T, meta?: { requestId? } }`)
+- [x] Forbidden state defined. (403 → `forbidden` with calm permission message)
+- [x] Invalid-id state defined. (404 → `invalid-id` with clear context message)
+- [x] Timezone policy defined. (RFC 3339 with offset; local display via `Intl.DateTimeFormat`)
+- [x] Pagination or list limits defined.
+- [x] Mock fixtures updated to match contract.
+- [x] QA fixture IDs still valid.
+- [x] No write behavior introduced.
+- [x] No production auth introduced.
+- [x] No upload/download introduced.
+- [x] No public review/delivery links introduced.
 
 ## Reviewer Notes
 

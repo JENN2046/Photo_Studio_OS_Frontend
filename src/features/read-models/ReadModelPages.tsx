@@ -4,6 +4,7 @@ import {
   RuntimeChipList,
   type RuntimeChip
 } from "../../components/panels/RuntimeChipList";
+import type { AuthRuntimeView } from "../auth/useAuthState";
 import {
   fetchAssetInboxReadModel,
   fetchDeliveryReadinessReadModel,
@@ -51,6 +52,7 @@ import "./readModelPages.css";
 
 export interface ReadModelPageProps {
   params: URLSearchParams;
+  authRuntime: AuthRuntimeView;
 }
 
 type ReadModelDebugState =
@@ -73,6 +75,7 @@ interface ReadModelFrameProps {
   params: URLSearchParams;
   runtime: BackendReadModelRuntimeView;
   status: BackendReadModelState<unknown>["status"];
+  authRuntime: AuthRuntimeView;
 }
 
 function getParam(params: URLSearchParams, key: string): string {
@@ -232,7 +235,8 @@ function ReadModelFrame({
   deck,
   params,
   runtime,
-  status
+  status,
+  authRuntime
 }: ReadModelFrameProps) {
   const sharedQuery = getReadModelSharedQuery(params);
 
@@ -258,6 +262,7 @@ function ReadModelFrame({
           </nav>
         </section>
         <ReadModelContextBar
+          authRuntime={authRuntime}
           params={params}
           runtime={runtime}
           status={status}
@@ -271,11 +276,13 @@ function ReadModelFrame({
 function ReadModelContextBar({
   params,
   runtime,
-  status
+  status,
+  authRuntime
 }: {
   params: URLSearchParams;
   runtime: BackendReadModelRuntimeView;
   status: BackendReadModelState<unknown>["status"];
+  authRuntime: AuthRuntimeView;
 }) {
   const projectId = getParam(params, "projectId");
   const reviewSessionId = getParam(params, "reviewSessionId");
@@ -326,6 +333,16 @@ function ReadModelContextBar({
       key: "transport",
       label: "传输",
       value: runtime.transportLabel
+    },
+    {
+      key: "auth-session",
+      label: "会话",
+      value: authRuntime.sessionLabel
+    },
+    {
+      key: "auth-role",
+      label: "角色",
+      value: authRuntime.roleLabel
     },
     {
       key: "boundary",
@@ -400,7 +417,7 @@ function ReadModelStateNotice<T>({
   );
 }
 
-export function AssetInboxPage({ params }: ReadModelPageProps) {
+export function AssetInboxPage({ params, authRuntime }: ReadModelPageProps) {
   const projectId = getParam(params, "projectId");
   const debugState = getReadModelDebugState(params);
   const mockData = selectDebugMock(projectId, debugState, {
@@ -425,6 +442,7 @@ export function AssetInboxPage({ params }: ReadModelPageProps) {
   return (
     <ReadModelFrame
       activeRoute="asset-inbox"
+      authRuntime={authRuntime}
       deck="只读场景：入库、绑定、文件元数据与最新质检状态。"
       eyebrow="v2 只读模型"
       params={params}
@@ -443,7 +461,7 @@ export function AssetInboxPage({ params }: ReadModelPageProps) {
   );
 }
 
-export function QcRetouchQueuePage({ params }: ReadModelPageProps) {
+export function QcRetouchQueuePage({ params, authRuntime }: ReadModelPageProps) {
   const projectId = getParam(params, "projectId");
   const debugState = getReadModelDebugState(params);
   const mockData = selectDebugMock(projectId, debugState, {
@@ -468,6 +486,7 @@ export function QcRetouchQueuePage({ params }: ReadModelPageProps) {
   return (
     <ReadModelFrame
       activeRoute="qc-retouch"
+      authRuntime={authRuntime}
       deck="只读场景：质检告警、精修状态、负责人与阻塞说明。"
       eyebrow="v2 只读模型"
       params={params}
@@ -486,7 +505,7 @@ export function QcRetouchQueuePage({ params }: ReadModelPageProps) {
   );
 }
 
-export function ReviewGalleryPage({ params }: ReadModelPageProps) {
+export function ReviewGalleryPage({ params, authRuntime }: ReadModelPageProps) {
   const reviewSessionId = getParam(params, "reviewSessionId");
   const debugState = getReadModelDebugState(params);
   const mockData = selectDebugMock(reviewSessionId, debugState, {
@@ -511,6 +530,7 @@ export function ReviewGalleryPage({ params }: ReadModelPageProps) {
   return (
     <ReadModelFrame
       activeRoute="review-gallery"
+      authRuntime={authRuntime}
       deck="只读场景：客户审核素材、评论与修订状态（外部访问仍禁用）。"
       eyebrow="v2 只读模型"
       params={params}
@@ -532,7 +552,7 @@ export function ReviewGalleryPage({ params }: ReadModelPageProps) {
   );
 }
 
-export function DeliveryReadinessPage({ params }: ReadModelPageProps) {
+export function DeliveryReadinessPage({ params, authRuntime }: ReadModelPageProps) {
   const deliveryId = getParam(params, "deliveryId");
   const debugState = getReadModelDebugState(params);
   const mockData = selectDebugMock(deliveryId, debugState, {
@@ -557,6 +577,7 @@ export function DeliveryReadinessPage({ params }: ReadModelPageProps) {
   return (
     <ReadModelFrame
       activeRoute="delivery-readiness"
+      authRuntime={authRuntime}
       deck="只读场景：交付清单、就绪检查、阻断与外部访问边界。"
       eyebrow="v2 只读模型"
       params={params}

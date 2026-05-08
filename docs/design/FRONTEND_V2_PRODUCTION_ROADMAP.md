@@ -48,9 +48,9 @@ Use these companion documents before handing production implementation to a new 
 | Stage | Name | Outcome | Risk | Production gate |
 |---|---|---|---|---|
 | S0 | Read-only QA baseline | Current mock-first cockpit and read-model workspaces are tagged and reproducible. | Low | Existing local QA remains green. |
-| S1 | Contract freeze | Frontend/backend read-model contracts are documented, fixture-aligned, and versioned. | Medium | Backend confirms response shapes and null/error semantics. |
+| S1 | Contract freeze — 完成 | Frontend/backend read-model contracts are documented, fixture-aligned, and versioned. | Medium | Backend confirms response shapes and null/error semantics. |
 | S2 | Backend read integration | Frontend can run against backend read models without losing mock-first fallback. | Medium | Local/staging backend smoke passes with no writes. |
-| S3 | Auth and roles | Frontend has production identity, role-aware navigation, and permission posture. | High | Auth is owned by backend/platform and verified in staging. |
+| S3 | Auth and roles — 前端完成 | Frontend has mock-first auth state machine, role matrix, session gates, and DEV debug rehearsal. Backend auth provider pending. | High | Auth is owned by backend/platform and verified in staging. |
 | S4 | Upload/download foundation | Asset ingest and delivery download are designed and implemented through approved storage APIs. | High | Storage, scan, audit, permission, quota, and failure handling pass. |
 | S5 | Review/delivery flows | Public or client-facing review/delivery experiences are secure, expirable, audited, and observable. | High | Token/link model and external access rules pass security review. |
 | S6 | Write-capable operations | Approval, QC, retouch, review feedback, and delivery state changes are enabled behind explicit APIs. | High | Backend write contracts, audit trail, idempotency, and rollback are proven. |
@@ -76,11 +76,11 @@ Exit criteria:
 - No upload/download/auth/write behavior exists.
 - Docs clearly mark backend smoke as optional and blocked until configuration is intentional.
 
-## S1: Contract Freeze
+## S1: Contract Freeze — 完成
 
-Goal:
+Status: **Frozen** as of 2026-05-08.
 
-Make frontend/backend expectations explicit before enabling real backend reads broadly.
+Frozen contract document: `docs/design/FRONTEND_V2_S1_CONTRACT_FREEZE.md`
 
 Scope:
 
@@ -146,7 +146,16 @@ Stop gates:
 - Stop if backend requires auth, token, schema, or write behavior before read smoke can pass.
 - Stop if production credentials or `.env` changes are needed.
 
-## S3: Auth And Role Readiness
+## S3: Auth And Role Readiness — 前端完成
+
+Status: Frontend implementation complete as of 2026-05-08. Backend auth provider pending.
+
+Implementation:
+- `src/features/auth/authTypes.ts` — Role matrix (7 roles × 10 routes), PageAccess enum, SessionState union
+- `src/features/auth/useAuthState.ts` — mock-first auth hook with `?authState=` DEV debug rehearsal
+- `src/features/auth/AuthGate.tsx` — SignedOut, Expired, AuthLoading, AuthError, Forbidden, InsufficientRole gate components
+- Wired into `App.tsx` — effective session derivation from role matrix
+- Runtime chips extended with auth source, session, and role labels on Command Center and ReadModel pages
 
 Goal:
 
@@ -384,18 +393,9 @@ Stop gates:
 
 ## Near-term Next Batches
 
-### Batch P4-A: Production Contract Pack
+### Batch P4-A: Production Contract Pack — 完成
 
-Scope:
-
-- Add contract matrix for all five read surfaces.
-- Document backend-required fields, optional fields, and frontend-derived fields.
-- Add empty/partial/stale/permission-denied states to the roadmap or contract note.
-
-Validation:
-
-- Docs diff check.
-- No code required unless existing docs links need correction.
+Deliverable: `docs/design/FRONTEND_V2_S1_CONTRACT_FREEZE.md`
 
 ### Batch P4-B: Backend Read Smoke Plan
 
@@ -410,18 +410,9 @@ Validation:
 - Docs diff check.
 - Optional local smoke only when backend base URL is deliberately configured.
 
-### Batch P4-C: Auth / Role State Design
+### Batch P4-C: Auth / Role State Design — 完成
 
-Scope:
-
-- Define role matrix.
-- Define signed-out, expired, forbidden, insufficient-role, and loading states.
-- Map current hash pages to role visibility.
-
-Validation:
-
-- Docs diff check.
-- Later implementation should run lint/build and browser QA.
+Deliverables: `FRONTEND_V2_AUTH_ROLE_STATE_DESIGN.md`, `src/features/auth/` (types, hook, gate components)
 
 ### Batch P4-D: Upload / Download Contract Design
 
