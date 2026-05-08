@@ -67,15 +67,14 @@ These headers must not become auth. Production auth remains out of scope.
 
 ## Optional Local Smoke Checklist
 
-Only run this when a local backend stack is already available and a safe base URL has been intentionally configured outside this repository.
+The full backend read smoke procedure, including environment setup, per-surface verification, runtime chip checks, failure mode diagnosis, and stop gates, is documented in `docs/design/FRONTEND_V2_BACKEND_READ_SMOKE_PLAN.md`.
+
+Quick smoke path (requires a local backend stack and intentionally configured `VITE_BACKEND_API_BASE_URL` outside this repo):
 
 1. Start the frontend with `VITE_BACKEND_API_BASE_URL=<local backend base URL>`.
-2. Open `http://127.0.0.1:5173/#`.
-3. Open `#asset-inbox?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220`.
-4. Open `#qc-retouch?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220`.
-5. Open `#review-gallery?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220`.
-6. Open `#delivery-readiness?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220`.
-7. Confirm the UI remains read-only, console errors are absent, and disabled upload/download/review/delivery actions stay disabled.
+2. Open `http://127.0.0.1:5173/#` through `#delivery-readiness?deliveryId=DEL-220`.
+3. Confirm runtime chips show `后端只读` / `已连接`.
+4. Confirm the UI remains read-only, console errors are absent, and disabled actions stay disabled.
 
 Stop immediately if the smoke path requires tokens, `.env` edits, backend code changes, uploads, downloads, approval writes, public links, or production endpoints.
 
