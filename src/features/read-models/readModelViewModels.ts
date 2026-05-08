@@ -174,17 +174,6 @@ export function formatSource(value: string): string {
   return sourceMap[value] ?? formatStatus(value);
 }
 
-function formatChecklistKey(value: string): string {
-  const checklistMap: Record<string, string> = {
-    hasItems: "包含交付素材",
-    hasPackageKey: "交付包已生成",
-    hasManifestKey: "交付清单已生成",
-    allItemsHaveFileKey: "所有素材已关联文件"
-  };
-
-  return checklistMap[value] ?? formatStatus(value);
-}
-
 export function formatShortDateTime(value: string | undefined): string {
   if (!value) {
     return "时间待定";
@@ -619,7 +608,7 @@ export function createDeliveryReadinessViewModel(
   const checklistRows: ReadModelRow[] = Object.entries(model.checklist).map(
     ([key, value]) => ({
       id: key,
-      primary: formatChecklistKey(key),
+      primary: deliveryChecklistLabels[key as DeliveryChecklistKey] ?? formatStatus(key),
       secondary: value ? "已满足要求" : "未满足要求",
       meta: "交付就绪检查项",
       status: value ? "已清除" : "阻塞",
