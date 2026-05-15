@@ -65,6 +65,7 @@ function Test-BoundaryCase {
     workspaceSelector = $Case.WorkspaceSelector
     expectedEncoded = $Case.ExpectedEncoded
     expectRetry = [bool]$Case.ExpectRetry
+    expectWorkspace = [bool]$Case.ExpectWorkspace
   } | ConvertTo-Json -Compress -Depth 6
 
   $code = "async (page) => { const testCase = $payload; page.removeAllListeners('console'); const consoleErrors = []; page.on('console', (message) => { if (message.type() === 'error') { consoleErrors.push(message.text()); } }); await page.goto(testCase.url); await page.waitForLoadState('domcontentloaded'); await page.waitForTimeout(50); await page.waitForSelector(testCase.stateSelector, { timeout: 2000 }).catch(() => undefined); const result = await page.evaluate((testCase) => { const text = document.body.innerText; const root = document.documentElement; const expected = testCase.expectedEncoded.map((item) => decodeURIComponent(item)); const missing = expected.filter((item) => !text.includes(item)); const stateCount = document.querySelectorAll('.read-model-state').length; const stateSelectorCount = document.querySelectorAll(testCase.stateSelector).length; const workspaceCount = document.querySelectorAll(testCase.workspaceSelector).length; const retryButtonCount = document.querySelectorAll('.read-model-state button').length; const overflow = root.scrollWidth > root.clientWidth + 1; return { name: testCase.name, url: location.href, missing, stateCount, stateSelectorCount, workspaceCount, retryButtonCount, overflow, scrollWidth: root.scrollWidth, clientWidth: root.clientWidth }; }, testCase); return Object.assign({}, result, { viewport: '$($Viewport.Name)', width: $($Viewport.Width), height: $($Viewport.Height), consoleErrorCount: consoleErrors.length, consoleErrors: consoleErrors, expectRetry: testCase.expectRetry }); }"
@@ -90,8 +91,12 @@ function Test-BoundaryCase {
   if ($result.stateSelectorCount -ne 1) {
     $problems += "state selector missing: $($Case.StateSelector)"
   }
-  if ($result.workspaceCount -ne 0) {
-    $problems += "workspace rendered during boundary state: $($Case.WorkspaceSelector)"
+  if ($Case.ExpectWorkspace) {
+    if ($result.workspaceCount -lt 1) {
+      $problems += "workspace should render with available boundary data: $($Case.WorkspaceSelector)"
+    }
+  } elseif ($result.workspaceCount -ne 0) {
+    $problems += "workspace rendered during blocking boundary state: $($Case.WorkspaceSelector)"
   }
   if ($result.missing.Count -gt 0) {
     $problems += "missing copy: $($result.missing -join ', ')"
@@ -258,6 +263,7 @@ foreach ($page in $readModelPages) {
     StateSelector = $states.Loading.StateSelector
     WorkspaceSelector = $page.WorkspaceSelector
     ExpectRetry = $states.Loading.ExpectRetry
+    ExpectWorkspace = $false
     ExpectedEncoded = @($states.Loading.ExpectedEncoded + $page.LoadingMessage)
   }
   $cases += @{
@@ -266,6 +272,7 @@ foreach ($page in $readModelPages) {
     StateSelector = $states.Error.StateSelector
     WorkspaceSelector = $page.WorkspaceSelector
     ExpectRetry = $states.Error.ExpectRetry
+    ExpectWorkspace = $false
     ExpectedEncoded = @($states.Error.ExpectedEncoded + $page.ErrorMessage)
   }
   $cases += @{
@@ -274,6 +281,7 @@ foreach ($page in $readModelPages) {
     StateSelector = $states.MissingConfig.StateSelector
     WorkspaceSelector = $page.WorkspaceSelector
     ExpectRetry = $states.MissingConfig.ExpectRetry
+    ExpectWorkspace = $false
     ExpectedEncoded = $states.MissingConfig.ExpectedEncoded
   }
   $cases += @{
@@ -282,6 +290,7 @@ foreach ($page in $readModelPages) {
     StateSelector = $states.Empty.StateSelector
     WorkspaceSelector = $page.WorkspaceSelector
     ExpectRetry = $states.Empty.ExpectRetry
+    ExpectWorkspace = $true
     ExpectedEncoded = @($states.Empty.ExpectedEncoded + "%E5%86%85%E9%83%A8%E8%B0%83%E8%AF%95%EF%BC%9A$([uri]::EscapeDataString($page.DebugLabel))%20%E5%8F%AA%E8%AF%BB%E6%A8%A1%E5%9E%8B%E8%BF%94%E5%9B%9E%E7%A9%BA%E6%95%B0%E6%8D%AE%E3%80%82")
   }
   $cases += @{
@@ -290,6 +299,7 @@ foreach ($page in $readModelPages) {
     StateSelector = $states.Partial.StateSelector
     WorkspaceSelector = $page.WorkspaceSelector
     ExpectRetry = $states.Partial.ExpectRetry
+    ExpectWorkspace = $true
     ExpectedEncoded = @($states.Partial.ExpectedEncoded + "%E5%86%85%E9%83%A8%E8%B0%83%E8%AF%95%EF%BC%9A$([uri]::EscapeDataString($page.DebugLabel))%20%E5%8F%AA%E8%AF%BB%E6%A8%A1%E5%9E%8B%E8%BF%94%E5%9B%9E%E4%B8%8D%E5%AE%8C%E6%95%B4%E6%95%B0%E6%8D%AE%E3%80%82")
   }
   $cases += @{
@@ -298,6 +308,7 @@ foreach ($page in $readModelPages) {
     StateSelector = $states.Stale.StateSelector
     WorkspaceSelector = $page.WorkspaceSelector
     ExpectRetry = $states.Stale.ExpectRetry
+    ExpectWorkspace = $true
     ExpectedEncoded = @($states.Stale.ExpectedEncoded + "%E5%86%85%E9%83%A8%E8%B0%83%E8%AF%95%EF%BC%9A$([uri]::EscapeDataString($page.DebugLabel))%20%E6%95%B0%E6%8D%AE%E5%B7%B2%E8%BF%87%E6%9C%9F%EF%BC%8C%E9%9C%80%E8%A6%81%E5%88%B7%E6%96%B0%E3%80%82")
   }
   $cases += @{
@@ -306,6 +317,7 @@ foreach ($page in $readModelPages) {
     StateSelector = $states.Forbidden.StateSelector
     WorkspaceSelector = $page.WorkspaceSelector
     ExpectRetry = $states.Forbidden.ExpectRetry
+    ExpectWorkspace = $false
     ExpectedEncoded = @($states.Forbidden.ExpectedEncoded + (ConvertTo-ExpectedEncoded @("Simulated $($page.DebugLabel) access denied")))
   }
   $cases += @{
@@ -314,6 +326,7 @@ foreach ($page in $readModelPages) {
     StateSelector = $states.InvalidId.StateSelector
     WorkspaceSelector = $page.WorkspaceSelector
     ExpectRetry = $states.InvalidId.ExpectRetry
+    ExpectWorkspace = $false
     ExpectedEncoded = @($states.InvalidId.ExpectedEncoded + (ConvertTo-ExpectedEncoded @("Simulated $($page.DebugLabel) invalid context id")))
   }
   $cases += @{
@@ -322,6 +335,7 @@ foreach ($page in $readModelPages) {
     StateSelector = $states.Idle.StateSelector
     WorkspaceSelector = $page.WorkspaceSelector
     ExpectRetry = $states.Idle.ExpectRetry
+    ExpectWorkspace = $false
     ExpectedEncoded = @($states.Idle.ExpectedEncoded + $page.IdleExpectedEncoded)
   }
 }

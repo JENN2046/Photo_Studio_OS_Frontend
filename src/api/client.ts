@@ -44,7 +44,7 @@ function createCommandCenterClient(): CommandCenterReadClient {
   return new BackendCommandCenterClient({
     baseUrl: backendBaseUrl,
     headers: {
-      "x-user-role": import.meta.env.VITE_BACKEND_USER_ROLE ?? "owner",
+      "x-user-role": import.meta.env.VITE_BACKEND_USER_ROLE ?? "operator",
       "x-user-name":
         import.meta.env.VITE_BACKEND_USER_NAME ?? "Frontend Operator"
     }

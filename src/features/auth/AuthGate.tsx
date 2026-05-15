@@ -168,10 +168,7 @@ function InsufficientRoleOverlay({
   if (access === "full") return <>{children}</>;
 
   const currentRoleLabel = role ? roleLabels[role] : "未登录";
-  const requiredLabel =
-    access === "read" ? "运营"
-    : access === "summary-only" ? "运营"
-    : "管理员";
+  const accessLabel = access === "read" ? "只读" : "摘要";
 
   return (
     <div className="insufficient-role-wrapper" aria-label="部分权限视图">
@@ -179,7 +176,7 @@ function InsufficientRoleOverlay({
       {access === "none" ? null : (
         <aside className="insufficient-role-notice" aria-label="权限说明">
           <span>
-            此区域需要{requiredLabel}权限方可操作。当前角色：{currentRoleLabel}。
+            当前角色：{currentRoleLabel}，仅开放{accessLabel}视图；业务写入、上传、下载和公开链接仍保持禁用。
           </span>
         </aside>
       )}

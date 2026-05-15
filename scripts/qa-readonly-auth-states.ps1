@@ -276,8 +276,9 @@ $authCases = @(
     Name = "cc-photographer-summary"
     Hash = "#?authState=signed-in&authRole=photographer"
     ExpectedEncoded = @(
-      "%E6%AD%A4%E5%8C%BA%E5%9F%9F%E9%9C%80%E8%A6%81%E8%BF%90%E8%90%A5%E6%9D%83%E9%99%90",
-      "%E5%BD%93%E5%89%8D%E8%A7%92%E8%89%B2%EF%BC%9A%E6%91%84%E5%BD%B1%E5%B8%88"
+      "%E4%BB%85%E5%BC%80%E6%94%BE%E6%91%98%E8%A6%81%E8%A7%86%E5%9B%BE",
+      "%E5%BD%93%E5%89%8D%E8%A7%92%E8%89%B2%EF%BC%9A%E6%91%84%E5%BD%B1%E5%B8%88",
+      "%E4%B8%9A%E5%8A%A1%E5%86%99%E5%85%A5%E3%80%81%E4%B8%8A%E4%BC%A0%E3%80%81%E4%B8%8B%E8%BD%BD%E5%92%8C%E5%85%AC%E5%BC%80%E9%93%BE%E6%8E%A5%E4%BB%8D%E4%BF%9D%E6%8C%81%E7%A6%81%E7%94%A8%E3%80%82"
     )
     ExpectedChipEncoded = @(
       "%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90",
@@ -332,8 +333,9 @@ $authCases = @(
     Hash = "#asset-inbox?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220&authState=signed-in&authRole=retoucher"
     ExpectedEncoded = @(
       "%E7%B4%A0%E6%9D%90%E6%94%B6%E4%BB%B6%E7%AE%B1",
-      "%E6%AD%A4%E5%8C%BA%E5%9F%9F%E9%9C%80%E8%A6%81%E8%BF%90%E8%90%A5%E6%9D%83%E9%99%90",
-      "%E5%BD%93%E5%89%8D%E8%A7%92%E8%89%B2%EF%BC%9A%E7%B2%BE%E4%BF%AE%E5%B8%88"
+      "%E4%BB%85%E5%BC%80%E6%94%BE%E5%8F%AA%E8%AF%BB%E8%A7%86%E5%9B%BE",
+      "%E5%BD%93%E5%89%8D%E8%A7%92%E8%89%B2%EF%BC%9A%E7%B2%BE%E4%BF%AE%E5%B8%88",
+      "%E4%B8%9A%E5%8A%A1%E5%86%99%E5%85%A5%E3%80%81%E4%B8%8A%E4%BC%A0%E3%80%81%E4%B8%8B%E8%BD%BD%E5%92%8C%E5%85%AC%E5%BC%80%E9%93%BE%E6%8E%A5%E4%BB%8D%E4%BF%9D%E6%8C%81%E7%A6%81%E7%94%A8%E3%80%82"
     )
     ExpectedChipEncoded = @(
       "%E4%BC%9A%E8%AF%9D",

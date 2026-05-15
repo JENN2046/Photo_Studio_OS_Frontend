@@ -10,7 +10,7 @@ param(
   [ValidateSet("local", "staging")]
   [string]$EnvironmentName = "local",
   [string]$FrontendBaseUrl = "http://127.0.0.1:5173",
-  [string]$BackendUserRole = "owner",
+  [string]$BackendUserRole = "operator",
   [string]$BackendUserName = "Backend Smoke Operator",
   [string]$SessionName = "photo-studio-backend-read-signoff",
   [ValidateSet("ready", "empty", "partial", "stale")]

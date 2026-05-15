@@ -911,6 +911,34 @@ Notes:
 - Full browser QA passed: 12 route checks at 1440x960 and 390x844, 32 read-model boundary-state checks at 1024x768 and 390x844, and read-model tab/selection/disabled-action checks at 1440x960 and 390x844.
 ```
 
+```text
+## VALIDATION-20260515-REVIEW-FIX-PASS
+
+Task: Harden auth route/read-model boundary semantics for Frontend v2 internal-pilot readiness.
+Commands run:
+- npm run lint
+- npm run build
+- powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1
+- powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-all.ps1
+- git diff --check
+- changed-file secret scan through scripts\validate-local.ps1
+Result: passed
+Failures:
+- First qa-readonly-all.ps1 run failed only in auth-state QA because scripts still expected the old partial-access copy "此区域需要运营权限".
+Fix attempted:
+- Updated auth-state and live-role QA expectations to the clearer read/summary-only notice copy.
+Re-run result:
+- scripts\qa-readonly-all.ps1 passed route, boundary-state, interaction, and auth matrices.
+Not validated:
+- No npm test script is defined.
+- No live backend/staging read smoke was run; backend reads remain gated by VITE_BACKEND_API_BASE_URL.
+- No push/tag/deploy was performed.
+Notes:
+- readModelState=empty, partial, and stale now preserve available mock data and render workspace content while blocking states still keep data null.
+- Temporary Vite dev server on 127.0.0.1:5173 was started for browser QA and stopped afterward.
+- fetchReadModel data-envelope guard was already present and remains covered by qa-backend-read-contract-map.ps1.
+```
+
 ---
 
 ## Entry Template

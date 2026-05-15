@@ -60,7 +60,7 @@ They remain dormant in normal development because mock data is used unless `VITE
 
 Optional request headers are frontend-only operator hints:
 
-- `VITE_BACKEND_USER_ROLE`, default `owner`
+- `VITE_BACKEND_USER_ROLE`, default `operator`
 - `VITE_BACKEND_USER_NAME`, default `Frontend Operator`
 
 These headers must not become auth. Production auth remains out of scope.

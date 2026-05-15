@@ -82,7 +82,7 @@ function getBackendReadModelRuntime(): BackendReadModelRuntime | null {
     baseUrl,
     options: {
       headers: {
-        "x-user-role": import.meta.env.VITE_BACKEND_USER_ROLE ?? "owner",
+        "x-user-role": import.meta.env.VITE_BACKEND_USER_ROLE ?? "operator",
         "x-user-name":
           import.meta.env.VITE_BACKEND_USER_NAME ?? "Frontend Operator"
       }

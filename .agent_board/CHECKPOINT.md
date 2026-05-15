@@ -435,3 +435,56 @@ Read this CHECKPOINT.md.
 Verify repository reality.
 Continue from Next Safe Task if no hard stop gate is present.
 ```
+
+---
+
+## CHECKPOINT-20260515-REVIEW-FIX-PASS
+
+```text
+Status: COMPLETED_VALIDATED
+Completed task queue items:
+- Confirmed authState=signed-out maps to internal no-auth.
+- Changed backend-read default role hints from owner to operator in client/hook/smoke defaults and docs.
+- Confirmed command-center subscene hashes parse as AppRoute and flow into AuthGate.
+- Clarified read/summary-only permission notices; none still maps to forbidden.
+- Preserved readModelState empty/partial/stale data so available workspace content renders.
+- Confirmed fetchReadModel data-envelope guard and contract-map coverage.
+- Added npm run qa:readonly.
+
+Changed files:
+- src/api/client.ts
+- src/features/read-models/useBackendReadModel.ts
+- src/features/read-models/ReadModelPages.tsx
+- src/features/auth/AuthGate.tsx
+- scripts/qa-backend-read-smoke.ps1
+- scripts/qa-backend-read-signoff.ps1
+- scripts/qa-readonly-boundary-states.ps1
+- scripts/qa-readonly-auth-states.ps1
+- scripts/qa-readonly-auth-live-roles.ps1
+- package.json
+- docs/design/COMMAND_CENTER_READONLY_API_CONTRACT_NOTE.md
+- docs/design/FRONTEND_V2_BACKEND_READ_SMOKE_PLAN.md
+- .agent_board/RUN_STATE.md
+- .agent_board/TASK_QUEUE.md
+- .agent_board/VALIDATION_LOG.md
+- .agent_board/CHECKPOINT.md
+
+Validation run:
+- npm run lint: passed
+- npm run build: passed
+- powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1: passed
+- powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-all.ps1: passed after one narrow QA expectation update
+- git diff --check: passed
+- changed-file secret scan: passed through validate-local.ps1
+
+Validation not run:
+- npm test is unavailable.
+- Live backend/staging smoke was not run because no approved backend URL was provided.
+
+Stop gate reached: no
+Remote actions: none
+Next safe task:
+- Make a local checkpoint commit if final diff/staged checks remain green; do not push without explicit user approval.
+Resume note:
+- Protect untracked .claude/, .mcp.json, and .omc/.
+```

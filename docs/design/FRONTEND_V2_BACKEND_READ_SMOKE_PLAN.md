@@ -29,7 +29,7 @@ npm run dev
 Optional operator hints (must not become auth):
 
 ```powershell
-$env:VITE_BACKEND_USER_ROLE = "owner"
+$env:VITE_BACKEND_USER_ROLE = "operator"
 $env:VITE_BACKEND_USER_NAME = "Smoke Operator"
 ```
 

@@ -17,7 +17,7 @@ A4-Sustained Local Frontend Autopilot
 ## Current Mission
 
 ```text
-P3.6/P3.7 Read-only QA Matrix Hardening Batch
+Frontend v2 Review Fix Pass for internal-pilot readiness
 ```
 
 ---
@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-Batch B/C read-only QA matrix hardening complete candidate
+Validated local auth/read-model boundary fixes; preparing local checkpoint commit only
 ```
 
 ---
@@ -58,7 +58,7 @@ Batch B/C read-only QA matrix hardening complete candidate
 ## Last Completed Task
 
 ```text
-scripts/qa-readonly-all.ps1 passed after Command Center entry-click and 1024px QA expansion
+Review Fix Pass validated: auth alias/default role, subscene route access, partial/read notices, read-model data-state semantics, envelope guard coverage, and qa:readonly script entry
 ```
 
 ---
@@ -66,7 +66,7 @@ scripts/qa-readonly-all.ps1 passed after Command Center entry-click and 1024px Q
 ## Last Validation
 
 ```text
-scripts/qa-readonly-interactions.ps1 passed; scripts/qa-readonly-all.ps1 passed route, boundary-state, and interaction matrices; scripts/validate-local.ps1 passed lint/build/whitespace/changed-file secret scan. Route QA covers 14 routes at 1440x960, 1024x768, and 390x844; interaction QA covers tabs, Command Center 黄金链路 entry clicks, local selection, and disabled actions at the same three viewports.
+npm run lint passed; npm run build passed; scripts/validate-local.ps1 passed; scripts/qa-readonly-all.ps1 passed after one narrow QA expectation update; git diff --check passed; changed-file secret scan passed. Temporary Vite server on 127.0.0.1:5173 was stopped after browser QA.
 ```
 
 ---
@@ -75,7 +75,7 @@ scripts/qa-readonly-interactions.ps1 passed; scripts/qa-readonly-all.ps1 passed 
 
 ```text
 Branch: main
-Worktree: intentionally editing Batch B/C docs/scripts/.agent_board after local 07e0e08; ready for local commit
+Worktree: intentionally editing Review Fix Pass files plus .agent_board checkpoint; untracked .claude/, .mcp.json, and .omc/ remain protected and untouched
 ```
 
 ---
@@ -107,7 +107,7 @@ no
 ## Ports Used
 
 ```text
-127.0.0.1:5173 checked/reused for browser QA; temporary dev-server job stopped if this session started it
+127.0.0.1:5173 temporary Vite dev server started for qa-readonly-all.ps1 and stopped afterward
 ```
 
 ---
@@ -115,7 +115,7 @@ no
 ## Current Stop Status
 
 ```text
-Batch B/C validation green; local commit allowed, then stop at remote push boundary
+Review Fix Pass validation green; local commit is the next safe checkpoint; push/tag/deploy remain unauthorized
 ```
 
 ---
@@ -123,5 +123,5 @@ Batch B/C validation green; local commit allowed, then stop at remote push bound
 ## Next Action
 
 ```text
-Commit locally without push.
+Inspect final staged diff, commit locally if guarded auto-commit conditions remain true, then continue with the next local-only internal-pilot gap.
 ```

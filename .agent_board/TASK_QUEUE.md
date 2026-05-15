@@ -262,6 +262,15 @@ none
 168. Extended read-model interaction QA to click Command Center 黄金链路 entries and verify target page, active tab, Golden Loop IDs, console errors, and horizontal overflow across 1440px, 1024px, and 390px.
 169. Validated Batch B/C browser QA with scripts/qa-readonly-interactions.ps1 and scripts/qa-readonly-all.ps1.
 170. Validated Batch B/C local gates with scripts/validate-local.ps1.
+171. Started Frontend v2 Review Fix Pass from current main worktree, preserving untracked .claude/, .mcp.json, and .omc/.
+172. Confirmed authState=signed-out is already supported as a DEV alias for internal no-auth.
+173. Changed frontend backend-read default x-user-role hints from owner to operator across client/hook/smoke defaults and docs.
+174. Confirmed Command Center subscene hashes parse as AppRoute values and pass currentRoute into AuthGate.
+175. Clarified read/summary-only permission notices while preserving none => forbidden and read-only behavior.
+176. Preserved empty/partial/stale readModelState mock data so available workspace content still renders.
+177. Confirmed fetchReadModel data-envelope guard remains covered by backend read contract-map QA.
+178. Added npm run qa:readonly and updated browser QA expectations for preserved data-state workspaces and clearer permission copy.
+179. Validated Review Fix Pass with npm run lint, npm run build, scripts/validate-local.ps1, scripts/qa-readonly-all.ps1, git diff --check, and changed-file secret scan.
 ```
 
 ### blocked

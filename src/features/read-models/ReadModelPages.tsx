@@ -267,8 +267,12 @@ function applyReadModelDebugState<T>({
     return state;
   }
 
+  const shouldPreserveData =
+    debugState === "empty" ||
+    debugState === "partial" ||
+    debugState === "stale";
   const baseState = {
-    data: null,
+    data: shouldPreserveData ? state.data : null,
     runtime: {
       source: "debug",
       sourceLabel: "DEV 调试",
