@@ -120,7 +120,8 @@ The backend smoke helper starts a temporary local Vite server with
 `VITE_BACKEND_API_BASE_URL` set only inside that child process. It refuses
 non-local backend URLs unless `-AllowNonLocalBackend` is passed for an explicitly
 approved staging smoke, checks Command Center plus the four read-model pages, and
-fails if the browser observes non-read request methods.
+fails if the browser does not request each expected backend read-model path or
+observes non-read request methods.
 The mock-backend wrapper starts a temporary localhost GET/OPTIONS JSON server,
 then reuses the same smoke helper to verify the backend-connected UI path.
 

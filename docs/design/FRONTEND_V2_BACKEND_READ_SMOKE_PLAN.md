@@ -73,10 +73,11 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-smoke.ps1 -Back
 ```
 
 The helper checks Command Center plus the four read-model hash pages, verifies
-the `后端只读` / `mock-first / read-only` runtime posture, and fails if the
-browser observes non-read request methods. Non-local backend URLs are blocked by
-default; use `-AllowNonLocalBackend` only for an explicitly approved staging
-smoke, never for production.
+the `后端只读` / `mock-first / read-only` runtime posture, checks that all five
+expected backend read paths are requested, and fails if the browser observes
+non-read request methods. Non-local backend URLs are blocked by default; use
+`-AllowNonLocalBackend` only for an explicitly approved staging smoke, never for
+production.
 
 ### Step 1: Verify mock-first baseline
 

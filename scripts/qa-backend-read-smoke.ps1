@@ -171,6 +171,7 @@ function Invoke-SmokeRouteCheck {
   param([array]$Routes)
 
   $payload = @{
+    backendBaseUrl = $BackendBaseUrl.TrimEnd("/")
     expectReadFailure = [bool]$ExpectReadFailure
     routes = $Routes
   } | ConvertTo-Json -Compress -Depth 8
@@ -180,12 +181,20 @@ async (page) => {
   const payload = $payload;
   const blockedMethods = [];
   const consoleErrors = [];
+  const backendRequests = [];
+  const backendBase = payload.backendBaseUrl.replace(/\/$/, '');
   page.removeAllListeners('request');
   page.removeAllListeners('console');
   page.on('request', (request) => {
     const method = request.method();
     if (!['GET', 'HEAD', 'OPTIONS'].includes(method)) {
       blockedMethods.push({ method, url: request.url() });
+    }
+    const requestUrl = request.url();
+    if (requestUrl.startsWith(backendBase)) {
+      const pathWithQuery = requestUrl.slice(backendBase.length) || '/';
+      const path = pathWithQuery.split(/[?#]/)[0] || '/';
+      backendRequests.push({ method, path, url: requestUrl });
     }
   });
   page.on('console', (message) => {
@@ -194,6 +203,7 @@ async (page) => {
     }
   });
 
+  await page.goto('about:blank');
   const checks = [];
   for (const route of payload.routes) {
     const selector = payload.expectReadFailure ? route.failureSelector : route.readySelector;
@@ -223,10 +233,17 @@ async (page) => {
         expectReadFailure
       };
     }, { route, selector, expectedEncoded, expectReadFailure: payload.expectReadFailure });
-    checks.push(state);
+    const backendHits = backendRequests.filter((request) => request.path === route.backendPath);
+    const backendReadHits = backendHits.filter((request) => request.method === 'GET' || request.method === 'HEAD');
+    checks.push(Object.assign({}, state, {
+      backendPath: route.backendPath,
+      backendRequestCount: backendHits.length,
+      backendReadRequestCount: backendReadHits.length,
+      backendMethods: Array.from(new Set(backendHits.map((request) => request.method)))
+    }));
   }
 
-  return { checks, blockedMethods, consoleErrors };
+  return { checks, blockedMethods, consoleErrors, backendRequests };
 }
 "@
 
@@ -270,6 +287,7 @@ $routes = @(
   @{
     name = "command-center"
     url = New-RouteUrl $ReadOnlyRouteHashes.CommandCenter
+    backendPath = "/command-center/v2"
     readySelector = ".cockpit-command-center"
     failureSelector = ".status-command-error"
     readyExpectedEncoded = $commonReadyExpected
@@ -278,6 +296,7 @@ $routes = @(
   @{
     name = "asset-inbox"
     url = New-RouteUrl $ReadOnlyRouteHashes.AssetInbox
+    backendPath = "/projects/PRJ-128/asset-inbox"
     readySelector = ".asset-inbox-console"
     failureSelector = ".read-model-state-error"
     readyExpectedEncoded = $commonReadyExpected
@@ -286,6 +305,7 @@ $routes = @(
   @{
     name = "qc-retouch"
     url = New-RouteUrl $ReadOnlyRouteHashes.QcRetouch
+    backendPath = "/projects/PRJ-128/qc-retouch-queue"
     readySelector = ".qc-retouch-console"
     failureSelector = ".read-model-state-error"
     readyExpectedEncoded = $commonReadyExpected
@@ -294,6 +314,7 @@ $routes = @(
   @{
     name = "review-gallery"
     url = New-RouteUrl $ReadOnlyRouteHashes.ReviewGallery
+    backendPath = "/review-sessions/REV-441/gallery"
     readySelector = ".review-gallery-console"
     failureSelector = ".read-model-state-error"
     readyExpectedEncoded = $commonReadyExpected
@@ -302,6 +323,7 @@ $routes = @(
   @{
     name = "delivery-readiness"
     url = New-RouteUrl $ReadOnlyRouteHashes.DeliveryReadiness
+    backendPath = "/deliveries/DEL-220/readiness"
     readySelector = ".delivery-readiness-console"
     failureSelector = ".read-model-state-error"
     readyExpectedEncoded = $commonReadyExpected
@@ -346,12 +368,23 @@ try {
     if ($check.overflow) {
       $problems += "horizontal overflow: $($check.scrollWidth) > $($check.clientWidth)"
     }
+    if ($check.backendReadRequestCount -lt 1) {
+      $problems += "backend read endpoint not requested: $($check.backendPath)"
+    }
+    if ($check.backendMethods.Count -gt 0) {
+      $nonReadBackendMethods = @($check.backendMethods | Where-Object {
+        $_ -ne "GET" -and $_ -ne "HEAD" -and $_ -ne "OPTIONS"
+      })
+      if ($nonReadBackendMethods.Count -gt 0) {
+        $problems += "non-read backend methods observed: $($nonReadBackendMethods -join ', ')"
+      }
+    }
 
     if ($problems.Count -gt 0) {
       $allPassed = $false
       Write-Host "[FAIL] $($check.name): $($problems -join '; ')"
     } else {
-      Write-Host "[PASS] $($check.name)"
+      Write-Host "[PASS] $($check.name) -> $($check.backendPath)"
     }
   }
 
