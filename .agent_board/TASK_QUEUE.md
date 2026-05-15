@@ -10,7 +10,7 @@ It does not authorize remote writes, commits, pushes, deployments, backend chang
 ## Current Mission
 
 ```text
-P3.6/P3.7 Read-only QA Matrix Hardening Batch
+Internal Pilot External Signoff Blocker Alignment
 ```
 
 Mode:
@@ -22,7 +22,7 @@ A4-Sustained Local Frontend Autopilot
 Goal:
 
 ```text
-Refresh post-commit board facts and harden the read-only browser QA matrix with Command Center Golden Loop entry-click checks plus 1024px middle viewport coverage.
+Keep the local frontend-ready candidate honest by recording the remaining external backend/auth signoff blockers in .agent_board and guarding them in local QA.
 ```
 
 ---
@@ -274,12 +274,19 @@ none
 180. Locally committed 67b42d1: fix: harden auth route gates and read model envelope checks.
 181. Ran scripts/qa-internal-pilot-readiness.ps1 on commit 67b42d1; result passed with approved backend signoff skipped.
 182. Refreshed local validation evidence to point at commit 67b42d1 and record the aggregate run.
+183. Locally committed b2a9eb1: docs: record internal pilot aggregate validation.
+184. Locally committed 1e7e216: test: add internal pilot qa npm shortcut.
+185. Started external signoff blocker alignment so approved backend URL and real auth/backend enforcement evidence cannot be mistaken as complete.
+186. Updated .agent_board/BLOCKERS.md with active external blockers for approved backend URL and real auth/backend enforcement evidence.
+187. Extended scripts/qa-internal-pilot-goal-audit.ps1 to guard the board blocker ledger.
+188. Validated the blocker alignment with qa-internal-pilot-goal-audit.ps1 and validate-local.ps1 after one narrow whitespace fix.
 ```
 
 ### blocked
 
 ```text
-Optional backend read-model smoke remains blocked until a local backend base URL is intentionally configured outside this repo.
+Studio Operator Internal Pilot Ready remains blocked until an approved local/staging backend base URL is provided and real backend read signoff passes.
+Studio Operator Internal Pilot Ready remains blocked until real auth provider/session/role-claim and backend enforcement evidence is provided by backend/platform owners.
 Full Bash validation helper execution remains blocked until the bash/WSL environment uses Node 20.19+ or 22.12+ and a compatible Rollup optional native package install.
 ```
 

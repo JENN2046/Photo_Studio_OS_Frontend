@@ -52,6 +52,7 @@ $signoffPath = "docs\design\FRONTEND_V2_INTERNAL_PILOT_SIGNOFF_RECORD.md"
 $readinessPath = "docs\design\FRONTEND_V2_INTERNAL_PILOT_READINESS.md"
 $authPreflightPath = "docs\design\FRONTEND_V2_AUTH_PROVIDER_PREFLIGHT.md"
 $releaseChecklistPath = "docs\design\FRONTEND_V2_PRODUCTION_RELEASE_CHECKLIST.md"
+$boardBlockersPath = ".agent_board\BLOCKERS.md"
 
 $requiredFiles = @(
   @{ Path = $goalAuditPath; Label = "Internal pilot goal audit" },
@@ -59,6 +60,7 @@ $requiredFiles = @(
   @{ Path = $readinessPath; Label = "Internal pilot readiness" },
   @{ Path = $authPreflightPath; Label = "Auth provider preflight" },
   @{ Path = $releaseChecklistPath; Label = "Production release checklist" },
+  @{ Path = $boardBlockersPath; Label = "Agent board blocker ledger" },
   @{ Path = "scripts\qa-internal-pilot-readiness.ps1"; Label = "Internal pilot aggregate QA" },
   @{ Path = "scripts\qa-internal-pilot-manifest.ps1"; Label = "Internal pilot evidence manifest QA" },
   @{ Path = "scripts\qa-internal-pilot-readiness-guards.ps1"; Label = "Internal pilot aggregate guard QA" },
@@ -110,6 +112,12 @@ Assert-FileContains -Path $authPreflightPath -Pattern "Provider owner named" -La
 Assert-FileContains -Path $releaseChecklistPath -Pattern "qa-internal-pilot-signoff-record\.ps1" -Label "release checklist keeps signoff record guard"
 Assert-FileContains -Path $releaseChecklistPath -Pattern "qa-backend-read-signoff\.ps1" -Label "release checklist keeps backend signoff gate"
 Assert-FileContains -Path $releaseChecklistPath -Pattern "Do not execute these steps without explicit approval" -Label "release checklist preserves explicit release approval boundary"
+
+Assert-FileContains -Path $boardBlockersPath -Pattern "BLOCKER-20260515-01" -Label "agent board records backend URL blocker"
+Assert-FileContains -Path $boardBlockersPath -Pattern "Approved local/staging backend URL" -Label "agent board names approved backend URL blocker"
+Assert-FileContains -Path $boardBlockersPath -Pattern "BLOCKER-20260515-02" -Label "agent board records auth/backend enforcement blocker"
+Assert-FileContains -Path $boardBlockersPath -Pattern "Real auth provider/backend enforcement evidence" -Label "agent board names auth/backend enforcement blocker"
+Assert-FileContains -Path $boardBlockersPath -Pattern "Studio Operator Internal Pilot Ready" -Label "agent board keeps full pilot readiness blocked until external evidence exists"
 
 Write-Host "== Photo Studio OS internal pilot goal audit QA =="
 

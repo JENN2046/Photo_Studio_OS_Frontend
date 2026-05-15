@@ -960,6 +960,29 @@ Notes:
 - Temporary Vite/mock backend servers were stopped after the run.
 ```
 
+```text
+## VALIDATION-20260515-EXTERNAL-SIGNOFF-BLOCKER-ALIGNMENT
+
+Task: Align .agent_board blocker evidence with the internal-pilot goal audit and guard it in local QA.
+Commands run:
+- powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-goal-audit.ps1
+- powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1
+Result: passed
+Failures:
+- First validate-local.ps1 run failed on trailing whitespace in .agent_board/BLOCKERS.md.
+Fix attempted:
+- Removed the trailing whitespace in the new blocker entries.
+Re-run result:
+- scripts\validate-local.ps1 passed.
+Not validated:
+- Approved backend signoff was not run because no approved local/staging backend URL was provided.
+- Real platform auth and backend authorization enforcement remain external blockers.
+- No push/tag/deploy was performed.
+Notes:
+- Goal audit QA now fails if .agent_board/BLOCKERS.md stops recording the approved backend URL blocker and real auth/backend enforcement blocker.
+- The frontend remains mock-first/read-only.
+```
+
 ---
 
 ## Entry Template

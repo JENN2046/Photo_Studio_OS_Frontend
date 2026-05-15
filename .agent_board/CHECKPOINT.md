@@ -525,3 +525,44 @@ Resume note:
 - Push/tag/deploy remain unauthorized.
 - Protect untracked .claude/, .mcp.json, and .omc/.
 ```
+
+---
+
+## CHECKPOINT-20260515-EXTERNAL-SIGNOFF-BLOCKER-ALIGNMENT
+
+```text
+Status: COMPLETED_VALIDATED
+Completed task queue items:
+- Confirmed the active goal is not complete because real backend read signoff and real auth/backend enforcement evidence remain external.
+- Updated .agent_board/BLOCKERS.md with explicit active blockers for approved backend URL and real auth/backend enforcement evidence.
+- Updated .agent_board/RUN_STATE.md, TASK_QUEUE.md, and HANDOFF.md to reflect LOCAL_FRONTEND_READY_CANDIDATE / externally blocked status.
+- Extended scripts/qa-internal-pilot-goal-audit.ps1 so validation fails if the board blocker ledger stops recording those external blockers.
+
+Changed files:
+- .agent_board/BLOCKERS.md
+- .agent_board/RUN_STATE.md
+- .agent_board/TASK_QUEUE.md
+- .agent_board/HANDOFF.md
+- scripts/qa-internal-pilot-goal-audit.ps1
+
+Validation run:
+- powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-goal-audit.ps1: passed
+- powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1: passed after one narrow whitespace fix
+- git diff --check: passed through validate-local.ps1
+- changed-file secret scan: passed through validate-local.ps1
+
+Validation failure handled:
+- First validate-local.ps1 run failed on .agent_board/BLOCKERS.md trailing whitespace.
+- Narrow fix removed the trailing whitespace and validate-local.ps1 passed on rerun.
+
+Validation not run:
+- Approved backend signoff was not run because no approved local/staging backend URL was provided.
+- Real platform auth/backend enforcement remains external evidence.
+
+Stop gate reached: no
+Remote actions: none
+Next safe task:
+- Commit this blocker-alignment batch locally if final staged checks are green.
+Resume note:
+- Protect untracked .claude/, .mcp.json, and .omc/.
+```

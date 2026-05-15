@@ -440,3 +440,38 @@ Next safe action: run validation, commit Batch B/C locally if final staged check
 按当前持续推进节奏，小批次验证后可以本地 commit；push 只有用户明确说 push 才执行。
 用中文汇报。
 ```
+
+---
+
+## HANDOFF-20260515-EXTERNAL-SIGNOFF-BLOCKERS
+
+```text
+Status: LOCAL_FRONTEND_READY_CANDIDATE / externally blocked
+Current branch: main
+Latest local commit before this blocker-alignment batch: 1e7e216 test: add internal pilot qa npm shortcut
+Protected untracked files: .claude/, .mcp.json, .omc/
+
+Current objective:
+- Move Frontend v2 toward Studio Operator Internal Pilot Ready while preserving mock-first/read-only hard boundaries.
+
+Completed local evidence:
+- Review Fix Pass committed in 67b42d1.
+- Full local internal-pilot aggregate passed on 67b42d1.
+- Local evidence refresh committed in b2a9eb1.
+- npm run qa:internal-pilot shortcut committed in 1e7e216.
+
+Remaining external blockers:
+- Approved local/staging backend base URL is required before real backend read signoff can run.
+- Real auth provider/session/role-claim and backend enforcement evidence is required before final internal-pilot signoff.
+
+Safe next action after this batch:
+- If the user provides an approved local/staging backend URL, run scripts\qa-internal-pilot-readiness.ps1 with -ApprovedBackendEnvironment and -ApprovedBackendBaseUrl.
+- If auth/backend enforcement evidence is provided, inspect it and record it in docs\design\FRONTEND_V2_INTERNAL_PILOT_SIGNOFF_RECORD.md only after verification.
+
+Hard boundaries:
+- Do not guess backend URLs.
+- Do not edit .env.
+- Do not use production endpoints.
+- Do not implement production auth or token storage.
+- Do not push/tag/deploy without explicit approval.
+```

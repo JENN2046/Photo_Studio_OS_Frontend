@@ -17,7 +17,7 @@ A4-Sustained Local Frontend Autopilot
 ## Current Mission
 
 ```text
-Frontend v2 internal-pilot local readiness evidence refresh
+Frontend v2 internal-pilot external signoff blocker alignment
 ```
 
 ---
@@ -25,7 +25,7 @@ Frontend v2 internal-pilot local readiness evidence refresh
 ## Current Phase
 
 ```text
-complete-candidate
+complete-candidate / externally-blocked
 ```
 
 Suggested phases:
@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-Recorded latest internal-pilot aggregate QA evidence for commit 67b42d1
+Blocker alignment completed locally; awaiting final staged checks and local commit.
 ```
 
 ---
@@ -58,7 +58,7 @@ Recorded latest internal-pilot aggregate QA evidence for commit 67b42d1
 ## Last Completed Task
 
 ```text
-Commit 67b42d1 created for the Review Fix Pass; internal-pilot aggregate QA passed afterward
+Commit 1e7e216 added the npm run qa:internal-pilot shortcut and package-boundary guard.
 ```
 
 ---
@@ -66,7 +66,7 @@ Commit 67b42d1 created for the Review Fix Pass; internal-pilot aggregate QA pass
 ## Last Validation
 
 ```text
-scripts/qa-internal-pilot-readiness.ps1 passed on commit 67b42d1. It covered lint, build, validate-local, package/source/contract/auth/doc guards, local mock-backend ready/403/404/empty/partial/stale/failure smoke, live env-role QA, auth-state QA, and full read-only browser QA. Approved backend signoff was skipped because no approved backend URL was provided. Temporary servers were stopped.
+scripts/qa-internal-pilot-goal-audit.ps1 passed after adding .agent_board blocker checks. scripts/validate-local.ps1 passed after one narrow whitespace fix; it covered lint, build, git diff --check, changed-file secret scan, package/source/contract/auth/doc guards, goal audit guard, and backend signoff guard. Approved backend signoff was skipped because no approved backend URL was provided.
 ```
 
 ---
@@ -74,8 +74,8 @@ scripts/qa-internal-pilot-readiness.ps1 passed on commit 67b42d1. It covered lin
 ## Last Known Git State
 
 ```text
-Branch: main
-Worktree: clean tracked files after commit 67b42d1; updating local validation evidence docs only; untracked .claude/, .mcp.json, and .omc/ remain protected and untouched
+Branch: main, ahead of origin/main with local commits.
+Worktree: tracked files were clean after commit 1e7e216; current batch intentionally edits .agent_board and goal-audit guard files. Untracked .claude/, .mcp.json, and .omc/ remain protected and untouched.
 ```
 
 ---
@@ -115,7 +115,7 @@ no
 ## Current Stop Status
 
 ```text
-Local internal-pilot aggregate validation green; push/tag/deploy remain unauthorized
+Local frontend candidate is green, but Studio Operator Internal Pilot Ready remains externally blocked on approved local/staging backend read signoff and real auth provider/backend enforcement evidence. Push/tag/deploy remain unauthorized.
 ```
 
 ---
@@ -123,5 +123,5 @@ Local internal-pilot aggregate validation green; push/tag/deploy remain unauthor
 ## Next Action
 
 ```text
-Commit local evidence refresh if docs-only checks remain green, then continue local-only gap audit. Do not push without explicit user approval.
+Run the goal-audit guard and validate-local after blocker alignment, then make a small local commit if checks are green. Do not push without explicit user approval.
 ```
