@@ -114,6 +114,10 @@ These items are outside the current frontend-only local boundary:
 - Staging signoff for empty, partial, stale, and any backend-specific 403 / 404 body semantics beyond the local HTTP boundary smoke.
 - Release manager approval for push, tag, deploy, or production rollout.
 
+Latest local-only aggregate evidence is recorded in
+`docs\design\FRONTEND_V2_INTERNAL_PILOT_LOCAL_VALIDATION_LOG.md`. That record
+does not replace the external signoff items above.
+
 ## Stop Conditions
 
 Stop and request explicit approval if any next step requires:

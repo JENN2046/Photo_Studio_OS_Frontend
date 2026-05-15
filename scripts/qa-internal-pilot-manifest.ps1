@@ -86,6 +86,7 @@ $docArtifacts = @(
   @{ Path = "docs\design\FRONTEND_V2_PRODUCTION_ROADMAP.md"; Label = "Production roadmap" },
   @{ Path = "docs\design\FRONTEND_V2_INTERNAL_PILOT_READINESS.md"; Label = "Internal pilot readiness" },
   @{ Path = "docs\design\FRONTEND_V2_INTERNAL_PILOT_GOAL_AUDIT.md"; Label = "Internal pilot goal audit" },
+  @{ Path = "docs\design\FRONTEND_V2_INTERNAL_PILOT_LOCAL_VALIDATION_LOG.md"; Label = "Internal pilot local validation log" },
   @{ Path = "docs\design\FRONTEND_V2_INTERNAL_PILOT_SIGNOFF_RECORD.md"; Label = "Internal pilot signoff record" },
   @{ Path = "docs\design\FRONTEND_V2_AUTH_PROVIDER_PREFLIGHT.md"; Label = "Auth provider preflight" },
   @{ Path = "docs\design\FRONTEND_V2_PRODUCTION_RELEASE_CHECKLIST.md"; Label = "Production release checklist" },
@@ -132,6 +133,9 @@ Assert-FileContains -Path "docs\design\FRONTEND_V2_INTERNAL_PILOT_READINESS.md" 
 Assert-FileContains -Path "docs\design\FRONTEND_V2_INTERNAL_PILOT_READINESS.md" -Pattern "Blocked on platform auth" -Label "readiness records auth blocker"
 Assert-FileContains -Path "docs\design\FRONTEND_V2_INTERNAL_PILOT_GOAL_AUDIT.md" -Pattern "LOCAL_FRONTEND_READY_CANDIDATE" -Label "goal audit records local candidate status"
 Assert-FileContains -Path "docs\design\FRONTEND_V2_INTERNAL_PILOT_GOAL_AUDIT.md" -Pattern "Blocked externally" -Label "goal audit records external blockers"
+Assert-FileContains -Path "docs\design\FRONTEND_V2_INTERNAL_PILOT_LOCAL_VALIDATION_LOG.md" -Pattern "LOCAL_FRONTEND_READY_CANDIDATE" -Label "local validation log records local candidate status"
+Assert-FileContains -Path "docs\design\FRONTEND_V2_INTERNAL_PILOT_LOCAL_VALIDATION_LOG.md" -Pattern "Approved backend signoff was skipped" -Label "local validation log records backend signoff gap"
+Assert-FileContains -Path "docs\design\FRONTEND_V2_INTERNAL_PILOT_LOCAL_VALIDATION_LOG.md" -Pattern "No remote action was performed" -Label "local validation log records remote boundary"
 Assert-FileContains -Path "docs\design\FRONTEND_V2_INTERNAL_PILOT_SIGNOFF_RECORD.md" -Pattern "Not signed off" -Label "signoff record remains unapproved template"
 Assert-FileContains -Path "docs\design\FRONTEND_V2_INTERNAL_PILOT_SIGNOFF_RECORD.md" -Pattern "qa-internal-pilot-signoff-record\.ps1" -Label "signoff record includes its own guard"
 Assert-FileContains -Path "docs\design\FRONTEND_V2_AUTH_PROVIDER_PREFLIGHT.md" -Pattern "Provider owner named" -Label "auth preflight includes provider owner check"
