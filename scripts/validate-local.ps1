@@ -43,6 +43,8 @@ if (-not $nodeOk) {
 
 Write-Host "Node.js $nodeVersion"
 
+$failed = $false
+
 Write-Host ""
 Write-Host "== Git status =="
 git branch --show-current
@@ -65,8 +67,6 @@ function Test-NpmScript {
   $pkg = Get-Content "package.json" -Raw | ConvertFrom-Json
   return $null -ne $pkg.scripts.$ScriptName
 }
-
-$failed = $false
 
 foreach ($script in @("typecheck", "lint", "build", "test")) {
   if (Test-NpmScript $script) {
