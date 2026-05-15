@@ -49,6 +49,15 @@ auth are verified in an approved local or staging environment.
 Run these before calling the frontend an internal-pilot candidate:
 
 ```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1
+```
+
+The aggregate script runs the same gates as the expanded command list below and
+starts a temporary local Vite server only for browser QA.
+
+Expanded command list:
+
+```powershell
 npm run lint
 npm run build
 powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1

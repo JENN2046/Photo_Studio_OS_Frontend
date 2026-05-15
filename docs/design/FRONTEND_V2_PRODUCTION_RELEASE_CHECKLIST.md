@@ -30,6 +30,7 @@ npm run build
 powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-all.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-auth-live-roles.ps1
+powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1
 ```
 
 | Check | Status |
@@ -40,6 +41,7 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-auth-live-roles.ps1
 | `validate-local.ps1` passes (including secret scan) | |
 | `qa-backend-read-all.ps1` passes connected and failure local backend read smoke | |
 | `qa-readonly-auth-live-roles.ps1` passes representative `VITE_BACKEND_USER_ROLE` paths | |
+| `qa-internal-pilot-readiness.ps1` passes on a machine with no pre-existing Vite server | |
 
 ## Browser QA Matrix
 

@@ -195,6 +195,12 @@ Automated live env role matrix:
 powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-auth-live-roles.ps1
 ```
 
+Automated internal pilot readiness aggregate:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1
+```
+
 The QA scripts use transient `npx --package @playwright/cli` execution without
 changing `package.json` or `package-lock.json`. The full QA script runs the
 route, boundary-state, interaction, and auth-state matrices in sequence. The route
@@ -212,6 +218,9 @@ forbidden, signed-in, and role-derived full/read/summary/no-access states at
 `1024x768` and `390x844`. The live env role matrix starts temporary local Vite
 servers with `VITE_BACKEND_USER_ROLE` set only in child process environments and
 checks representative non-debug role paths without editing `.env`.
+The internal pilot readiness aggregate runs local lint/build/validation,
+backend read aggregate smoke, live env role QA, and the browser QA matrices from
+one local command.
 
 Baseline cockpit routes:
 
