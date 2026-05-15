@@ -35,6 +35,7 @@ edits, or business writes.
 | Build | `npm run build` | | |
 | Local validation | `powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1` | | |
 | Internal pilot aggregate | `powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1` | | |
+| Local validation evidence log | `docs\design\FRONTEND_V2_INTERNAL_PILOT_LOCAL_VALIDATION_LOG.md` | | |
 | Source boundary | `scripts\qa-readonly-source-boundary.ps1` | | |
 | Auth role matrix | `scripts\qa-auth-role-matrix.ps1` | | |
 | Evidence manifest | `scripts\qa-internal-pilot-manifest.ps1` | | |

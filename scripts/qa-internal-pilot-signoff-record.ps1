@@ -57,6 +57,7 @@ $requiredLiterals = @(
   @{ Text = '`npm run build`'; Label = "build evidence row" },
   @{ Text = 'scripts\validate-local.ps1'; Label = "local validation row" },
   @{ Text = 'scripts\qa-internal-pilot-readiness.ps1'; Label = "internal pilot aggregate row" },
+  @{ Text = 'docs\design\FRONTEND_V2_INTERNAL_PILOT_LOCAL_VALIDATION_LOG.md'; Label = "local validation evidence log row" },
   @{ Text = 'scripts\qa-readonly-source-boundary.ps1'; Label = "source boundary row" },
   @{ Text = 'scripts\qa-auth-role-matrix.ps1'; Label = "auth role matrix row" },
   @{ Text = 'scripts\qa-internal-pilot-manifest.ps1'; Label = "evidence manifest row" },
