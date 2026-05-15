@@ -51,7 +51,7 @@ edits, or business writes.
 | Check | Command or artifact | Result | Evidence link / notes |
 |---|---|---|---|
 | Local connected/failure smoke | `scripts\qa-backend-read-all.ps1` | | |
-| Approved backend signoff | `scripts\qa-backend-read-signoff.ps1 -BackendBaseUrl <approved-url>` | | |
+| Approved backend signoff | `scripts\qa-backend-read-signoff.ps1 -BackendBaseUrl <approved-url>` | PASSED local | `http://127.0.0.1:3001/api/v2/read`; expected states: asset-inbox partial, qc-retouch empty, review-gallery ready, delivery-readiness empty |
 | Command Center backend read | `/command-center/v2` | | |
 | Asset Inbox backend read | `/projects/:projectId/asset-inbox` | | |
 | QC / Retouch backend read | `/projects/:projectId/qc-retouch-queue` | | |
@@ -101,7 +101,7 @@ Choose one:
 
 - [ ] Approved as `Studio Operator Internal Pilot Ready`.
 - [ ] Approved as local frontend ready candidate only.
-- [ ] Blocked pending backend read smoke.
+- [ ] Blocked pending staging backend read smoke.
 - [ ] Blocked pending platform auth/backend enforcement.
 - [ ] Blocked pending QA failure.
 - [ ] Rejected due to boundary violation.

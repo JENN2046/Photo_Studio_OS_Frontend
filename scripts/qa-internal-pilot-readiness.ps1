@@ -9,8 +9,18 @@ param(
   [string]$ApprovedBackendBaseUrl = "",
   [ValidateSet("local", "staging")]
   [string]$ApprovedBackendEnvironment = "local",
+  [string]$ApprovedBackendUserRole = "operator",
+  [string]$ApprovedBackendUserName = "Backend Smoke Operator",
   [ValidateSet("ready", "empty", "partial", "stale")]
   [string]$ApprovedBackendExpectedReadModelState = "ready",
+  [ValidateSet("", "ready", "empty", "partial", "stale")]
+  [string]$ApprovedBackendAssetInboxExpectedReadModelState = "",
+  [ValidateSet("", "ready", "empty", "partial", "stale")]
+  [string]$ApprovedBackendQcRetouchExpectedReadModelState = "",
+  [ValidateSet("", "ready", "empty", "partial", "stale")]
+  [string]$ApprovedBackendReviewGalleryExpectedReadModelState = "",
+  [ValidateSet("", "ready", "empty", "partial", "stale")]
+  [string]$ApprovedBackendDeliveryReadinessExpectedReadModelState = "",
   [switch]$ApprovedBackendExpectReadFailure,
   [ValidateSet("error", "forbidden", "invalid-id")]
   [string]$ApprovedBackendExpectedFailureState = "error"
@@ -27,8 +37,15 @@ $normalizedBaseUrl = $BaseUrl.TrimEnd("/")
 $serverProcess = $null
 $listenerPid = $null
 
-if ($ApprovedBackendExpectReadFailure -and $ApprovedBackendExpectedReadModelState -ne "ready") {
-  Write-Host "ApprovedBackendExpectedReadModelState cannot be combined with ApprovedBackendExpectReadFailure."
+function Test-AnyApprovedBackendRouteStateOverride {
+  return (-not [string]::IsNullOrWhiteSpace($ApprovedBackendAssetInboxExpectedReadModelState)) -or
+    (-not [string]::IsNullOrWhiteSpace($ApprovedBackendQcRetouchExpectedReadModelState)) -or
+    (-not [string]::IsNullOrWhiteSpace($ApprovedBackendReviewGalleryExpectedReadModelState)) -or
+    (-not [string]::IsNullOrWhiteSpace($ApprovedBackendDeliveryReadinessExpectedReadModelState))
+}
+
+if ($ApprovedBackendExpectReadFailure -and ($ApprovedBackendExpectedReadModelState -ne "ready" -or (Test-AnyApprovedBackendRouteStateOverride))) {
+  Write-Host "ApprovedBackendExpectedReadModelState or per-route backend states cannot be combined with ApprovedBackendExpectReadFailure."
   exit 1
 }
 
@@ -143,6 +160,9 @@ Write-Host "BaseUrl: $normalizedBaseUrl"
 if (-not [string]::IsNullOrWhiteSpace($ApprovedBackendBaseUrl)) {
   Write-Host "Approved backend signoff: enabled ($ApprovedBackendEnvironment)"
   Write-Host "Approved backend expectation: $(if ($ApprovedBackendExpectReadFailure) { "failure:$ApprovedBackendExpectedFailureState" } else { "data:$ApprovedBackendExpectedReadModelState" })"
+  if (-not $ApprovedBackendExpectReadFailure -and (Test-AnyApprovedBackendRouteStateOverride)) {
+    Write-Host "Approved backend per-route states: asset-inbox=$ApprovedBackendAssetInboxExpectedReadModelState qc-retouch=$ApprovedBackendQcRetouchExpectedReadModelState review-gallery=$ApprovedBackendReviewGalleryExpectedReadModelState delivery-readiness=$ApprovedBackendDeliveryReadinessExpectedReadModelState"
+  }
 } else {
   Write-Host "Approved backend signoff: skipped"
 }
@@ -164,6 +184,8 @@ try {
         "-EnvironmentName", $ApprovedBackendEnvironment,
         "-BackendBaseUrl", $ApprovedBackendBaseUrl,
         "-FrontendBaseUrl", $normalizedBaseUrl,
+        "-BackendUserRole", $ApprovedBackendUserRole,
+        "-BackendUserName", $ApprovedBackendUserName,
         "-SkipPostValidation"
       )
 
@@ -174,6 +196,22 @@ try {
       } else {
         $signoffArgs += "-ExpectedReadModelState"
         $signoffArgs += $ApprovedBackendExpectedReadModelState
+        if (-not [string]::IsNullOrWhiteSpace($ApprovedBackendAssetInboxExpectedReadModelState)) {
+          $signoffArgs += "-AssetInboxExpectedReadModelState"
+          $signoffArgs += $ApprovedBackendAssetInboxExpectedReadModelState
+        }
+        if (-not [string]::IsNullOrWhiteSpace($ApprovedBackendQcRetouchExpectedReadModelState)) {
+          $signoffArgs += "-QcRetouchExpectedReadModelState"
+          $signoffArgs += $ApprovedBackendQcRetouchExpectedReadModelState
+        }
+        if (-not [string]::IsNullOrWhiteSpace($ApprovedBackendReviewGalleryExpectedReadModelState)) {
+          $signoffArgs += "-ReviewGalleryExpectedReadModelState"
+          $signoffArgs += $ApprovedBackendReviewGalleryExpectedReadModelState
+        }
+        if (-not [string]::IsNullOrWhiteSpace($ApprovedBackendDeliveryReadinessExpectedReadModelState)) {
+          $signoffArgs += "-DeliveryReadinessExpectedReadModelState"
+          $signoffArgs += $ApprovedBackendDeliveryReadinessExpectedReadModelState
+        }
       }
 
       powershell @signoffArgs

@@ -283,12 +283,17 @@ none
 189. Locally committed bcd59c0: test: guard internal pilot external blockers.
 190. Ran npm run qa:internal-pilot on bcd59c0; result passed with approved backend signoff skipped.
 191. Started latest local validation evidence refresh for bcd59c0.
+192. Discovered approved local backend read-model base URL http://127.0.0.1:3001/api/v2/read from repo/backend evidence after user approval.
+193. Ran guarded local backend read signoff against 3001 with owner read headers and mixed expected data states; result passed.
+194. Extended backend signoff scripts to support per-route expected data states for real fixtures that are partial or empty.
+195. Ran scripts\qa-internal-pilot-readiness.ps1 with the approved local backend URL; result passed.
+196. Stopped the temporary frontend Vite server, local backend process, and backend validation containers after QA.
 ```
 
 ### blocked
 
 ```text
-Studio Operator Internal Pilot Ready remains blocked until an approved local/staging backend base URL is provided and real backend read signoff passes.
+Studio Operator Internal Pilot Ready remains blocked until staging/backend-owner accepts the local backend read evidence or provides approved staging backend read fixtures.
 Studio Operator Internal Pilot Ready remains blocked until real auth provider/session/role-claim and backend enforcement evidence is provided by backend/platform owners.
 Full Bash validation helper execution remains blocked until the bash/WSL environment uses Node 20.19+ or 22.12+ and a compatible Rollup optional native package install.
 ```

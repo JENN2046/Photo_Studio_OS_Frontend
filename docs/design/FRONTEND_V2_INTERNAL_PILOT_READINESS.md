@@ -21,8 +21,10 @@ the production loop in read-only mode:
 - Review gallery status and retouch feedback posture.
 - Delivery readiness, package checklist, and blockers.
 
-The pilot is not production ready until real backend read smoke and platform
-auth are verified in an approved local or staging environment.
+The pilot is not production ready until backend read smoke and platform auth are
+verified in the approved target environment. Local backend read smoke has passed
+against `http://127.0.0.1:3001/api/v2/read`; staging backend smoke and real auth
+provider evidence remain external signoff items.
 
 ## Readiness Matrix
 
@@ -39,7 +41,7 @@ auth are verified in an approved local or staging environment.
 | Backend contract map | Five fetchers, smoke routes, mock backend paths, and smoke-plan docs stay aligned. | `scripts\qa-backend-read-contract-map.ps1` | Frontend ready |
 | Backend smoke | Connected-path local mock, mock-backend 403 / 404, mock-backend empty / partial / stale, and unreachable-backend failure paths are automated. | `scripts\qa-backend-read-all.ps1` | Local ready |
 | Backend signoff guards | Production-like, credentialed, wrong-scope, non-HTTPS staging, and query-bearing backend URLs are rejected before smoke; expected 403 / 404 failure modes and empty / partial / stale 200 data-state signoff modes are explicitly exposed. | `scripts\qa-backend-read-signoff-guards.ps1` | Local ready |
-| Real backend smoke | Approved local/staging backend URL is required; production endpoints are not allowed. | `scripts\qa-backend-read-smoke.ps1`, `scripts\qa-backend-read-signoff.ps1` | Blocked on backend URL |
+| Real backend smoke | Approved local/staging backend URL is required; production endpoints are not allowed. | Local `http://127.0.0.1:3001/api/v2/read` signoff passed; `scripts\qa-backend-read-smoke.ps1`, `scripts\qa-backend-read-signoff.ps1` | Local passed; staging Blocked on backend URL |
 | Auth/session states | Signed-out, expired, loading, error, forbidden, insufficient-role, and signed-in states are stable. | `src\features\auth\*`, `scripts\qa-readonly-auth-states.ps1` | Frontend ready |
 | Role matrix integrity | Seven roles, ten routes, seventy matrix cells, session states, and access labels are statically checked. | `scripts\qa-auth-role-matrix.ps1` | Frontend ready |
 | Auth provider preflight | Provider owner, session source, role claim, backend enforcement, and staging fixture requirements remain explicit before real auth work. | `scripts\qa-auth-provider-preflight.ps1` | Frontend ready |
@@ -75,9 +77,16 @@ It skips real backend signoff by default. When an approved local or staging
 backend URL exists, pass it explicitly:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment local -ApprovedBackendBaseUrl http://127.0.0.1:8080
+powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment local -ApprovedBackendBaseUrl http://127.0.0.1:3001/api/v2/read
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment staging -ApprovedBackendBaseUrl <approved-staging-backend-url> -ApprovedBackendExpectedReadModelState stale
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment staging -ApprovedBackendBaseUrl <approved-staging-backend-url> -ApprovedBackendExpectReadFailure -ApprovedBackendExpectedFailureState forbidden
+```
+
+When the approved backend fixture has mixed 200 data states, pass the per-page
+expectations through the aggregate:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment local -ApprovedBackendBaseUrl http://127.0.0.1:3001/api/v2/read -ApprovedBackendAssetInboxExpectedReadModelState partial -ApprovedBackendQcRetouchExpectedReadModelState empty -ApprovedBackendDeliveryReadinessExpectedReadModelState empty
 ```
 
 Expanded command list:

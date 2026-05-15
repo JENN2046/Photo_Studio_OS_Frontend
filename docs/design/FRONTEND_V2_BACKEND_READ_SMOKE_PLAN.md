@@ -54,7 +54,7 @@ temporary Vite server with `VITE_BACKEND_API_BASE_URL` set only in that child
 process; it does not edit `.env`.
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-smoke.ps1 -BackendBaseUrl http://127.0.0.1:8080
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-smoke.ps1 -BackendBaseUrl http://127.0.0.1:3001/api/v2/read
 ```
 
 For the full local backend read smoke, run the aggregate helper. It checks the
@@ -97,7 +97,7 @@ credentialed URLs, production-like hostnames, and non-local `http` staging
 targets, then runs the backend read smoke and local frontend gates:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName local -BackendBaseUrl http://127.0.0.1:8080
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName local -BackendBaseUrl http://127.0.0.1:3001/api/v2/read
 ```
 
 For approved backend fixtures that intentionally return 403 or 404, keep using
@@ -116,6 +116,14 @@ data state explicit:
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName staging -BackendBaseUrl <approved-staging-backend-base-url> -ExpectedReadModelState empty
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName staging -BackendBaseUrl <approved-staging-backend-base-url> -ExpectedReadModelState partial
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName staging -BackendBaseUrl <approved-staging-backend-base-url> -ExpectedReadModelState stale
+```
+
+If the approved local/staging fixture returns mixed states across the four
+read-model pages, keep the global state as `ready` and override only the pages
+whose 200 response is intentionally empty, partial, or stale:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName local -BackendBaseUrl http://127.0.0.1:3001/api/v2/read -AssetInboxExpectedReadModelState partial -QcRetouchExpectedReadModelState empty -DeliveryReadinessExpectedReadModelState empty
 ```
 
 The guard behavior itself is checked by:

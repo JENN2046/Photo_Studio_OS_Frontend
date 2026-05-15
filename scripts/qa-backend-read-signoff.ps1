@@ -15,6 +15,14 @@ param(
   [string]$SessionName = "photo-studio-backend-read-signoff",
   [ValidateSet("ready", "empty", "partial", "stale")]
   [string]$ExpectedReadModelState = "ready",
+  [ValidateSet("", "ready", "empty", "partial", "stale")]
+  [string]$AssetInboxExpectedReadModelState = "",
+  [ValidateSet("", "ready", "empty", "partial", "stale")]
+  [string]$QcRetouchExpectedReadModelState = "",
+  [ValidateSet("", "ready", "empty", "partial", "stale")]
+  [string]$ReviewGalleryExpectedReadModelState = "",
+  [ValidateSet("", "ready", "empty", "partial", "stale")]
+  [string]$DeliveryReadinessExpectedReadModelState = "",
   [switch]$ExpectReadFailure,
   [ValidateSet("error", "forbidden", "invalid-id")]
   [string]$ExpectedFailureState = "error",
@@ -80,6 +88,13 @@ function Assert-BackendSignoffUrl {
   }
 }
 
+function Test-AnyRouteReadModelStateOverride {
+  return (-not [string]::IsNullOrWhiteSpace($AssetInboxExpectedReadModelState)) -or
+    (-not [string]::IsNullOrWhiteSpace($QcRetouchExpectedReadModelState)) -or
+    (-not [string]::IsNullOrWhiteSpace($ReviewGalleryExpectedReadModelState)) -or
+    (-not [string]::IsNullOrWhiteSpace($DeliveryReadinessExpectedReadModelState))
+}
+
 function Invoke-Step {
   param(
     [string]$Name,
@@ -95,8 +110,8 @@ function Invoke-Step {
 }
 
 try {
-  if ($ExpectReadFailure -and $ExpectedReadModelState -ne "ready") {
-    throw "ExpectedReadModelState cannot be combined with ExpectReadFailure."
+  if ($ExpectReadFailure -and ($ExpectedReadModelState -ne "ready" -or (Test-AnyRouteReadModelStateOverride))) {
+    throw "ExpectedReadModelState or per-route read model states cannot be combined with ExpectReadFailure."
   }
 
   $urlInfo = Assert-BackendSignoffUrl -Url $BackendBaseUrl -Scope $EnvironmentName
@@ -107,6 +122,9 @@ try {
   Write-Host "Backend locality: $(if ($urlInfo.IsLocal) { 'local' } else { 'staging' })"
   Write-Host "FrontendBaseUrl: $($FrontendBaseUrl.TrimEnd('/'))"
   Write-Host "Expected result: $(if ($ExpectReadFailure) { "backend $ExpectedFailureState boundary UI" } else { "backend $ExpectedReadModelState UI" })"
+  if (-not $ExpectReadFailure -and (Test-AnyRouteReadModelStateOverride)) {
+    Write-Host "Per-route states: asset-inbox=$AssetInboxExpectedReadModelState qc-retouch=$QcRetouchExpectedReadModelState review-gallery=$ReviewGalleryExpectedReadModelState delivery-readiness=$DeliveryReadinessExpectedReadModelState"
+  }
   Write-Host "Write boundary: read-only GET smoke only"
 
   $smokeArgs = @(
@@ -130,6 +148,22 @@ try {
   } else {
     $smokeArgs += "-ExpectedReadModelState"
     $smokeArgs += $ExpectedReadModelState
+    if (-not [string]::IsNullOrWhiteSpace($AssetInboxExpectedReadModelState)) {
+      $smokeArgs += "-AssetInboxExpectedReadModelState"
+      $smokeArgs += $AssetInboxExpectedReadModelState
+    }
+    if (-not [string]::IsNullOrWhiteSpace($QcRetouchExpectedReadModelState)) {
+      $smokeArgs += "-QcRetouchExpectedReadModelState"
+      $smokeArgs += $QcRetouchExpectedReadModelState
+    }
+    if (-not [string]::IsNullOrWhiteSpace($ReviewGalleryExpectedReadModelState)) {
+      $smokeArgs += "-ReviewGalleryExpectedReadModelState"
+      $smokeArgs += $ReviewGalleryExpectedReadModelState
+    }
+    if (-not [string]::IsNullOrWhiteSpace($DeliveryReadinessExpectedReadModelState)) {
+      $smokeArgs += "-DeliveryReadinessExpectedReadModelState"
+      $smokeArgs += $DeliveryReadinessExpectedReadModelState
+    }
   }
 
   if ($KeepBrowser) {

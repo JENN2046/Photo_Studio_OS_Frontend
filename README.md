@@ -46,9 +46,15 @@ inspection.
 
 Do not use:
 
-- 3000: NewAPI
+- 3000: NewAPI / external owned service
 - 6005: VCPToolBox backend
 - 6006: VCPToolBox Admin
+
+Known Photo Studio local validation ports:
+
+- 3001: backend API
+- 3100: runtime candidate
+- 6380: Redis validation
 
 Preferred frontend dev port:
 
@@ -107,7 +113,7 @@ project uses Vite 7, so the shell running either helper must expose Node.js
 Backend read-model smoke helper:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-smoke.ps1 -BackendBaseUrl http://127.0.0.1:8080
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-smoke.ps1 -BackendBaseUrl http://127.0.0.1:3001/api/v2/read
 ```
 
 Full local backend read smoke, with connected, 403, 404, empty, partial,
@@ -132,7 +138,7 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-smoke.ps1 -Back
 Guarded local/staging backend read signoff, for an approved backend URL:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName local -BackendBaseUrl http://127.0.0.1:8080
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName local -BackendBaseUrl http://127.0.0.1:3001/api/v2/read
 ```
 
 For approved 403 / 404 fixture signoff, keep the same guarded wrapper and make
@@ -147,6 +153,13 @@ and make the expected 200 data state explicit:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName staging -BackendBaseUrl <approved-staging-backend-base-url> -ExpectedReadModelState partial
+```
+
+Approved local/staging signoff can also declare mixed per-page 200 data states
+when the real fixture is not uniformly `ready`:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName local -BackendBaseUrl http://127.0.0.1:3001/api/v2/read -AssetInboxExpectedReadModelState partial -QcRetouchExpectedReadModelState empty -DeliveryReadinessExpectedReadModelState empty
 ```
 
 Guard QA for unsafe backend signoff URLs:
@@ -306,7 +319,7 @@ signoff. Expected data states can be passed through the aggregate when the
 approved backend fixture intentionally returns `empty`, `partial`, or `stale`:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment local -ApprovedBackendBaseUrl http://127.0.0.1:8080
+powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment local -ApprovedBackendBaseUrl http://127.0.0.1:3001/api/v2/read
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment staging -ApprovedBackendBaseUrl <approved-staging-backend-url> -ApprovedBackendExpectedReadModelState stale
 ```
 

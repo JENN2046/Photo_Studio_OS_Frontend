@@ -1021,3 +1021,29 @@ Re-run result:
 Not validated:
 Notes:
 ```
+
+```text
+## VALIDATION-20260515-APPROVED-LOCAL-BACKEND-SIGNOFF
+
+Task: Run approved local backend read signoff and aggregate internal-pilot QA against the real local backend.
+Commands run:
+- powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName local -BackendBaseUrl http://127.0.0.1:3001/api/v2/read -BackendUserRole owner -BackendUserName "Studio Owner" -AssetInboxExpectedReadModelState partial -QcRetouchExpectedReadModelState empty -DeliveryReadinessExpectedReadModelState empty
+- powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-all.ps1 -BaseUrl http://127.0.0.1:5173
+- powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment local -ApprovedBackendBaseUrl http://127.0.0.1:3001/api/v2/read -ApprovedBackendUserRole owner -ApprovedBackendUserName "Studio Owner" -ApprovedBackendAssetInboxExpectedReadModelState partial -ApprovedBackendQcRetouchExpectedReadModelState empty -ApprovedBackendDeliveryReadinessExpectedReadModelState empty
+Result: passed
+Failures:
+- First aggregate attempt timed out at the outer shell timeout while qa-readonly-all.ps1 was near completion; no QA failure was observed.
+Fix attempted:
+- Cleaned the timed-out child processes and reran qa-readonly-all.ps1 directly, then reran the aggregate with a longer timeout and log capture.
+Re-run result:
+- qa-readonly-all.ps1 passed.
+- qa-internal-pilot-readiness.ps1 with approved local backend URL passed.
+Not validated:
+- Staging backend read signoff.
+- Real auth provider/session/role-claim and backend enforcement evidence.
+- Push/tag/deploy/release.
+Notes:
+- The real local backend fixture rendered mixed data states: asset-inbox partial, qc-retouch empty, review-gallery ready, delivery-readiness empty.
+- No backend code, root repo, .env, dependency, upload/download/write/auth/storage changes were made.
+- Temporary Vite/backend validation processes and backend postgres/redis validation containers were stopped after the run.
+```

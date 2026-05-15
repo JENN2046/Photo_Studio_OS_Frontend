@@ -528,6 +528,43 @@ Resume note:
 
 ---
 
+## CHECKPOINT-20260515-APPROVED-LOCAL-BACKEND-SIGNOFF
+
+```text
+Status: COMPLETED_VALIDATED
+Completed task queue items:
+- Found and verified the approved local backend read-model base URL: http://127.0.0.1:3001/api/v2/read.
+- Extended backend read signoff QA to support per-route expected data states.
+- Ran approved local backend read signoff with asset-inbox partial, qc-retouch empty, review-gallery ready, and delivery-readiness empty expectations.
+- Ran full internal-pilot aggregate QA with the approved local backend URL.
+- Updated readiness, goal-audit, signoff, local validation log, and .agent_board evidence to stop claiming no local backend URL exists.
+
+Validation run:
+- scripts\qa-backend-read-signoff-guards.ps1: passed
+- scripts\qa-internal-pilot-readiness-guards.ps1: passed
+- scripts\qa-backend-read-signoff.ps1 with approved local backend URL: passed
+- scripts\validate-local.ps1: passed
+- scripts\qa-readonly-all.ps1: passed
+- scripts\qa-internal-pilot-readiness.ps1 with approved local backend URL: passed
+
+Validation failure handled:
+- First aggregate attempt hit the shell timeout while qa-readonly-all.ps1 was still running. Rerun with a longer timeout passed.
+
+Validation not run:
+- Staging backend read signoff.
+- Real platform auth/backend enforcement evidence.
+
+Stop gate reached: no
+Remote actions: none
+Next safe task:
+- Run final diff/secret checks for this script/doc batch and commit locally only with explicit request or guarded auto-commit conditions.
+Resume note:
+- Push/tag/deploy remain unauthorized.
+- Protect untracked .claude/, .mcp.json, and .omc/.
+```
+
+---
+
 ## CHECKPOINT-20260515-EXTERNAL-SIGNOFF-BLOCKER-ALIGNMENT
 
 ```text

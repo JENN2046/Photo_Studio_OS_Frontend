@@ -423,7 +423,7 @@ none for the next safe local frontend slice.
 ## Next Safe Action
 
 ```text
-Next safe action: run validation, commit Batch B/C locally if final staged checks remain green, then wait for explicit push approval.
+Next safe action: run final validation for the approved local backend signoff evidence update, then commit locally only if requested or guarded auto-commit conditions are met. Wait for explicit push approval.
 ```
 
 ---
@@ -446,7 +446,7 @@ Next safe action: run validation, commit Batch B/C locally if final staged check
 ## HANDOFF-20260515-EXTERNAL-SIGNOFF-BLOCKERS
 
 ```text
-Status: LOCAL_FRONTEND_READY_CANDIDATE / externally blocked
+Status: LOCAL_FRONTEND_READY_CANDIDATE / local backend signoff passed / auth and staging evidence externally blocked
 Current branch: main
 Latest local commit before this blocker-alignment batch: 1e7e216 test: add internal pilot qa npm shortcut
 Protected untracked files: .claude/, .mcp.json, .omc/
@@ -461,15 +461,15 @@ Completed local evidence:
 - npm run qa:internal-pilot shortcut committed in 1e7e216.
 
 Remaining external blockers:
-- Approved local/staging backend base URL is required before real backend read signoff can run.
+- Staging/backend-owner acceptance is still needed if local-only backend read evidence is not enough for the pilot.
 - Real auth provider/session/role-claim and backend enforcement evidence is required before final internal-pilot signoff.
 
 Safe next action after this batch:
-- If the user provides an approved local/staging backend URL, run scripts\qa-internal-pilot-readiness.ps1 with -ApprovedBackendEnvironment and -ApprovedBackendBaseUrl.
+- If the user provides an approved staging backend URL, run scripts\qa-internal-pilot-readiness.ps1 with -ApprovedBackendEnvironment staging and -ApprovedBackendBaseUrl.
 - If auth/backend enforcement evidence is provided, inspect it and record it in docs\design\FRONTEND_V2_INTERNAL_PILOT_SIGNOFF_RECORD.md only after verification.
 
 Hard boundaries:
-- Do not guess backend URLs.
+- Do not guess staging backend URLs.
 - Do not edit .env.
 - Do not use production endpoints.
 - Do not implement production auth or token storage.
@@ -481,7 +481,7 @@ Hard boundaries:
 ## HANDOFF-20260515-INTERNAL-PILOT-AGGREGATE-BCD59C0
 
 ```text
-Status: LOCAL_FRONTEND_READY_CANDIDATE / externally blocked
+Status: LOCAL_FRONTEND_READY_CANDIDATE / local backend signoff passed / externally blocked on auth and staging acceptance
 Latest checked commit: bcd59c0 test: guard internal pilot external blockers
 Validation command: npm run qa:internal-pilot
 Validation result: passed
@@ -496,10 +496,10 @@ Covered:
 - full read-only browser QA
 
 Not covered:
-- approved real local/staging backend read signoff
+- approved staging backend read signoff
 - real auth provider/backend enforcement evidence
 
 Next safe action:
-- If an approved backend URL is provided, run npm run qa:internal-pilot through scripts\qa-internal-pilot-readiness.ps1 with -ApprovedBackendEnvironment and -ApprovedBackendBaseUrl.
+- If an approved staging backend URL is provided, run npm run qa:internal-pilot through scripts\qa-internal-pilot-readiness.ps1 with -ApprovedBackendEnvironment staging and -ApprovedBackendBaseUrl.
 - If auth/backend enforcement evidence is provided, verify it before filling docs\design\FRONTEND_V2_INTERNAL_PILOT_SIGNOFF_RECORD.md.
 ```

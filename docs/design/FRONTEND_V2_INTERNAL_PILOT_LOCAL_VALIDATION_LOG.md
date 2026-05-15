@@ -37,6 +37,34 @@ Important context:
 - No `.env` file was edited.
 - No remote action was performed.
 
+## Latest Approved Local Backend Run
+
+Command:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment local -ApprovedBackendBaseUrl http://127.0.0.1:3001/api/v2/read -ApprovedBackendUserRole owner -ApprovedBackendUserName "Studio Owner" -ApprovedBackendAssetInboxExpectedReadModelState partial -ApprovedBackendQcRetouchExpectedReadModelState empty -ApprovedBackendDeliveryReadinessExpectedReadModelState empty
+```
+
+Result:
+
+```text
+PASSED
+```
+
+Evidence notes:
+
+- Approved local backend signoff used `http://127.0.0.1:3001/api/v2/read`.
+- The backend fixture intentionally rendered mixed read-model states:
+  `asset-inbox=partial`, `qc-retouch=empty`, `review-gallery=ready`, and
+  `delivery-readiness=empty`.
+- The aggregate also passed `npm run lint`, `npm run build`,
+  `scripts\validate-local.ps1`, backend read aggregate smoke, live env role QA,
+  auth-state QA, and full read-only browser QA.
+- The frontend Vite validation server and the local backend process were stopped
+  after the run.
+- No `.env` file was edited.
+- No remote action was performed.
+
 ## Covered Locally
 
 The aggregate run covered:
@@ -75,9 +103,8 @@ The aggregate run covered:
 
 ## Not Covered By This Local Run
 
-The run did not verify:
+The latest approved local backend run did not verify:
 
-- Approved local or staging backend read signoff through a real backend URL.
 - Real backend authorization enforcement.
 - Real platform auth provider behavior.
 - Real session source, role claim, expiry, refresh, or forbidden semantics.

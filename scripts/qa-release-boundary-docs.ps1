@@ -102,7 +102,7 @@ Assert-FileContains -Path $releaseChecklistPath -Pattern "\- \[ \] Post-deploy s
 Assert-FileContains -Path $releaseChecklistPath -Pattern "\- \[ \] Release announced to team" -Label "release announced checkbox remains unchecked"
 Assert-FileNotContains -Path $releaseChecklistPath -Pattern "(?im)^\- \[[xX]\] (Tag created|Tag pushed|Release deployed to production|Post-deploy smoke test passed|Release announced to team)" -Label "checked release execution checkbox"
 
-Assert-FileContains -Path $pilotReadinessPath -Pattern "The pilot is not production ready until real backend read smoke and platform\s+auth are verified" -Label "pilot readiness remains non-production"
+Assert-FileContains -Path $pilotReadinessPath -Pattern "The pilot is not production ready until backend read smoke and platform auth are\s+verified" -Label "pilot readiness remains non-production"
 Assert-FileContains -Path $pilotReadinessPath -Pattern "External Signoff Still Required" -Label "pilot readiness keeps external signoff section"
 Assert-FileContains -Path $pilotReadinessPath -Pattern "Release manager approval for push, tag, deploy, or production rollout" -Label "pilot readiness preserves release approval blocker"
 

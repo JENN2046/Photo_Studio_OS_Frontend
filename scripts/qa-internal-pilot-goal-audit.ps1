@@ -88,7 +88,7 @@ Assert-FileContains -Path $goalAuditPath -Pattern "No production release, push, 
 Assert-FileContains -Path $signoffPath -Pattern "\|\s*Decision\s*\|\s*Not signed off\s*\|" -Label "signoff decision remains unapproved"
 Assert-FileContains -Path $signoffPath -Pattern '\- \[ \] Approved as `Studio Operator Internal Pilot Ready`\.' -Label "final approval checkbox remains unchecked"
 Assert-FileContains -Path $signoffPath -Pattern "\- \[ \] Approved as local frontend ready candidate only\." -Label "local-candidate approval checkbox remains unchecked"
-Assert-FileContains -Path $signoffPath -Pattern "\- \[ \] Blocked pending backend read smoke\." -Label "backend-smoke blocker checkbox remains available"
+Assert-FileContains -Path $signoffPath -Pattern "\- \[ \] Blocked pending staging backend read smoke\." -Label "backend-smoke blocker checkbox remains available"
 Assert-FileContains -Path $signoffPath -Pattern "\- \[ \] Blocked pending platform auth/backend enforcement\." -Label "auth/backend-enforcement blocker checkbox remains available"
 Assert-FileContains -Path $signoffPath -Pattern "No push/tag/deploy/release performed by this signoff" -Label "signoff preserves remote/release boundary"
 

@@ -22,8 +22,10 @@ operator can inspect the production loop in read-only mode:
 - Review status and revision posture.
 - Delivery readiness, manifest posture, and blockers.
 
-The goal is not production launch. Real backend read smoke and real platform
-auth/backend authorization still require approved local or staging environments.
+The goal is not production launch. Local backend read smoke has been verified
+against the approved `http://127.0.0.1:3001/api/v2/read` base URL; staging
+backend read smoke and real platform auth/backend authorization still require
+approved external environments and owner evidence.
 
 ## Prompt-to-Artifact Checklist
 
@@ -34,7 +36,7 @@ auth/backend authorization still require approved local or staging environments.
 | Enable backend reads only when configured. | `src\api\backendReadModels.ts`, `src\api\client.ts`, `scripts\qa-backend-read-all.ps1` | Backend-connected mock smoke, mock-backend 403 / 404 smoke, mock-backend empty / partial / stale data-state smoke, and unreachable-backend failure smoke are automated. | Covered locally |
 | Keep backend read contract map aligned. | `scripts\qa-backend-read-contract-map.ps1` | Static QA checks all five fetchers, smoke routes, mock backend paths, and smoke-plan docs stay synchronized. | Covered locally |
 | Provide guarded local/staging backend signoff path. | `scripts\qa-backend-read-signoff.ps1` | Wrapper rejects production-like URLs and credentialed/non-local misuse before smoke runs, and can pass explicit expected 403 / 404 failure states plus empty / partial / stale 200 data states to the smoke harness. | Covered locally |
-| Verify real local/staging backend reads. | `scripts\qa-backend-read-signoff.ps1 -BackendBaseUrl <approved-url>` | No approved backend URL is present in this repo or session. | Blocked externally |
+| Verify real local/staging backend reads. | `scripts\qa-backend-read-signoff.ps1 -BackendBaseUrl <approved-url>` | Approved local backend signoff passed against `http://127.0.0.1:3001/api/v2/read` with `asset-inbox=partial`, `qc-retouch=empty`, and `delivery-readiness=empty`; staging remains external. | Local covered / staging blocked externally |
 | Keep all backend traffic read-only. | `scripts\qa-backend-read-smoke.ps1`, `scripts\qa-readonly-source-boundary.ps1` | Browser request monitor fails on non-read methods; source scan blocks write-method signals. | Covered locally |
 | Stabilize backend error states. | `scripts\qa-readonly-boundary-states.ps1`, `scripts\qa-backend-read-all.ps1` | Loading, error, missing-config, empty, partial, stale, forbidden, invalid-id, and failure paths are checked locally. | Covered locally |
 | Provide role/session UI readiness. | `src\features\auth\*`, `scripts\qa-readonly-auth-states.ps1` | Signed-out, expired, loading, error, forbidden, partial, no-access, and signed-in paths are scripted. | Covered locally |
@@ -86,11 +88,12 @@ This command currently chains:
 For approved local/staging backend signoff, use:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment local -ApprovedBackendBaseUrl http://127.0.0.1:8080
+powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment local -ApprovedBackendBaseUrl http://127.0.0.1:3001/api/v2/read
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment staging -ApprovedBackendBaseUrl <approved-staging-backend-base-url> -ApprovedBackendExpectedReadModelState stale
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment staging -ApprovedBackendBaseUrl <approved-staging-backend-base-url> -ApprovedBackendExpectReadFailure -ApprovedBackendExpectedFailureState forbidden
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName staging -BackendBaseUrl <approved-staging-backend-base-url> -ExpectReadFailure -ExpectedFailureState forbidden
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName staging -BackendBaseUrl <approved-staging-backend-base-url> -ExpectedReadModelState stale
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName local -BackendBaseUrl http://127.0.0.1:3001/api/v2/read -AssetInboxExpectedReadModelState partial -QcRetouchExpectedReadModelState empty -DeliveryReadinessExpectedReadModelState empty
 ```
 
 Use `-ApprovedBackendEnvironment staging` only with an explicitly approved
@@ -100,7 +103,7 @@ HTTPS staging backend URL. Do not use production endpoints.
 
 | Requirement | Why not complete | Required unblock |
 |---|---|---|
-| Real backend read smoke | No approved local/staging backend base URL is available in this frontend repo. | Backend/platform owner provides an approved local or staging read-model base URL. |
+| Real backend read smoke | Approved local backend read smoke passed; staging backend read smoke has not been observed. | Backend/platform owner provides approved staging read-model fixtures, or accepts local-only evidence for the pilot. |
 | Real backend authorization enforcement | Frontend role gates are display-only by design. | Backend verifies role enforcement for every read-model endpoint. |
 | Real platform auth/session | Current auth state is mock-first and env-role rehearsal only. | Auth provider, session source, role claims, expiry, and forbidden behavior are approved and available in staging. |
 | Staging signoff for empty/partial/stale and backend-specific 403/404 bodies | Local DEV/query rehearsal plus localhost HTTP 200/403/404 smoke exist, but staging behavior has not been observed. | Run backend smoke and auth QA against approved staging fixtures. |

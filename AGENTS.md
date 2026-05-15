@@ -850,8 +850,15 @@ Do not use these ports:
 6005 = VCPToolBox backend service
 6006 = VCPToolBox Admin panel service
 6379 = default Redis, not for frontend
-6380 = Photo Studio OS Redis validation
 5432 = Photo Studio OS local PostgreSQL test dependency
+```
+
+Known Photo Studio local service ports:
+
+```text
+3001 = Photo Studio backend API local validation
+3100 = Photo Studio runtime candidate
+6380 = Photo Studio OS Redis validation
 ```
 
 Preferred frontend dev ports:
@@ -859,7 +866,7 @@ Preferred frontend dev ports:
 ```text
 5173 = preferred Vite dev port
 5174 = alternate Vite dev port
-3101 = fixed Photo Studio frontend dev candidate
+3101 = alternate Photo Studio frontend dev candidate
 4173 = preview candidate
 ```
 

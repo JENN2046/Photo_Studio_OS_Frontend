@@ -102,7 +102,7 @@ $requiredLiterals = @(
   @{ Text = 'No push/tag/deploy/release performed by this signoff'; Label = "remote/release hard boundary row" },
   @{ Text = '- [ ] Approved as `Studio Operator Internal Pilot Ready`.'; Label = "unchecked final approval option" },
   @{ Text = '- [ ] Approved as local frontend ready candidate only.'; Label = "unchecked local-candidate option" },
-  @{ Text = '- [ ] Blocked pending backend read smoke.'; Label = "backend blocker option" },
+  @{ Text = '- [ ] Blocked pending staging backend read smoke.'; Label = "backend blocker option" },
   @{ Text = '- [ ] Blocked pending platform auth/backend enforcement.'; Label = "auth blocker option" }
 )
 
@@ -111,7 +111,7 @@ foreach ($item in $requiredLiterals) {
 }
 
 Assert-ContainsPattern -Content $content -Pattern '(?im)^\- \[ \] Approved as `Studio Operator Internal Pilot Ready`\.' -Label "final approval checkbox stays unchecked"
-Assert-ContainsPattern -Content $content -Pattern '(?im)^\- \[ \] Blocked pending backend read smoke\.' -Label "backend blocker checkbox stays available"
+Assert-ContainsPattern -Content $content -Pattern '(?im)^\- \[ \] Blocked pending staging backend read smoke\.' -Label "backend blocker checkbox stays available"
 Assert-ContainsPattern -Content $content -Pattern '(?im)^\- \[ \] Blocked pending platform auth/backend enforcement\.' -Label "auth blocker checkbox stays available"
 
 if ($content -match "(?im)^\- \[[xX]\] Approved as") {

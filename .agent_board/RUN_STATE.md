@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-Record npm run qa:internal-pilot evidence for latest local candidate commit bcd59c0.
+Record approved local backend read signoff evidence and keep staging/auth blockers explicit.
 ```
 
 ---
@@ -58,7 +58,7 @@ Record npm run qa:internal-pilot evidence for latest local candidate commit bcd5
 ## Last Completed Task
 
 ```text
-Commit bcd59c0 guarded the internal-pilot external blockers in .agent_board and goal-audit QA.
+Approved local backend read signoff passed against http://127.0.0.1:3001/api/v2/read with mixed read-model expected states.
 ```
 
 ---
@@ -66,7 +66,7 @@ Commit bcd59c0 guarded the internal-pilot external blockers in .agent_board and 
 ## Last Validation
 
 ```text
-npm run qa:internal-pilot passed on commit bcd59c0. It covered lint, build, validate-local, package/source/contract/auth/doc guards, local mock-backend ready/403/404/empty/partial/stale/failure smoke, live env-role QA, auth-state QA, and full read-only browser QA. Approved backend signoff was skipped because no approved backend URL was provided.
+scripts\qa-internal-pilot-readiness.ps1 passed with -ApprovedBackendEnvironment local -ApprovedBackendBaseUrl http://127.0.0.1:3001/api/v2/read. It covered lint, build, validate-local, local mock-backend ready/403/404/empty/partial/stale/failure smoke, approved local backend read signoff, live env-role QA, auth-state QA, and full read-only browser QA.
 ```
 
 ---
@@ -75,7 +75,7 @@ npm run qa:internal-pilot passed on commit bcd59c0. It covered lint, build, vali
 
 ```text
 Branch: main, ahead of origin/main with local commits.
-Worktree: tracked files were clean after commit bcd59c0; current batch intentionally edits local validation evidence docs. Untracked .claude/, .mcp.json, and .omc/ remain protected and untouched.
+Worktree: current batch intentionally edits backend-read signoff QA scripts, port docs, local backend signoff evidence docs, and .agent_board state. Untracked .claude/, .mcp.json, and .omc/ remain protected and untouched.
 ```
 
 ---
@@ -83,7 +83,7 @@ Worktree: tracked files were clean after commit bcd59c0; current batch intention
 ## Backend Touched
 
 ```text
-no
+read-only start/stop only; no backend code or .env edits
 ```
 
 ---
@@ -108,6 +108,8 @@ no
 
 ```text
 127.0.0.1:5173 temporary Vite dev servers started by QA and stopped afterward
+127.0.0.1:3001 local backend process started for approved read signoff and stopped afterward
+Docker postgres/redis validation containers were started for backend support and stopped afterward
 ```
 
 ---
@@ -115,7 +117,7 @@ no
 ## Current Stop Status
 
 ```text
-Local frontend candidate is green, but Studio Operator Internal Pilot Ready remains externally blocked on approved local/staging backend read signoff and real auth provider/backend enforcement evidence. Push/tag/deploy remain unauthorized.
+Local frontend candidate is green and approved local backend read signoff has passed. Studio Operator Internal Pilot Ready remains externally blocked on staging/backend-owner signoff choice and real auth provider/backend enforcement evidence. Push/tag/deploy remain unauthorized.
 ```
 
 ---
@@ -123,5 +125,5 @@ Local frontend candidate is green, but Studio Operator Internal Pilot Ready rema
 ## Next Action
 
 ```text
-Commit latest local validation evidence if docs-only checks remain green. Do not push without explicit user approval.
+Run final local validation checks for the current QA/doc updates, then commit locally only if explicitly requested or guarded auto-commit conditions are met. Do not push without explicit user approval.
 ```

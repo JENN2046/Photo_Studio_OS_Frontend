@@ -570,8 +570,15 @@ Do not use:
 6005 = VCPToolBox backend
 6006 = VCPToolBox Admin
 6379 = default Redis
-6380 = Photo Studio OS Redis validation
 5432 = Photo Studio OS local PostgreSQL test dependency
+```
+
+Known Photo Studio local service ports:
+
+```text
+3001 = Photo Studio backend API local validation
+3100 = Photo Studio runtime candidate
+6380 = Photo Studio OS Redis validation
 ```
 
 Recommended frontend development ports:
@@ -579,7 +586,7 @@ Recommended frontend development ports:
 ```text
 5173 = preferred Vite dev port
 5174 = alternate Vite dev port
-3101 = fixed Photo Studio frontend candidate
+3101 = alternate Photo Studio frontend candidate
 4173 = preview candidate
 ```
 
@@ -670,7 +677,7 @@ T128-001 is acceptable when:
 - visual direction is recognizable
 - no backend modification occurred
 - no upload/download/auth/storage was implemented
-- dev port avoids `3000 / 6005 / 6006`
+- dev port avoids `3000 / 6005 / 6006`; backend API signoff uses `3001`, runtime candidate uses `3100`, and Redis validation uses `6380`
 - validation commands are real, or missing scripts are honestly reported
 - git status is known
 - no push occurs without approval
