@@ -122,6 +122,17 @@ For local failure-mode rehearsal without a real backend:
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-smoke.ps1 -BackendBaseUrl http://127.0.0.1:59999 -ExpectReadFailure
 ```
 
+Guarded local/staging backend read signoff, for an approved backend URL:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName local -BackendBaseUrl http://127.0.0.1:8080
+```
+
+Use `-EnvironmentName staging` only for an explicitly approved HTTPS staging
+backend. The signoff wrapper rejects production-like hostnames, refuses URL
+credentials, delegates to the read-only backend smoke helper, and then reruns
+lint, build, and local validation.
+
 The backend smoke helper starts a temporary local Vite server with
 `VITE_BACKEND_API_BASE_URL` set only inside that child process. It refuses
 non-local backend URLs unless `-AllowNonLocalBackend` is passed for an explicitly

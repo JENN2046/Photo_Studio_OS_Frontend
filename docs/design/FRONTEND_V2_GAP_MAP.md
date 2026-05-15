@@ -53,6 +53,7 @@ As of the current Frontend v2 local state, the read-only production loop has mov
 - P3.6 post-commit board facts now record Batch A as committed in `07e0e08` instead of leaving stale pending-commit wording.
 - P3.7 read-only browser QA now checks Command Center `黄金链路` entry clicks and extends route/interaction coverage to `1024x768`.
 - S2 backend read smoke now has `scripts/qa-backend-read-all.ps1`, which runs connected-path local mock backend smoke plus unreachable-backend failure smoke without editing `.env`.
+- S2 local/staging signoff now has `scripts/qa-backend-read-signoff.ps1`, a guarded wrapper that rejects production-like URLs and reruns local gates after backend read smoke.
 - S3 auth/role readiness now exposes role-derived access posture (`完全` / `只读` / `摘要` / `无权`) in runtime chips and verifies representative role matrix paths in auth QA.
 - S3 live env role QA now checks representative `VITE_BACKEND_USER_ROLE` paths through temporary child Vite processes without editing `.env`.
 - Internal pilot readiness now has a single local aggregate, `scripts/qa-internal-pilot-readiness.ps1`, that chains local validation, backend read smoke, live env role QA, and browser QA.
@@ -151,7 +152,7 @@ Image references:
 | Invalid debug-state fallback QA. | Route QA covers unknown `commandCenterState` and `readModelState` values falling back to normal mock-first ready screens. | Keep unknown DEV query values non-destructive and read-only. | P3.5 done |
 | Post-commit board facts. | `.agent_board` now records Batch A as committed in `07e0e08` and uses Batch B/C as the active local task. | Keep board state tied to actual `git log` rather than pending handoff text. | P3.6 done |
 | Command Center entry-click QA. | Interaction QA now clicks the four Command Center `黄金链路` entries and checks target page, active tab, Golden Loop IDs, console errors, and horizontal overflow. | Keep this check green whenever Command Center entry labels, IDs, or read-model routes change. | P3.7 done |
-| Real backend read-model smoke. | Local connected/failure smoke is automated; real backend smoke is still intentionally not run without a local or staging backend base URL. | Run only with a deliberately configured local/staging `VITE_BACKEND_API_BASE_URL` outside this repo. | S2 blocked on backend URL |
+| Real backend read-model smoke. | Local connected/failure smoke is automated; guarded signoff wrapper is available; real backend smoke is still intentionally not run without a local or staging backend base URL. | Run `scripts\qa-backend-read-signoff.ps1` only with an approved local/staging backend URL outside this repo. | S2 blocked on backend URL |
 
 ## Command Center Gap Table
 

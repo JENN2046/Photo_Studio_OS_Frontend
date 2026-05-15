@@ -36,7 +36,7 @@ auth are verified in an approved local or staging environment.
 | Delivery Readiness | Operator can see checklist, package artifacts, blockers, and download/public delivery boundary. | `src\features\read-models\readModelWorkspaces.tsx`, `#delivery-readiness` QA | Ready |
 | Backend read switch | Backend reads activate only through `VITE_BACKEND_API_BASE_URL`; mock-first remains default. | `src\api\client.ts`, `src\api\backendReadModels.ts` | Frontend ready |
 | Backend smoke | Connected-path local mock and unreachable-backend failure path are automated. | `scripts\qa-backend-read-all.ps1` | Local ready |
-| Real backend smoke | Approved local/staging backend URL is required; production endpoints are not allowed. | `scripts\qa-backend-read-smoke.ps1` | Blocked on backend URL |
+| Real backend smoke | Approved local/staging backend URL is required; production endpoints are not allowed. | `scripts\qa-backend-read-smoke.ps1`, `scripts\qa-backend-read-signoff.ps1` | Blocked on backend URL |
 | Auth/session states | Signed-out, expired, loading, error, forbidden, insufficient-role, and signed-in states are stable. | `src\features\auth\*`, `scripts\qa-readonly-auth-states.ps1` | Frontend ready |
 | Env role readiness | Representative `VITE_BACKEND_USER_ROLE` paths are verified without `.env` edits. | `scripts\qa-readonly-auth-live-roles.ps1` | Frontend ready |
 | Real auth provider | Backend/platform auth provider, token model, and enforcement are not implemented in this frontend. | `docs\design\FRONTEND_V2_AUTH_ROLE_STATE_DESIGN.md` | Blocked on platform auth |
@@ -80,6 +80,7 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-all.ps1
 These items are outside the current frontend-only local boundary:
 
 - Real local/staging backend read smoke with approved `VITE_BACKEND_API_BASE_URL`.
+- Guarded local/staging backend signoff through `scripts\qa-backend-read-signoff.ps1`.
 - Backend/platform auth provider and token/session model.
 - Backend authorization enforcement for every role and read-model endpoint.
 - Staging signoff for 403, 404, empty, partial, stale, and network failure states.

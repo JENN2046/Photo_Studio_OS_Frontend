@@ -86,6 +86,7 @@ Current fetcher boundary:
 - Mock remains the default.
 - Backend read-model fetchers activate only when `VITE_BACKEND_API_BASE_URL` is deliberately configured outside the repo.
 - Local connected/failure smoke is automated through `scripts\qa-backend-read-all.ps1`.
+- Approved local/staging backend signoff should use `scripts\qa-backend-read-signoff.ps1` so production-like URLs and credentialed URLs are rejected before smoke runs.
 - The frontend must not add POST, PATCH, DELETE, upload, download, storage, public link, or production auth behavior without stage approval.
 
 ## Local Commands
@@ -145,6 +146,7 @@ Run the existing frontend against an approved local or staging backend base URL.
 Allowed:
 
 - Use `scripts\qa-backend-read-smoke.ps1` with a deliberately configured local/staging URL.
+- Prefer `scripts\qa-backend-read-signoff.ps1` for approved local/staging signoff because it wraps backend smoke with URL guards and local validation gates.
 - Keep `VITE_BACKEND_API_BASE_URL` outside the repo.
 - Add narrow compatibility handling only if the backend returns an additive or nullable read-model shape.
 - Keep mock-first validation green.
@@ -163,6 +165,7 @@ Validation:
 - `npm run build`
 - `scripts/validate-local.ps1`
 - `scripts\qa-backend-read-smoke.ps1`
+- `scripts\qa-backend-read-signoff.ps1`
 - `scripts\qa-internal-pilot-readiness.ps1` after local compatibility fixes.
 
 ### Track 2: Platform auth integration plan
@@ -290,6 +293,7 @@ Every implementation PR or local handoff should answer:
 Start with `S2-External Backend Read Smoke` after a local/staging backend URL is approved:
 
 - Run `scripts\qa-backend-read-smoke.ps1` against the approved backend URL.
+- Or run `scripts\qa-backend-read-signoff.ps1` for the guarded signoff path.
 - Confirm Command Center plus the four read-model pages request the five expected GET paths.
 - Confirm backend 403/404/network states remain calm and read-only.
 - Keep `.env`, backend repo, root repo, dependency files, upload/download, public links, writes, push, tag, and deploy untouched.

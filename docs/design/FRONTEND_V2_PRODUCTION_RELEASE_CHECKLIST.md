@@ -42,6 +42,7 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1
 | `validate-local.ps1` passes (including secret scan) | |
 | `qa-readonly-source-boundary.ps1` passes | |
 | `qa-backend-read-all.ps1` passes connected and failure local backend read smoke | |
+| `qa-backend-read-signoff.ps1` passes with an approved local/staging backend URL when backend signoff is in scope | |
 | `qa-readonly-auth-live-roles.ps1` passes representative `VITE_BACKEND_USER_ROLE` paths | |
 | `qa-internal-pilot-readiness.ps1` passes on a machine with no pre-existing Vite server | |
 
@@ -230,6 +231,7 @@ If a staging backend is available and configured:
 
 | Check | Status |
 |---|---|
+| `scripts\qa-backend-read-signoff.ps1` passes against approved local/staging backend URL | |
 | `scripts\qa-backend-read-smoke.ps1` passes against approved local/staging backend URL | |
 | Command Center loads from backend | |
 | Asset Inbox loads from backend | |

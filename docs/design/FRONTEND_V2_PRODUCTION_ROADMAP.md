@@ -122,6 +122,7 @@ Frontend-side deliverables (done):
 - Runtime state surface with source/status/transport chips
 - Complete error handling: loading / error / forbidden / invalid-id states
 - Debug state rehearsal via `?readModelState=`
+- Guarded local/staging backend read signoff wrapper (`scripts\qa-backend-read-signoff.ps1`)
 
 Backend-side deliverables (pending):
 - Read endpoint ownership and availability
@@ -154,6 +155,7 @@ Validation:
 - `scripts/validate-local.ps1`
 - `scripts/qa-readonly-all.ps1`
 - Backend read smoke with sanitized local/staging config only.
+- Guarded backend signoff through `scripts/qa-backend-read-signoff.ps1` when an approved local/staging URL is available.
 
 Stop gates:
 
@@ -398,7 +400,7 @@ Stop gates:
 
 1. Keep S0 as the recovery baseline.
 2. Complete S1 contract freeze before widening backend usage.
-3. Run S2 backend read smoke in local/staging only.
+3. Run S2 backend read smoke/signoff in local/staging only.
 4. Implement S3 auth/role states before exposing user-specific or external surfaces.
 5. Design and approve S4 upload/download storage contracts before implementing real file movement.
 6. Design and approve S5 public review/delivery token model before external links.

@@ -80,6 +80,17 @@ port and expect read failure UI:
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-smoke.ps1 -BackendBaseUrl http://127.0.0.1:59999 -ExpectReadFailure
 ```
 
+For approved local/staging signoff, use the guarded wrapper. It refuses
+credentialed URLs, production-like hostnames, and non-local `http` staging
+targets, then runs the backend read smoke and local frontend gates:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName local -BackendBaseUrl http://127.0.0.1:8080
+```
+
+For staging, use `-EnvironmentName staging` only after a human explicitly
+approves the staging backend base URL. Do not use this wrapper for production.
+
 The helper checks Command Center plus the four read-model hash pages, verifies
 the `后端只读` / `mock-first / read-only` runtime posture, checks that all five
 expected backend read paths are requested, and fails if the browser observes
@@ -283,6 +294,7 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-all.ps1
 | No secrets committed | |
 | `scripts\qa-backend-read-all.ps1` passes for connected and failure local backend read smoke | |
 | `scripts\qa-backend-read-smoke.ps1` passes for local/staging read smoke | |
+| `scripts\qa-backend-read-signoff.ps1` passes for approved local/staging backend read signoff | |
 | `scripts\qa-backend-read-smoke-mock.ps1` passes for connected-path local mock backend smoke | |
 
 ## Non-goals
