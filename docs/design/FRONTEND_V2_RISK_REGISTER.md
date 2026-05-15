@@ -35,7 +35,7 @@ Status:
 | R01 | Mock fixtures drift from backend read-model truth. | High | Medium | Watching | S1 contract freeze complete; fixtures aligned with frozen types. Recheck when backend examples arrive in S2. |
 | R02 | Backend read integration breaks mock-first local development. | High | Medium | Watching | Backend reads stay behind `VITE_BACKEND_API_BASE_URL`; `scripts\qa-backend-read-all.ps1` and `scripts\qa-internal-pilot-readiness.ps1` validate mock-first, connected mock-backend, and unreachable-backend paths. |
 | R03 | Frontend starts treating display-derived values as business truth. | High | Medium | Watching | Keep durable facts backend-owned; keep view-model derivations presentation-only; source boundary QA blocks write methods and public-access enablement in `src`. |
-| R04 | Production auth is added without a clear role and session model. | Critical | Medium | Watching | S3 mock-first auth gates, role matrix, and session state machine implemented. Auth provider integration still blocked. |
+| R04 | Production auth is added without a clear role and session model. | Critical | Medium | Watching | S3 mock-first auth gates, role matrix, and session state machine implemented. `FRONTEND_V2_AUTH_PROVIDER_PREFLIGHT.md` defines provider/session/role-claim prerequisites. Auth provider integration still blocked. |
 | R05 | Token or secret values leak into source, docs, logs, screenshots, or mocks. | Critical | Medium | Watching | Keep `.env` unmodified; run changed-file secret scans; `scripts\qa-readonly-source-boundary.ps1` blocks token/browser-storage/Authorization signals in source. |
 | R06 | Upload implementation bypasses storage, scan, audit, or permission review. | Critical | Medium | Blocked | Do not implement real upload before storage signing, scan, audit, quota, and permission contracts exist. |
 | R07 | Download implementation exposes unpublished or unauthorized delivery files. | Critical | Medium | Blocked | Require signed/permissioned download endpoints, expiry, audit, and server-side authorization. |
@@ -94,7 +94,7 @@ Watch:
 Required control:
 
 - Backend/platform must own authorization; frontend only reflects allowed state.
-- Use `scripts\qa-readonly-auth-states.ps1` and `scripts\qa-readonly-auth-live-roles.ps1` for local display-state checks.
+- Use `FRONTEND_V2_AUTH_PROVIDER_PREFLIGHT.md`, `scripts\qa-auth-role-matrix.ps1`, `scripts\qa-readonly-auth-states.ps1`, and `scripts\qa-readonly-auth-live-roles.ps1` for local readiness checks.
 
 ### S4 Upload / Download
 
