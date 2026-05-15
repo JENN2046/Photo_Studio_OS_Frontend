@@ -120,6 +120,13 @@ if ($LASTEXITCODE -ne 0) {
   $failed = $true
 }
 
+Write-Host ""
+Write-Host "== auth role matrix QA =="
+powershell -ExecutionPolicy Bypass -File "scripts\qa-auth-role-matrix.ps1"
+if ($LASTEXITCODE -ne 0) {
+  $failed = $true
+}
+
 if ($IncludeBrowserQa) {
   Write-Host ""
   Write-Host "== full read-only browser QA =="

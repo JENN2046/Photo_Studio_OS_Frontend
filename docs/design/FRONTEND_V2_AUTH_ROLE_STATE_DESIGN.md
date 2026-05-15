@@ -245,6 +245,9 @@ When S3 is approved:
 - `scripts\qa-readonly-auth-live-roles.ps1` starts temporary local Vite servers
   with `VITE_BACKEND_USER_ROLE` set only in child process environments and
   verifies representative non-debug role paths without editing `.env`.
+- `scripts\qa-auth-role-matrix.ps1` verifies the 7 roles, 10 app routes,
+  70 role-route matrix cells, session states, access labels, and DEV/env role
+  rehearsal signals without connecting to a real auth provider.
 - Real auth provider integration, token handling, and backend authorization
   enforcement remain unimplemented and require separate approval.
 

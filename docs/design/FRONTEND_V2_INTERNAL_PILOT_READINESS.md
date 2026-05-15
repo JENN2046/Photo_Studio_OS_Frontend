@@ -38,6 +38,7 @@ auth are verified in an approved local or staging environment.
 | Backend smoke | Connected-path local mock and unreachable-backend failure path are automated. | `scripts\qa-backend-read-all.ps1` | Local ready |
 | Real backend smoke | Approved local/staging backend URL is required; production endpoints are not allowed. | `scripts\qa-backend-read-smoke.ps1`, `scripts\qa-backend-read-signoff.ps1` | Blocked on backend URL |
 | Auth/session states | Signed-out, expired, loading, error, forbidden, insufficient-role, and signed-in states are stable. | `src\features\auth\*`, `scripts\qa-readonly-auth-states.ps1` | Frontend ready |
+| Role matrix integrity | Seven roles, ten routes, seventy matrix cells, session states, and access labels are statically checked. | `scripts\qa-auth-role-matrix.ps1` | Frontend ready |
 | Env role readiness | Representative `VITE_BACKEND_USER_ROLE` paths are verified without `.env` edits. | `scripts\qa-readonly-auth-live-roles.ps1` | Frontend ready |
 | Real auth provider | Backend/platform auth provider, token model, and enforcement are not implemented in this frontend. | `docs\design\FRONTEND_V2_AUTH_ROLE_STATE_DESIGN.md` | Blocked on platform auth |
 | Responsive QA | 1440px, 1024px, and 390px scripted matrices pass without horizontal overflow. | `scripts\qa-readonly-all.ps1` | Ready |
@@ -69,6 +70,7 @@ npm run lint
 npm run build
 powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-source-boundary.ps1
+powershell -ExecutionPolicy Bypass -File scripts\qa-auth-role-matrix.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-all.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-auth-live-roles.ps1
 ```

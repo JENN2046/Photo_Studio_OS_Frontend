@@ -146,6 +146,10 @@ echo ""
 echo "== read-only source boundary QA =="
 run_powershell_script "scripts/qa-readonly-source-boundary.ps1"
 
+echo ""
+echo "== auth role matrix QA =="
+run_powershell_script "scripts/qa-auth-role-matrix.ps1"
+
 if [ "$include_browser_qa" -eq 1 ]; then
   echo ""
   echo "== full read-only browser QA =="

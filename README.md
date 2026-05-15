@@ -206,6 +206,12 @@ Automated live env role matrix:
 powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-auth-live-roles.ps1
 ```
 
+Automated auth role matrix static QA:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-auth-role-matrix.ps1
+```
+
 Automated read-only source boundary scan:
 
 ```powershell
@@ -248,9 +254,9 @@ one local command. It skips real backend signoff by default and only runs
 `scripts\qa-backend-read-signoff.ps1` when an approved local/staging backend URL
 is passed through `-ApprovedBackendBaseUrl`.
 `validate-local.ps1` and `validate-local.sh` also run the read-only source
-boundary scan so source-level POST/PATCH/DELETE, file input, signed URL, token,
-browser-storage, storage-provider URL, or public-access enablement signals fail
-before browser QA.
+boundary scan and auth role matrix static QA so source-level POST/PATCH/DELETE,
+file input, signed URL, token, browser-storage, storage-provider URL,
+public-access enablement, or role-matrix drift signals fail before browser QA.
 
 Baseline cockpit routes:
 
