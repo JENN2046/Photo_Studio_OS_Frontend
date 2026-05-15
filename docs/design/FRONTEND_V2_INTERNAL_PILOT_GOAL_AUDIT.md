@@ -50,7 +50,7 @@ auth/backend authorization still require approved local or staging environments.
 | Keep evidence artifacts present. | `scripts\qa-internal-pilot-manifest.ps1` | Static manifest QA checks required source, QA, and documentation artifacts for the local internal-pilot goal. | Covered locally |
 | Keep pilot aggregate options guarded. | `scripts\qa-internal-pilot-readiness-guards.ps1` | Static and negative-path QA checks approved backend expected-state options stay exposed and reject mixed data/failure modes before long QA starts. | Covered locally |
 | Keep signoff record aligned. | `scripts\qa-internal-pilot-signoff-record.ps1` | Static QA checks the signoff template covers current local, backend, auth, and boundary evidence while remaining unapproved. | Covered locally |
-| Keep goal status honest. | `scripts\qa-internal-pilot-goal-audit.ps1` | Static audit QA checks this goal remains a local frontend-ready candidate until backend/auth signoff blockers are cleared. | Covered locally |
+| Keep goal status honest. | `scripts\qa-internal-pilot-goal-audit.ps1` | Static audit QA checks this goal remains a local frontend-ready candidate until backend/auth signoff blockers are cleared, and that the pilot guard scripts stay present. | Covered locally |
 | Keep release/signoff docs unapproved. | `scripts\qa-release-boundary-docs.ps1` | Static QA checks internal-pilot, signoff, release, risk, and review docs still separate local readiness from production release. | Covered locally |
 | Avoid remote side effects. | Git status and commit history | Local commits exist; push/tag/deploy are not authorized by this audit. | Covered locally |
 

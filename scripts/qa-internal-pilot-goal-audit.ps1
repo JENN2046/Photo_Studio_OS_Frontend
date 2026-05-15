@@ -61,9 +61,13 @@ $requiredFiles = @(
   @{ Path = $releaseChecklistPath; Label = "Production release checklist" },
   @{ Path = "scripts\qa-internal-pilot-readiness.ps1"; Label = "Internal pilot aggregate QA" },
   @{ Path = "scripts\qa-internal-pilot-manifest.ps1"; Label = "Internal pilot evidence manifest QA" },
+  @{ Path = "scripts\qa-internal-pilot-readiness-guards.ps1"; Label = "Internal pilot aggregate guard QA" },
+  @{ Path = "scripts\qa-internal-pilot-signoff-record.ps1"; Label = "Internal pilot signoff record QA" },
+  @{ Path = "scripts\qa-release-boundary-docs.ps1"; Label = "Release-boundary docs QA" },
   @{ Path = "scripts\qa-backend-read-signoff.ps1"; Label = "Guarded backend read signoff" },
   @{ Path = "scripts\qa-backend-read-signoff-guards.ps1"; Label = "Backend read signoff guard QA" },
-  @{ Path = "scripts\qa-auth-role-matrix.ps1"; Label = "Auth role matrix QA" }
+  @{ Path = "scripts\qa-auth-role-matrix.ps1"; Label = "Auth role matrix QA" },
+  @{ Path = "scripts\qa-auth-provider-preflight.ps1"; Label = "Auth provider preflight QA" }
 )
 
 foreach ($file in $requiredFiles) {
@@ -75,6 +79,8 @@ Assert-FileContains -Path $goalAuditPath -Pattern "Blocked externally" -Label "g
 Assert-FileContains -Path $goalAuditPath -Pattern "Real backend read smoke" -Label "goal audit records backend smoke blocker"
 Assert-FileContains -Path $goalAuditPath -Pattern "Real backend authorization enforcement" -Label "goal audit records backend authorization blocker"
 Assert-FileContains -Path $goalAuditPath -Pattern "Real platform auth/session" -Label "goal audit records platform auth blocker"
+Assert-FileContains -Path $goalAuditPath -Pattern "qa-internal-pilot-readiness-guards\.ps1" -Label "goal audit records aggregate guard evidence"
+Assert-FileContains -Path $goalAuditPath -Pattern "qa-internal-pilot-signoff-record\.ps1" -Label "goal audit records signoff record guard evidence"
 Assert-FileContains -Path $goalAuditPath -Pattern "No production release, push, tag, deploy" -Label "goal audit preserves remote/release boundary"
 
 Assert-FileContains -Path $signoffPath -Pattern "\|\s*Decision\s*\|\s*Not signed off\s*\|" -Label "signoff decision remains unapproved"
@@ -97,9 +103,11 @@ if ($signoffContent -match "(?im)^\- \[[xX]\] Approved as") {
 Assert-FileContains -Path $readinessPath -Pattern "Blocked on backend URL" -Label "readiness records backend URL blocker"
 Assert-FileContains -Path $readinessPath -Pattern "Blocked on platform auth" -Label "readiness records platform auth blocker"
 Assert-FileContains -Path $readinessPath -Pattern "External Signoff Still Required" -Label "readiness keeps external signoff section"
+Assert-FileContains -Path $readinessPath -Pattern "Signoff record coverage" -Label "readiness records signoff record guard"
 Assert-FileContains -Path $readinessPath -Pattern "Release manager approval for push, tag, deploy, or production rollout" -Label "readiness preserves release approval boundary"
 
 Assert-FileContains -Path $authPreflightPath -Pattern "Provider owner named" -Label "auth preflight keeps provider owner gate"
+Assert-FileContains -Path $releaseChecklistPath -Pattern "qa-internal-pilot-signoff-record\.ps1" -Label "release checklist keeps signoff record guard"
 Assert-FileContains -Path $releaseChecklistPath -Pattern "qa-backend-read-signoff\.ps1" -Label "release checklist keeps backend signoff gate"
 Assert-FileContains -Path $releaseChecklistPath -Pattern "Do not execute these steps without explicit approval" -Label "release checklist preserves explicit release approval boundary"
 
