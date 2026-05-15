@@ -68,6 +68,8 @@ backend URL exists, pass it explicitly:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment local -ApprovedBackendBaseUrl http://127.0.0.1:8080
+powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment staging -ApprovedBackendBaseUrl <approved-staging-backend-url> -ApprovedBackendExpectedReadModelState stale
+powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment staging -ApprovedBackendBaseUrl <approved-staging-backend-url> -ApprovedBackendExpectReadFailure -ApprovedBackendExpectedFailureState forbidden
 ```
 
 Expanded command list:

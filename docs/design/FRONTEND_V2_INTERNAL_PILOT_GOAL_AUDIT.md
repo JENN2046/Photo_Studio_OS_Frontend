@@ -73,6 +73,7 @@ This command currently chains:
 - `scripts\qa-release-boundary-docs.ps1`
 - `scripts\qa-backend-read-all.ps1`
 - optional approved backend signoff when `-ApprovedBackendBaseUrl` is provided
+- optional approved backend expected data/failure state passthrough when staging fixtures intentionally return empty / partial / stale / 403 / 404
 - `scripts\qa-readonly-auth-live-roles.ps1`
 - `scripts\qa-readonly-auth-states.ps1`
 - `scripts\qa-readonly-all.ps1`
@@ -81,6 +82,8 @@ For approved local/staging backend signoff, use:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment local -ApprovedBackendBaseUrl http://127.0.0.1:8080
+powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment staging -ApprovedBackendBaseUrl <approved-staging-backend-base-url> -ApprovedBackendExpectedReadModelState stale
+powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment staging -ApprovedBackendBaseUrl <approved-staging-backend-base-url> -ApprovedBackendExpectReadFailure -ApprovedBackendExpectedFailureState forbidden
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName staging -BackendBaseUrl <approved-staging-backend-base-url> -ExpectReadFailure -ExpectedFailureState forbidden
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName staging -BackendBaseUrl <approved-staging-backend-base-url> -ExpectedReadModelState stale
 ```

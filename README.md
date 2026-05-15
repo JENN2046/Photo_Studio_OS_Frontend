@@ -284,10 +284,19 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1
 ```
 
 Optional internal pilot aggregate with an approved local/staging backend read
-signoff:
+signoff. Expected data states can be passed through the aggregate when the
+approved backend fixture intentionally returns `empty`, `partial`, or `stale`:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment local -ApprovedBackendBaseUrl http://127.0.0.1:8080
+powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment staging -ApprovedBackendBaseUrl <approved-staging-backend-url> -ApprovedBackendExpectedReadModelState stale
+```
+
+Expected failure states can also be passed through for approved 403 / 404
+fixtures:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment staging -ApprovedBackendBaseUrl <approved-staging-backend-url> -ApprovedBackendExpectReadFailure -ApprovedBackendExpectedFailureState forbidden
 ```
 
 The QA scripts use transient `npx --package @playwright/cli` execution without
@@ -311,7 +320,8 @@ The internal pilot readiness aggregate runs local lint/build/validation,
 backend read aggregate smoke, live env role QA, and the browser QA matrices from
 one local command. It skips real backend signoff by default and only runs
 `scripts\qa-backend-read-signoff.ps1` when an approved local/staging backend URL
-is passed through `-ApprovedBackendBaseUrl`.
+is passed through `-ApprovedBackendBaseUrl`; expected backend data/failure
+states are forwarded to the guarded signoff wrapper.
 `validate-local.ps1` and `validate-local.sh` also run the read-only source
 boundary scan, package boundary QA, backend read contract-map QA, and auth role
 matrix static QA so source-level POST/PATCH/DELETE, file input, signed URL,

@@ -103,6 +103,7 @@ With an approved staging backend/auth environment, also run:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment staging -ApprovedBackendBaseUrl <approved-staging-backend-url>
+powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment staging -ApprovedBackendBaseUrl <approved-staging-backend-url> -ApprovedBackendExpectReadFailure -ApprovedBackendExpectedFailureState forbidden
 ```
 
 Do not place the approved URL in docs, source, `.env`, screenshots, or commit

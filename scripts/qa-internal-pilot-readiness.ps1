@@ -8,7 +8,12 @@ param(
   [string]$BaseUrl = "http://127.0.0.1:5173",
   [string]$ApprovedBackendBaseUrl = "",
   [ValidateSet("local", "staging")]
-  [string]$ApprovedBackendEnvironment = "local"
+  [string]$ApprovedBackendEnvironment = "local",
+  [ValidateSet("ready", "empty", "partial", "stale")]
+  [string]$ApprovedBackendExpectedReadModelState = "ready",
+  [switch]$ApprovedBackendExpectReadFailure,
+  [ValidateSet("error", "forbidden", "invalid-id")]
+  [string]$ApprovedBackendExpectedFailureState = "error"
 )
 
 $ErrorActionPreference = "Stop"
@@ -21,6 +26,11 @@ if (-not (Test-Path "package.json")) {
 $normalizedBaseUrl = $BaseUrl.TrimEnd("/")
 $serverProcess = $null
 $listenerPid = $null
+
+if ($ApprovedBackendExpectReadFailure -and $ApprovedBackendExpectedReadModelState -ne "ready") {
+  Write-Host "ApprovedBackendExpectedReadModelState cannot be combined with ApprovedBackendExpectReadFailure."
+  exit 1
+}
 
 function Test-Reachable {
   param([string]$Url)
@@ -132,6 +142,7 @@ Write-Host "== Photo Studio OS internal pilot readiness QA =="
 Write-Host "BaseUrl: $normalizedBaseUrl"
 if (-not [string]::IsNullOrWhiteSpace($ApprovedBackendBaseUrl)) {
   Write-Host "Approved backend signoff: enabled ($ApprovedBackendEnvironment)"
+  Write-Host "Approved backend expectation: $(if ($ApprovedBackendExpectReadFailure) { "failure:$ApprovedBackendExpectedFailureState" } else { "data:$ApprovedBackendExpectedReadModelState" })"
 } else {
   Write-Host "Approved backend signoff: skipped"
 }
@@ -147,13 +158,25 @@ try {
   }
   if (-not [string]::IsNullOrWhiteSpace($ApprovedBackendBaseUrl)) {
     Invoke-CommandStep "approved backend read signoff" {
-      powershell `
-        -ExecutionPolicy Bypass `
-        -File scripts\qa-backend-read-signoff.ps1 `
-        -EnvironmentName $ApprovedBackendEnvironment `
-        -BackendBaseUrl $ApprovedBackendBaseUrl `
-        -FrontendBaseUrl $normalizedBaseUrl `
-        -SkipPostValidation
+      $signoffArgs = @(
+        "-ExecutionPolicy", "Bypass",
+        "-File", "scripts\qa-backend-read-signoff.ps1",
+        "-EnvironmentName", $ApprovedBackendEnvironment,
+        "-BackendBaseUrl", $ApprovedBackendBaseUrl,
+        "-FrontendBaseUrl", $normalizedBaseUrl,
+        "-SkipPostValidation"
+      )
+
+      if ($ApprovedBackendExpectReadFailure) {
+        $signoffArgs += "-ExpectReadFailure"
+        $signoffArgs += "-ExpectedFailureState"
+        $signoffArgs += $ApprovedBackendExpectedFailureState
+      } else {
+        $signoffArgs += "-ExpectedReadModelState"
+        $signoffArgs += $ApprovedBackendExpectedReadModelState
+      }
+
+      powershell @signoffArgs
     }
   } else {
     Write-Host ""

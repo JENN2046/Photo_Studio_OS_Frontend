@@ -114,6 +114,9 @@ Assert-FileContains -Path "scripts\validate-local.sh" -Pattern "qa-release-bound
 
 Assert-FileContains -Path "scripts\qa-internal-pilot-readiness.ps1" -Pattern "qa-backend-read-all\.ps1" -Label "internal pilot aggregate includes backend read smoke"
 Assert-FileContains -Path "scripts\qa-internal-pilot-readiness.ps1" -Pattern "ApprovedBackendBaseUrl" -Label "internal pilot aggregate has approved backend signoff switch"
+Assert-FileContains -Path "scripts\qa-internal-pilot-readiness.ps1" -Pattern "ApprovedBackendExpectedReadModelState" -Label "internal pilot aggregate exposes approved backend data-state signoff"
+Assert-FileContains -Path "scripts\qa-internal-pilot-readiness.ps1" -Pattern "ApprovedBackendExpectedFailureState" -Label "internal pilot aggregate exposes approved backend failure-state signoff"
+Assert-FileContains -Path "scripts\qa-internal-pilot-readiness.ps1" -Pattern "cannot be combined with ApprovedBackendExpectReadFailure" -Label "internal pilot aggregate rejects mixed backend signoff expectations"
 Assert-FileContains -Path "scripts\qa-internal-pilot-readiness.ps1" -Pattern "qa-readonly-auth-live-roles\.ps1" -Label "internal pilot aggregate includes live role QA"
 Assert-FileContains -Path "scripts\qa-internal-pilot-readiness.ps1" -Pattern "qa-readonly-auth-states\.ps1" -Label "internal pilot aggregate includes auth-state QA"
 Assert-FileContains -Path "scripts\qa-internal-pilot-readiness.ps1" -Pattern "qa-readonly-all\.ps1" -Label "internal pilot aggregate includes full browser QA"

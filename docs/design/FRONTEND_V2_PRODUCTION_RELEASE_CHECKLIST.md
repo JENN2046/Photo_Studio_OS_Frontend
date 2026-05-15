@@ -47,6 +47,8 @@ approved URL instead of relying only on the default local mock-backend path:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment local -ApprovedBackendBaseUrl http://127.0.0.1:8080
+powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment staging -ApprovedBackendBaseUrl <approved-staging-backend-url> -ApprovedBackendExpectedReadModelState stale
+powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment staging -ApprovedBackendBaseUrl <approved-staging-backend-url> -ApprovedBackendExpectReadFailure -ApprovedBackendExpectedFailureState forbidden
 ```
 
 | Check | Status |
@@ -67,7 +69,7 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1
 | `qa-backend-read-all.ps1` passes connected, 403, 404, empty, partial, stale, and failure local backend read smoke | |
 | `qa-backend-read-signoff.ps1` passes with an approved local/staging backend URL, including explicit expected 403 / 404 and empty / partial / stale states when backend signoff is in scope | |
 | `qa-readonly-auth-live-roles.ps1` passes representative `VITE_BACKEND_USER_ROLE` paths | |
-| `qa-internal-pilot-readiness.ps1` passes on a machine with no pre-existing Vite server | |
+| `qa-internal-pilot-readiness.ps1` passes on a machine with no pre-existing Vite server, including explicit expected backend state passthrough when approved staging fixtures are used | |
 
 ## Browser QA Matrix
 
