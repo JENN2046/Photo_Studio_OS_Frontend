@@ -46,6 +46,12 @@ function New-RouteUrl {
   return "$normalizedBaseUrl/$Hash"
 }
 
+function ConvertTo-ExpectedEncoded {
+  param([string[]]$Items)
+
+  return @($Items | ForEach-Object { [uri]::EscapeDataString($_) })
+}
+
 function Test-BoundaryCase {
   param(
     [hashtable]$Case,
@@ -139,6 +145,47 @@ $states = @{
       "%E5%86%85%E9%83%A8%E8%B0%83%E8%AF%95%EF%BC%9A%E6%A8%A1%E6%8B%9F%E5%90%8E%E7%AB%AF%E5%8F%AA%E8%AF%BB%E6%A8%A1%E5%9E%8B%E6%9C%AA%E9%85%8D%E7%BD%AE%E3%80%82"
     )
   }
+  Empty = @{
+    StateSelector = ".read-model-state-empty"
+    ExpectRetry = $false
+    ExpectedEncoded = @(
+      "%E8%AF%A5%E8%A7%86%E5%9B%BE%E6%9A%82%E6%97%A0%E6%95%B0%E6%8D%AE",
+      "%E6%95%B0%E6%8D%AE%E4%B8%BA%E7%A9%BA"
+    )
+  }
+  Partial = @{
+    StateSelector = ".read-model-state-partial"
+    ExpectRetry = $false
+    ExpectedEncoded = @(
+      "%E8%AF%A5%E8%A7%86%E5%9B%BE%E4%BB%85%E5%8A%A0%E8%BD%BD%E4%BA%86%E9%83%A8%E5%88%86%E6%95%B0%E6%8D%AE",
+      "%E9%83%A8%E5%88%86%E6%95%B0%E6%8D%AE"
+    )
+  }
+  Stale = @{
+    StateSelector = ".read-model-state-stale"
+    ExpectRetry = $true
+    ExpectedEncoded = @(
+      "%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%83%BD%E5%B7%B2%E8%BF%87%E6%9C%9F",
+      "%E6%95%B0%E6%8D%AE%E8%BF%87%E6%9C%9F",
+      "%E9%87%8D%E8%AF%95"
+    )
+  }
+  Forbidden = @{
+    StateSelector = ".read-model-state-forbidden"
+    ExpectRetry = $false
+    ExpectedEncoded = @(
+      "%E6%97%A0%E6%9D%83%E8%AE%BF%E9%97%AE%E8%AF%A5%E5%8F%AA%E8%AF%BB%E6%A8%A1%E5%9E%8B",
+      "%E6%9D%83%E9%99%90%E4%B8%8D%E8%B6%B3"
+    )
+  }
+  InvalidId = @{
+    StateSelector = ".read-model-state-invalid-id"
+    ExpectRetry = $false
+    ExpectedEncoded = @(
+      "%E8%AF%B7%E6%B1%82%E7%9A%84%20ID%20%E6%97%A0%E6%95%88%E6%88%96%E6%9C%AA%E6%89%BE%E5%88%B0",
+      "ID%20%E6%97%A0%E6%95%88"
+    )
+  }
   Idle = @{
     StateSelector = ".read-model-state-idle"
     ExpectRetry = $false
@@ -151,6 +198,7 @@ $states = @{
 $readModelPages = @(
   @{
     Name = "asset-inbox"
+    DebugLabel = "Asset Inbox"
     HashBase = $ReadOnlyRouteHashes.AssetInbox
     IdleHash = $ReadOnlyRouteHashes.AssetInboxIdle
     WorkspaceSelector = ".asset-inbox-console"
@@ -163,6 +211,7 @@ $readModelPages = @(
   },
   @{
     Name = "qc-retouch"
+    DebugLabel = "QC / Retouch"
     HashBase = $ReadOnlyRouteHashes.QcRetouch
     IdleHash = $ReadOnlyRouteHashes.QcRetouchIdle
     WorkspaceSelector = ".qc-retouch-console"
@@ -175,6 +224,7 @@ $readModelPages = @(
   },
   @{
     Name = "review-gallery"
+    DebugLabel = "Review Gallery"
     HashBase = $ReadOnlyRouteHashes.ReviewGallery
     IdleHash = $ReadOnlyRouteHashes.ReviewGalleryIdle
     WorkspaceSelector = ".review-gallery-console"
@@ -187,6 +237,7 @@ $readModelPages = @(
   },
   @{
     Name = "delivery-readiness"
+    DebugLabel = "Delivery Readiness"
     HashBase = $ReadOnlyRouteHashes.DeliveryReadiness
     IdleHash = $ReadOnlyRouteHashes.DeliveryReadinessIdle
     WorkspaceSelector = ".delivery-readiness-console"
@@ -224,6 +275,46 @@ foreach ($page in $readModelPages) {
     WorkspaceSelector = $page.WorkspaceSelector
     ExpectRetry = $states.MissingConfig.ExpectRetry
     ExpectedEncoded = $states.MissingConfig.ExpectedEncoded
+  }
+  $cases += @{
+    Name = "$($page.Name)-empty"
+    Hash = "$($page.HashBase)&readModelState=empty"
+    StateSelector = $states.Empty.StateSelector
+    WorkspaceSelector = $page.WorkspaceSelector
+    ExpectRetry = $states.Empty.ExpectRetry
+    ExpectedEncoded = @($states.Empty.ExpectedEncoded + "%E5%86%85%E9%83%A8%E8%B0%83%E8%AF%95%EF%BC%9A$([uri]::EscapeDataString($page.DebugLabel))%20%E5%8F%AA%E8%AF%BB%E6%A8%A1%E5%9E%8B%E8%BF%94%E5%9B%9E%E7%A9%BA%E6%95%B0%E6%8D%AE%E3%80%82")
+  }
+  $cases += @{
+    Name = "$($page.Name)-partial"
+    Hash = "$($page.HashBase)&readModelState=partial"
+    StateSelector = $states.Partial.StateSelector
+    WorkspaceSelector = $page.WorkspaceSelector
+    ExpectRetry = $states.Partial.ExpectRetry
+    ExpectedEncoded = @($states.Partial.ExpectedEncoded + "%E5%86%85%E9%83%A8%E8%B0%83%E8%AF%95%EF%BC%9A$([uri]::EscapeDataString($page.DebugLabel))%20%E5%8F%AA%E8%AF%BB%E6%A8%A1%E5%9E%8B%E8%BF%94%E5%9B%9E%E4%B8%8D%E5%AE%8C%E6%95%B4%E6%95%B0%E6%8D%AE%E3%80%82")
+  }
+  $cases += @{
+    Name = "$($page.Name)-stale"
+    Hash = "$($page.HashBase)&readModelState=stale"
+    StateSelector = $states.Stale.StateSelector
+    WorkspaceSelector = $page.WorkspaceSelector
+    ExpectRetry = $states.Stale.ExpectRetry
+    ExpectedEncoded = @($states.Stale.ExpectedEncoded + "%E5%86%85%E9%83%A8%E8%B0%83%E8%AF%95%EF%BC%9A$([uri]::EscapeDataString($page.DebugLabel))%20%E6%95%B0%E6%8D%AE%E5%B7%B2%E8%BF%87%E6%9C%9F%EF%BC%8C%E9%9C%80%E8%A6%81%E5%88%B7%E6%96%B0%E3%80%82")
+  }
+  $cases += @{
+    Name = "$($page.Name)-forbidden"
+    Hash = "$($page.HashBase)&readModelState=forbidden"
+    StateSelector = $states.Forbidden.StateSelector
+    WorkspaceSelector = $page.WorkspaceSelector
+    ExpectRetry = $states.Forbidden.ExpectRetry
+    ExpectedEncoded = @($states.Forbidden.ExpectedEncoded + (ConvertTo-ExpectedEncoded @("Simulated $($page.DebugLabel) access denied")))
+  }
+  $cases += @{
+    Name = "$($page.Name)-invalid-id"
+    Hash = "$($page.HashBase)&readModelState=invalid-id"
+    StateSelector = $states.InvalidId.StateSelector
+    WorkspaceSelector = $page.WorkspaceSelector
+    ExpectRetry = $states.InvalidId.ExpectRetry
+    ExpectedEncoded = @($states.InvalidId.ExpectedEncoded + (ConvertTo-ExpectedEncoded @("Simulated $($page.DebugLabel) invalid context id")))
   }
   $cases += @{
     Name = "$($page.Name)-idle"

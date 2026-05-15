@@ -28,10 +28,10 @@ As of the current Frontend v2 local state, the read-only production loop has mov
 - Command Center now exposes the first Golden Product Loop IDs through a compact `黄金链路` entry strip with four read-only page links.
 - P2 cockpit browser polish has fixed the 1280px side-rail breakpoint and the 390px Command Center topbar status line.
 - Read-model UI now shares repeated disabled action pairs and repeated metric strip rendering.
-- DEV-only read-model boundary rehearsals exist for `readModelState=loading`, `readModelState=error`, and `readModelState=missing-config`; idle context handling is also browser-checked.
+- DEV-only read-model boundary rehearsals exist for `readModelState=loading`, `readModelState=error`, `readModelState=missing-config`, `readModelState=empty`, `readModelState=partial`, `readModelState=stale`, `readModelState=forbidden`, and `readModelState=invalid-id`; idle context handling is also browser-checked.
 - README.md now documents the local Frontend v2 QA runway for Command Center, the four hash pages, 390px checks, and DEV-only state rehearsals.
 - P2.5 RC hardening has browser-clicked the Command Center `黄金链路` entries, verified visible keyboard focus rings, and re-run the five-page RC matrix at 1440px / 1024px / 390px.
-- P2.5 boundary-state matrix has rechecked loading, error, missing-config, and missing-id idle states at 1024px and 390px with no console errors or horizontal overflow.
+- Boundary-state matrix now checks loading, error, missing-config, empty, partial, stale, forbidden, invalid-id, and missing-id idle states at 1024px and 390px with no console errors or horizontal overflow.
 - P2.6 click affordance pass has converted Command Center fake heading actions into real links, confirmed read-model card selection, and clarified disabled read-only action semantics.
 - P2.7 command rail hygiene has reduced Command Center rail entries to unique hash scenes and added hash-aware `aria-current` active state.
 - P2.8 Risk / Approval scene depth adds read-only detail cards for risk impact, owner, suggested action, approval state, approval impact, and next step; direct `#risk` / `#approvals` hash loads are stabilized with Command Center scene state.
@@ -39,7 +39,7 @@ As of the current Frontend v2 local state, the read-only production loop has mov
 - P2.11 read-model workspace helpers now live in `readModelViewModels.ts`: asset labels/tone, QC result labels, review item tone, delivery checklist labels, and delivery artifact derivation are no longer component-local.
 - P2.12 read-model workspace components now live in `readModelWorkspaces.tsx`, while `ReadModelPages.tsx` owns route params, read-model state, mock-first loading, and page shell only.
 - P2.13 read-only route QA is now scripted through `scripts/qa-readonly-routes.ps1`, covering Command Center plus six promoted hash scenes and the four read-model pages at 1440px and 390px.
-- P2.14 read-model boundary-state QA is now scripted through `scripts/qa-readonly-boundary-states.ps1`, covering loading, error, missing-config, and missing-id idle states at 1024px and 390px.
+- P2.14/P3.8 read-model boundary-state QA is scripted through `scripts/qa-readonly-boundary-states.ps1`, covering loading, error, missing-config, empty, partial, stale, forbidden, invalid-id, and missing-id idle states at 1024px and 390px.
 - P2.15 local validation orchestration now allows `scripts/validate-local.ps1 -IncludeBrowserQa` to run lint/build, whitespace, changed-file secret scan, route QA, and boundary-state QA from one local entry point.
 - P2.16/P2.17 now align the Bash validation helper and add `scripts/qa-readonly-interactions.ps1` for read-model tabs, local selection state, and disabled action posture.
 - P2.18 adds a Bash validation runtime preflight so incompatible Bash/WSL Node versions fail early with a clear Vite 7 Node requirement instead of failing deep inside `npm run build`.
@@ -116,7 +116,7 @@ Image references:
 | Cross-page production context and Command Center entry clarity. | Completed with shared read-model context bar plus Command Center `黄金链路` strip. | Keep entry links read-only and verify them when route or fixture IDs change. | P1B done |
 | Command Center responsive cockpit polish. | 1280px side rail and 390px topbar status issues were fixed and browser-checked. | Continue checking 1440px / 1024px / 390px after future cockpit layout changes. | P2 done |
 | Read-model shared UI duplication. | Disabled action pairs and metric strips are shared components. | Add more shared pieces only when concrete duplication appears; avoid speculative abstractions. | P2 done |
-| Read-model boundary-state rehearsal. | DEV-only query states cover loading, error, missing-config, and missing-id idle checks without backend writes. | Keep these states local and read-only; do not use them as production auth/backend behavior. | P2 done |
+| Read-model boundary-state rehearsal. | DEV-only query states cover loading, error, missing-config, empty, partial, stale, forbidden, invalid-id, and missing-id idle checks without backend writes. | Keep these states local and read-only; do not use them as production auth/backend behavior. | P3.8 done |
 | Local QA runway. | README documents local routes, 390px checks, and DEV-only boundary rehearsals. | Use the README route list before future P2/P3 visual or read-model changes. | P2 done |
 | Keyboard focus visibility. | Command Center links and read-model tabs/cards now expose visible focus rings. | Keep future links/buttons/selectable cards covered by `:focus-visible` styles. | P2.5 done |
 | RC browser matrix. | Command Center plus four read-model pages passed 1440px / 1024px / 390px checks; boundary states passed 1024px / 390px checks. | Re-run this matrix after route, layout, or shared style changes. | P2.5 done |
@@ -127,7 +127,7 @@ Image references:
 | Read-model workspace view model cleanup. | Asset label/tone, QC result label/value, review tone, delivery checklist labels, and delivery artifact derivation moved out of `ReadModelPages.tsx`. | Keep page components focused on local selection state and rendering; add future read-model derivation to `readModelViewModels.ts`. | P2.11 done |
 | Read-model workspace component split. | Asset Inbox, QC / Retouch, Review Gallery, and Delivery Readiness workspace components moved out of `ReadModelPages.tsx` into `readModelWorkspaces.tsx`. | Keep route/data-state orchestration in `ReadModelPages.tsx`; add future workspace-only UI changes in `readModelWorkspaces.tsx`. | P2.12 done |
 | Scripted read-only route QA. | Local QA script checks Command Center scenes, read-model pages, runtime chips, rail active state, invalid DEV debug fallback, console errors, and horizontal overflow across 1440px, 1024px, and 390px. | Run `scripts/qa-readonly-routes.ps1` after route, layout, rail, runtime-state, or read-model page changes while the Vite server is running. | P3.7 done |
-| Scripted boundary-state QA. | Local QA script checks all four read-model pages across loading, error, missing-config, and missing-id idle states at 1024px and 390px. | Run `scripts/qa-readonly-boundary-states.ps1` after read-model state, shell, notice, or responsive style changes. | P2.14 done |
+| Scripted boundary-state QA. | Local QA script checks all four read-model pages across loading, error, missing-config, empty, partial, stale, forbidden, invalid-id, and missing-id idle states at 1024px and 390px. | Run `scripts/qa-readonly-boundary-states.ps1` after read-model state, shell, notice, or responsive style changes. | P3.8 done |
 | Local validation orchestration. | `scripts/validate-local.ps1` now performs changed-file secret scan and can run both browser QA matrices via `-IncludeBrowserQa`. | Use default mode for fast local gates and `-IncludeBrowserQa` before larger read-only UI commits when the dev server is running. | P2.15 done |
 | Scripted interaction QA. | Local QA script checks read-model tab switching, local card selection, and disabled read-only actions at desktop and 390px. | Run through `scripts/qa-readonly-interactions.ps1` or the full validation helper after read-model interaction changes. | P2.17 done |
 | Bash validation environment guard. | `scripts/validate-local.sh` checks Node.js before npm gates and reports the Vite 7 requirement when Bash/WSL exposes an incompatible runtime. | Use PowerShell validation on this machine unless the Bash/WSL Node runtime is `20.19+` or `22.12+`. | P2.18 done |
@@ -279,7 +279,7 @@ Use this as the first copy alignment pass before creating more pages.
 19. Completed: P2.11 read-model workspace helper derivation into `readModelViewModels.ts`.
 20. Completed: P2.12 read-model workspace component split into `readModelWorkspaces.tsx`.
 21. Completed: P2.13 scripted read-only route QA for Command Center scenes plus four read-model pages at 1440px and 390px.
-22. Completed: P2.14 scripted read-model boundary-state QA for loading, error, missing-config, and missing-id idle states at 1024px and 390px.
+22. Completed: P2.14/P3.8 scripted read-model boundary-state QA for loading, error, missing-config, empty, partial, stale, forbidden, invalid-id, and missing-id idle states at 1024px and 390px.
 23. Completed: P2.15 local validation orchestration with optional browser QA aggregation.
 24. Completed: P2.16/P2.17 Bash validation helper parity plus read-model interaction QA.
 25. Completed: P3.1/P3.2 visible runtime state surfaces for read-model pages and Command Center.

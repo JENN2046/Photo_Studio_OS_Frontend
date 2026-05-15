@@ -161,8 +161,9 @@ matrix checks Command Center scenes plus the four read-model hash pages at
 `1440x960`, `1024x768`, and `390x844` for expected Chinese copy, runtime chips,
 invalid debug-state fallbacks, required workspace selectors, Command Center
 `aria-current` state, console errors, and horizontal overflow. The boundary
-matrix checks loading, error, missing-config, and missing-id idle states for all
-four read-model pages at `1024x768` and `390x844`. The interaction matrix checks
+matrix checks loading, error, missing-config, empty, partial, stale, forbidden,
+invalid-id, and missing-id idle states for all four read-model pages at
+`1024x768` and `390x844`. The interaction matrix checks
 Command Center `黄金链路` entry clicks, read-model tab switching, local selection
 state, and disabled read-only action posture at `1440x960`, `1024x768`, and
 `390x844`. The auth-state matrix checks signed-out, expired, loading, error,
@@ -214,6 +215,10 @@ DEV-only read-model boundary rehearsals:
 - Add `readModelState=loading` to a read-model hash query to hold the loading state.
 - Add `readModelState=error` to rehearse the read-only error state.
 - Add `readModelState=missing-config` to rehearse a missing backend read-model config.
+- Add `readModelState=empty`, `readModelState=partial`, or
+  `readModelState=stale` to rehearse backend data-quality boundary states.
+- Add `readModelState=forbidden` or `readModelState=invalid-id` to rehearse
+  backend 403 / 404-style read-model gates.
 - Unknown `readModelState` values should fall back to the normal mock-first
   ready path.
 - Omit the required id such as `deliveryId` on `#delivery-readiness` to check idle context handling.
