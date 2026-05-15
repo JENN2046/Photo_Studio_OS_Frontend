@@ -63,7 +63,71 @@ function Test-AuthCase {
     expectNoticeSelector = $Case.ExpectNoticeSelector
   } | ConvertTo-Json -Compress -Depth 6
 
-  $code = "async (page) => { const testCase = $payload; page.removeAllListeners('console'); const consoleErrors = []; page.on('console', (message) => { if (message.type() === 'error') { consoleErrors.push(message.text()); } }); await page.goto(testCase.url); await page.waitForLoadState('domcontentloaded'); await page.waitForTimeout(50); await page.waitForSelector('.read-model-page', { timeout: 2000 }).catch(() => undefined); if (testCase.expectNoticeSelector) { await page.waitForSelector(testCase.expectNoticeSelector, { timeout: 2000 }).catch(() => undefined); } else if (testCase.contentSelector) { await page.waitForSelector(testCase.contentSelector, { timeout: 2000 }).catch(() => undefined); } const result = await page.evaluate((testCase) => { const text = document.body.innerText; const root = document.documentElement; const expected = testCase.expectedEncoded.map((item) => decodeURIComponent(item)); const chipExpected = testCase.expectChipEncoded.map((item) => decodeURIComponent(item)); const missing = expected.filter((item) => !text.includes(item)); const missingChips = chipExpected.filter((item) => !text.includes(item)); const stateNoticeCount = document.querySelectorAll('.read-model-state').length; const noticeSelectorCount = testCase.expectNoticeSelector ? document.querySelectorAll(testCase.expectNoticeSelector).length : null; const contentCount = testCase.contentSelector ? document.querySelectorAll(testCase.contentSelector).length : null; const contentHidden = testCase.expectContentHidden && testCase.contentSelector ? contentCount === 0 : null; const contentVisible = testCase.expectContentVisible && testCase.contentSelector ? contentCount > 0 : null; const overflow = root.scrollWidth > root.clientWidth + 1; return { name: testCase.name, url: location.href, missing, missingChips, stateNoticeCount, noticeSelectorCount, contentCount, contentHidden, contentVisible, overflow, scrollWidth: root.scrollWidth, clientWidth: root.clientWidth }; }, testCase); return Object.assign({}, result, { viewport: '$($Viewport.Name)', width: $($Viewport.Width), height: $($Viewport.Height), consoleErrorCount: consoleErrors.length, consoleErrors: consoleErrors }); }"
+  $code = @"
+async (page) => {
+  const testCase = $payload;
+  page.removeAllListeners('console');
+  const consoleErrors = [];
+  page.on('console', (message) => {
+    if (message.type() === 'error') {
+      consoleErrors.push(message.text());
+    }
+  });
+  await page.goto(testCase.url);
+  await page.waitForLoadState('domcontentloaded');
+  await page.waitForTimeout(50);
+  await page.waitForSelector('.read-model-page', { timeout: 2000 }).catch(() => undefined);
+  if (testCase.expectNoticeSelector) {
+    await page.waitForSelector(testCase.expectNoticeSelector, { timeout: 2000 }).catch(() => undefined);
+  } else if (testCase.contentSelector) {
+    await page.waitForSelector(testCase.contentSelector, { timeout: 2000 }).catch(() => undefined);
+  }
+  const result = await page.evaluate((testCase) => {
+    const text = document.body.innerText;
+    const root = document.documentElement;
+    const expected = testCase.expectedEncoded.map((item) => decodeURIComponent(item));
+    const chipExpected = testCase.expectChipEncoded.map((item) => decodeURIComponent(item));
+    const missing = expected.filter((item) => !text.includes(item));
+    const missingChips = chipExpected.filter((item) => !text.includes(item));
+    const stateNoticeCount = document.querySelectorAll('.read-model-state').length;
+    const noticeSelectorCount = testCase.expectNoticeSelector ? document.querySelectorAll(testCase.expectNoticeSelector).length : null;
+    const contentCount = testCase.contentSelector ? document.querySelectorAll(testCase.contentSelector).length : null;
+    const contentHidden = testCase.expectContentHidden && testCase.contentSelector ? contentCount === 0 : null;
+    const contentVisible = testCase.expectContentVisible && testCase.contentSelector ? contentCount > 0 : null;
+    const overflow = root.scrollWidth > root.clientWidth + 1;
+    const storageKeys = [];
+    try {
+      storageKeys.push(...Object.keys(window.localStorage));
+      storageKeys.push(...Object.keys(window.sessionStorage));
+    } catch {
+      storageKeys.push('__storage_unavailable__');
+    }
+    const suspiciousStorageKeyCount = storageKeys.filter((key) => /auth|token|session|jwt|secret|password/i.test(key)).length;
+    return {
+      name: testCase.name,
+      url: location.href,
+      missing,
+      missingChips,
+      stateNoticeCount,
+      noticeSelectorCount,
+      contentCount,
+      contentHidden,
+      contentVisible,
+      overflow,
+      scrollWidth: root.scrollWidth,
+      clientWidth: root.clientWidth,
+      suspiciousStorageKeyCount
+    };
+  }, testCase);
+  return Object.assign({}, result, {
+    viewport: '$($Viewport.Name)',
+    width: $($Viewport.Width),
+    height: $($Viewport.Height),
+    consoleErrorCount: consoleErrors.length,
+    consoleErrors: consoleErrors
+  });
+}
+"@
   $playwrightDir = Join-Path (Get-Location) ".playwright-cli"
   if (-not (Test-Path $playwrightDir)) {
     New-Item -ItemType Directory -Path $playwrightDir | Out-Null
@@ -100,6 +164,9 @@ function Test-AuthCase {
   }
   if ($result.consoleErrorCount -gt 0) {
     $problems += "console errors: $($result.consoleErrors -join ' | ')"
+  }
+  if ($result.suspiciousStorageKeyCount -gt 0) {
+    $problems += "auth/session storage keys observed: $($result.suspiciousStorageKeyCount)"
   }
 
   if ($problems.Count -gt 0) {

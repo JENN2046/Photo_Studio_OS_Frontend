@@ -218,6 +218,14 @@ async (page) => {
     const contentHidden = testCase.expectContentHidden && testCase.contentSelector ? contentCount === 0 : null;
     const contentVisible = testCase.expectContentVisible && testCase.contentSelector ? contentCount > 0 : null;
     const overflow = root.scrollWidth > root.clientWidth + 1;
+    const storageKeys = [];
+    try {
+      storageKeys.push(...Object.keys(window.localStorage));
+      storageKeys.push(...Object.keys(window.sessionStorage));
+    } catch {
+      storageKeys.push('__storage_unavailable__');
+    }
+    const suspiciousStorageKeyCount = storageKeys.filter((key) => /auth|token|session|jwt|secret|password/i.test(key)).length;
     return {
       name: testCase.name,
       url: location.href,
@@ -229,7 +237,8 @@ async (page) => {
       contentVisible,
       overflow,
       scrollWidth: root.scrollWidth,
-      clientWidth: root.clientWidth
+      clientWidth: root.clientWidth,
+      suspiciousStorageKeyCount
     };
   }, { testCase, expectedEncoded, chipEncoded });
   return Object.assign({}, result, {
@@ -278,6 +287,9 @@ async (page) => {
   }
   if ($result.consoleErrorCount -gt 0) {
     $problems += "console errors: $($result.consoleErrors -join ' | ')"
+  }
+  if ($result.suspiciousStorageKeyCount -gt 0) {
+    $problems += "auth/session storage keys observed: $($result.suspiciousStorageKeyCount)"
   }
 
   if ($problems.Count -gt 0) {
