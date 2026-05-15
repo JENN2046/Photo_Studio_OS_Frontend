@@ -77,6 +77,7 @@ $qaArtifacts = @(
   @{ Path = "scripts\qa-readonly-all.ps1"; Label = "Full read-only browser QA" },
   @{ Path = "scripts\qa-internal-pilot-readiness.ps1"; Label = "Internal pilot aggregate QA" },
   @{ Path = "scripts\qa-internal-pilot-readiness-guards.ps1"; Label = "Internal pilot aggregate guard QA" },
+  @{ Path = "scripts\qa-internal-pilot-signoff-record.ps1"; Label = "Internal pilot signoff record QA" },
   @{ Path = "scripts\qa-internal-pilot-goal-audit.ps1"; Label = "Internal pilot goal audit QA" },
   @{ Path = "scripts\qa-release-boundary-docs.ps1"; Label = "Release-boundary docs QA" }
 )
@@ -104,6 +105,7 @@ Assert-FileContains -Path "scripts\validate-local.ps1" -Pattern "qa-backend-read
 Assert-FileContains -Path "scripts\validate-local.ps1" -Pattern "qa-auth-role-matrix\.ps1" -Label "validate-local includes auth role matrix QA"
 Assert-FileContains -Path "scripts\validate-local.ps1" -Pattern "qa-auth-provider-preflight\.ps1" -Label "validate-local includes auth provider preflight QA"
 Assert-FileContains -Path "scripts\validate-local.ps1" -Pattern "qa-internal-pilot-readiness-guards\.ps1" -Label "validate-local includes internal pilot readiness guard QA"
+Assert-FileContains -Path "scripts\validate-local.ps1" -Pattern "qa-internal-pilot-signoff-record\.ps1" -Label "validate-local includes internal pilot signoff record QA"
 Assert-FileContains -Path "scripts\validate-local.ps1" -Pattern "qa-internal-pilot-goal-audit\.ps1" -Label "validate-local includes internal pilot goal audit QA"
 Assert-FileContains -Path "scripts\validate-local.ps1" -Pattern "qa-release-boundary-docs\.ps1" -Label "validate-local includes release-boundary docs QA"
 Assert-FileContains -Path "scripts\validate-local.sh" -Pattern "qa-readonly-source-boundary\.ps1" -Label "Bash validation includes source boundary QA"
@@ -112,6 +114,7 @@ Assert-FileContains -Path "scripts\validate-local.sh" -Pattern "qa-backend-read-
 Assert-FileContains -Path "scripts\validate-local.sh" -Pattern "qa-auth-role-matrix\.ps1" -Label "Bash validation includes auth role matrix QA"
 Assert-FileContains -Path "scripts\validate-local.sh" -Pattern "qa-auth-provider-preflight\.ps1" -Label "Bash validation includes auth provider preflight QA"
 Assert-FileContains -Path "scripts\validate-local.sh" -Pattern "qa-internal-pilot-readiness-guards\.ps1" -Label "Bash validation includes internal pilot readiness guard QA"
+Assert-FileContains -Path "scripts\validate-local.sh" -Pattern "qa-internal-pilot-signoff-record\.ps1" -Label "Bash validation includes internal pilot signoff record QA"
 Assert-FileContains -Path "scripts\validate-local.sh" -Pattern "qa-internal-pilot-goal-audit\.ps1" -Label "Bash validation includes internal pilot goal audit QA"
 Assert-FileContains -Path "scripts\validate-local.sh" -Pattern "qa-release-boundary-docs\.ps1" -Label "Bash validation includes release-boundary docs QA"
 
@@ -130,6 +133,7 @@ Assert-FileContains -Path "docs\design\FRONTEND_V2_INTERNAL_PILOT_READINESS.md" 
 Assert-FileContains -Path "docs\design\FRONTEND_V2_INTERNAL_PILOT_GOAL_AUDIT.md" -Pattern "LOCAL_FRONTEND_READY_CANDIDATE" -Label "goal audit records local candidate status"
 Assert-FileContains -Path "docs\design\FRONTEND_V2_INTERNAL_PILOT_GOAL_AUDIT.md" -Pattern "Blocked externally" -Label "goal audit records external blockers"
 Assert-FileContains -Path "docs\design\FRONTEND_V2_INTERNAL_PILOT_SIGNOFF_RECORD.md" -Pattern "Not signed off" -Label "signoff record remains unapproved template"
+Assert-FileContains -Path "docs\design\FRONTEND_V2_INTERNAL_PILOT_SIGNOFF_RECORD.md" -Pattern "qa-internal-pilot-signoff-record\.ps1" -Label "signoff record includes its own guard"
 Assert-FileContains -Path "docs\design\FRONTEND_V2_AUTH_PROVIDER_PREFLIGHT.md" -Pattern "Provider owner named" -Label "auth preflight includes provider owner check"
 Assert-FileContains -Path "docs\design\FRONTEND_V2_PRODUCTION_RELEASE_CHECKLIST.md" -Pattern "qa-internal-pilot-readiness\.ps1" -Label "release checklist includes pilot aggregate"
 

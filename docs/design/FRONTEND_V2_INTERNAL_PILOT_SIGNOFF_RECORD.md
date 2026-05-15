@@ -38,6 +38,11 @@ edits, or business writes.
 | Source boundary | `scripts\qa-readonly-source-boundary.ps1` | | |
 | Auth role matrix | `scripts\qa-auth-role-matrix.ps1` | | |
 | Evidence manifest | `scripts\qa-internal-pilot-manifest.ps1` | | |
+| Pilot readiness guard | `scripts\qa-internal-pilot-readiness-guards.ps1` | | |
+| Signoff record guard | `scripts\qa-internal-pilot-signoff-record.ps1` | | |
+| Goal audit guard | `scripts\qa-internal-pilot-goal-audit.ps1` | | |
+| Release-boundary docs guard | `scripts\qa-release-boundary-docs.ps1` | | |
+| Backend signoff guard | `scripts\qa-backend-read-signoff-guards.ps1` | | |
 | Full read-only browser QA | `scripts\qa-readonly-all.ps1` | | |
 
 ## Backend Read Evidence
