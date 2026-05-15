@@ -58,11 +58,12 @@ function Test-AuthCase {
     expectedEncoded = $Case.ExpectedEncoded
     expectChipEncoded = if ($Case.ExpectedChipEncoded) { $Case.ExpectedChipEncoded } else { @() }
     expectContentHidden = [bool]$Case.ExpectContentHidden
+    expectContentVisible = [bool]$Case.ExpectContentVisible
     contentSelector = $Case.ContentSelector
     expectNoticeSelector = $Case.ExpectNoticeSelector
   } | ConvertTo-Json -Compress -Depth 6
 
-  $code = "async (page) => { const testCase = $payload; page.removeAllListeners('console'); const consoleErrors = []; page.on('console', (message) => { if (message.type() === 'error') { consoleErrors.push(message.text()); } }); await page.goto(testCase.url); await page.waitForLoadState('domcontentloaded'); await page.waitForTimeout(50); await page.waitForSelector('.read-model-page', { timeout: 2000 }).catch(() => undefined); if (testCase.expectNoticeSelector) { await page.waitForSelector(testCase.expectNoticeSelector, { timeout: 2000 }).catch(() => undefined); } else if (testCase.contentSelector) { await page.waitForSelector(testCase.contentSelector, { timeout: 2000 }).catch(() => undefined); } const result = await page.evaluate((testCase) => { const text = document.body.innerText; const root = document.documentElement; const expected = testCase.expectedEncoded.map((item) => decodeURIComponent(item)); const chipExpected = testCase.expectChipEncoded.map((item) => decodeURIComponent(item)); const missing = expected.filter((item) => !text.includes(item)); const missingChips = chipExpected.filter((item) => !text.includes(item)); const stateNoticeCount = document.querySelectorAll('.read-model-state').length; const noticeSelectorCount = testCase.expectNoticeSelector ? document.querySelectorAll(testCase.expectNoticeSelector).length : null; const contentHidden = testCase.expectContentHidden && testCase.contentSelector ? document.querySelectorAll(testCase.contentSelector).length === 0 : null; const overflow = root.scrollWidth > root.clientWidth + 1; return { name: testCase.name, url: location.href, missing, missingChips, stateNoticeCount, noticeSelectorCount, contentHidden, overflow, scrollWidth: root.scrollWidth, clientWidth: root.clientWidth }; }, testCase); return Object.assign({}, result, { viewport: '$($Viewport.Name)', width: $($Viewport.Width), height: $($Viewport.Height), consoleErrorCount: consoleErrors.length, consoleErrors: consoleErrors }); }"
+  $code = "async (page) => { const testCase = $payload; page.removeAllListeners('console'); const consoleErrors = []; page.on('console', (message) => { if (message.type() === 'error') { consoleErrors.push(message.text()); } }); await page.goto(testCase.url); await page.waitForLoadState('domcontentloaded'); await page.waitForTimeout(50); await page.waitForSelector('.read-model-page', { timeout: 2000 }).catch(() => undefined); if (testCase.expectNoticeSelector) { await page.waitForSelector(testCase.expectNoticeSelector, { timeout: 2000 }).catch(() => undefined); } else if (testCase.contentSelector) { await page.waitForSelector(testCase.contentSelector, { timeout: 2000 }).catch(() => undefined); } const result = await page.evaluate((testCase) => { const text = document.body.innerText; const root = document.documentElement; const expected = testCase.expectedEncoded.map((item) => decodeURIComponent(item)); const chipExpected = testCase.expectChipEncoded.map((item) => decodeURIComponent(item)); const missing = expected.filter((item) => !text.includes(item)); const missingChips = chipExpected.filter((item) => !text.includes(item)); const stateNoticeCount = document.querySelectorAll('.read-model-state').length; const noticeSelectorCount = testCase.expectNoticeSelector ? document.querySelectorAll(testCase.expectNoticeSelector).length : null; const contentCount = testCase.contentSelector ? document.querySelectorAll(testCase.contentSelector).length : null; const contentHidden = testCase.expectContentHidden && testCase.contentSelector ? contentCount === 0 : null; const contentVisible = testCase.expectContentVisible && testCase.contentSelector ? contentCount > 0 : null; const overflow = root.scrollWidth > root.clientWidth + 1; return { name: testCase.name, url: location.href, missing, missingChips, stateNoticeCount, noticeSelectorCount, contentCount, contentHidden, contentVisible, overflow, scrollWidth: root.scrollWidth, clientWidth: root.clientWidth }; }, testCase); return Object.assign({}, result, { viewport: '$($Viewport.Name)', width: $($Viewport.Width), height: $($Viewport.Height), consoleErrorCount: consoleErrors.length, consoleErrors: consoleErrors }); }"
   $playwrightDir = Join-Path (Get-Location) ".playwright-cli"
   if (-not (Test-Path $playwrightDir)) {
     New-Item -ItemType Directory -Path $playwrightDir | Out-Null
@@ -90,6 +91,9 @@ function Test-AuthCase {
   }
   if ($Case.ExpectContentHidden -and $result.contentHidden -eq $false) {
     $problems += "content should be hidden but was rendered"
+  }
+  if ($Case.ExpectContentVisible -and $result.contentVisible -eq $false) {
+    $problems += "content should be visible but was not rendered"
   }
   if ($result.overflow) {
     $problems += "horizontal overflow: $($result.scrollWidth) > $($result.clientWidth)"
@@ -204,8 +208,44 @@ $authCases = @(
       "%E8%A7%92%E8%89%B2"
     )
     ExpectContentHidden = $false
+    ExpectContentVisible = $true
     ContentSelector = ".asset-inbox-console"
     ExpectNoticeSelector = ""
+  },
+  @{
+    Name = "approvals-photographer-forbidden"
+    Hash = "#approvals?authState=signed-in&authRole=photographer"
+    ExpectedEncoded = @(
+      "%E6%97%A0%E6%9D%83%E8%AE%BF%E9%97%AE%E8%AF%A5%E9%A1%B5%E9%9D%A2",
+      "%E6%89%80%E9%9C%80%E8%A7%92%E8%89%B2",
+      "%E5%BD%93%E5%89%8D%E8%A7%92%E8%89%B2",
+      "%E6%91%84%E5%BD%B1%E5%B8%88"
+    )
+    ExpectedChipEncoded = @(
+      "%E8%AE%A4%E8%AF%81%E6%BA%90",
+      "%E4%BC%9A%E8%AF%9D",
+      "%E8%A7%92%E8%89%B2"
+    )
+    ExpectContentHidden = $true
+    ContentSelector = ".cockpit-command-center"
+    ExpectNoticeSelector = ".read-model-state-forbidden"
+  },
+  @{
+    Name = "asset-inbox-retoucher-partial"
+    Hash = "#asset-inbox?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220&authState=signed-in&authRole=retoucher"
+    ExpectedEncoded = @(
+      "%E7%B4%A0%E6%9D%90%E6%94%B6%E4%BB%B6%E7%AE%B1",
+      "%E6%AD%A4%E5%8C%BA%E5%9F%9F%E9%9C%80%E8%A6%81%E8%BF%90%E8%90%A5%E6%9D%83%E9%99%90",
+      "%E5%BD%93%E5%89%8D%E8%A7%92%E8%89%B2%EF%BC%9A%E7%B2%BE%E4%BF%AE%E5%B8%88"
+    )
+    ExpectedChipEncoded = @(
+      "%E4%BC%9A%E8%AF%9D",
+      "%E8%A7%92%E8%89%B2"
+    )
+    ExpectContentHidden = $false
+    ExpectContentVisible = $true
+    ContentSelector = ".asset-inbox-console"
+    ExpectNoticeSelector = ".insufficient-role-notice"
   }
 )
 

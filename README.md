@@ -228,6 +228,7 @@ DEV-only auth state boundary rehearsals:
 - Add `authState=forbidden` to rehearse the forbidden (no page access) gate.
 - Add `authState=insufficient-role` to rehearse the partial-access overlay.
 - Add `authState=signed-in` with a page hash to confirm signed-in content renders.
+- Add DEV-only `authRole=<role>` with `authState=signed-in` to rehearse role-specific access without editing `.env`.
 - Run `scripts\qa-readonly-auth-states.ps1` to verify these states across Command
   Center and Asset Inbox at tablet and mobile widths.
 - Set `VITE_BACKEND_USER_ROLE` env var (e.g. `photographer`, `retoucher`) to

@@ -14,6 +14,18 @@ export interface AuthRuntimeView {
 function getRoleFromEnv(): Role | null {
   const envRole = import.meta.env.VITE_BACKEND_USER_ROLE?.trim();
   if (!envRole) return null;
+  return normalizeRole(envRole);
+}
+
+function getRoleFromDebugParams(params: URLSearchParams): Role | null {
+  if (!import.meta.env.DEV) return null;
+
+  const debugRole = params.get("authRole")?.trim();
+  if (!debugRole) return null;
+  return normalizeRole(debugRole);
+}
+
+function normalizeRole(value: string): Role | null {
   const validRoles: Role[] = [
     "admin",
     "operator",
@@ -23,7 +35,7 @@ function getRoleFromEnv(): Role | null {
     "client",
     "delivery_approver"
   ];
-  return validRoles.includes(envRole as Role) ? (envRole as Role) : null;
+  return validRoles.includes(value as Role) ? (value as Role) : null;
 }
 
 function getAuthDebugState(params: URLSearchParams): AuthDebugState {
@@ -111,7 +123,7 @@ export function useAuthState(params: URLSearchParams): {
   runtime: AuthRuntimeView;
 } {
   const debugState = getAuthDebugState(params);
-  const envRole = getRoleFromEnv();
+  const envRole = getRoleFromDebugParams(params) ?? getRoleFromEnv();
   const isDebug = debugState !== "live";
 
   const auth = useMemo(
