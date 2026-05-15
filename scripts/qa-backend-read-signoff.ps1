@@ -13,6 +13,8 @@ param(
   [string]$BackendUserRole = "owner",
   [string]$BackendUserName = "Backend Smoke Operator",
   [string]$SessionName = "photo-studio-backend-read-signoff",
+  [ValidateSet("ready", "empty", "partial", "stale")]
+  [string]$ExpectedReadModelState = "ready",
   [switch]$ExpectReadFailure,
   [ValidateSet("error", "forbidden", "invalid-id")]
   [string]$ExpectedFailureState = "error",
@@ -93,6 +95,10 @@ function Invoke-Step {
 }
 
 try {
+  if ($ExpectReadFailure -and $ExpectedReadModelState -ne "ready") {
+    throw "ExpectedReadModelState cannot be combined with ExpectReadFailure."
+  }
+
   $urlInfo = Assert-BackendSignoffUrl -Url $BackendBaseUrl -Scope $EnvironmentName
   $allowNonLocalBackend = -not $urlInfo.IsLocal
 
@@ -100,7 +106,7 @@ try {
   Write-Host "Environment: $EnvironmentName"
   Write-Host "Backend locality: $(if ($urlInfo.IsLocal) { 'local' } else { 'staging' })"
   Write-Host "FrontendBaseUrl: $($FrontendBaseUrl.TrimEnd('/'))"
-  Write-Host "Expected result: $(if ($ExpectReadFailure) { "backend $ExpectedFailureState boundary UI" } else { 'backend connected UI' })"
+  Write-Host "Expected result: $(if ($ExpectReadFailure) { "backend $ExpectedFailureState boundary UI" } else { "backend $ExpectedReadModelState UI" })"
   Write-Host "Write boundary: read-only GET smoke only"
 
   $smokeArgs = @(
@@ -121,6 +127,9 @@ try {
     $smokeArgs += "-ExpectReadFailure"
     $smokeArgs += "-ExpectedFailureState"
     $smokeArgs += $ExpectedFailureState
+  } else {
+    $smokeArgs += "-ExpectedReadModelState"
+    $smokeArgs += $ExpectedReadModelState
   }
 
   if ($KeepBrowser) {

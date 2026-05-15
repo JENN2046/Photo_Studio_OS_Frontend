@@ -108,6 +108,16 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -En
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName staging -BackendBaseUrl <approved-staging-backend-base-url> -ExpectReadFailure -ExpectedFailureState invalid-id
 ```
 
+For approved backend fixtures that intentionally return 200 with empty,
+partial, or stale data, keep using the guarded wrapper and make the expected
+data state explicit:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName staging -BackendBaseUrl <approved-staging-backend-base-url> -ExpectedReadModelState empty
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName staging -BackendBaseUrl <approved-staging-backend-base-url> -ExpectedReadModelState partial
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName staging -BackendBaseUrl <approved-staging-backend-base-url> -ExpectedReadModelState stale
+```
+
 The guard behavior itself is checked by:
 
 ```powershell
@@ -338,7 +348,7 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-all.ps1
 | No secrets committed | |
 | `scripts\qa-backend-read-all.ps1` passes for connected, 403, 404, empty, partial, stale, and failure local backend read smoke | |
 | `scripts\qa-backend-read-smoke.ps1` passes for local/staging read smoke | |
-| `scripts\qa-backend-read-signoff.ps1` passes for approved local/staging backend read signoff, including explicit expected failure states when fixture endpoints return 403 / 404 | |
+| `scripts\qa-backend-read-signoff.ps1` passes for approved local/staging backend read signoff, including explicit expected failure states when fixture endpoints return 403 / 404 and explicit expected data states when fixture endpoints return empty / partial / stale 200 responses | |
 | `scripts\qa-backend-read-signoff-guards.ps1` passes unsafe URL rejection checks | |
 | `scripts\qa-backend-read-smoke-mock.ps1` passes for connected-path local mock backend smoke | |
 | `scripts\qa-backend-read-contract-map.ps1` passes fetcher/smoke/mock/docs contract-map checks | |

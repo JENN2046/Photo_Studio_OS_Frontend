@@ -36,6 +36,11 @@ $cases = @(
     Name = "query-string-url"
     Args = @("-EnvironmentName", "local", "-BackendBaseUrl", "http://127.0.0.1:8080?token=example")
     Expected = "must not include query strings or fragments"
+  },
+  @{
+    Name = "mixed-failure-and-data-state"
+    Args = @("-EnvironmentName", "local", "-BackendBaseUrl", "http://127.0.0.1:8080", "-ExpectReadFailure", "-ExpectedReadModelState", "stale")
+    Expected = "cannot be combined"
   }
 )
 
@@ -48,6 +53,16 @@ Write-Host "Cases: $($cases.Count)"
 if ($signoffSource -notmatch "ExpectedFailureState" -or $signoffSource -notmatch "ExpectReadFailure") {
   $failed = $true
   Write-Host "[FAIL] signoff wrapper must expose expected backend failure-state smoke options"
+}
+
+if ($signoffSource -notmatch "ExpectedReadModelState" -or $signoffSource -notmatch '"empty", "partial", "stale"') {
+  $failed = $true
+  Write-Host "[FAIL] signoff wrapper must expose expected backend 200 data-state smoke options"
+}
+
+if ($signoffSource -notmatch '\$smokeArgs \+= "-ExpectedReadModelState"' -or $signoffSource -notmatch '\$smokeArgs \+= \$ExpectedReadModelState') {
+  $failed = $true
+  Write-Host "[FAIL] signoff wrapper must pass expected backend 200 data-state options to the smoke helper"
 }
 
 foreach ($case in $cases) {

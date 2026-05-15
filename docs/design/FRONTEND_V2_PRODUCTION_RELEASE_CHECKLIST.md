@@ -63,9 +63,9 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1
 | `qa-internal-pilot-manifest.ps1` passes source/script/doc evidence checks | |
 | `qa-internal-pilot-goal-audit.ps1` passes local-candidate/external-blocker guard checks | |
 | `qa-release-boundary-docs.ps1` passes signoff/release boundary checks | |
-| `qa-backend-read-signoff-guards.ps1` passes unsafe backend URL rejection and expected failure-state option checks | |
+| `qa-backend-read-signoff-guards.ps1` passes unsafe backend URL rejection plus expected failure-state and data-state option checks | |
 | `qa-backend-read-all.ps1` passes connected, 403, 404, empty, partial, stale, and failure local backend read smoke | |
-| `qa-backend-read-signoff.ps1` passes with an approved local/staging backend URL, including explicit expected 403 / 404 states when backend signoff is in scope | |
+| `qa-backend-read-signoff.ps1` passes with an approved local/staging backend URL, including explicit expected 403 / 404 and empty / partial / stale states when backend signoff is in scope | |
 | `qa-readonly-auth-live-roles.ps1` passes representative `VITE_BACKEND_USER_ROLE` paths | |
 | `qa-internal-pilot-readiness.ps1` passes on a machine with no pre-existing Vite server | |
 

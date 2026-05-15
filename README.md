@@ -142,6 +142,13 @@ the expected boundary state explicit:
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName staging -BackendBaseUrl <approved-staging-backend-base-url> -ExpectReadFailure -ExpectedFailureState forbidden
 ```
 
+For approved empty / partial / stale fixture signoff, keep the guarded wrapper
+and make the expected 200 data state explicit:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName staging -BackendBaseUrl <approved-staging-backend-base-url> -ExpectedReadModelState partial
+```
+
 Guard QA for unsafe backend signoff URLs:
 
 ```powershell
