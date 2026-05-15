@@ -218,6 +218,13 @@ Automated internal pilot readiness aggregate:
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1
 ```
 
+Optional internal pilot aggregate with an approved local/staging backend read
+signoff:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment local -ApprovedBackendBaseUrl http://127.0.0.1:8080
+```
+
 The QA scripts use transient `npx --package @playwright/cli` execution without
 changing `package.json` or `package-lock.json`. The full QA script runs the
 route, boundary-state, interaction, and auth-state matrices in sequence. The route
@@ -237,7 +244,9 @@ servers with `VITE_BACKEND_USER_ROLE` set only in child process environments and
 checks representative non-debug role paths without editing `.env`.
 The internal pilot readiness aggregate runs local lint/build/validation,
 backend read aggregate smoke, live env role QA, and the browser QA matrices from
-one local command.
+one local command. It skips real backend signoff by default and only runs
+`scripts\qa-backend-read-signoff.ps1` when an approved local/staging backend URL
+is passed through `-ApprovedBackendBaseUrl`.
 `validate-local.ps1` and `validate-local.sh` also run the read-only source
 boundary scan so source-level POST/PATCH/DELETE, file input, signed URL, token,
 browser-storage, storage-provider URL, or public-access enablement signals fail

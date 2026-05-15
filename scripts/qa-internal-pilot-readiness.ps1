@@ -5,7 +5,10 @@
 # dependency manifests.
 
 param(
-  [string]$BaseUrl = "http://127.0.0.1:5173"
+  [string]$BaseUrl = "http://127.0.0.1:5173",
+  [string]$ApprovedBackendBaseUrl = "",
+  [ValidateSet("local", "staging")]
+  [string]$ApprovedBackendEnvironment = "local"
 )
 
 $ErrorActionPreference = "Stop"
@@ -127,6 +130,11 @@ if (Test-Reachable "$normalizedBaseUrl/") {
 
 Write-Host "== Photo Studio OS internal pilot readiness QA =="
 Write-Host "BaseUrl: $normalizedBaseUrl"
+if (-not [string]::IsNullOrWhiteSpace($ApprovedBackendBaseUrl)) {
+  Write-Host "Approved backend signoff: enabled ($ApprovedBackendEnvironment)"
+} else {
+  Write-Host "Approved backend signoff: skipped"
+}
 
 try {
   Invoke-CommandStep "npm run lint" { npm run lint }
@@ -136,6 +144,21 @@ try {
   }
   Invoke-CommandStep "backend read aggregate smoke" {
     powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-all.ps1 -FrontendBaseUrl $normalizedBaseUrl
+  }
+  if (-not [string]::IsNullOrWhiteSpace($ApprovedBackendBaseUrl)) {
+    Invoke-CommandStep "approved backend read signoff" {
+      powershell `
+        -ExecutionPolicy Bypass `
+        -File scripts\qa-backend-read-signoff.ps1 `
+        -EnvironmentName $ApprovedBackendEnvironment `
+        -BackendBaseUrl $ApprovedBackendBaseUrl `
+        -FrontendBaseUrl $normalizedBaseUrl `
+        -SkipPostValidation
+    }
+  } else {
+    Write-Host ""
+    Write-Host "== approved backend read signoff =="
+    Write-Host "Skip: no approved local/staging backend URL was provided."
   }
   Invoke-CommandStep "live env role QA" {
     powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-auth-live-roles.ps1 -BaseUrl $normalizedBaseUrl

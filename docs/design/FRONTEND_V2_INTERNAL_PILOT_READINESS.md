@@ -55,6 +55,12 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1
 The aggregate script runs the same gates as the expanded command list below and
 starts a temporary local Vite server only for browser QA.
 `scripts\validate-local.ps1` includes the read-only source boundary scan.
+It skips real backend signoff by default. When an approved local or staging
+backend URL exists, pass it explicitly:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment local -ApprovedBackendBaseUrl http://127.0.0.1:8080
+```
 
 Expanded command list:
 

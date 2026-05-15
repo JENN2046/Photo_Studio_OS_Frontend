@@ -115,6 +115,12 @@ Internal pilot candidate validation:
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1
 ```
 
+With approved local/staging backend read signoff:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment local -ApprovedBackendBaseUrl http://127.0.0.1:8080
+```
+
 Full read-only browser QA while Vite is already running:
 
 ```powershell

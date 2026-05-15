@@ -34,6 +34,13 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-auth-live-roles.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1
 ```
 
+When an approved local/staging backend is in scope, run the aggregate with the
+approved URL instead of relying only on the default local mock-backend path:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment local -ApprovedBackendBaseUrl http://127.0.0.1:8080
+```
+
 | Check | Status |
 |---|---|
 | `npm ci` completes without errors | |
