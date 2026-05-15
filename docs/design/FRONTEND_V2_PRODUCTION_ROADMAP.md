@@ -32,6 +32,7 @@ Use these companion documents before handing production implementation to a new 
 - `docs/design/FRONTEND_V2_CONTRACT_REVIEW.md`: read-model and future write-contract review surface.
 - `docs/design/FRONTEND_V2_PRODUCTION_REVIEW_CHECKLIST.md`: reviewer checklist for implementation, QA, release, and rollback.
 - `docs/design/FRONTEND_V2_INTERNAL_PILOT_READINESS.md`: internal studio-operator pilot readiness matrix, evidence, and remaining external signoff gates.
+- `docs/design/FRONTEND_V2_INTERNAL_PILOT_GOAL_AUDIT.md`: prompt-to-artifact audit for the active internal-pilot goal and remaining blockers.
 - `docs/design/FRONTEND_V2_RISK_REGISTER.md`: active risks and stage-specific watchpoints.
 
 ## Production Principles

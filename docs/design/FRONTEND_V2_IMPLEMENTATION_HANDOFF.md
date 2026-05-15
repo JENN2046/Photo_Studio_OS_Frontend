@@ -18,10 +18,11 @@ Frontend v2 is a mock-first, read-only cockpit with Command Center plus four pro
 3. `docs/design/FRONTEND_V2_PRODUCTION_REVIEW_CHECKLIST.md`
 4. `docs/design/FRONTEND_V2_RISK_REGISTER.md`
 5. `docs/design/FRONTEND_V2_INTERNAL_PILOT_READINESS.md`
-6. `docs/design/FRONTEND_V2_GAP_MAP.md`
-7. `docs/design/COMMAND_CENTER_READONLY_API_CONTRACT_NOTE.md`
-8. `README.md`
-9. `AGENTS.md`
+6. `docs/design/FRONTEND_V2_INTERNAL_PILOT_GOAL_AUDIT.md`
+7. `docs/design/FRONTEND_V2_GAP_MAP.md`
+8. `docs/design/COMMAND_CENTER_READONLY_API_CONTRACT_NOTE.md`
+9. `README.md`
+10. `AGENTS.md`
 
 ## Current Product State
 
