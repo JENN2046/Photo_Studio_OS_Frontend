@@ -156,6 +156,13 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host ""
+Write-Host "== release-boundary docs QA =="
+powershell -ExecutionPolicy Bypass -File "scripts\qa-release-boundary-docs.ps1"
+if ($LASTEXITCODE -ne 0) {
+  $failed = $true
+}
+
+Write-Host ""
 Write-Host "== backend read signoff guard QA =="
 powershell -ExecutionPolicy Bypass -File "scripts\qa-backend-read-signoff-guards.ps1"
 if ($LASTEXITCODE -ne 0) {

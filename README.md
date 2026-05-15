@@ -242,6 +242,12 @@ Automated internal pilot goal audit QA:
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-goal-audit.ps1
 ```
 
+Automated release-boundary docs QA:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-release-boundary-docs.ps1
+```
+
 Automated read-only source boundary scan:
 
 ```powershell
@@ -292,7 +298,9 @@ evidence signals fail before browser QA. The backend signoff guard QA also runs
 during local validation so unsafe backend URL shapes are rejected before any
 smoke can start. The internal pilot goal audit QA also runs during local
 validation so the repo keeps reporting `LOCAL_FRONTEND_READY_CANDIDATE` until
-real backend and auth signoff blockers are cleared.
+real backend and auth signoff blockers are cleared. The release-boundary docs QA
+keeps signoff/release execution checkboxes unapproved and blocks non-local
+non-example URLs in docs.
 
 Baseline cockpit routes:
 

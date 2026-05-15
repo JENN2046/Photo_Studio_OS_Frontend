@@ -34,6 +34,7 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-auth-role-matrix.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-auth-provider-preflight.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-manifest.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-goal-audit.ps1
+powershell -ExecutionPolicy Bypass -File scripts\qa-release-boundary-docs.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff-guards.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-all.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-auth-live-roles.ps1
@@ -59,6 +60,7 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1
 | `qa-auth-provider-preflight.ps1` passes provider/session/role-claim preflight checks | |
 | `qa-internal-pilot-manifest.ps1` passes source/script/doc evidence checks | |
 | `qa-internal-pilot-goal-audit.ps1` passes local-candidate/external-blocker guard checks | |
+| `qa-release-boundary-docs.ps1` passes signoff/release boundary checks | |
 | `qa-backend-read-signoff-guards.ps1` passes unsafe backend URL rejection checks | |
 | `qa-backend-read-all.ps1` passes connected and failure local backend read smoke | |
 | `qa-backend-read-signoff.ps1` passes with an approved local/staging backend URL when backend signoff is in scope | |

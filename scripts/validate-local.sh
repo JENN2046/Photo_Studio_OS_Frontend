@@ -167,6 +167,10 @@ echo "== internal pilot goal audit QA =="
 run_powershell_script "scripts/qa-internal-pilot-goal-audit.ps1"
 
 echo ""
+echo "== release-boundary docs QA =="
+run_powershell_script "scripts/qa-release-boundary-docs.ps1"
+
+echo ""
 echo "== backend read signoff guard QA =="
 run_powershell_script "scripts/qa-backend-read-signoff-guards.ps1"
 
