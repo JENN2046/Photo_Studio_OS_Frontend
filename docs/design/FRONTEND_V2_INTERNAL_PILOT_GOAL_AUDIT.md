@@ -43,6 +43,7 @@ auth/backend authorization still require approved local or staging environments.
 | Verify responsive internal pilot surfaces. | `scripts\qa-readonly-all.ps1` | 1440px, 1024px, and 390px route/interaction checks include overflow checks. | Covered locally |
 | Preserve read-only hard boundaries. | `scripts\qa-readonly-source-boundary.ps1`, `scripts\qa-readonly-interactions.ps1` | Source scan and interaction QA cover disabled write/upload/download/public-link posture. | Covered locally |
 | Keep release candidate docs current. | `docs\design\FRONTEND_V2_PRODUCTION_ROADMAP.md`, `FRONTEND_V2_INTERNAL_PILOT_READINESS.md`, `FRONTEND_V2_PRODUCTION_RELEASE_CHECKLIST.md`, `FRONTEND_V2_RISK_REGISTER.md`, `FRONTEND_V2_IMPLEMENTATION_HANDOFF.md` | Planning, risk, readiness, checklist, and handoff docs exist and point to current gates. | Covered locally |
+| Preserve final signoff evidence slot. | `docs\design\FRONTEND_V2_INTERNAL_PILOT_SIGNOFF_RECORD.md` | Blank signoff record exists for the eventual approved local/staging acceptance run. | Covered locally |
 | Keep evidence artifacts present. | `scripts\qa-internal-pilot-manifest.ps1` | Static manifest QA checks required source, QA, and documentation artifacts for the local internal-pilot goal. | Covered locally |
 | Avoid remote side effects. | Git status and commit history | Local commits exist; push/tag/deploy are not authorized by this audit. | Covered locally |
 

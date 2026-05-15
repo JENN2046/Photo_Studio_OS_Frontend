@@ -78,6 +78,7 @@ $docArtifacts = @(
   @{ Path = "docs\design\FRONTEND_V2_PRODUCTION_ROADMAP.md"; Label = "Production roadmap" },
   @{ Path = "docs\design\FRONTEND_V2_INTERNAL_PILOT_READINESS.md"; Label = "Internal pilot readiness" },
   @{ Path = "docs\design\FRONTEND_V2_INTERNAL_PILOT_GOAL_AUDIT.md"; Label = "Internal pilot goal audit" },
+  @{ Path = "docs\design\FRONTEND_V2_INTERNAL_PILOT_SIGNOFF_RECORD.md"; Label = "Internal pilot signoff record" },
   @{ Path = "docs\design\FRONTEND_V2_AUTH_PROVIDER_PREFLIGHT.md"; Label = "Auth provider preflight" },
   @{ Path = "docs\design\FRONTEND_V2_PRODUCTION_RELEASE_CHECKLIST.md"; Label = "Production release checklist" },
   @{ Path = "docs\design\FRONTEND_V2_RISK_REGISTER.md"; Label = "Risk register" },
@@ -105,6 +106,7 @@ Assert-FileContains -Path "docs\design\FRONTEND_V2_INTERNAL_PILOT_READINESS.md" 
 Assert-FileContains -Path "docs\design\FRONTEND_V2_INTERNAL_PILOT_READINESS.md" -Pattern "Blocked on platform auth" -Label "readiness records auth blocker"
 Assert-FileContains -Path "docs\design\FRONTEND_V2_INTERNAL_PILOT_GOAL_AUDIT.md" -Pattern "LOCAL_FRONTEND_READY_CANDIDATE" -Label "goal audit records local candidate status"
 Assert-FileContains -Path "docs\design\FRONTEND_V2_INTERNAL_PILOT_GOAL_AUDIT.md" -Pattern "Blocked externally" -Label "goal audit records external blockers"
+Assert-FileContains -Path "docs\design\FRONTEND_V2_INTERNAL_PILOT_SIGNOFF_RECORD.md" -Pattern "Not signed off" -Label "signoff record remains unapproved template"
 Assert-FileContains -Path "docs\design\FRONTEND_V2_AUTH_PROVIDER_PREFLIGHT.md" -Pattern "Provider owner named" -Label "auth preflight includes provider owner check"
 Assert-FileContains -Path "docs\design\FRONTEND_V2_PRODUCTION_RELEASE_CHECKLIST.md" -Pattern "qa-internal-pilot-readiness\.ps1" -Label "release checklist includes pilot aggregate"
 
