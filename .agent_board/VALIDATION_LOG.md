@@ -1047,3 +1047,30 @@ Notes:
 - No backend code, root repo, .env, dependency, upload/download/write/auth/storage changes were made.
 - Temporary Vite/backend validation processes and backend postgres/redis validation containers were stopped after the run.
 ```
+
+```text
+## VALIDATION-20260515-S3-AUTH-BACKEND-ENFORCEMENT-PACK
+
+Task: Add and guard the S3 auth/backend enforcement evidence intake pack.
+Commands run:
+- powershell -ExecutionPolicy Bypass -File scripts\qa-auth-backend-enforcement-signoff.ps1
+- powershell -ExecutionPolicy Bypass -File scripts\qa-auth-provider-preflight.ps1
+- powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-manifest.ps1
+- powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-signoff-record.ps1
+- powershell -ExecutionPolicy Bypass -File scripts\qa-release-boundary-docs.ps1
+- powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1
+Result: passed
+Failures:
+- First qa-auth-backend-enforcement-signoff.ps1 run had PowerShell string interpolation parse errors in regex patterns.
+Fix attempted:
+- Rewrote dynamic regex construction into explicit pattern variables and escaped the literal `Not signed off` backticks.
+Re-run result:
+- qa-auth-backend-enforcement-signoff.ps1 passed.
+- validate-local.ps1 passed.
+Not validated:
+- Real auth provider/session/role-claim evidence.
+- Backend/platform enforcement results.
+- Staging fixtures.
+Notes:
+- This batch is docs/static QA only. It does not implement auth or call external services.
+```

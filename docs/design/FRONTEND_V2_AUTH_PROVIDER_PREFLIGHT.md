@@ -24,6 +24,9 @@ Implemented locally:
 - Static role-matrix QA through `scripts\qa-auth-role-matrix.ps1`.
 - Browser auth-state QA through `scripts\qa-readonly-auth-states.ps1`.
 - Live env-role QA through `scripts\qa-readonly-auth-live-roles.ps1`.
+- Auth/backend enforcement evidence intake through
+  `docs\design\FRONTEND_V2_AUTH_BACKEND_ENFORCEMENT_SIGNOFF.md` and
+  `scripts\qa-auth-backend-enforcement-signoff.ps1`.
 
 Still external:
 
@@ -95,6 +98,7 @@ npm run build
 powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-auth-role-matrix.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-auth-provider-preflight.ps1
+powershell -ExecutionPolicy Bypass -File scripts\qa-auth-backend-enforcement-signoff.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-auth-states.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-auth-live-roles.ps1
 ```
@@ -122,6 +126,7 @@ messages.
 | No production auth endpoint appears in source or docs | |
 | `scripts\qa-auth-role-matrix.ps1` passes | |
 | `scripts\qa-auth-provider-preflight.ps1` passes | |
+| `scripts\qa-auth-backend-enforcement-signoff.ps1` passes | |
 | `scripts\qa-readonly-auth-states.ps1` passes | |
 | `scripts\qa-readonly-auth-live-roles.ps1` passes | |
 | `scripts\qa-internal-pilot-readiness.ps1` passes with approved staging signoff when available | |

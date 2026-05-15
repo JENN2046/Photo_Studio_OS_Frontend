@@ -51,6 +51,7 @@ $goalAuditPath = "docs\design\FRONTEND_V2_INTERNAL_PILOT_GOAL_AUDIT.md"
 $signoffPath = "docs\design\FRONTEND_V2_INTERNAL_PILOT_SIGNOFF_RECORD.md"
 $readinessPath = "docs\design\FRONTEND_V2_INTERNAL_PILOT_READINESS.md"
 $authPreflightPath = "docs\design\FRONTEND_V2_AUTH_PROVIDER_PREFLIGHT.md"
+$authBackendSignoffPath = "docs\design\FRONTEND_V2_AUTH_BACKEND_ENFORCEMENT_SIGNOFF.md"
 $releaseChecklistPath = "docs\design\FRONTEND_V2_PRODUCTION_RELEASE_CHECKLIST.md"
 $boardBlockersPath = ".agent_board\BLOCKERS.md"
 
@@ -59,6 +60,7 @@ $requiredFiles = @(
   @{ Path = $signoffPath; Label = "Internal pilot signoff record" },
   @{ Path = $readinessPath; Label = "Internal pilot readiness" },
   @{ Path = $authPreflightPath; Label = "Auth provider preflight" },
+  @{ Path = $authBackendSignoffPath; Label = "Auth/backend enforcement signoff pack" },
   @{ Path = $releaseChecklistPath; Label = "Production release checklist" },
   @{ Path = $boardBlockersPath; Label = "Agent board blocker ledger" },
   @{ Path = "scripts\qa-internal-pilot-readiness.ps1"; Label = "Internal pilot aggregate QA" },
@@ -69,7 +71,8 @@ $requiredFiles = @(
   @{ Path = "scripts\qa-backend-read-signoff.ps1"; Label = "Guarded backend read signoff" },
   @{ Path = "scripts\qa-backend-read-signoff-guards.ps1"; Label = "Backend read signoff guard QA" },
   @{ Path = "scripts\qa-auth-role-matrix.ps1"; Label = "Auth role matrix QA" },
-  @{ Path = "scripts\qa-auth-provider-preflight.ps1"; Label = "Auth provider preflight QA" }
+  @{ Path = "scripts\qa-auth-provider-preflight.ps1"; Label = "Auth provider preflight QA" },
+  @{ Path = "scripts\qa-auth-backend-enforcement-signoff.ps1"; Label = "Auth/backend enforcement signoff QA" }
 )
 
 foreach ($file in $requiredFiles) {
@@ -109,6 +112,8 @@ Assert-FileContains -Path $readinessPath -Pattern "Signoff record coverage" -Lab
 Assert-FileContains -Path $readinessPath -Pattern "Release manager approval for push, tag, deploy, or production rollout" -Label "readiness preserves release approval boundary"
 
 Assert-FileContains -Path $authPreflightPath -Pattern "Provider owner named" -Label "auth preflight keeps provider owner gate"
+Assert-FileContains -Path $authBackendSignoffPath -Pattern "Backend enforcement must be described as backend-owned" -Label "auth/backend signoff keeps backend-owned enforcement"
+Assert-FileContains -Path $authBackendSignoffPath -Pattern "Frontend route gates must remain presentation-only" -Label "auth/backend signoff keeps frontend display-only boundary"
 Assert-FileContains -Path $releaseChecklistPath -Pattern "qa-internal-pilot-signoff-record\.ps1" -Label "release checklist keeps signoff record guard"
 Assert-FileContains -Path $releaseChecklistPath -Pattern "qa-backend-read-signoff\.ps1" -Label "release checklist keeps backend signoff gate"
 Assert-FileContains -Path $releaseChecklistPath -Pattern "Do not execute these steps without explicit approval" -Label "release checklist preserves explicit release approval boundary"

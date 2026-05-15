@@ -149,6 +149,13 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host ""
+Write-Host "== auth/backend enforcement signoff QA =="
+powershell -ExecutionPolicy Bypass -File "scripts\qa-auth-backend-enforcement-signoff.ps1"
+if ($LASTEXITCODE -ne 0) {
+  $failed = $true
+}
+
+Write-Host ""
 Write-Host "== internal pilot evidence manifest QA =="
 powershell -ExecutionPolicy Bypass -File "scripts\qa-internal-pilot-manifest.ps1"
 if ($LASTEXITCODE -ne 0) {

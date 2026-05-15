@@ -288,6 +288,8 @@ none
 194. Extended backend signoff scripts to support per-route expected data states for real fixtures that are partial or empty.
 195. Ran scripts\qa-internal-pilot-readiness.ps1 with the approved local backend URL; result passed.
 196. Stopped the temporary frontend Vite server, local backend process, and backend validation containers after QA.
+197. Added S3 auth/backend enforcement evidence intake doc and static QA guard.
+198. Wired the new auth/backend enforcement signoff QA into validate-local and internal-pilot manifest/preflight guards.
 ```
 
 ### blocked

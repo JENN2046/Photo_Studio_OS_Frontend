@@ -528,6 +528,36 @@ Resume note:
 
 ---
 
+## CHECKPOINT-20260515-S3-AUTH-BACKEND-ENFORCEMENT-PACK
+
+```text
+Status: COMPLETED_VALIDATED
+Completed task queue items:
+- Added docs\design\FRONTEND_V2_AUTH_BACKEND_ENFORCEMENT_SIGNOFF.md.
+- Added scripts\qa-auth-backend-enforcement-signoff.ps1.
+- Wired the new guard into validate-local, validate-local.sh, auth provider preflight QA, internal-pilot manifest QA, goal audit QA, signoff record QA, and release/checklist docs.
+
+Validation run:
+- scripts\qa-auth-backend-enforcement-signoff.ps1: passed after one narrow parser fix
+- scripts\qa-auth-provider-preflight.ps1: passed
+- scripts\qa-internal-pilot-manifest.ps1: passed
+- scripts\qa-internal-pilot-signoff-record.ps1: passed
+- scripts\qa-release-boundary-docs.ps1: passed
+
+Validation not run:
+- Real auth provider/backend enforcement remains external evidence.
+
+Stop gate reached: no
+Remote actions: none
+Next safe task:
+- Commit locally if final diff/secret checks pass.
+Resume note:
+- Push/tag/deploy remain unauthorized.
+- Protect untracked .claude/, .mcp.json, and .omc/.
+```
+
+---
+
 ## CHECKPOINT-20260515-APPROVED-LOCAL-BACKEND-SIGNOFF
 
 ```text

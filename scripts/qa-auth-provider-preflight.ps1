@@ -50,12 +50,14 @@ function Assert-FileContains {
 
 $preflightPath = "docs\design\FRONTEND_V2_AUTH_PROVIDER_PREFLIGHT.md"
 $authDesignPath = "docs\design\FRONTEND_V2_AUTH_ROLE_STATE_DESIGN.md"
+$authBackendSignoffPath = "docs\design\FRONTEND_V2_AUTH_BACKEND_ENFORCEMENT_SIGNOFF.md"
 $authTypesPath = "src\features\auth\authTypes.ts"
 $authHookPath = "src\features\auth\useAuthState.ts"
 
 $requiredFiles = @(
   @{ Path = $preflightPath; Label = "Auth provider preflight" },
   @{ Path = $authDesignPath; Label = "Auth role-state design" },
+  @{ Path = $authBackendSignoffPath; Label = "Auth/backend enforcement signoff pack" },
   @{ Path = $authTypesPath; Label = "Auth types" },
   @{ Path = $authHookPath; Label = "Auth state hook" },
   @{ Path = "scripts\qa-auth-role-matrix.ps1"; Label = "Auth role matrix QA" },
@@ -136,6 +138,9 @@ Assert-FileContains -Path $preflightPath -Pattern "replace backend authorization
 Assert-FileContains -Path $preflightPath -Pattern "Still external" -Label "preflight records external blockers"
 Assert-FileContains -Path $preflightPath -Pattern "Auth provider ownership" -Label "preflight records provider ownership blocker"
 Assert-FileContains -Path $preflightPath -Pattern "Backend authorization enforcement" -Label "preflight records backend enforcement blocker"
+Assert-FileContains -Path $preflightPath -Pattern "FRONTEND_V2_AUTH_BACKEND_ENFORCEMENT_SIGNOFF\.md" -Label "preflight points to auth/backend enforcement signoff pack"
+Assert-FileContains -Path $authBackendSignoffPath -Pattern "Backend enforcement must be described as backend-owned" -Label "auth/backend signoff keeps backend-owned enforcement"
+Assert-FileContains -Path $authBackendSignoffPath -Pattern "Frontend route gates must remain presentation-only" -Label "auth/backend signoff keeps frontend display-only boundary"
 Assert-FileContains -Path $preflightPath -Pattern "Do not place the approved URL in docs, source, ``\.env``, screenshots, or commit\s+messages\." -Label "preflight preserves approved URL secrecy"
 Assert-FileContains -Path $preflightPath -Pattern "Stop and request explicit approval" -Label "preflight has stop conditions"
 Assert-FileContains -Path $authDesignPath -Pattern "Frontend enforcement is presentation-only" -Label "auth design preserves frontend display-only boundary"

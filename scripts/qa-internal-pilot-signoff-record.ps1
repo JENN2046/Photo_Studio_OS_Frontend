@@ -80,6 +80,8 @@ $requiredLiterals = @(
   @{ Text = 'Session source documented'; Label = "session source row" },
   @{ Text = 'Role claim mapping approved'; Label = "role claim row" },
   @{ Text = 'Backend enforcement confirmed'; Label = "backend enforcement row" },
+  @{ Text = 'docs\design\FRONTEND_V2_AUTH_BACKEND_ENFORCEMENT_SIGNOFF.md'; Label = "auth/backend enforcement signoff pack row" },
+  @{ Text = 'scripts\qa-auth-backend-enforcement-signoff.ps1'; Label = "auth/backend enforcement signoff QA row" },
   @{ Text = 'Signed-out fixture'; Label = "signed-out fixture row" },
   @{ Text = 'Expired-session fixture'; Label = "expired-session fixture row" },
   @{ Text = 'Provider-error fixture'; Label = "provider-error fixture row" },

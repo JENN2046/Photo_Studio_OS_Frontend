@@ -69,6 +69,7 @@ edits, or business writes.
 | Session source documented | platform/auth contract | | |
 | Role claim mapping approved | platform/auth contract | | |
 | Backend enforcement confirmed | backend read endpoints | | |
+| Auth/backend enforcement signoff pack | `docs\design\FRONTEND_V2_AUTH_BACKEND_ENFORCEMENT_SIGNOFF.md`; `scripts\qa-auth-backend-enforcement-signoff.ps1` | | |
 | Signed-out fixture | staging auth fixture | | |
 | Expired-session fixture | staging auth fixture | | |
 | Provider-error fixture | staging auth fixture | | |

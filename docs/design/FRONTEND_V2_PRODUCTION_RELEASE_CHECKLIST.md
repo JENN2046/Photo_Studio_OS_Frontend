@@ -33,6 +33,7 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-source-boundary.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-contract-map.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-auth-role-matrix.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-auth-provider-preflight.ps1
+powershell -ExecutionPolicy Bypass -File scripts\qa-auth-backend-enforcement-signoff.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-manifest.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness-guards.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-signoff-record.ps1

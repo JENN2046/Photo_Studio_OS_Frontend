@@ -45,6 +45,7 @@ provider evidence remain external signoff items.
 | Auth/session states | Signed-out, expired, loading, error, forbidden, insufficient-role, and signed-in states are stable. | `src\features\auth\*`, `scripts\qa-readonly-auth-states.ps1` | Frontend ready |
 | Role matrix integrity | Seven roles, ten routes, seventy matrix cells, session states, and access labels are statically checked. | `scripts\qa-auth-role-matrix.ps1` | Frontend ready |
 | Auth provider preflight | Provider owner, session source, role claim, backend enforcement, and staging fixture requirements remain explicit before real auth work. | `scripts\qa-auth-provider-preflight.ps1` | Frontend ready |
+| Auth/backend enforcement evidence pack | Backend/platform evidence intake covers owners, role mapping, endpoint enforcement, staging fixtures, and no-secret boundaries. | `docs\design\FRONTEND_V2_AUTH_BACKEND_ENFORCEMENT_SIGNOFF.md`, `scripts\qa-auth-backend-enforcement-signoff.ps1` | Frontend ready |
 | Evidence manifest | Required S2/S3/QA/readiness source, script, and document artifacts are present. | `scripts\qa-internal-pilot-manifest.ps1` | Frontend ready |
 | Pilot aggregate guards | Internal pilot aggregate expected backend data/failure state options stay exposed and reject mixed modes before long QA starts. | `scripts\qa-internal-pilot-readiness-guards.ps1` | Frontend ready |
 | Signoff record coverage | Final signoff template covers the current evidence stack and remains explicitly unapproved. | `scripts\qa-internal-pilot-signoff-record.ps1` | Frontend ready |
@@ -100,6 +101,7 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-source-boundary.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-contract-map.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-auth-role-matrix.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-auth-provider-preflight.ps1
+powershell -ExecutionPolicy Bypass -File scripts\qa-auth-backend-enforcement-signoff.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-manifest.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness-guards.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-signoff-record.ps1
@@ -126,6 +128,8 @@ These items are outside the current frontend-only local boundary:
 - Guarded local/staging backend signoff through `scripts\qa-backend-read-signoff.ps1`, including explicit expected failure-state runs for approved 403 / 404 fixtures and expected data-state runs for approved empty / partial / stale fixtures.
 - Backend/platform auth provider and token/session model.
 - Backend authorization enforcement for every role and read-model endpoint.
+- Auth/backend enforcement evidence recorded through
+  `docs\design\FRONTEND_V2_AUTH_BACKEND_ENFORCEMENT_SIGNOFF.md`.
 - Staging signoff for empty, partial, stale, and any backend-specific 403 / 404 body semantics beyond the local HTTP boundary smoke.
 - Release manager approval for push, tag, deploy, or production rollout.
 
