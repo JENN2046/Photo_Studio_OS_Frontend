@@ -28,6 +28,7 @@ npm ci
 npm run lint
 npm run build
 powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1
+powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-source-boundary.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-all.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-auth-live-roles.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1
@@ -39,6 +40,7 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1
 | `npm run lint` passes | |
 | `npm run build` passes | |
 | `validate-local.ps1` passes (including secret scan) | |
+| `qa-readonly-source-boundary.ps1` passes | |
 | `qa-backend-read-all.ps1` passes connected and failure local backend read smoke | |
 | `qa-readonly-auth-live-roles.ps1` passes representative `VITE_BACKEND_USER_ROLE` paths | |
 | `qa-internal-pilot-readiness.ps1` passes on a machine with no pre-existing Vite server | |
@@ -177,6 +179,7 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-auth-live-roles.ps1
 | All download buttons disabled and labelled `下载未启用` | |
 | All write actions disabled with read-only posture | |
 | 写入边界 chip shows `mock-first / read-only` on every page | |
+| Source boundary scan reports no POST/PATCH/DELETE, file input, signed URL, browser storage, token, storage-provider URL, or public-access enablement signal | |
 
 ### Auth Boundary
 

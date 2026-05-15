@@ -54,6 +54,7 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1
 
 The aggregate script runs the same gates as the expanded command list below and
 starts a temporary local Vite server only for browser QA.
+`scripts\validate-local.ps1` includes the read-only source boundary scan.
 
 Expanded command list:
 
@@ -61,6 +62,7 @@ Expanded command list:
 npm run lint
 npm run build
 powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1
+powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-source-boundary.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-all.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-auth-live-roles.ps1
 ```

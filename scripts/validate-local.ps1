@@ -113,6 +113,13 @@ if ($changedFiles.Count -eq 0) {
   }
 }
 
+Write-Host ""
+Write-Host "== read-only source boundary QA =="
+powershell -ExecutionPolicy Bypass -File "scripts\qa-readonly-source-boundary.ps1"
+if ($LASTEXITCODE -ne 0) {
+  $failed = $true
+}
+
 if ($IncludeBrowserQa) {
   Write-Host ""
   Write-Host "== full read-only browser QA =="
