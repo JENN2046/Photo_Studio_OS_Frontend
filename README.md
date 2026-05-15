@@ -104,6 +104,12 @@ Backend read-model smoke helper:
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-smoke.ps1 -BackendBaseUrl http://127.0.0.1:8080
 ```
 
+Connected-path smoke without a real backend:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-smoke-mock.ps1
+```
+
 For local failure-mode rehearsal without a real backend:
 
 ```powershell
@@ -115,6 +121,8 @@ The backend smoke helper starts a temporary local Vite server with
 non-local backend URLs unless `-AllowNonLocalBackend` is passed for an explicitly
 approved staging smoke, checks Command Center plus the four read-model pages, and
 fails if the browser observes non-read request methods.
+The mock-backend wrapper starts a temporary localhost GET/OPTIONS JSON server,
+then reuses the same smoke helper to verify the backend-connected UI path.
 
 ## Validation Status
 

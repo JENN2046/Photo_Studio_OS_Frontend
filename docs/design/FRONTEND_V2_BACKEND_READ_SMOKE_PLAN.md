@@ -57,6 +57,14 @@ process; it does not edit `.env`.
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-smoke.ps1 -BackendBaseUrl http://127.0.0.1:8080
 ```
 
+To verify the backend-connected UI path without a real backend, run the local
+mock backend wrapper. It starts a temporary localhost GET/OPTIONS JSON server
+with the five read-model paths, then reuses the same smoke helper:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-smoke-mock.ps1
+```
+
 For a local failure-mode rehearsal without a real backend, use an unused local
 port and expect read failure UI:
 
@@ -265,6 +273,7 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-all.ps1
 | Browser QA passes | |
 | No secrets committed | |
 | `scripts\qa-backend-read-smoke.ps1` passes for local/staging read smoke | |
+| `scripts\qa-backend-read-smoke-mock.ps1` passes for connected-path local mock backend smoke | |
 
 ## Non-goals
 

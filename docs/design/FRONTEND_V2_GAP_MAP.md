@@ -52,6 +52,7 @@ As of the current Frontend v2 local state, the read-only production loop has mov
 - P3.5 route QA now checks invalid DEV debug query values fall back to the normal mock-first ready path without console errors or overflow.
 - P3.6 post-commit board facts now record Batch A as committed in `07e0e08` instead of leaving stale pending-commit wording.
 - P3.7 read-only browser QA now checks Command Center `黄金链路` entry clicks and extends route/interaction coverage to `1024x768`.
+- S2 backend read smoke now has a local connected-path wrapper, `scripts/qa-backend-read-smoke-mock.ps1`, that starts a temporary GET/OPTIONS mock backend and reuses the backend smoke helper without editing `.env`.
 - `--ps-*` token aliases and text-color compatibility aliases exist in `src/styles/tokens.css`.
 - Current long-track focus is post-RC read-only UX tightening, reusable local QA, and optional backend read-model smoke testing only when a local backend base URL is explicitly configured.
 
@@ -133,6 +134,7 @@ Image references:
 | Bash validation environment guard. | `scripts/validate-local.sh` checks Node.js before npm gates and reports the Vite 7 requirement when Bash/WSL exposes an incompatible runtime. | Use PowerShell validation on this machine unless the Bash/WSL Node runtime is `20.19+` or `22.12+`. | P2.18 done |
 | PowerShell validation environment guard. | `scripts/validate-local.ps1` also checks Node.js before npm gates and reports the Vite 7 requirement when the shell runtime is incompatible. | Keep both validation helpers aligned when changing project runtime gates. | P2.19 done |
 | Full browser QA aggregation. | `scripts/qa-readonly-all.ps1` runs the route, boundary-state, and interaction matrices in sequence; both validation helpers use it for browser-QA mode. | Run the aggregate script before broad read-only UI handoffs instead of remembering three separate commands. | P2.20 done |
+| Backend connected-path smoke. | `scripts/qa-backend-read-smoke-mock.ps1` starts a temporary localhost read-model mock backend and verifies Command Center plus the four read-model pages through the real backend-read client path. | Keep this wrapper GET/OPTIONS only; use it before any real staging backend smoke so connected UI regressions are caught locally. | S2 done |
 | Read-model runtime state surface. | Context bar now shows read source, runtime status, transport posture, and read-only write boundary across all four read-model scenes. | Keep future runtime states derived in `useBackendReadModel`; do not leak production URLs or secrets into UI. | P3.1 done |
 | Command Center runtime state surface. | Main cockpit now shows read source, runtime status, transport posture, and read-only write boundary in ready/loading/error/forbidden/invalid-id states. | Keep future Command Center runtime posture derived in `useCommandCenterSnapshot`; do not expose backend URLs or secret-bearing config. | P3.9 done |
 | Shared runtime chip renderer. | Command Center and read-model runtime/context bars now use one `RuntimeChipList` component and shared tone rules. | Extend the shared chip shape only when a real runtime-state field appears; avoid page-local duplicate chip markup. | P3.3 done |
@@ -285,7 +287,8 @@ Use this as the first copy alignment pass before creating more pages.
 25. Completed: P3.1/P3.2/P3.9 visible runtime state surfaces for read-model pages and Command Center, including Command Center forbidden/invalid-id read-boundary states.
 26. Completed: P3.3/P3.4/P3.5 shared runtime chip renderer, centralized Golden Loop QA fixtures, and invalid debug-state fallback route QA.
 27. Completed: P3.6/P3.7 post-commit board fact refresh plus Command Center Golden Loop entry-click QA and 1024px route/interaction matrix coverage.
-28. Next: optional backend read-model smoke remains blocked until a local backend base URL is intentionally configured outside this repo.
+28. Completed: S2 local backend connected-path smoke wrapper through `scripts/qa-backend-read-smoke-mock.ps1`.
+29. Next: real backend read-model smoke remains blocked until a local or staging backend base URL is intentionally configured outside this repo.
 29. Always run `scripts/validate-local.ps1`; add `-IncludeBrowserQa` after route/layout/read-model changes while the dev server is running.
 
 ## Stop Conditions
