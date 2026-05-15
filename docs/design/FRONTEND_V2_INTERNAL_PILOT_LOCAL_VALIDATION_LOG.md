@@ -3,7 +3,7 @@
 Date: 2026-05-15
 Repo: `A:\Photo_Studio_OS_Frontend`
 Branch: `main`
-Candidate commit checked: `d1cdc7a`
+Candidate commit checked: `67b42d1`
 Target: `Studio Operator Internal Pilot Ready`
 
 This document records local validation evidence only. It does not approve
@@ -31,6 +31,8 @@ Important context:
 - Approved backend signoff was skipped because no approved local or staging
   backend URL was provided.
 - The run used only local mock-first and local mock-backend smoke paths.
+- The run includes the Review Fix Pass that hardened auth/read-model boundary
+  semantics and added `npm run qa:readonly`.
 - The temporary Vite server was stopped after the run.
 - No `.env` file was edited.
 - No remote action was performed.

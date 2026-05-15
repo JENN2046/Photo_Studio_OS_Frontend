@@ -17,7 +17,7 @@ A4-Sustained Local Frontend Autopilot
 ## Current Mission
 
 ```text
-Frontend v2 Review Fix Pass for internal-pilot readiness
+Frontend v2 internal-pilot local readiness evidence refresh
 ```
 
 ---
@@ -50,7 +50,7 @@ complete-candidate
 ## Current Task
 
 ```text
-Validated local auth/read-model boundary fixes; preparing local checkpoint commit only
+Recorded latest internal-pilot aggregate QA evidence for commit 67b42d1
 ```
 
 ---
@@ -58,7 +58,7 @@ Validated local auth/read-model boundary fixes; preparing local checkpoint commi
 ## Last Completed Task
 
 ```text
-Review Fix Pass validated: auth alias/default role, subscene route access, partial/read notices, read-model data-state semantics, envelope guard coverage, and qa:readonly script entry
+Commit 67b42d1 created for the Review Fix Pass; internal-pilot aggregate QA passed afterward
 ```
 
 ---
@@ -66,7 +66,7 @@ Review Fix Pass validated: auth alias/default role, subscene route access, parti
 ## Last Validation
 
 ```text
-npm run lint passed; npm run build passed; scripts/validate-local.ps1 passed; scripts/qa-readonly-all.ps1 passed after one narrow QA expectation update; git diff --check passed; changed-file secret scan passed. Temporary Vite server on 127.0.0.1:5173 was stopped after browser QA.
+scripts/qa-internal-pilot-readiness.ps1 passed on commit 67b42d1. It covered lint, build, validate-local, package/source/contract/auth/doc guards, local mock-backend ready/403/404/empty/partial/stale/failure smoke, live env-role QA, auth-state QA, and full read-only browser QA. Approved backend signoff was skipped because no approved backend URL was provided. Temporary servers were stopped.
 ```
 
 ---
@@ -75,7 +75,7 @@ npm run lint passed; npm run build passed; scripts/validate-local.ps1 passed; sc
 
 ```text
 Branch: main
-Worktree: intentionally editing Review Fix Pass files plus .agent_board checkpoint; untracked .claude/, .mcp.json, and .omc/ remain protected and untouched
+Worktree: clean tracked files after commit 67b42d1; updating local validation evidence docs only; untracked .claude/, .mcp.json, and .omc/ remain protected and untouched
 ```
 
 ---
@@ -107,7 +107,7 @@ no
 ## Ports Used
 
 ```text
-127.0.0.1:5173 temporary Vite dev server started for qa-readonly-all.ps1 and stopped afterward
+127.0.0.1:5173 temporary Vite dev servers started by QA and stopped afterward
 ```
 
 ---
@@ -115,7 +115,7 @@ no
 ## Current Stop Status
 
 ```text
-Review Fix Pass validation green; local commit is the next safe checkpoint; push/tag/deploy remain unauthorized
+Local internal-pilot aggregate validation green; push/tag/deploy remain unauthorized
 ```
 
 ---
@@ -123,5 +123,5 @@ Review Fix Pass validation green; local commit is the next safe checkpoint; push
 ## Next Action
 
 ```text
-Inspect final staged diff, commit locally if guarded auto-commit conditions remain true, then continue with the next local-only internal-pilot gap.
+Commit local evidence refresh if docs-only checks remain green, then continue local-only gap audit. Do not push without explicit user approval.
 ```

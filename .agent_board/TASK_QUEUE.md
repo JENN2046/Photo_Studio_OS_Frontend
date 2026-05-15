@@ -271,6 +271,9 @@ none
 177. Confirmed fetchReadModel data-envelope guard remains covered by backend read contract-map QA.
 178. Added npm run qa:readonly and updated browser QA expectations for preserved data-state workspaces and clearer permission copy.
 179. Validated Review Fix Pass with npm run lint, npm run build, scripts/validate-local.ps1, scripts/qa-readonly-all.ps1, git diff --check, and changed-file secret scan.
+180. Locally committed 67b42d1: fix: harden auth route gates and read model envelope checks.
+181. Ran scripts/qa-internal-pilot-readiness.ps1 on commit 67b42d1; result passed with approved backend signoff skipped.
+182. Refreshed local validation evidence to point at commit 67b42d1 and record the aggregate run.
 ```
 
 ### blocked
