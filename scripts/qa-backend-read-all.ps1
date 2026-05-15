@@ -70,6 +70,39 @@ $matrices = @(
     )
   },
   @{
+    Name = "backend empty data path with local mock backend"
+    Arguments = @(
+      "-ExecutionPolicy", "Bypass",
+      "-File", "scripts\qa-backend-read-smoke-mock.ps1",
+      "-BackendPort", [string]$MockBackendPort,
+      "-FrontendBaseUrl", $FrontendBaseUrl,
+      "-SessionName", "$SessionNamePrefix-empty",
+      "-ResponseMode", "empty"
+    )
+  },
+  @{
+    Name = "backend partial data path with local mock backend"
+    Arguments = @(
+      "-ExecutionPolicy", "Bypass",
+      "-File", "scripts\qa-backend-read-smoke-mock.ps1",
+      "-BackendPort", [string]$MockBackendPort,
+      "-FrontendBaseUrl", $FrontendBaseUrl,
+      "-SessionName", "$SessionNamePrefix-partial",
+      "-ResponseMode", "partial"
+    )
+  },
+  @{
+    Name = "backend stale data path with local mock backend"
+    Arguments = @(
+      "-ExecutionPolicy", "Bypass",
+      "-File", "scripts\qa-backend-read-smoke-mock.ps1",
+      "-BackendPort", [string]$MockBackendPort,
+      "-FrontendBaseUrl", $FrontendBaseUrl,
+      "-SessionName", "$SessionNamePrefix-stale",
+      "-ResponseMode", "stale"
+    )
+  },
+  @{
     Name = "backend failure path with unreachable local backend"
     Arguments = @(
       "-ExecutionPolicy", "Bypass",

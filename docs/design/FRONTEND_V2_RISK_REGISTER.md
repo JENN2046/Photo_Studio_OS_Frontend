@@ -33,7 +33,7 @@ Status:
 | ID | Risk | Severity | Likelihood | Status | Mitigation |
 |---|---|---|---|---|---|
 | R01 | Mock fixtures drift from backend read-model truth. | High | Medium | Watching | S1 contract freeze complete; fixtures aligned with frozen types. Recheck when backend examples arrive in S2. |
-| R02 | Backend read integration breaks mock-first local development. | High | Medium | Watching | Backend reads stay behind `VITE_BACKEND_API_BASE_URL`; `scripts\qa-backend-read-all.ps1` and `scripts\qa-internal-pilot-readiness.ps1` validate mock-first, connected mock-backend, and unreachable-backend paths. |
+| R02 | Backend read integration breaks mock-first local development. | High | Medium | Watching | Backend reads stay behind `VITE_BACKEND_API_BASE_URL`; `scripts\qa-backend-read-all.ps1` and `scripts\qa-internal-pilot-readiness.ps1` validate mock-first, connected mock-backend, 403/404, empty/partial/stale, and unreachable-backend paths. |
 | R03 | Frontend starts treating display-derived values as business truth. | High | Medium | Watching | Keep durable facts backend-owned; keep view-model derivations presentation-only; source boundary QA blocks write methods and public-access enablement in `src`. |
 | R04 | Production auth is added without a clear role and session model. | Critical | Medium | Watching | S3 mock-first auth gates, role matrix, and session state machine implemented. `FRONTEND_V2_AUTH_PROVIDER_PREFLIGHT.md` defines provider/session/role-claim prerequisites. Auth provider integration still blocked. |
 | R05 | Token or secret values leak into source, docs, logs, screenshots, or mocks. | Critical | Medium | Watching | Keep `.env` unmodified; run changed-file secret scans; `scripts\qa-readonly-source-boundary.ps1` blocks token/browser-storage/Authorization signals in source. |
@@ -79,7 +79,7 @@ Watch:
 
 Required control:
 
-- Validate no-backend mock mode, local connected mock backend mode, and unreachable-backend failure mode.
+- Validate no-backend mock mode, local connected mock backend mode, 403/404, empty/partial/stale, and unreachable-backend failure mode.
 - Run real backend smoke only with an approved local/staging URL.
 
 ### S3 Auth And Roles

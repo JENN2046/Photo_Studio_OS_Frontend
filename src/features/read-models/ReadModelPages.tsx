@@ -6,12 +6,17 @@ import {
 } from "../../components/panels/RuntimeChipList";
 import type { AuthRuntimeView } from "../auth/useAuthState";
 import {
+  type BackendAssetInbox,
+  type BackendDeliveryReadiness,
+  type BackendQcRetouchQueue,
+  type BackendReviewGallery,
   fetchAssetInboxReadModel,
   fetchDeliveryReadinessReadModel,
   fetchQcRetouchQueueReadModel,
   fetchReviewGalleryReadModel
 } from "../../api/backendReadModels";
 import type {
+  BackendReadModelDataState,
   BackendReadModelRuntimeView,
   BackendReadModelState
 } from "./useBackendReadModel";
@@ -118,6 +123,133 @@ function selectDebugMock<T>(
   if (debugState === "empty") return factories.empty(id);
   if (debugState === "partial") return factories.partial(id);
   return factories.normal(id);
+}
+
+const staleThresholdMs = 5 * 60 * 1000;
+
+function readyDataState(): BackendReadModelDataState {
+  return {
+    status: "ready",
+    message: "只读模型已加载。",
+    canRetry: true,
+    transportLabel: "已连接"
+  };
+}
+
+function backendDataState(
+  status: BackendReadModelDataState["status"],
+  message: string
+): BackendReadModelDataState {
+  const transportLabels = {
+    ready: "已连接",
+    empty: "数据为空",
+    partial: "部分数据",
+    stale: "数据过期"
+  } satisfies Record<BackendReadModelDataState["status"], string>;
+
+  return {
+    status,
+    message,
+    canRetry: status === "ready" || status === "stale",
+    transportLabel: transportLabels[status]
+  };
+}
+
+function isGeneratedAtStale(generatedAt: string | undefined): boolean {
+  if (!generatedAt) {
+    return false;
+  }
+
+  const generatedAtTime = new Date(generatedAt).getTime();
+
+  if (Number.isNaN(generatedAtTime)) {
+    return false;
+  }
+
+  return Date.now() - generatedAtTime > staleThresholdMs;
+}
+
+function classifyAssetInboxData(
+  model: BackendAssetInbox
+): BackendReadModelDataState {
+  if (isGeneratedAtStale(model.generatedAt)) {
+    return backendDataState("stale", "素材收件箱数据可能已过期。");
+  }
+
+  if (model.total === 0 || model.items.length === 0) {
+    return backendDataState("empty", "素材收件箱暂无素材数据。");
+  }
+
+  if (
+    model.items.some(
+      (item) => !item.latestQc || !item.sku || !item.shotRequirement
+    )
+  ) {
+    return backendDataState("partial", "素材收件箱仅返回了部分绑定或 QC 数据。");
+  }
+
+  return readyDataState();
+}
+
+function classifyQcRetouchData(
+  model: BackendQcRetouchQueue
+): BackendReadModelDataState {
+  if (isGeneratedAtStale(model.generatedAt)) {
+    return backendDataState("stale", "质检 / 精修队列数据可能已过期。");
+  }
+
+  if (model.total === 0 || model.items.length === 0) {
+    return backendDataState("empty", "质检 / 精修队列暂无素材版本。");
+  }
+
+  if (
+    model.items.some(
+      (item) =>
+        !item.retouch ||
+        Object.keys(item.qc.technicalResults).length === 0 ||
+        Object.keys(item.qc.manualResults).length === 0
+    )
+  ) {
+    return backendDataState("partial", "质检 / 精修队列仅返回了部分检查数据。");
+  }
+
+  return readyDataState();
+}
+
+function classifyReviewGalleryData(
+  model: BackendReviewGallery
+): BackendReadModelDataState {
+  if (isGeneratedAtStale(model.generatedAt)) {
+    return backendDataState("stale", "审核画廊数据可能已过期。");
+  }
+
+  if (model.items.length === 0) {
+    return backendDataState("empty", "审核画廊暂无审核素材。");
+  }
+
+  if (!model.summary) {
+    return backendDataState("partial", "审核画廊仅返回了部分汇总数据。");
+  }
+
+  return readyDataState();
+}
+
+function classifyDeliveryReadinessData(
+  model: BackendDeliveryReadiness
+): BackendReadModelDataState {
+  if (isGeneratedAtStale(model.generatedAt)) {
+    return backendDataState("stale", "交付就绪数据可能已过期。");
+  }
+
+  if (model.itemCount === 0 || !model.checklist.hasItems) {
+    return backendDataState("empty", "交付包暂无交付素材。");
+  }
+
+  if (!model.packageKey || !model.manifestKey) {
+    return backendDataState("partial", "交付就绪仅返回了部分交付包数据。");
+  }
+
+  return readyDataState();
 }
 
 function applyReadModelDebugState<T>({
@@ -442,6 +574,7 @@ export function AssetInboxPage({ params, authRuntime }: ReadModelPageProps) {
     load: ({ baseUrl, options }) =>
       fetchAssetInboxReadModel(baseUrl, projectId, { limit: 24 }, options),
     mockData,
+    classifyData: classifyAssetInboxData,
     deps: [projectId]
   });
   const state = applyReadModelDebugState({
@@ -486,6 +619,7 @@ export function QcRetouchQueuePage({ params, authRuntime }: ReadModelPageProps) 
     load: ({ baseUrl, options }) =>
       fetchQcRetouchQueueReadModel(baseUrl, projectId, { limit: 24 }, options),
     mockData,
+    classifyData: classifyQcRetouchData,
     deps: [projectId]
   });
   const state = applyReadModelDebugState({
@@ -530,6 +664,7 @@ export function ReviewGalleryPage({ params, authRuntime }: ReadModelPageProps) {
     load: ({ baseUrl, options }) =>
       fetchReviewGalleryReadModel(baseUrl, reviewSessionId, options),
     mockData,
+    classifyData: classifyReviewGalleryData,
     deps: [reviewSessionId]
   });
   const state = applyReadModelDebugState({
@@ -577,6 +712,7 @@ export function DeliveryReadinessPage({ params, authRuntime }: ReadModelPageProp
     load: ({ baseUrl, options }) =>
       fetchDeliveryReadinessReadModel(baseUrl, deliveryId, options),
     mockData,
+    classifyData: classifyDeliveryReadinessData,
     deps: [deliveryId]
   });
   const state = applyReadModelDebugState({

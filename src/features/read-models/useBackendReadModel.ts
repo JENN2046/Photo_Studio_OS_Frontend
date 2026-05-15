@@ -51,7 +51,24 @@ interface UseBackendReadModelOptions<T> {
   idleMessage: string;
   load: (runtime: BackendReadModelRuntime) => Promise<T>;
   mockData?: T;
+  classifyData?: (data: T) => BackendReadModelDataState;
   deps: DependencyList;
+}
+
+export interface BackendReadModelDataState {
+  status: Extract<BackendReadModelStatus, "ready" | "empty" | "partial" | "stale">;
+  message: string;
+  canRetry: boolean;
+  transportLabel: string;
+}
+
+function createReadyDataState(): BackendReadModelDataState {
+  return {
+    status: "ready",
+    message: "只读模型已加载。",
+    canRetry: true,
+    transportLabel: "已连接"
+  };
 }
 
 function getBackendReadModelRuntime(): BackendReadModelRuntime | null {
@@ -111,6 +128,7 @@ export function useBackendReadModel<T>({
   idleMessage,
   load,
   mockData,
+  classifyData,
   deps
 }: UseBackendReadModelOptions<T>): BackendReadModelState<T> {
   const [reloadToken, setReloadToken] = useState(0);
@@ -205,16 +223,18 @@ export function useBackendReadModel<T>({
           return;
         }
 
+        const dataState = classifyData ? classifyData(data) : createReadyDataState();
+
         setState({
           data,
-          status: "ready",
-          message: "只读模型已加载。",
+          status: dataState.status,
+          message: dataState.message,
           errorMessage: null,
-          canRetry: true,
+          canRetry: dataState.canRetry,
           runtime: createRuntimeView({
             source: "backend",
             sourceLabel: "后端只读",
-            transportLabel: "已连接"
+            transportLabel: dataState.transportLabel
           }),
           retry
         });
@@ -265,7 +285,7 @@ export function useBackendReadModel<T>({
     return () => {
       isCurrent = false;
     };
-  }, [...deps, enabled, idleMessage, reloadToken]);
+  }, [...deps, enabled, idleMessage, reloadToken, classifyData]);
 
   return {
     ...state,

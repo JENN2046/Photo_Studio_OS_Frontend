@@ -238,7 +238,7 @@ All five surfaces share the same state model implemented in `useBackendReadModel
 | `ready` | 200 with data | Normal workspace rendering | n/a |
 | `empty` | 200 with 0 items / empty list | Clear empty explanation, next safe action | Future: add create/take-action link |
 | `partial` | 200 with incomplete fields | Show available data, mark missing sections | Data completion depends on backend |
-| `stale` | `generatedAt` > threshold | Stale warning (not yet implemented in UI) | Re-fetch |
+| `stale` | `generatedAt` > threshold | Stale warning with available read-only data | Re-fetch |
 | `error` | Network failure or 500 | Recoverable error state, retry available | Retry button |
 | `missing-config` | No `VITE_BACKEND_API_BASE_URL` | Fall back to mock data ("本地模拟") | Configure env var |
 | `forbidden` | 403 response | Clear permission state, no data leak | Requires auth/role resolution |
@@ -248,7 +248,8 @@ Empty vs partial distinction:
 - **Empty:** response succeeds, `items` is `[]`, `total` is `0`. Valid but nothing to show.
 - **Partial:** response succeeds, some items have `undefined` optional fields or missing sub-objects. Data is present but incomplete.
 
-Stale detection (not yet implemented): frontend may compare `generatedAt` to current time with a configurable threshold (default 5 minutes).
+Stale detection: read-model pages compare optional `generatedAt` to current time
+with a 5-minute threshold and show a `数据可能已过期` notice when exceeded.
 
 ---
 

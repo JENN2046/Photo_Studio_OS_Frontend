@@ -11,6 +11,8 @@ param(
   [string]$BackendUserRole = "owner",
   [string]$BackendUserName = "Backend Smoke Operator",
   [string]$SessionName = "photo-studio-backend-read-smoke",
+  [ValidateSet("ready", "empty", "partial", "stale")]
+  [string]$ExpectedReadModelState = "ready",
   [switch]$ExpectReadFailure,
   [ValidateSet("error", "forbidden", "invalid-id")]
   [string]$ExpectedFailureState = "error",
@@ -298,9 +300,27 @@ $failureStateConfig = @{
   }
 }
 $failureConfig = $failureStateConfig[$ExpectedFailureState]
+$readModelSuccessStateConfig = @{
+  ready = @{
+    Selector = ".asset-inbox-console,.qc-retouch-console,.review-gallery-console,.delivery-readiness-console"
+    ExpectedEncoded = @("%E5%B7%B2%E8%BF%9E%E6%8E%A5")
+  }
+  empty = @{
+    Selector = ".read-model-state-empty"
+    ExpectedEncoded = @("%E8%AF%A5%E8%A7%86%E5%9B%BE%E6%9A%82%E6%97%A0%E6%95%B0%E6%8D%AE", "%E6%95%B0%E6%8D%AE%E4%B8%BA%E7%A9%BA")
+  }
+  partial = @{
+    Selector = ".read-model-state-partial"
+    ExpectedEncoded = @("%E8%AF%A5%E8%A7%86%E5%9B%BE%E4%BB%85%E5%8A%A0%E8%BD%BD%E4%BA%86%E9%83%A8%E5%88%86%E6%95%B0%E6%8D%AE", "%E9%83%A8%E5%88%86%E6%95%B0%E6%8D%AE")
+  }
+  stale = @{
+    Selector = ".read-model-state-stale"
+    ExpectedEncoded = @("%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%83%BD%E5%B7%B2%E8%BF%87%E6%9C%9F", "%E6%95%B0%E6%8D%AE%E8%BF%87%E6%9C%9F")
+  }
+}
+$readModelSuccessConfig = $readModelSuccessStateConfig[$ExpectedReadModelState]
 $commonReadyExpected = @(
   "%E5%90%8E%E7%AB%AF%E5%8F%AA%E8%AF%BB",
-  "%E5%B7%B2%E8%BF%9E%E6%8E%A5",
   "mock-first%20%2F%20read-only"
 )
 $commonFailureExpected = @(
@@ -315,43 +335,43 @@ $routes = @(
     backendPath = "/command-center/v2"
     readySelector = ".cockpit-command-center"
     failureSelector = $failureConfig.CommandSelector
-    readyExpectedEncoded = $commonReadyExpected
+    readyExpectedEncoded = @($commonReadyExpected + @("%E5%B7%B2%E8%BF%9E%E6%8E%A5"))
     failureExpectedEncoded = @($commonFailureExpected + $failureConfig.CommandExpectedEncoded)
   },
   @{
     name = "asset-inbox"
     url = New-RouteUrl $ReadOnlyRouteHashes.AssetInbox
     backendPath = "/projects/PRJ-128/asset-inbox"
-    readySelector = ".asset-inbox-console"
+    readySelector = $(if ($ExpectedReadModelState -eq "ready") { ".asset-inbox-console" } else { $readModelSuccessConfig.Selector })
     failureSelector = $failureConfig.ReadModelSelector
-    readyExpectedEncoded = $commonReadyExpected
+    readyExpectedEncoded = @($commonReadyExpected + $readModelSuccessConfig.ExpectedEncoded)
     failureExpectedEncoded = @($commonFailureExpected + $failureConfig.ReadModelExpectedEncoded)
   },
   @{
     name = "qc-retouch"
     url = New-RouteUrl $ReadOnlyRouteHashes.QcRetouch
     backendPath = "/projects/PRJ-128/qc-retouch-queue"
-    readySelector = ".qc-retouch-console"
+    readySelector = $(if ($ExpectedReadModelState -eq "ready") { ".qc-retouch-console" } else { $readModelSuccessConfig.Selector })
     failureSelector = $failureConfig.ReadModelSelector
-    readyExpectedEncoded = $commonReadyExpected
+    readyExpectedEncoded = @($commonReadyExpected + $readModelSuccessConfig.ExpectedEncoded)
     failureExpectedEncoded = @($commonFailureExpected + $failureConfig.ReadModelExpectedEncoded)
   },
   @{
     name = "review-gallery"
     url = New-RouteUrl $ReadOnlyRouteHashes.ReviewGallery
     backendPath = "/review-sessions/REV-441/gallery"
-    readySelector = ".review-gallery-console"
+    readySelector = $(if ($ExpectedReadModelState -eq "ready") { ".review-gallery-console" } else { $readModelSuccessConfig.Selector })
     failureSelector = $failureConfig.ReadModelSelector
-    readyExpectedEncoded = $commonReadyExpected
+    readyExpectedEncoded = @($commonReadyExpected + $readModelSuccessConfig.ExpectedEncoded)
     failureExpectedEncoded = @($commonFailureExpected + $failureConfig.ReadModelExpectedEncoded)
   },
   @{
     name = "delivery-readiness"
     url = New-RouteUrl $ReadOnlyRouteHashes.DeliveryReadiness
     backendPath = "/deliveries/DEL-220/readiness"
-    readySelector = ".delivery-readiness-console"
+    readySelector = $(if ($ExpectedReadModelState -eq "ready") { ".delivery-readiness-console" } else { $readModelSuccessConfig.Selector })
     failureSelector = $failureConfig.ReadModelSelector
-    readyExpectedEncoded = $commonReadyExpected
+    readyExpectedEncoded = @($commonReadyExpected + $readModelSuccessConfig.ExpectedEncoded)
     failureExpectedEncoded = @($commonFailureExpected + $failureConfig.ReadModelExpectedEncoded)
   }
 )
@@ -359,7 +379,7 @@ $routes = @(
 Write-Host "== Photo Studio OS backend read-model smoke QA =="
 Write-Host "FrontendBaseUrl: $normalizedFrontendUrl"
 Write-Host "BackendBaseUrl: $BackendBaseUrl"
-Write-Host "Mode: $(if ($ExpectReadFailure) { "expect backend $ExpectedFailureState UI" } else { 'expect backend connected UI' })"
+Write-Host "Mode: $(if ($ExpectReadFailure) { "expect backend $ExpectedFailureState UI" } else { "expect backend $ExpectedReadModelState UI" })"
 Write-Host "Routes: $($routes.Count)"
 
 try {

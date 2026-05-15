@@ -169,6 +169,7 @@ export interface BackendAssetInboxQuery {
 }
 
 export interface BackendAssetInbox {
+  generatedAt?: string;
   projectId: string;
   page: number;
   limit: number;
@@ -220,6 +221,7 @@ export interface BackendQcRetouchQueueQuery {
 }
 
 export interface BackendQcRetouchQueue {
+  generatedAt?: string;
   projectId: string;
   page: number;
   limit: number;
@@ -250,6 +252,7 @@ export interface BackendQcRetouchQueue {
 }
 
 export interface BackendReviewGallery {
+  generatedAt?: string;
   reviewSessionId: string;
   title?: string;
   status: BackendReviewSessionStatus;
@@ -278,6 +281,7 @@ export interface BackendReviewGallery {
 }
 
 export interface BackendDeliveryReadiness {
+  generatedAt?: string;
   deliveryId: string;
   status: BackendDeliveryStatus;
   packageKey?: string;

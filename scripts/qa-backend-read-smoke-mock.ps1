@@ -8,7 +8,7 @@ param(
   [int]$BackendPort = 5181,
   [string]$FrontendBaseUrl = "http://127.0.0.1:5173",
   [string]$SessionName = "photo-studio-backend-read-smoke-mock",
-  [ValidateSet("ready", "forbidden", "invalid-id")]
+  [ValidateSet("ready", "forbidden", "invalid-id", "empty", "partial", "stale")]
   [string]$ResponseMode = "ready",
   [switch]$KeepBrowser
 )
@@ -73,6 +73,12 @@ const http = require('node:http');
 
 const port = Number(process.env.BACKEND_READ_SMOKE_PORT || '$BackendPort');
 const responseMode = '$ResponseMode';
+const readModelPaths = new Set([
+  '/projects/PRJ-128/asset-inbox',
+  '/projects/PRJ-128/qc-retouch-queue',
+  '/review-sessions/REV-441/gallery',
+  '/deliveries/DEL-220/readiness'
+]);
 
 const sku = {
   id: 'SKU-AUR-001',
@@ -288,6 +294,142 @@ const dataByPath = new Map([
   }]
 ]);
 
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function emptyBodyForPath(path) {
+  if (path === '/projects/PRJ-128/asset-inbox') {
+    return {
+      data: {
+        projectId: 'PRJ-128',
+        page: 1,
+        limit: 24,
+        total: 0,
+        intake: {
+          source: 'capture_one_placeholder',
+          status: 'not_configured',
+          message: 'capture_one_export'
+        },
+        items: []
+      }
+    };
+  }
+
+  if (path === '/projects/PRJ-128/qc-retouch-queue') {
+    return {
+      data: {
+        projectId: 'PRJ-128',
+        page: 1,
+        limit: 24,
+        total: 0,
+        items: []
+      }
+    };
+  }
+
+  if (path === '/review-sessions/REV-441/gallery') {
+    return {
+      data: {
+        reviewSessionId: 'REV-441',
+        title: 'Empty local smoke review',
+        status: 'draft',
+        items: [],
+        summary: {
+          pending: 0,
+          approved: 0,
+          revisionRequested: 0,
+          withdrawn: 0
+        },
+        publicAccess: {
+          enabled: false,
+          reason: 'storage_auth_and_public_review_not_approved'
+        }
+      }
+    };
+  }
+
+  if (path === '/deliveries/DEL-220/readiness') {
+    return {
+      data: {
+        deliveryId: 'DEL-220',
+        status: 'preparing',
+        itemCount: 0,
+        checklist: {
+          hasItems: false,
+          hasPackageKey: false,
+          hasManifestKey: false,
+          allItemsHaveFileKey: false
+        },
+        blockers: [],
+        externalAccess: {
+          enabled: false,
+          reason: 'storage_auth_and_public_delivery_not_approved'
+        }
+      }
+    };
+  }
+
+  return null;
+}
+
+function partialBodyForPath(path, body) {
+  const next = clone(body);
+
+  if (path === '/projects/PRJ-128/asset-inbox') {
+    delete next.data.items[0].latestQc;
+    delete next.data.items[0].shotRequirement;
+    return next;
+  }
+
+  if (path === '/projects/PRJ-128/qc-retouch-queue') {
+    delete next.data.items[0].retouch;
+    next.data.items[0].qc.manualResults = {};
+    return next;
+  }
+
+  if (path === '/review-sessions/REV-441/gallery') {
+    delete next.data.summary;
+    return next;
+  }
+
+  if (path === '/deliveries/DEL-220/readiness') {
+    delete next.data.packageKey;
+    delete next.data.manifestKey;
+    return next;
+  }
+
+  return next;
+}
+
+function staleBody(body) {
+  const next = clone(body);
+  if (next.data) {
+    next.data.generatedAt = '2000-01-01T00:00:00+00:00';
+  }
+  return next;
+}
+
+function bodyForResponseMode(path, body) {
+  if (!readModelPaths.has(path)) {
+    return body;
+  }
+
+  if (responseMode === 'empty') {
+    return emptyBodyForPath(path);
+  }
+
+  if (responseMode === 'partial') {
+    return partialBodyForPath(path, body);
+  }
+
+  if (responseMode === 'stale') {
+    return staleBody(body);
+  }
+
+  return body;
+}
+
 function writeJson(response, statusCode, body) {
   response.writeHead(statusCode, {
     'access-control-allow-origin': '*',
@@ -336,12 +478,14 @@ const server = http.createServer((request, response) => {
     }
   }
 
-  const body = dataByPath.get(url.pathname);
+  let body = dataByPath.get(url.pathname);
 
   if (!body) {
     writeJson(response, 404, { error: 'not_found' });
     return;
   }
+
+  body = bodyForResponseMode(url.pathname, body);
 
   writeJson(response, 200, body);
 });
@@ -386,9 +530,14 @@ try {
   }
 
   if ($ResponseMode -ne "ready") {
-    $arguments += "-ExpectReadFailure"
-    $arguments += "-ExpectedFailureState"
-    $arguments += $ResponseMode
+    if ($ResponseMode -eq "forbidden" -or $ResponseMode -eq "invalid-id") {
+      $arguments += "-ExpectReadFailure"
+      $arguments += "-ExpectedFailureState"
+      $arguments += $ResponseMode
+    } else {
+      $arguments += "-ExpectedReadModelState"
+      $arguments += $ResponseMode
+    }
   }
 
   powershell @arguments

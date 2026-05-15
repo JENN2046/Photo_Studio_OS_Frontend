@@ -59,7 +59,8 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-smoke.ps1 -Back
 
 For the full local backend read smoke, run the aggregate helper. It checks the
 connected path with a temporary mock backend, local mock-backend 403 / 404
-boundary paths, and the unreachable-backend failure path:
+boundary paths, local mock-backend empty / partial / stale data-state paths,
+and the unreachable-backend failure path:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-all.ps1
@@ -79,6 +80,9 @@ or staging access:
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-smoke-mock.ps1 -ResponseMode forbidden
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-smoke-mock.ps1 -ResponseMode invalid-id
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-smoke-mock.ps1 -ResponseMode empty
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-smoke-mock.ps1 -ResponseMode partial
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-smoke-mock.ps1 -ResponseMode stale
 ```
 
 For a local failure-mode rehearsal without a real backend, use an unused local
@@ -169,6 +173,11 @@ Expected if backend returns 403 or 404:
 - `404` shows `ID 无效` / `快照未找到` while keeping the Command Center in a read-only boundary surface.
 - No project, risk, approval, or execution data is inferred when the snapshot is not returned.
 
+Expected if backend read-model pages return 200 with empty / partial / stale data:
+- Runtime chips keep `读取源: 后端只读` and show `数据为空`, `部分数据`, or `数据过期`.
+- State notice shows `该视图暂无数据`, `该视图仅加载了部分数据`, or `数据可能已过期`.
+- Available workspace data may still render, but write/upload/download/public-link actions remain disabled.
+
 ### Step 4: Asset Inbox smoke
 
 Open `http://127.0.0.1:5173/#asset-inbox?projectId=PRJ-128`.
@@ -258,6 +267,8 @@ Confirm each state renders correctly when triggered by backend response:
 | Loading | Normal fetch delay | `读取中` notice with calm loading state |
 | Ready | Successful response | Workspace renders; `已就绪` chip |
 | Empty | Response with `total: 0` or `items: []` | `该视图暂无数据` notice; empty workspace |
+| Partial | 200 response with missing optional binding, QC, summary, or package fields | `该视图仅加载了部分数据` notice; available workspace data remains read-only |
+| Stale | 200 response with old `generatedAt` timestamp | `数据可能已过期` notice; retry remains available |
 | Error | Network failure or 5xx | `只读模型不可用` notice; `重试` button |
 | Forbidden | 403 response | `无权访问该只读模型`; no data exposed |
 | Invalid ID | 404 response | `请求的 ID 无效或未找到` notice |
@@ -270,6 +281,9 @@ Confirm each state renders correctly when triggered by backend response:
 | `后端只读` | Backend URL configured, request in flight or succeeded |
 | `请求中` | Fetch in progress |
 | `已连接` | Fetch succeeded |
+| `数据为空` | Fetch succeeded with no list items or delivery items |
+| `部分数据` | Fetch succeeded but expected optional sub-data is missing |
+| `数据过期` | Fetch succeeded with a stale `generatedAt` timestamp |
 | `请求失败` | Fetch failed (network, 5xx) |
 | `权限不足` | 403 response |
 
@@ -322,7 +336,7 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-all.ps1
 | Build passes | |
 | Browser QA passes | |
 | No secrets committed | |
-| `scripts\qa-backend-read-all.ps1` passes for connected, 403, 404, and failure local backend read smoke | |
+| `scripts\qa-backend-read-all.ps1` passes for connected, 403, 404, empty, partial, stale, and failure local backend read smoke | |
 | `scripts\qa-backend-read-smoke.ps1` passes for local/staging read smoke | |
 | `scripts\qa-backend-read-signoff.ps1` passes for approved local/staging backend read signoff, including explicit expected failure states when fixture endpoints return 403 / 404 | |
 | `scripts\qa-backend-read-signoff-guards.ps1` passes unsafe URL rejection checks | |
