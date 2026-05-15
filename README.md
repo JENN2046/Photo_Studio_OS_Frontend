@@ -212,6 +212,12 @@ Automated auth role matrix static QA:
 powershell -ExecutionPolicy Bypass -File scripts\qa-auth-role-matrix.ps1
 ```
 
+Automated internal pilot evidence manifest QA:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-manifest.ps1
+```
+
 Automated read-only source boundary scan:
 
 ```powershell
@@ -256,7 +262,8 @@ is passed through `-ApprovedBackendBaseUrl`.
 `validate-local.ps1` and `validate-local.sh` also run the read-only source
 boundary scan and auth role matrix static QA so source-level POST/PATCH/DELETE,
 file input, signed URL, token, browser-storage, storage-provider URL,
-public-access enablement, or role-matrix drift signals fail before browser QA.
+public-access enablement, role-matrix drift, or missing internal-pilot evidence
+signals fail before browser QA.
 
 Baseline cockpit routes:
 

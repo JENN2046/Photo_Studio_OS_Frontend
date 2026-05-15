@@ -127,6 +127,13 @@ if ($LASTEXITCODE -ne 0) {
   $failed = $true
 }
 
+Write-Host ""
+Write-Host "== internal pilot evidence manifest QA =="
+powershell -ExecutionPolicy Bypass -File "scripts\qa-internal-pilot-manifest.ps1"
+if ($LASTEXITCODE -ne 0) {
+  $failed = $true
+}
+
 if ($IncludeBrowserQa) {
   Write-Host ""
   Write-Host "== full read-only browser QA =="

@@ -150,6 +150,10 @@ echo ""
 echo "== auth role matrix QA =="
 run_powershell_script "scripts/qa-auth-role-matrix.ps1"
 
+echo ""
+echo "== internal pilot evidence manifest QA =="
+run_powershell_script "scripts/qa-internal-pilot-manifest.ps1"
+
 if [ "$include_browser_qa" -eq 1 ]; then
   echo ""
   echo "== full read-only browser QA =="

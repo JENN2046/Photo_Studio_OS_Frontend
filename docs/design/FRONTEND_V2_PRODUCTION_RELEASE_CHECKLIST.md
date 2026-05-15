@@ -30,6 +30,7 @@ npm run build
 powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-source-boundary.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-auth-role-matrix.ps1
+powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-manifest.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-all.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-auth-live-roles.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1
@@ -50,6 +51,7 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1
 | `validate-local.ps1` passes (including secret scan) | |
 | `qa-readonly-source-boundary.ps1` passes | |
 | `qa-auth-role-matrix.ps1` passes 7-role / 10-route static matrix checks | |
+| `qa-internal-pilot-manifest.ps1` passes source/script/doc evidence checks | |
 | `qa-backend-read-all.ps1` passes connected and failure local backend read smoke | |
 | `qa-backend-read-signoff.ps1` passes with an approved local/staging backend URL when backend signoff is in scope | |
 | `qa-readonly-auth-live-roles.ps1` passes representative `VITE_BACKEND_USER_ROLE` paths | |
