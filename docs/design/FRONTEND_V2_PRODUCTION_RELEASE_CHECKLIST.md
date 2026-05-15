@@ -28,6 +28,8 @@ npm ci
 npm run lint
 npm run build
 powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-all.ps1
+powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-auth-live-roles.ps1
 ```
 
 | Check | Status |
@@ -36,6 +38,8 @@ powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1
 | `npm run lint` passes | |
 | `npm run build` passes | |
 | `validate-local.ps1` passes (including secret scan) | |
+| `qa-backend-read-all.ps1` passes connected and failure local backend read smoke | |
+| `qa-readonly-auth-live-roles.ps1` passes representative `VITE_BACKEND_USER_ROLE` paths | |
 
 ## Browser QA Matrix
 
@@ -46,13 +50,15 @@ npm run dev
 powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-all.ps1
 ```
 
-### Route Matrix (14 routes × 3 viewports)
+### Route Matrix (16 routes × 3 viewports)
 
 | Route | 1440x960 | 1024x768 | 390x844 |
 |---|---|---|---|
 | `#` (Command Center) | | | |
 | `#?commandCenterState=loading` | | | |
 | `#?commandCenterState=error` | | | |
+| `#?commandCenterState=forbidden` | | | |
+| `#?commandCenterState=invalid-id` | | | |
 | `#?commandCenterState=invalid` | | | |
 | `#risk` | | | |
 | `#projects` | | | |
@@ -65,7 +71,7 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-all.ps1
 | `#review-gallery?reviewSessionId=REV-441&projectId=PRJ-128&deliveryId=DEL-220` | | | |
 | `#delivery-readiness?deliveryId=DEL-220&projectId=PRJ-128&reviewSessionId=REV-441` | | | |
 
-### Boundary State Matrix (4 pages × 5 new states × 2 viewports)
+### Boundary State Matrix (4 pages × 9 states × 2 viewports)
 
 | Page | empty | partial | stale | forbidden | invalid-id |
 |---|---|---|---|---|---|
@@ -78,11 +84,13 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-all.ps1
 | Delivery Readiness (1024) | | | | | |
 | Delivery Readiness (390) | | | | | |
 
-Trigger via `readModelState=` query param. Existing boundary states (loading, error, missing-config, idle) are covered by `scripts/qa-readonly-boundary-states.ps1`.
+Trigger via `readModelState=` query param. Loading, error, missing-config, empty,
+partial, stale, forbidden, invalid-id, and missing-id idle states are covered by
+`scripts\qa-readonly-boundary-states.ps1`.
 
-### Auth State Matrix (6 states × 2 viewports)
+### Auth State Matrix (10 cases × 2 viewports)
 
-| State | 1024x768 | 390x844 |
+| Case | 1024x768 | 390x844 |
 |---|---|---|
 | signed-out (未登录) | | |
 | expired (会话过期) | | |
@@ -90,8 +98,30 @@ Trigger via `readModelState=` query param. Existing boundary states (loading, er
 | error (认证故障) | | |
 | forbidden (权限不足) | | |
 | signed-in with content (已登录) | | |
+| photographer summary-only partial access | | |
+| retoucher read-only partial access | | |
+| photographer no-access forbidden route | | |
+| delivery approver full delivery access | | |
 
-Trigger via `?authState=` query param on Command Center (`#`) and Asset Inbox (`#asset-inbox?...&authState=signed-in`). Covered by `scripts/qa-readonly-auth-states.ps1`.
+Trigger via `?authState=` / `?authRole=` query params on Command Center and
+read-model pages. Covered by `scripts\qa-readonly-auth-states.ps1`.
+
+### Live Env Role Matrix (5 roles × 2 viewports)
+
+Run with no existing dev server. The script starts temporary local Vite child
+processes and sets `VITE_BACKEND_USER_ROLE` without editing `.env`.
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-auth-live-roles.ps1
+```
+
+| Role path | 1024x768 | 390x844 |
+|---|---|---|
+| operator full Asset Inbox access | | |
+| photographer summary Command Center access | | |
+| retoucher read-only Asset Inbox access | | |
+| delivery approver full Delivery Readiness access | | |
+| client no-access Delivery Readiness gate | | |
 
 ### Interaction Matrix (6 checks × 3 viewports)
 
@@ -154,6 +184,8 @@ Trigger via `?authState=` query param on Command Center (`#`) and Asset Inbox (`
 | No auth headers beyond `x-user-role` and `x-user-name` | |
 | No sign-in page | |
 | No production auth URLs in source or config | |
+| `认证源`, `会话`, `角色`, and `访问权限` chips are visible on Command Center and read-model pages | |
+| `qa-readonly-auth-live-roles.ps1` passes without `.env` changes | |
 
 ### No Secrets
 
@@ -193,6 +225,7 @@ If a staging backend is available and configured:
 
 | Check | Status |
 |---|---|
+| `scripts\qa-backend-read-smoke.ps1` passes against approved local/staging backend URL | |
 | Command Center loads from backend | |
 | Asset Inbox loads from backend | |
 | QC / Retouch loads from backend | |
