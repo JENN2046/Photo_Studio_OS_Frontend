@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type { AuthState, Role, SessionState } from "./authTypes";
+import { roleLabels, type AuthState, type Role, type SessionState } from "./authTypes";
 
 export type AuthDebugState = SessionState | "live";
 
@@ -123,12 +123,15 @@ export function useAuthState(params: URLSearchParams): {
   runtime: AuthRuntimeView;
 } {
   const debugState = getAuthDebugState(params);
-  const envRole = getRoleFromDebugParams(params) ?? getRoleFromEnv();
-  const isDebug = debugState !== "live";
+  const debugRole = getRoleFromDebugParams(params);
+  const envRole = getRoleFromEnv();
+  const resolvedRole = debugRole ?? envRole;
+  const isDebug = debugState !== "live" || debugRole !== null;
+  const isEnvRole = !debugRole && envRole !== null;
 
   const auth = useMemo(
-    () => deriveSessionState(envRole, debugState),
-    [envRole, debugState]
+    () => deriveSessionState(resolvedRole, debugState),
+    [resolvedRole, debugState]
   );
 
   const sessionLabels: Record<string, string> = {
@@ -146,12 +149,16 @@ export function useAuthState(params: URLSearchParams): {
     debugState,
     runtime: {
       source: isDebug ? "mock" : "mock",
-      sourceLabel: isDebug ? "DEV 调试认证" : "本地模拟认证",
+      sourceLabel: isDebug
+        ? "DEV 调试认证"
+        : isEnvRole
+          ? "环境角色认证"
+          : "本地模拟认证",
       sessionLabel: sessionLabels[auth.session] ?? auth.session,
       roleLabel: auth.role
-        ? (import.meta.env.DEV
-          ? `DEV-${auth.role}`
-          : auth.role)
+        ? isDebug
+          ? `DEV-${roleLabels[auth.role]}`
+          : roleLabels[auth.role]
         : "未分配",
       permissionLabel: "完全"
     }

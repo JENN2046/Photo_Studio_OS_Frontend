@@ -335,6 +335,12 @@ function ReadModelContextBar({
       value: runtime.transportLabel
     },
     {
+      key: "auth-source",
+      label: "认证源",
+      value: authRuntime.sourceLabel,
+      tone: authRuntime.source
+    },
+    {
       key: "auth-session",
       label: "会话",
       value: authRuntime.sessionLabel

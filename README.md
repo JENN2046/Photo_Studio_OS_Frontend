@@ -189,6 +189,12 @@ Automated auth state boundary matrix:
 powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-auth-states.ps1
 ```
 
+Automated live env role matrix:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-auth-live-roles.ps1
+```
+
 The QA scripts use transient `npx --package @playwright/cli` execution without
 changing `package.json` or `package-lock.json`. The full QA script runs the
 route, boundary-state, interaction, and auth-state matrices in sequence. The route
@@ -203,7 +209,9 @@ Command Center `黄金链路` entry clicks, read-model tab switching, local sele
 state, and disabled read-only action posture at `1440x960`, `1024x768`, and
 `390x844`. The auth-state matrix checks signed-out, expired, loading, error,
 forbidden, signed-in, and role-derived full/read/summary/no-access states at
-`1024x768` and `390x844`.
+`1024x768` and `390x844`. The live env role matrix starts temporary local Vite
+servers with `VITE_BACKEND_USER_ROLE` set only in child process environments and
+checks representative non-debug role paths without editing `.env`.
 
 Baseline cockpit routes:
 
@@ -274,6 +282,8 @@ DEV-only auth state boundary rehearsals:
   Center, Asset Inbox, and Delivery Readiness at tablet and mobile widths.
 - Set `VITE_BACKEND_USER_ROLE` env var (e.g. `photographer`, `retoucher`) to
   simulate a specific role in live (non-debug) mode.
+- Run `scripts\qa-readonly-auth-live-roles.ps1` with no existing dev server to
+  verify representative `VITE_BACKEND_USER_ROLE` role paths without editing `.env`.
 
 The default role is `operator` (full access). Auth gates are display-only; they
 do not implement production authentication, store tokens, or replace backend

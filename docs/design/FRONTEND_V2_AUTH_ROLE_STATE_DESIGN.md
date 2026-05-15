@@ -242,6 +242,9 @@ When S3 is approved:
 - `scripts\qa-readonly-auth-states.ps1` covers signed-out, expired, loading,
   error, forbidden, full access, read-only partial access, summary-only partial
   access, and no-access role paths at tablet and mobile widths.
+- `scripts\qa-readonly-auth-live-roles.ps1` starts temporary local Vite servers
+  with `VITE_BACKEND_USER_ROLE` set only in child process environments and
+  verifies representative non-debug role paths without editing `.env`.
 - Real auth provider integration, token handling, and backend authorization
   enforcement remain unimplemented and require separate approval.
 
