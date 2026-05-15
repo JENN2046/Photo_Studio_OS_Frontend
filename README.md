@@ -98,6 +98,24 @@ Both validation helpers perform a Node runtime preflight before npm gates. This
 project uses Vite 7, so the shell running either helper must expose Node.js
 `20.19+` or `22.12+`.
 
+Backend read-model smoke helper:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-smoke.ps1 -BackendBaseUrl http://127.0.0.1:8080
+```
+
+For local failure-mode rehearsal without a real backend:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-smoke.ps1 -BackendBaseUrl http://127.0.0.1:59999 -ExpectReadFailure
+```
+
+The backend smoke helper starts a temporary local Vite server with
+`VITE_BACKEND_API_BASE_URL` set only inside that child process. It refuses
+non-local backend URLs unless `-AllowNonLocalBackend` is passed for an explicitly
+approved staging smoke, checks Command Center plus the four read-model pages, and
+fails if the browser observes non-read request methods.
+
 ## Validation Status
 
 Recent local validation:
@@ -263,5 +281,6 @@ It must not add `POST`, `PATCH`, `DELETE`, upload, download, auth token, storage
 provider, external review, or external delivery flows.
 
 Mock mode is the default. Optional backend read-model smoke testing is documented
-in `docs/design/COMMAND_CENTER_READONLY_API_CONTRACT_NOTE.md` and only activates
-when `VITE_BACKEND_API_BASE_URL` is deliberately configured outside this repo.
+in `docs/design/COMMAND_CENTER_READONLY_API_CONTRACT_NOTE.md` and
+`docs/design/FRONTEND_V2_BACKEND_READ_SMOKE_PLAN.md`, and only activates when
+`VITE_BACKEND_API_BASE_URL` is deliberately configured outside this repo.

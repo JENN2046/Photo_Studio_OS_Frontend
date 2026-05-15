@@ -47,6 +47,29 @@ If `VITE_BACKEND_API_BASE_URL` is unset or empty, the frontend falls back to moc
 
 ## Smoke Procedure
 
+### Automated helper
+
+Use the local helper when you want a repeatable browser-led smoke. It starts a
+temporary Vite server with `VITE_BACKEND_API_BASE_URL` set only in that child
+process; it does not edit `.env`.
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-smoke.ps1 -BackendBaseUrl http://127.0.0.1:8080
+```
+
+For a local failure-mode rehearsal without a real backend, use an unused local
+port and expect read failure UI:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-smoke.ps1 -BackendBaseUrl http://127.0.0.1:59999 -ExpectReadFailure
+```
+
+The helper checks Command Center plus the four read-model hash pages, verifies
+the `后端只读` / `mock-first / read-only` runtime posture, and fails if the
+browser observes non-read request methods. Non-local backend URLs are blocked by
+default; use `-AllowNonLocalBackend` only for an explicitly approved staging
+smoke, never for production.
+
 ### Step 1: Verify mock-first baseline
 
 ```powershell
@@ -236,6 +259,7 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-all.ps1
 | Build passes | |
 | Browser QA passes | |
 | No secrets committed | |
+| `scripts\qa-backend-read-smoke.ps1` passes for local/staging read smoke | |
 
 ## Non-goals
 
