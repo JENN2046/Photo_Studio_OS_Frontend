@@ -62,6 +62,12 @@ Run these before calling the frontend an internal-pilot candidate:
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1
 ```
 
+Equivalent npm shortcut:
+
+```powershell
+npm run qa:internal-pilot
+```
+
 The aggregate script runs the same gates as the expanded command list below and
 starts a temporary local Vite server only for browser QA.
 `scripts\validate-local.ps1` includes the read-only source boundary scan.

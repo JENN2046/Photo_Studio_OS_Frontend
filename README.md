@@ -295,6 +295,12 @@ Automated internal pilot readiness aggregate:
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1
 ```
 
+Equivalent npm shortcut:
+
+```powershell
+npm run qa:internal-pilot
+```
+
 Optional internal pilot aggregate with an approved local/staging backend read
 signoff. Expected data states can be passed through the aggregate when the
 approved backend fixture intentionally returns `empty`, `partial`, or `stale`:

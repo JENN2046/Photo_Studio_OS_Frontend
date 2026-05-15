@@ -44,6 +44,12 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-auth-live-roles.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1
 ```
 
+Equivalent npm shortcut for the default local candidate run:
+
+```powershell
+npm run qa:internal-pilot
+```
+
 When an approved local/staging backend is in scope, run the aggregate with the
 approved URL instead of relying only on the default local mock-backend path:
 

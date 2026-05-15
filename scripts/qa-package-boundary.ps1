@@ -124,6 +124,8 @@ Assert-RequiredScript -Scripts $pkg.scripts -Name "dev" -Command "vite --host 12
 Assert-RequiredScript -Scripts $pkg.scripts -Name "build" -Command "tsc --noEmit -p tsconfig.typecheck.json && vite build"
 Assert-RequiredScript -Scripts $pkg.scripts -Name "lint" -Command "tsc --noEmit -p tsconfig.typecheck.json"
 Assert-RequiredScript -Scripts $pkg.scripts -Name "preview" -Command "vite preview --host 127.0.0.1 --port 4173"
+Assert-RequiredScript -Scripts $pkg.scripts -Name "qa:readonly" -Command "powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-all.ps1"
+Assert-RequiredScript -Scripts $pkg.scripts -Name "qa:internal-pilot" -Command "powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1"
 
 $packageDependencies = Get-ObjectPropertyMap $pkg.dependencies
 $packageDevDependencies = Get-ObjectPropertyMap $pkg.devDependencies
