@@ -41,6 +41,7 @@ auth are verified in an approved local or staging environment.
 | Auth/session states | Signed-out, expired, loading, error, forbidden, insufficient-role, and signed-in states are stable. | `src\features\auth\*`, `scripts\qa-readonly-auth-states.ps1` | Frontend ready |
 | Role matrix integrity | Seven roles, ten routes, seventy matrix cells, session states, and access labels are statically checked. | `scripts\qa-auth-role-matrix.ps1` | Frontend ready |
 | Evidence manifest | Required S2/S3/QA/readiness source, script, and document artifacts are present. | `scripts\qa-internal-pilot-manifest.ps1` | Frontend ready |
+| Goal audit guard | Internal pilot status stays explicit as local candidate, with backend/auth signoff blockers still visible. | `scripts\qa-internal-pilot-goal-audit.ps1` | Frontend ready |
 | Env role readiness | Representative `VITE_BACKEND_USER_ROLE` paths are verified without `.env` edits. | `scripts\qa-readonly-auth-live-roles.ps1` | Frontend ready |
 | Real auth provider | Backend/platform auth provider, token model, and enforcement are not implemented in this frontend. | `docs\design\FRONTEND_V2_AUTH_ROLE_STATE_DESIGN.md` | Blocked on platform auth |
 | Responsive QA | 1440px, 1024px, and 390px scripted matrices pass without horizontal overflow. | `scripts\qa-readonly-all.ps1` | Ready |
@@ -74,6 +75,7 @@ powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-source-boundary.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-auth-role-matrix.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-manifest.ps1
+powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-goal-audit.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff-guards.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-all.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-auth-live-roles.ps1

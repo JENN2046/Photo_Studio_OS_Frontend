@@ -135,6 +135,13 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host ""
+Write-Host "== internal pilot goal audit QA =="
+powershell -ExecutionPolicy Bypass -File "scripts\qa-internal-pilot-goal-audit.ps1"
+if ($LASTEXITCODE -ne 0) {
+  $failed = $true
+}
+
+Write-Host ""
 Write-Host "== backend read signoff guard QA =="
 powershell -ExecutionPolicy Bypass -File "scripts\qa-backend-read-signoff-guards.ps1"
 if ($LASTEXITCODE -ne 0) {

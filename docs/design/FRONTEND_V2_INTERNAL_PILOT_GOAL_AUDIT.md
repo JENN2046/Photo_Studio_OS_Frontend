@@ -45,6 +45,7 @@ auth/backend authorization still require approved local or staging environments.
 | Keep release candidate docs current. | `docs\design\FRONTEND_V2_PRODUCTION_ROADMAP.md`, `FRONTEND_V2_INTERNAL_PILOT_READINESS.md`, `FRONTEND_V2_PRODUCTION_RELEASE_CHECKLIST.md`, `FRONTEND_V2_RISK_REGISTER.md`, `FRONTEND_V2_IMPLEMENTATION_HANDOFF.md` | Planning, risk, readiness, checklist, and handoff docs exist and point to current gates. | Covered locally |
 | Preserve final signoff evidence slot. | `docs\design\FRONTEND_V2_INTERNAL_PILOT_SIGNOFF_RECORD.md` | Blank signoff record exists for the eventual approved local/staging acceptance run. | Covered locally |
 | Keep evidence artifacts present. | `scripts\qa-internal-pilot-manifest.ps1` | Static manifest QA checks required source, QA, and documentation artifacts for the local internal-pilot goal. | Covered locally |
+| Keep goal status honest. | `scripts\qa-internal-pilot-goal-audit.ps1` | Static audit QA checks this goal remains a local frontend-ready candidate until backend/auth signoff blockers are cleared. | Covered locally |
 | Avoid remote side effects. | Git status and commit history | Local commits exist; push/tag/deploy are not authorized by this audit. | Covered locally |
 
 ## Current Local Signoff Stack
@@ -61,6 +62,7 @@ This command currently chains:
 - `npm run build`
 - `scripts\validate-local.ps1`
 - `scripts\qa-internal-pilot-manifest.ps1`
+- `scripts\qa-internal-pilot-goal-audit.ps1`
 - `scripts\qa-backend-read-all.ps1`
 - optional approved backend signoff when `-ApprovedBackendBaseUrl` is provided
 - `scripts\qa-readonly-auth-live-roles.ps1`

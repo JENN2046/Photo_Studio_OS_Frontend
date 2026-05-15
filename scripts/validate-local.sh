@@ -155,6 +155,10 @@ echo "== internal pilot evidence manifest QA =="
 run_powershell_script "scripts/qa-internal-pilot-manifest.ps1"
 
 echo ""
+echo "== internal pilot goal audit QA =="
+run_powershell_script "scripts/qa-internal-pilot-goal-audit.ps1"
+
+echo ""
 echo "== backend read signoff guard QA =="
 run_powershell_script "scripts/qa-backend-read-signoff-guards.ps1"
 
