@@ -38,6 +38,7 @@ auth/backend authorization still require approved local or staging environments.
 | Stabilize backend error states. | `scripts\qa-readonly-boundary-states.ps1`, `scripts\qa-backend-read-all.ps1` | Loading, error, missing-config, empty, partial, stale, forbidden, invalid-id, and failure paths are checked locally. | Covered locally |
 | Provide role/session UI readiness. | `src\features\auth\*`, `scripts\qa-readonly-auth-states.ps1` | Signed-out, expired, loading, error, forbidden, partial, no-access, and signed-in paths are scripted. | Covered locally |
 | Keep role matrix complete. | `scripts\qa-auth-role-matrix.ps1` | Static QA checks 7 roles, 10 routes, 70 cells, session states, access labels, and auth rehearsal signals. | Covered locally |
+| Keep auth provider preflight explicit. | `scripts\qa-auth-provider-preflight.ps1` | Static QA checks provider owner, session source, role claim, backend enforcement, staging fixtures, and hard boundaries remain documented before real auth work. | Covered locally |
 | Verify env-role rehearsal without `.env`. | `scripts\qa-readonly-auth-live-roles.ps1` | Temporary child Vite processes set `VITE_BACKEND_USER_ROLE`; `.env` is not edited. | Covered locally |
 | Verify real auth provider and backend enforcement. | Platform/backend auth stack | No platform auth provider, token model, or backend enforcement evidence is present in this repo. | Blocked externally |
 | Keep visible UI Chinese-first. | `scripts\qa-readonly-routes.ps1`, `scripts\qa-readonly-all.ps1` | Scripted copy checks cover Command Center scenes and read-model pages. | Covered locally |
@@ -65,6 +66,7 @@ This command currently chains:
 - `scripts\qa-internal-pilot-manifest.ps1`
 - `scripts\qa-internal-pilot-goal-audit.ps1`
 - `scripts\qa-backend-read-contract-map.ps1`
+- `scripts\qa-auth-provider-preflight.ps1`
 - `scripts\qa-backend-read-all.ps1`
 - optional approved backend signoff when `-ApprovedBackendBaseUrl` is provided
 - `scripts\qa-readonly-auth-live-roles.ps1`

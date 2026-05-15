@@ -31,6 +31,7 @@ powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-source-boundary.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-contract-map.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-auth-role-matrix.ps1
+powershell -ExecutionPolicy Bypass -File scripts\qa-auth-provider-preflight.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-manifest.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-goal-audit.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff-guards.ps1
@@ -55,6 +56,7 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1
 | `qa-readonly-source-boundary.ps1` passes | |
 | `qa-backend-read-contract-map.ps1` passes fetcher/smoke/mock/docs contract-map checks | |
 | `qa-auth-role-matrix.ps1` passes 7-role / 10-route static matrix checks | |
+| `qa-auth-provider-preflight.ps1` passes provider/session/role-claim preflight checks | |
 | `qa-internal-pilot-manifest.ps1` passes source/script/doc evidence checks | |
 | `qa-internal-pilot-goal-audit.ps1` passes local-candidate/external-blocker guard checks | |
 | `qa-backend-read-signoff-guards.ps1` passes unsafe backend URL rejection checks | |

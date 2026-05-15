@@ -224,6 +224,12 @@ Automated auth role matrix static QA:
 powershell -ExecutionPolicy Bypass -File scripts\qa-auth-role-matrix.ps1
 ```
 
+Automated auth provider preflight static QA:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-auth-provider-preflight.ps1
+```
+
 Automated internal pilot evidence manifest QA:
 
 ```powershell
@@ -281,12 +287,12 @@ is passed through `-ApprovedBackendBaseUrl`.
 boundary scan, backend read contract-map QA, and auth role matrix static QA so
 source-level POST/PATCH/DELETE, file input, signed URL, token, browser-storage,
 storage-provider URL, public-access enablement, backend fetcher/smoke drift,
-role-matrix drift, or missing internal-pilot evidence signals fail before
-browser QA. The backend signoff guard QA also runs during local validation so
-unsafe backend URL shapes are rejected before any smoke can start. The internal
-pilot goal audit QA also runs during local validation so the repo keeps reporting
-`LOCAL_FRONTEND_READY_CANDIDATE` until real backend and auth signoff blockers
-are cleared.
+role-matrix drift, auth-provider preflight drift, or missing internal-pilot
+evidence signals fail before browser QA. The backend signoff guard QA also runs
+during local validation so unsafe backend URL shapes are rejected before any
+smoke can start. The internal pilot goal audit QA also runs during local
+validation so the repo keeps reporting `LOCAL_FRONTEND_READY_CANDIDATE` until
+real backend and auth signoff blockers are cleared.
 
 Baseline cockpit routes:
 

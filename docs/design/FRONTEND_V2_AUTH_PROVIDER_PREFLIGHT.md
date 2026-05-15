@@ -94,6 +94,7 @@ npm run lint
 npm run build
 powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-auth-role-matrix.ps1
+powershell -ExecutionPolicy Bypass -File scripts\qa-auth-provider-preflight.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-auth-states.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-auth-live-roles.ps1
 ```
@@ -119,6 +120,7 @@ messages.
 | No frontend credential storage is introduced | |
 | No production auth endpoint appears in source or docs | |
 | `scripts\qa-auth-role-matrix.ps1` passes | |
+| `scripts\qa-auth-provider-preflight.ps1` passes | |
 | `scripts\qa-readonly-auth-states.ps1` passes | |
 | `scripts\qa-readonly-auth-live-roles.ps1` passes | |
 | `scripts\qa-internal-pilot-readiness.ps1` passes with approved staging signoff when available | |

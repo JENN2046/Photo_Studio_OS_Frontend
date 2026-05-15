@@ -65,6 +65,7 @@ $qaArtifacts = @(
   @{ Path = "scripts\qa-readonly-source-boundary.ps1"; Label = "Read-only source boundary QA" },
   @{ Path = "scripts\qa-backend-read-contract-map.ps1"; Label = "Backend read contract-map QA" },
   @{ Path = "scripts\qa-auth-role-matrix.ps1"; Label = "Auth role matrix QA" },
+  @{ Path = "scripts\qa-auth-provider-preflight.ps1"; Label = "Auth provider preflight QA" },
   @{ Path = "scripts\qa-backend-read-all.ps1"; Label = "Backend read aggregate smoke" },
   @{ Path = "scripts\qa-backend-read-smoke.ps1"; Label = "Backend read smoke" },
   @{ Path = "scripts\qa-backend-read-smoke-mock.ps1"; Label = "Backend read mock smoke" },
@@ -97,10 +98,12 @@ foreach ($artifact in @($sourceArtifacts + $qaArtifacts + $docArtifacts)) {
 Assert-FileContains -Path "scripts\validate-local.ps1" -Pattern "qa-readonly-source-boundary\.ps1" -Label "validate-local includes source boundary QA"
 Assert-FileContains -Path "scripts\validate-local.ps1" -Pattern "qa-backend-read-contract-map\.ps1" -Label "validate-local includes backend read contract-map QA"
 Assert-FileContains -Path "scripts\validate-local.ps1" -Pattern "qa-auth-role-matrix\.ps1" -Label "validate-local includes auth role matrix QA"
+Assert-FileContains -Path "scripts\validate-local.ps1" -Pattern "qa-auth-provider-preflight\.ps1" -Label "validate-local includes auth provider preflight QA"
 Assert-FileContains -Path "scripts\validate-local.ps1" -Pattern "qa-internal-pilot-goal-audit\.ps1" -Label "validate-local includes internal pilot goal audit QA"
 Assert-FileContains -Path "scripts\validate-local.sh" -Pattern "qa-readonly-source-boundary\.ps1" -Label "Bash validation includes source boundary QA"
 Assert-FileContains -Path "scripts\validate-local.sh" -Pattern "qa-backend-read-contract-map\.ps1" -Label "Bash validation includes backend read contract-map QA"
 Assert-FileContains -Path "scripts\validate-local.sh" -Pattern "qa-auth-role-matrix\.ps1" -Label "Bash validation includes auth role matrix QA"
+Assert-FileContains -Path "scripts\validate-local.sh" -Pattern "qa-auth-provider-preflight\.ps1" -Label "Bash validation includes auth provider preflight QA"
 Assert-FileContains -Path "scripts\validate-local.sh" -Pattern "qa-internal-pilot-goal-audit\.ps1" -Label "Bash validation includes internal pilot goal audit QA"
 
 Assert-FileContains -Path "scripts\qa-internal-pilot-readiness.ps1" -Pattern "qa-backend-read-all\.ps1" -Label "internal pilot aggregate includes backend read smoke"

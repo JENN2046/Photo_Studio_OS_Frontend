@@ -155,6 +155,10 @@ echo "== auth role matrix QA =="
 run_powershell_script "scripts/qa-auth-role-matrix.ps1"
 
 echo ""
+echo "== auth provider preflight QA =="
+run_powershell_script "scripts/qa-auth-provider-preflight.ps1"
+
+echo ""
 echo "== internal pilot evidence manifest QA =="
 run_powershell_script "scripts/qa-internal-pilot-manifest.ps1"
 

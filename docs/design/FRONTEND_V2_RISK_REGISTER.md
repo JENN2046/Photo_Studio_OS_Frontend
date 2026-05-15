@@ -94,7 +94,7 @@ Watch:
 Required control:
 
 - Backend/platform must own authorization; frontend only reflects allowed state.
-- Use `FRONTEND_V2_AUTH_PROVIDER_PREFLIGHT.md`, `scripts\qa-auth-role-matrix.ps1`, `scripts\qa-readonly-auth-states.ps1`, and `scripts\qa-readonly-auth-live-roles.ps1` for local readiness checks.
+- Use `FRONTEND_V2_AUTH_PROVIDER_PREFLIGHT.md`, `scripts\qa-auth-provider-preflight.ps1`, `scripts\qa-auth-role-matrix.ps1`, `scripts\qa-readonly-auth-states.ps1`, and `scripts\qa-readonly-auth-live-roles.ps1` for local readiness checks.
 
 ### S4 Upload / Download
 
