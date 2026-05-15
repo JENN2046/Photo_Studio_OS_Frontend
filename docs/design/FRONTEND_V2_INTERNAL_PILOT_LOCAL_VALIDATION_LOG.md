@@ -3,7 +3,7 @@
 Date: 2026-05-15
 Repo: `A:\Photo_Studio_OS_Frontend`
 Branch: `main`
-Candidate commit checked: `67b42d1`
+Candidate commit checked: `bcd59c0`
 Target: `Studio Operator Internal Pilot Ready`
 
 This document records local validation evidence only. It does not approve
@@ -17,7 +17,7 @@ integration, backend repo changes, root repo changes, dependency changes,
 Command:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1
+npm run qa:internal-pilot
 ```
 
 Result:
@@ -31,9 +31,9 @@ Important context:
 - Approved backend signoff was skipped because no approved local or staging
   backend URL was provided.
 - The run used only local mock-first and local mock-backend smoke paths.
-- The run includes the Review Fix Pass that hardened auth/read-model boundary
-  semantics and added `npm run qa:readonly`.
-- The temporary Vite server was stopped after the run.
+- The run includes the Review Fix Pass, the `npm run qa:internal-pilot`
+  shortcut, and the external blocker guard in `.agent_board/BLOCKERS.md`.
+- The temporary Vite and mock-backend servers were stopped after the run.
 - No `.env` file was edited.
 - No remote action was performed.
 

@@ -983,6 +983,28 @@ Notes:
 - The frontend remains mock-first/read-only.
 ```
 
+```text
+## VALIDATION-20260515-INTERNAL-PILOT-AGGREGATE-BCD59C0
+
+Task: Re-run the full local internal-pilot readiness aggregate through the npm shortcut after external blocker guard commit.
+Commit checked: bcd59c0
+Commands run:
+- npm run qa:internal-pilot
+Result: passed
+Failures: none
+Fix attempted: not applicable
+Re-run result: not applicable
+Not validated:
+- Approved backend signoff was skipped because no approved local/staging backend URL was provided.
+- Real platform auth and backend authorization enforcement remain external blockers.
+- No push/tag/deploy was performed.
+Notes:
+- The aggregate covered lint, build, validate-local, package/source/contract/auth/doc guards, backend read aggregate smoke with local mock backend, live env-role QA, auth-state QA, and full read-only browser QA.
+- Local mock-backend smoke covered ready, forbidden, invalid-id, empty, partial, stale, and unreachable-backend failure paths.
+- Full read-only browser QA covered route, boundary-state, interaction, and auth-state matrices at desktop/tablet/mobile widths.
+- Temporary Vite/mock backend servers were stopped after the run.
+```
+
 ---
 
 ## Entry Template

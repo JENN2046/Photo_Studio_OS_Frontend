@@ -475,3 +475,31 @@ Hard boundaries:
 - Do not implement production auth or token storage.
 - Do not push/tag/deploy without explicit approval.
 ```
+
+---
+
+## HANDOFF-20260515-INTERNAL-PILOT-AGGREGATE-BCD59C0
+
+```text
+Status: LOCAL_FRONTEND_READY_CANDIDATE / externally blocked
+Latest checked commit: bcd59c0 test: guard internal pilot external blockers
+Validation command: npm run qa:internal-pilot
+Validation result: passed
+
+Covered:
+- lint/build
+- validate-local
+- package/source/contract/auth/doc guards
+- local mock-backend backend-read smoke in ready/403/404/empty/partial/stale/failure modes
+- live env-role QA
+- auth-state QA
+- full read-only browser QA
+
+Not covered:
+- approved real local/staging backend read signoff
+- real auth provider/backend enforcement evidence
+
+Next safe action:
+- If an approved backend URL is provided, run npm run qa:internal-pilot through scripts\qa-internal-pilot-readiness.ps1 with -ApprovedBackendEnvironment and -ApprovedBackendBaseUrl.
+- If auth/backend enforcement evidence is provided, verify it before filling docs\design\FRONTEND_V2_INTERNAL_PILOT_SIGNOFF_RECORD.md.
+```

@@ -280,6 +280,9 @@ none
 186. Updated .agent_board/BLOCKERS.md with active external blockers for approved backend URL and real auth/backend enforcement evidence.
 187. Extended scripts/qa-internal-pilot-goal-audit.ps1 to guard the board blocker ledger.
 188. Validated the blocker alignment with qa-internal-pilot-goal-audit.ps1 and validate-local.ps1 after one narrow whitespace fix.
+189. Locally committed bcd59c0: test: guard internal pilot external blockers.
+190. Ran npm run qa:internal-pilot on bcd59c0; result passed with approved backend signoff skipped.
+191. Started latest local validation evidence refresh for bcd59c0.
 ```
 
 ### blocked
