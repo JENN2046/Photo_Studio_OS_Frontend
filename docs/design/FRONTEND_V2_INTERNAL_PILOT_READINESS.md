@@ -36,6 +36,7 @@ auth are verified in an approved local or staging environment.
 | Delivery Readiness | Operator can see checklist, package artifacts, blockers, and download/public delivery boundary. | `src\features\read-models\readModelWorkspaces.tsx`, `#delivery-readiness` QA | Ready |
 | Backend read switch | Backend reads activate only through `VITE_BACKEND_API_BASE_URL`; mock-first remains default. | `src\api\client.ts`, `src\api\backendReadModels.ts` | Frontend ready |
 | Backend smoke | Connected-path local mock and unreachable-backend failure path are automated. | `scripts\qa-backend-read-all.ps1` | Local ready |
+| Backend signoff guards | Production-like, credentialed, wrong-scope, non-HTTPS staging, and query-bearing backend URLs are rejected before smoke. | `scripts\qa-backend-read-signoff-guards.ps1` | Local ready |
 | Real backend smoke | Approved local/staging backend URL is required; production endpoints are not allowed. | `scripts\qa-backend-read-smoke.ps1`, `scripts\qa-backend-read-signoff.ps1` | Blocked on backend URL |
 | Auth/session states | Signed-out, expired, loading, error, forbidden, insufficient-role, and signed-in states are stable. | `src\features\auth\*`, `scripts\qa-readonly-auth-states.ps1` | Frontend ready |
 | Role matrix integrity | Seven roles, ten routes, seventy matrix cells, session states, and access labels are statically checked. | `scripts\qa-auth-role-matrix.ps1` | Frontend ready |
@@ -73,6 +74,7 @@ powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-source-boundary.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-auth-role-matrix.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-manifest.ps1
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff-guards.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-all.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-auth-live-roles.ps1
 ```

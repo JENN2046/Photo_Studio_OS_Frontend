@@ -154,6 +154,10 @@ echo ""
 echo "== internal pilot evidence manifest QA =="
 run_powershell_script "scripts/qa-internal-pilot-manifest.ps1"
 
+echo ""
+echo "== backend read signoff guard QA =="
+run_powershell_script "scripts/qa-backend-read-signoff-guards.ps1"
+
 if [ "$include_browser_qa" -eq 1 ]; then
   echo ""
   echo "== full read-only browser QA =="

@@ -128,6 +128,12 @@ Guarded local/staging backend read signoff, for an approved backend URL:
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName local -BackendBaseUrl http://127.0.0.1:8080
 ```
 
+Guard QA for unsafe backend signoff URLs:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff-guards.ps1
+```
+
 Use `-EnvironmentName staging` only for an explicitly approved HTTPS staging
 backend. The signoff wrapper rejects production-like hostnames, refuses URL
 credentials, delegates to the read-only backend smoke helper, and then reruns
@@ -263,7 +269,9 @@ is passed through `-ApprovedBackendBaseUrl`.
 boundary scan and auth role matrix static QA so source-level POST/PATCH/DELETE,
 file input, signed URL, token, browser-storage, storage-provider URL,
 public-access enablement, role-matrix drift, or missing internal-pilot evidence
-signals fail before browser QA.
+signals fail before browser QA. The backend signoff guard QA also runs during
+local validation so unsafe backend URL shapes are rejected before any smoke can
+start.
 
 Baseline cockpit routes:
 

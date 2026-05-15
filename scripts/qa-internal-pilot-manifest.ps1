@@ -68,6 +68,7 @@ $qaArtifacts = @(
   @{ Path = "scripts\qa-backend-read-smoke.ps1"; Label = "Backend read smoke" },
   @{ Path = "scripts\qa-backend-read-smoke-mock.ps1"; Label = "Backend read mock smoke" },
   @{ Path = "scripts\qa-backend-read-signoff.ps1"; Label = "Guarded backend read signoff" },
+  @{ Path = "scripts\qa-backend-read-signoff-guards.ps1"; Label = "Backend read signoff guard QA" },
   @{ Path = "scripts\qa-readonly-auth-states.ps1"; Label = "Auth state browser QA" },
   @{ Path = "scripts\qa-readonly-auth-live-roles.ps1"; Label = "Live env role QA" },
   @{ Path = "scripts\qa-readonly-all.ps1"; Label = "Full read-only browser QA" },
@@ -101,6 +102,7 @@ Assert-FileContains -Path "scripts\qa-internal-pilot-readiness.ps1" -Pattern "Ap
 Assert-FileContains -Path "scripts\qa-internal-pilot-readiness.ps1" -Pattern "qa-readonly-auth-live-roles\.ps1" -Label "internal pilot aggregate includes live role QA"
 Assert-FileContains -Path "scripts\qa-internal-pilot-readiness.ps1" -Pattern "qa-readonly-auth-states\.ps1" -Label "internal pilot aggregate includes auth-state QA"
 Assert-FileContains -Path "scripts\qa-internal-pilot-readiness.ps1" -Pattern "qa-readonly-all\.ps1" -Label "internal pilot aggregate includes full browser QA"
+Assert-FileContains -Path "scripts\validate-local.ps1" -Pattern "qa-backend-read-signoff-guards\.ps1" -Label "validate-local includes backend signoff guards"
 
 Assert-FileContains -Path "docs\design\FRONTEND_V2_INTERNAL_PILOT_READINESS.md" -Pattern "Blocked on backend URL" -Label "readiness records backend blocker"
 Assert-FileContains -Path "docs\design\FRONTEND_V2_INTERNAL_PILOT_READINESS.md" -Pattern "Blocked on platform auth" -Label "readiness records auth blocker"
