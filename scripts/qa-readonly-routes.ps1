@@ -122,6 +122,18 @@ $routes = @(
     ExpectedEncoded = @("%E5%8F%AA%E8%AF%BB%E4%BF%9D%E7%95%99%E6%80%81", "%E8%AF%BB%E5%8F%96%E6%BA%90", "%E8%BF%90%E8%A1%8C%E7%8A%B6%E6%80%81", "DEV%20%E8%B0%83%E8%AF%95", "%E5%91%BD%E4%BB%A4%E4%B8%AD%E5%BF%83%E8%BE%B9%E7%95%8C%E6%80%81%E6%BC%94%E7%BB%83", "mock-first%20%2F%20read-only")
   },
   @{
+    Name = "command-center-forbidden"
+    Hash = $ReadOnlyRouteHashes.CommandCenterForbidden
+    Selector = ".status-command-state-forbidden"
+    ExpectedEncoded = @("%E6%9D%83%E9%99%90%E4%B8%8D%E8%B6%B3", "%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E5%91%BD%E4%BB%A4%E4%B8%AD%E5%BF%83%E5%8F%AA%E8%AF%BB%E5%BF%AB%E7%85%A7", "%E8%AF%BB%E5%8F%96%E6%BA%90", "%E8%BF%90%E8%A1%8C%E7%8A%B6%E6%80%81", "DEV%20%E8%B0%83%E8%AF%95", "%E5%91%BD%E4%BB%A4%E4%B8%AD%E5%BF%83%E8%BE%B9%E7%95%8C%E6%80%81%E6%BC%94%E7%BB%83", "mock-first%20%2F%20read-only")
+  },
+  @{
+    Name = "command-center-invalid-id"
+    Hash = $ReadOnlyRouteHashes.CommandCenterInvalidId
+    Selector = ".status-command-state-invalid-id"
+    ExpectedEncoded = @("%E5%BF%AB%E7%85%A7%E6%9C%AA%E6%89%BE%E5%88%B0", "%E5%91%BD%E4%BB%A4%E4%B8%AD%E5%BF%83%E5%8F%AA%E8%AF%BB%E5%BF%AB%E7%85%A7%E6%97%A0%E6%95%88%E6%88%96%E6%9C%AA%E6%89%BE%E5%88%B0", "%E8%AF%BB%E5%8F%96%E6%BA%90", "%E8%BF%90%E8%A1%8C%E7%8A%B6%E6%80%81", "DEV%20%E8%B0%83%E8%AF%95", "%E5%91%BD%E4%BB%A4%E4%B8%AD%E5%BF%83%E8%BE%B9%E7%95%8C%E6%80%81%E6%BC%94%E7%BB%83", "mock-first%20%2F%20read-only")
+  },
+  @{
     Name = "command-center-invalid-state"
     Hash = $ReadOnlyRouteHashes.CommandCenterInvalidState
     Selector = ".cockpit-command-center"

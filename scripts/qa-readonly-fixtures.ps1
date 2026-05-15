@@ -20,6 +20,8 @@ $ReadOnlyRouteHashes = @{
   CommandCenter = "#"
   CommandCenterLoading = "?commandCenterState=loading#"
   CommandCenterError = "?commandCenterState=error#"
+  CommandCenterForbidden = "?commandCenterState=forbidden#"
+  CommandCenterInvalidId = "?commandCenterState=invalid-id#"
   CommandCenterInvalidState = "?commandCenterState=invalid#"
   AssetInbox = "#asset-inbox?$GoldenLoopQuery"
   QcRetouch = "#qc-retouch?$GoldenLoopQuery"

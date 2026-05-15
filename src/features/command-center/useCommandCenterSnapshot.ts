@@ -1,9 +1,20 @@
 import { useEffect, useState } from "react";
+import { ReadModelHttpError } from "../../api/backendReadModels";
 import { commandCenterClient } from "../../api/client";
 import type { CommandCenterSnapshot } from "../../api/types";
 
-export type CommandCenterSnapshotStatus = "loading" | "ready" | "error";
-export type CommandCenterDebugState = "live" | "loading" | "error";
+export type CommandCenterSnapshotStatus =
+  | "loading"
+  | "ready"
+  | "error"
+  | "forbidden"
+  | "invalid-id";
+export type CommandCenterDebugState =
+  | "live"
+  | "loading"
+  | "error"
+  | "forbidden"
+  | "invalid-id";
 export type CommandCenterRuntimeSource =
   | "initializing"
   | "mock"
@@ -66,6 +77,22 @@ function createLiveRuntimeView(
 ): CommandCenterRuntimeView {
   const hasBackend = hasBackendRuntime();
 
+  if (status === "forbidden") {
+    return createRuntimeView({
+      source: hasBackend ? "backend-error" : "mock-error",
+      sourceLabel: hasBackend ? "后端只读" : "本地模拟",
+      transportLabel: "权限不足"
+    });
+  }
+
+  if (status === "invalid-id") {
+    return createRuntimeView({
+      source: hasBackend ? "backend-error" : "mock-error",
+      sourceLabel: hasBackend ? "后端只读" : "本地模拟",
+      transportLabel: "ID 未找到"
+    });
+  }
+
   if (status === "error") {
     return createRuntimeView({
       source: hasBackend ? "backend-error" : "mock-error",
@@ -106,11 +133,50 @@ function getDebugState(): CommandCenterDebugState {
     "commandCenterState"
   );
 
-  if (stateParam === "loading" || stateParam === "error") {
+  if (
+    stateParam === "loading" ||
+    stateParam === "error" ||
+    stateParam === "forbidden" ||
+    stateParam === "invalid-id"
+  ) {
     return stateParam;
   }
 
   return "live";
+}
+
+function getFailureStatus(error: unknown): Exclude<
+  CommandCenterSnapshotStatus,
+  "loading" | "ready"
+> {
+  if (error instanceof ReadModelHttpError) {
+    if (error.statusCode === 403) {
+      return "forbidden";
+    }
+
+    if (error.statusCode === 404) {
+      return "invalid-id";
+    }
+  }
+
+  return "error";
+}
+
+function getFailureMessage(
+  error: unknown,
+  status: Exclude<CommandCenterSnapshotStatus, "loading" | "ready">
+): string {
+  if (status === "forbidden") {
+    return "权限不足，无法访问命令中心只读快照。";
+  }
+
+  if (status === "invalid-id") {
+    return "请求的命令中心只读快照无效或未找到。";
+  }
+
+  return error instanceof Error
+    ? error.message
+    : "Unable to load command center snapshot";
 }
 
 export function useCommandCenterSnapshot(): CommandCenterSnapshotState {
@@ -157,6 +223,22 @@ export function useCommandCenterSnapshot(): CommandCenterSnapshotState {
       };
     }
 
+    if (debugState === "forbidden" || debugState === "invalid-id") {
+      const status = debugState;
+      setState({
+        snapshot: null,
+        status,
+        errorMessage: getFailureMessage(null, status),
+        debugState,
+        canRetry: false,
+        runtime: createDebugRuntimeView()
+      });
+
+      return () => {
+        isCurrent = false;
+      };
+    }
+
     commandCenterClient
       .getSnapshot()
       .then((snapshot) => {
@@ -178,16 +260,14 @@ export function useCommandCenterSnapshot(): CommandCenterSnapshotState {
           return;
         }
 
+        const status = getFailureStatus(error);
         setState({
           snapshot: null,
-          status: "error",
-          errorMessage:
-            error instanceof Error
-              ? error.message
-              : "Unable to load command center snapshot",
+          status,
+          errorMessage: getFailureMessage(error, status),
           debugState,
-          canRetry: import.meta.env.DEV,
-          runtime: createLiveRuntimeView("error")
+          canRetry: import.meta.env.DEV && status !== "forbidden",
+          runtime: createLiveRuntimeView(status)
         });
       });
 

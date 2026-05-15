@@ -69,7 +69,9 @@ function getDebugStateLabel(debugState: CommandCenterDebugState) {
   const labels = {
     live: "实时态",
     loading: "加载态",
-    error: "错误态"
+    error: "错误态",
+    forbidden: "权限不足",
+    "invalid-id": "ID 无效"
   } satisfies Record<CommandCenterDebugState, string>;
 
   return labels[debugState];
@@ -89,7 +91,9 @@ function getCommandCenterStatusLabel(status: CommandCenterSnapshotStatus) {
   const labels = {
     loading: "读取中",
     ready: "已就绪",
-    error: "读取失败"
+    error: "读取失败",
+    forbidden: "权限不足",
+    "invalid-id": "ID 无效"
   } satisfies Record<CommandCenterSnapshotStatus, string>;
 
   return labels[status];
@@ -210,7 +214,7 @@ function useCommandCenterScene() {
   return scene;
 }
 
-function useCommandCenterAnchorScroll(status: "loading" | "ready" | "error") {
+function useCommandCenterAnchorScroll(status: CommandCenterSnapshotStatus) {
   useEffect(() => {
     scrollToCurrentHash();
     window.addEventListener("hashchange", scrollToCurrentHash);
@@ -298,7 +302,7 @@ function CommandCenterStateSurface({
   runtime,
   authRuntime
 }: {
-  status: "loading" | "error";
+  status: Exclude<CommandCenterSnapshotStatus, "ready">;
   message: string;
   onRetry: () => void;
   debugState: CommandCenterDebugState;
@@ -307,11 +311,30 @@ function CommandCenterStateSurface({
   authRuntime: AuthRuntimeView;
 }) {
   const isLoading = status === "loading";
-  const eyebrow = isLoading ? "遥测同步" : "快照停机";
-  const heading = isLoading ? "遥测对齐中" : "只读保留态";
+  const isForbidden = status === "forbidden";
+  const isInvalidId = status === "invalid-id";
+  const surfaceTone = isLoading ? "loading" : "error";
+  const eyebrow = isLoading
+    ? "遥测同步"
+    : isForbidden
+      ? "权限边界"
+      : isInvalidId
+        ? "快照缺失"
+        : "快照停机";
+  const heading = isLoading
+    ? "遥测对齐中"
+    : isForbidden
+      ? "权限不足"
+      : isInvalidId
+        ? "快照未找到"
+        : "只读保留态";
   const summary = isLoading
     ? "命令舱启动前正在对齐只读快照。"
-    : "快照尚未稳定。命令舱保持只读安全状态。";
+    : isForbidden
+      ? "当前角色无法读取命令中心快照，命令舱保持只读封存。"
+      : isInvalidId
+        ? "请求的命令中心快照不可用，命令舱不做推断补齐。"
+        : "快照尚未稳定。命令舱保持只读安全状态。";
   const lanes = isLoading ? loadingStatusLanes : errorStatusLanes;
   const modeLabel = getDebugModeLabel(debugState);
   const actionLabel = canRetry
@@ -319,7 +342,13 @@ function CommandCenterStateSurface({
       ? "待机"
       : "调试就绪"
     : "仅观察";
-  const messageLabel = isLoading ? "同步提示" : "异常说明";
+  const messageLabel = isLoading
+    ? "同步提示"
+    : isForbidden
+      ? "权限说明"
+      : isInvalidId
+        ? "ID 状态"
+        : "异常说明";
   const buttonLabel = isLoading ? "重新准备" : "重试";
   const recoveryTitle = canRetry
     ? isLoading
@@ -343,7 +372,7 @@ function CommandCenterStateSurface({
       <main className="command-center">
         <section
           className="hero-band status-hero-band"
-          aria-label={`命令中心${isLoading ? "加载态" : "异常态"}`}
+          aria-label={`命令中心${isLoading ? "加载态" : "只读边界态"}`}
         >
           <div className="status-grid">
             <aside className="status-column" aria-label="只读准备状态">
@@ -387,7 +416,9 @@ function CommandCenterStateSurface({
               </section>
             </aside>
 
-            <section className={`status-command status-command-${status}`}>
+            <section
+              className={`status-command status-command-${surfaceTone} status-command-state-${status}`}
+            >
               <div className="status-command-frame">
                 <div className="status-command-header">
                   <div>
@@ -538,6 +569,9 @@ export function CommandCenter({
   }
 
   if (!snapshot) {
+    const boundaryStatus: Exclude<CommandCenterSnapshotStatus, "ready"> =
+      status === "ready" ? "error" : status;
+
     return (
       <CommandCenterStateSurface
         authRuntime={authRuntime}
@@ -546,7 +580,7 @@ export function CommandCenter({
         message={errorMessage ?? "未返回命令中心快照"}
         onRetry={retry}
         runtime={runtime}
-        status="error"
+        status={boundaryStatus}
       />
     );
   }

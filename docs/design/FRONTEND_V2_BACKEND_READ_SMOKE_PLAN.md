@@ -107,6 +107,11 @@ Expected if backend is unreachable or misconfigured:
 - `重试` button is available.
 - Command Center layout is preserved.
 
+Expected if backend returns 403 or 404:
+- `403` shows `权限不足` while keeping the Command Center in a read-only boundary surface.
+- `404` shows `ID 无效` / `快照未找到` while keeping the Command Center in a read-only boundary surface.
+- No project, risk, approval, or execution data is inferred when the snapshot is not returned.
+
 ### Step 4: Asset Inbox smoke
 
 Open `http://127.0.0.1:5173/#asset-inbox?projectId=PRJ-128`.

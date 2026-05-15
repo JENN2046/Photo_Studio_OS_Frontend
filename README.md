@@ -268,11 +268,15 @@ DEV-only Command Center boundary rehearsals:
 
 - Add `commandCenterState=loading` to rehearse the Command Center loading state.
 - Add `commandCenterState=error` to rehearse the Command Center read-boundary error state.
+- Add `commandCenterState=forbidden` or `commandCenterState=invalid-id` to
+  rehearse backend 403 / 404-style Command Center read boundaries.
 - Unknown `commandCenterState` values should fall back to the normal mock-first
   cockpit path.
-- The Command Center runtime chips should remain visible in ready, loading, and error states.
+- The Command Center runtime chips should remain visible in ready, loading,
+  error, forbidden, and invalid-id states.
 - `scripts\qa-readonly-routes.ps1` checks ready, loading, error, and invalid
-  debug-state fallback runtime chip copy.
+  debug-state fallback runtime chip copy, plus the Command Center forbidden and
+  invalid-id boundary copy.
 
 ## Read-only Contract
 
