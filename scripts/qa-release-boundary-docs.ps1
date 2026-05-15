@@ -69,6 +69,7 @@ $roadmapPath = "docs\design\FRONTEND_V2_PRODUCTION_ROADMAP.md"
 $releaseChecklistPath = "docs\design\FRONTEND_V2_PRODUCTION_RELEASE_CHECKLIST.md"
 $pilotReadinessPath = "docs\design\FRONTEND_V2_INTERNAL_PILOT_READINESS.md"
 $goalAuditPath = "docs\design\FRONTEND_V2_INTERNAL_PILOT_GOAL_AUDIT.md"
+$localValidationLogPath = "docs\design\FRONTEND_V2_INTERNAL_PILOT_LOCAL_VALIDATION_LOG.md"
 $signoffPath = "docs\design\FRONTEND_V2_INTERNAL_PILOT_SIGNOFF_RECORD.md"
 $riskRegisterPath = "docs\design\FRONTEND_V2_RISK_REGISTER.md"
 $reviewChecklistPath = "docs\design\FRONTEND_V2_PRODUCTION_REVIEW_CHECKLIST.md"
@@ -78,6 +79,7 @@ $requiredDocs = @(
   @{ Path = $releaseChecklistPath; Label = "Production release checklist" },
   @{ Path = $pilotReadinessPath; Label = "Internal pilot readiness" },
   @{ Path = $goalAuditPath; Label = "Internal pilot goal audit" },
+  @{ Path = $localValidationLogPath; Label = "Internal pilot local validation log" },
   @{ Path = $signoffPath; Label = "Internal pilot signoff record" },
   @{ Path = $riskRegisterPath; Label = "Risk register" },
   @{ Path = $reviewChecklistPath; Label = "Production review checklist" }
@@ -107,6 +109,12 @@ Assert-FileContains -Path $pilotReadinessPath -Pattern "Release manager approval
 Assert-FileContains -Path $goalAuditPath -Pattern "Studio Operator Internal Pilot Ready:\s*LOCAL_FRONTEND_READY_CANDIDATE" -Label "goal audit remains local candidate"
 Assert-FileContains -Path $goalAuditPath -Pattern "No production release, push, tag, deploy" -Label "goal audit preserves production boundary"
 Assert-FileNotContains -Path $goalAuditPath -Pattern "Studio Operator Internal Pilot Ready:\s*(COMPLETE|DONE|PRODUCTION_READY|SIGNED_OFF)" -Label "goal audit must not claim full completion"
+
+Assert-FileContains -Path $localValidationLogPath -Pattern "records local validation evidence only" -Label "local validation log remains local-only"
+Assert-FileContains -Path $localValidationLogPath -Pattern "does not approve\s+backend signoff, platform auth, staging acceptance, push, tag, deploy, release" -Label "local validation log preserves approval boundary"
+Assert-FileContains -Path $localValidationLogPath -Pattern "Approved backend signoff was skipped" -Label "local validation log keeps backend signoff gap"
+Assert-FileContains -Path $localValidationLogPath -Pattern "Studio Operator Internal Pilot Ready:\s*LOCAL_FRONTEND_READY_CANDIDATE" -Label "local validation log remains candidate-only"
+Assert-FileNotContains -Path $localValidationLogPath -Pattern "Studio Operator Internal Pilot Ready:\s*(COMPLETE|DONE|PRODUCTION_READY|SIGNED_OFF)" -Label "local validation log must not claim full completion"
 
 Assert-FileContains -Path $signoffPath -Pattern "\|\s*Decision\s*\|\s*Not signed off\s*\|" -Label "signoff decision remains unapproved"
 Assert-FileNotContains -Path $signoffPath -Pattern "(?im)^\- \[[xX]\] Approved as" -Label "checked signoff approval checkbox"
