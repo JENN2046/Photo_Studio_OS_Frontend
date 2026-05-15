@@ -121,6 +121,13 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host ""
+Write-Host "== backend read contract-map QA =="
+powershell -ExecutionPolicy Bypass -File "scripts\qa-backend-read-contract-map.ps1"
+if ($LASTEXITCODE -ne 0) {
+  $failed = $true
+}
+
+Write-Host ""
 Write-Host "== auth role matrix QA =="
 powershell -ExecutionPolicy Bypass -File "scripts\qa-auth-role-matrix.ps1"
 if ($LASTEXITCODE -ne 0) {

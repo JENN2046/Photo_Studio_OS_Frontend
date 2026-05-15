@@ -147,6 +147,10 @@ echo "== read-only source boundary QA =="
 run_powershell_script "scripts/qa-readonly-source-boundary.ps1"
 
 echo ""
+echo "== backend read contract-map QA =="
+run_powershell_script "scripts/qa-backend-read-contract-map.ps1"
+
+echo ""
 echo "== auth role matrix QA =="
 run_powershell_script "scripts/qa-auth-role-matrix.ps1"
 

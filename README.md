@@ -134,6 +134,12 @@ Guard QA for unsafe backend signoff URLs:
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff-guards.ps1
 ```
 
+Static backend read contract-map QA:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-contract-map.ps1
+```
+
 Use `-EnvironmentName staging` only for an explicitly approved HTTPS staging
 backend. The signoff wrapper rejects production-like hostnames, refuses URL
 credentials, delegates to the read-only backend smoke helper, and then reruns
@@ -272,14 +278,15 @@ one local command. It skips real backend signoff by default and only runs
 `scripts\qa-backend-read-signoff.ps1` when an approved local/staging backend URL
 is passed through `-ApprovedBackendBaseUrl`.
 `validate-local.ps1` and `validate-local.sh` also run the read-only source
-boundary scan and auth role matrix static QA so source-level POST/PATCH/DELETE,
-file input, signed URL, token, browser-storage, storage-provider URL,
-public-access enablement, role-matrix drift, or missing internal-pilot evidence
-signals fail before browser QA. The backend signoff guard QA also runs during
-local validation so unsafe backend URL shapes are rejected before any smoke can
-start. The internal pilot goal audit QA also runs during local validation so the
-repo keeps reporting `LOCAL_FRONTEND_READY_CANDIDATE` until real backend and
-auth signoff blockers are cleared.
+boundary scan, backend read contract-map QA, and auth role matrix static QA so
+source-level POST/PATCH/DELETE, file input, signed URL, token, browser-storage,
+storage-provider URL, public-access enablement, backend fetcher/smoke drift,
+role-matrix drift, or missing internal-pilot evidence signals fail before
+browser QA. The backend signoff guard QA also runs during local validation so
+unsafe backend URL shapes are rejected before any smoke can start. The internal
+pilot goal audit QA also runs during local validation so the repo keeps reporting
+`LOCAL_FRONTEND_READY_CANDIDATE` until real backend and auth signoff blockers
+are cleared.
 
 Baseline cockpit routes:
 

@@ -94,6 +94,13 @@ The guard behavior itself is checked by:
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff-guards.ps1
 ```
 
+Before running browser-led smoke, the static contract map can be checked without
+starting Vite or a backend:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-contract-map.ps1
+```
+
 For staging, use `-EnvironmentName staging` only after a human explicitly
 approves the staging backend base URL. Do not use this wrapper for production.
 
@@ -270,6 +277,7 @@ After smoke completes successfully:
 ```powershell
 npm run lint
 npm run build
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-contract-map.ps1
 powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1
 ```
 
@@ -303,6 +311,7 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-all.ps1
 | `scripts\qa-backend-read-signoff.ps1` passes for approved local/staging backend read signoff | |
 | `scripts\qa-backend-read-signoff-guards.ps1` passes unsafe URL rejection checks | |
 | `scripts\qa-backend-read-smoke-mock.ps1` passes for connected-path local mock backend smoke | |
+| `scripts\qa-backend-read-contract-map.ps1` passes fetcher/smoke/mock/docs contract-map checks | |
 
 ## Non-goals
 
