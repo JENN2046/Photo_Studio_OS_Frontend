@@ -96,6 +96,14 @@ targets, then runs the backend read smoke and local frontend gates:
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName local -BackendBaseUrl http://127.0.0.1:8080
 ```
 
+For approved backend fixtures that intentionally return 403 or 404, keep using
+the guarded wrapper and make the expected state explicit:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName staging -BackendBaseUrl <approved-staging-backend-base-url> -ExpectReadFailure -ExpectedFailureState forbidden
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName staging -BackendBaseUrl <approved-staging-backend-base-url> -ExpectReadFailure -ExpectedFailureState invalid-id
+```
+
 The guard behavior itself is checked by:
 
 ```powershell
@@ -316,7 +324,7 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-all.ps1
 | No secrets committed | |
 | `scripts\qa-backend-read-all.ps1` passes for connected, 403, 404, and failure local backend read smoke | |
 | `scripts\qa-backend-read-smoke.ps1` passes for local/staging read smoke | |
-| `scripts\qa-backend-read-signoff.ps1` passes for approved local/staging backend read signoff | |
+| `scripts\qa-backend-read-signoff.ps1` passes for approved local/staging backend read signoff, including explicit expected failure states when fixture endpoints return 403 / 404 | |
 | `scripts\qa-backend-read-signoff-guards.ps1` passes unsafe URL rejection checks | |
 | `scripts\qa-backend-read-smoke-mock.ps1` passes for connected-path local mock backend smoke | |
 | `scripts\qa-backend-read-contract-map.ps1` passes fetcher/smoke/mock/docs contract-map checks | |

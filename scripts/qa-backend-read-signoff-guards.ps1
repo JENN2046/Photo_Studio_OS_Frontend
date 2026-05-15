@@ -40,9 +40,15 @@ $cases = @(
 )
 
 $failed = $false
+$signoffSource = Get-Content -LiteralPath "scripts\qa-backend-read-signoff.ps1" -Raw
 
 Write-Host "== Photo Studio OS backend read signoff guard QA =="
 Write-Host "Cases: $($cases.Count)"
+
+if ($signoffSource -notmatch "ExpectedFailureState" -or $signoffSource -notmatch "ExpectReadFailure") {
+  $failed = $true
+  Write-Host "[FAIL] signoff wrapper must expose expected backend failure-state smoke options"
+}
 
 foreach ($case in $cases) {
   $output = & powershell -ExecutionPolicy Bypass -File "scripts\qa-backend-read-signoff.ps1" @($case.Args) 2>&1

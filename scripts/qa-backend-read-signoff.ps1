@@ -13,6 +13,9 @@ param(
   [string]$BackendUserRole = "owner",
   [string]$BackendUserName = "Backend Smoke Operator",
   [string]$SessionName = "photo-studio-backend-read-signoff",
+  [switch]$ExpectReadFailure,
+  [ValidateSet("error", "forbidden", "invalid-id")]
+  [string]$ExpectedFailureState = "error",
   [switch]$SkipPostValidation,
   [switch]$KeepBrowser
 )
@@ -97,6 +100,7 @@ try {
   Write-Host "Environment: $EnvironmentName"
   Write-Host "Backend locality: $(if ($urlInfo.IsLocal) { 'local' } else { 'staging' })"
   Write-Host "FrontendBaseUrl: $($FrontendBaseUrl.TrimEnd('/'))"
+  Write-Host "Expected result: $(if ($ExpectReadFailure) { "backend $ExpectedFailureState boundary UI" } else { 'backend connected UI' })"
   Write-Host "Write boundary: read-only GET smoke only"
 
   $smokeArgs = @(
@@ -111,6 +115,12 @@ try {
 
   if ($allowNonLocalBackend) {
     $smokeArgs += "-AllowNonLocalBackend"
+  }
+
+  if ($ExpectReadFailure) {
+    $smokeArgs += "-ExpectReadFailure"
+    $smokeArgs += "-ExpectedFailureState"
+    $smokeArgs += $ExpectedFailureState
   }
 
   if ($KeepBrowser) {

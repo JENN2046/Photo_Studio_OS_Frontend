@@ -134,6 +134,13 @@ Guarded local/staging backend read signoff, for an approved backend URL:
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName local -BackendBaseUrl http://127.0.0.1:8080
 ```
 
+For approved 403 / 404 fixture signoff, keep the same guarded wrapper and make
+the expected boundary state explicit:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName staging -BackendBaseUrl <approved-staging-backend-base-url> -ExpectReadFailure -ExpectedFailureState forbidden
+```
+
 Guard QA for unsafe backend signoff URLs:
 
 ```powershell

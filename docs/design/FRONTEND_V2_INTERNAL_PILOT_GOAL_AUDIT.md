@@ -33,7 +33,7 @@ auth/backend authorization still require approved local or staging environments.
 | Preserve dependency boundary. | `scripts\qa-package-boundary.ps1`, `package.json`, `package-lock.json` | Static QA checks the approved Vite/React/TypeScript top-level package set remains unchanged. | Covered locally |
 | Enable backend reads only when configured. | `src\api\backendReadModels.ts`, `src\api\client.ts`, `scripts\qa-backend-read-all.ps1` | Backend-connected mock smoke, mock-backend 403 / 404 smoke, and unreachable-backend failure smoke are automated. | Covered locally |
 | Keep backend read contract map aligned. | `scripts\qa-backend-read-contract-map.ps1` | Static QA checks all five fetchers, smoke routes, mock backend paths, and smoke-plan docs stay synchronized. | Covered locally |
-| Provide guarded local/staging backend signoff path. | `scripts\qa-backend-read-signoff.ps1` | Wrapper rejects production-like URLs and credentialed/non-local misuse before smoke runs. | Covered locally |
+| Provide guarded local/staging backend signoff path. | `scripts\qa-backend-read-signoff.ps1` | Wrapper rejects production-like URLs and credentialed/non-local misuse before smoke runs, and can pass explicit expected 403 / 404 failure states to the smoke harness. | Covered locally |
 | Verify real local/staging backend reads. | `scripts\qa-backend-read-signoff.ps1 -BackendBaseUrl <approved-url>` | No approved backend URL is present in this repo or session. | Blocked externally |
 | Keep all backend traffic read-only. | `scripts\qa-backend-read-smoke.ps1`, `scripts\qa-readonly-source-boundary.ps1` | Browser request monitor fails on non-read methods; source scan blocks write-method signals. | Covered locally |
 | Stabilize backend error states. | `scripts\qa-readonly-boundary-states.ps1`, `scripts\qa-backend-read-all.ps1` | Loading, error, missing-config, empty, partial, stale, forbidden, invalid-id, and failure paths are checked locally. | Covered locally |
@@ -81,6 +81,7 @@ For approved local/staging backend signoff, use:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment local -ApprovedBackendBaseUrl http://127.0.0.1:8080
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName staging -BackendBaseUrl <approved-staging-backend-base-url> -ExpectReadFailure -ExpectedFailureState forbidden
 ```
 
 Use `-ApprovedBackendEnvironment staging` only with an explicitly approved
