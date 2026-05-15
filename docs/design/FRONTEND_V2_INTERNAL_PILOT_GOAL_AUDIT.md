@@ -31,7 +31,7 @@ auth/backend authorization still require approved local or staging environments.
 |---|---|---|---|
 | Keep mock-first default behavior. | `src\api\client.ts`, `scripts\validate-local.ps1`, `scripts\qa-readonly-all.ps1` | Local validation and browser QA cover mock-first route behavior. | Covered locally |
 | Preserve dependency boundary. | `scripts\qa-package-boundary.ps1`, `package.json`, `package-lock.json` | Static QA checks the approved Vite/React/TypeScript top-level package set remains unchanged. | Covered locally |
-| Enable backend reads only when configured. | `src\api\backendReadModels.ts`, `src\api\client.ts`, `scripts\qa-backend-read-all.ps1` | Backend-connected mock smoke and unreachable-backend failure smoke are automated. | Covered locally |
+| Enable backend reads only when configured. | `src\api\backendReadModels.ts`, `src\api\client.ts`, `scripts\qa-backend-read-all.ps1` | Backend-connected mock smoke, mock-backend 403 / 404 smoke, and unreachable-backend failure smoke are automated. | Covered locally |
 | Keep backend read contract map aligned. | `scripts\qa-backend-read-contract-map.ps1` | Static QA checks all five fetchers, smoke routes, mock backend paths, and smoke-plan docs stay synchronized. | Covered locally |
 | Provide guarded local/staging backend signoff path. | `scripts\qa-backend-read-signoff.ps1` | Wrapper rejects production-like URLs and credentialed/non-local misuse before smoke runs. | Covered locally |
 | Verify real local/staging backend reads. | `scripts\qa-backend-read-signoff.ps1 -BackendBaseUrl <approved-url>` | No approved backend URL is present in this repo or session. | Blocked externally |
@@ -93,7 +93,7 @@ HTTPS staging backend URL. Do not use production endpoints.
 | Real backend read smoke | No approved local/staging backend base URL is available in this frontend repo. | Backend/platform owner provides an approved local or staging read-model base URL. |
 | Real backend authorization enforcement | Frontend role gates are display-only by design. | Backend verifies role enforcement for every read-model endpoint. |
 | Real platform auth/session | Current auth state is mock-first and env-role rehearsal only. | Auth provider, session source, role claims, expiry, and forbidden behavior are approved and available in staging. |
-| Staging signoff for 403/404/empty/partial/stale | Local DEV/query rehearsal exists, but staging behavior has not been observed. | Run backend smoke and auth QA against approved staging fixtures. |
+| Staging signoff for empty/partial/stale and backend-specific 403/404 bodies | Local DEV/query rehearsal and localhost HTTP 403 / 404 smoke exist, but staging behavior has not been observed. | Run backend smoke and auth QA against approved staging fixtures. |
 | Production release | Push/tag/deploy/release are explicitly out of scope. | Release manager approval plus production checklist completion. |
 
 ## Audit Conclusion

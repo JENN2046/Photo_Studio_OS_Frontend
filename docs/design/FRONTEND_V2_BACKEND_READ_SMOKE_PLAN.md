@@ -58,8 +58,8 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-smoke.ps1 -Back
 ```
 
 For the full local backend read smoke, run the aggregate helper. It checks the
-connected path with a temporary mock backend and the unreachable-backend failure
-path:
+connected path with a temporary mock backend, local mock-backend 403 / 404
+boundary paths, and the unreachable-backend failure path:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-all.ps1
@@ -71,6 +71,14 @@ with the five read-model paths, then reuses the same smoke helper:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-smoke-mock.ps1
+```
+
+The same wrapper can rehearse backend HTTP boundary states without production
+or staging access:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-smoke-mock.ps1 -ResponseMode forbidden
+powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-smoke-mock.ps1 -ResponseMode invalid-id
 ```
 
 For a local failure-mode rehearsal without a real backend, use an unused local
@@ -306,7 +314,7 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-all.ps1
 | Build passes | |
 | Browser QA passes | |
 | No secrets committed | |
-| `scripts\qa-backend-read-all.ps1` passes for connected and failure local backend read smoke | |
+| `scripts\qa-backend-read-all.ps1` passes for connected, 403, 404, and failure local backend read smoke | |
 | `scripts\qa-backend-read-smoke.ps1` passes for local/staging read smoke | |
 | `scripts\qa-backend-read-signoff.ps1` passes for approved local/staging backend read signoff | |
 | `scripts\qa-backend-read-signoff-guards.ps1` passes unsafe URL rejection checks | |

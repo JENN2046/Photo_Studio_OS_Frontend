@@ -12,6 +12,8 @@ param(
   [string]$BackendUserName = "Backend Smoke Operator",
   [string]$SessionName = "photo-studio-backend-read-smoke",
   [switch]$ExpectReadFailure,
+  [ValidateSet("error", "forbidden", "invalid-id")]
+  [string]$ExpectedFailureState = "error",
   [switch]$AllowNonLocalBackend,
   [switch]$KeepBrowser
 )
@@ -272,15 +274,38 @@ if (Test-Reachable "$normalizedFrontendUrl/") {
   exit 1
 }
 
+$failureStateConfig = @{
+  error = @{
+    TransportExpectedEncoded = @("%E8%AF%B7%E6%B1%82%E5%A4%B1%E8%B4%A5")
+    CommandSelector = ".status-command-error"
+    CommandExpectedEncoded = @("%E5%8F%AA%E8%AF%BB%E4%BF%9D%E7%95%99%E6%80%81", "%E5%BC%82%E5%B8%B8%E8%AF%B4%E6%98%8E")
+    ReadModelSelector = ".read-model-state-error"
+    ReadModelExpectedEncoded = @("%E5%8F%AA%E8%AF%BB%E6%A8%A1%E5%9E%8B%E4%B8%8D%E5%8F%AF%E7%94%A8", "%E8%AF%BB%E5%8F%96%E5%A4%B1%E8%B4%A5")
+  }
+  forbidden = @{
+    TransportExpectedEncoded = @("%E6%9D%83%E9%99%90%E4%B8%8D%E8%B6%B3")
+    CommandSelector = ".status-command-state-forbidden"
+    CommandExpectedEncoded = @("%E6%9D%83%E9%99%90%E4%B8%8D%E8%B6%B3", "%E6%9D%83%E9%99%90%E8%AF%B4%E6%98%8E")
+    ReadModelSelector = ".read-model-state-forbidden"
+    ReadModelExpectedEncoded = @("%E6%97%A0%E6%9D%83%E8%AE%BF%E9%97%AE%E8%AF%A5%E5%8F%AA%E8%AF%BB%E6%A8%A1%E5%9E%8B", "%E6%9D%83%E9%99%90%E4%B8%8D%E8%B6%B3")
+  }
+  "invalid-id" = @{
+    TransportExpectedEncoded = @("ID%20%E6%9C%AA%E6%89%BE%E5%88%B0", "ID%20%E6%97%A0%E6%95%88")
+    CommandSelector = ".status-command-state-invalid-id"
+    CommandExpectedEncoded = @("%E5%BF%AB%E7%85%A7%E6%9C%AA%E6%89%BE%E5%88%B0", "ID%20%E7%8A%B6%E6%80%81")
+    ReadModelSelector = ".read-model-state-invalid-id"
+    ReadModelExpectedEncoded = @("%E8%AF%B7%E6%B1%82%E7%9A%84%20ID%20%E6%97%A0%E6%95%88%E6%88%96%E6%9C%AA%E6%89%BE%E5%88%B0", "ID%20%E6%97%A0%E6%95%88")
+  }
+}
+$failureConfig = $failureStateConfig[$ExpectedFailureState]
 $commonReadyExpected = @(
   "%E5%90%8E%E7%AB%AF%E5%8F%AA%E8%AF%BB",
   "%E5%B7%B2%E8%BF%9E%E6%8E%A5",
   "mock-first%20%2F%20read-only"
 )
 $commonFailureExpected = @(
-  "%E5%90%8E%E7%AB%AF%E5%8F%AA%E8%AF%BB",
-  "%E8%AF%B7%E6%B1%82%E5%A4%B1%E8%B4%A5",
-  "mock-first%20%2F%20read-only"
+  @("%E5%90%8E%E7%AB%AF%E5%8F%AA%E8%AF%BB", "mock-first%20%2F%20read-only") +
+  $failureConfig.TransportExpectedEncoded
 )
 
 $routes = @(
@@ -289,52 +314,52 @@ $routes = @(
     url = New-RouteUrl $ReadOnlyRouteHashes.CommandCenter
     backendPath = "/command-center/v2"
     readySelector = ".cockpit-command-center"
-    failureSelector = ".status-command-error"
+    failureSelector = $failureConfig.CommandSelector
     readyExpectedEncoded = $commonReadyExpected
-    failureExpectedEncoded = $commonFailureExpected
+    failureExpectedEncoded = @($commonFailureExpected + $failureConfig.CommandExpectedEncoded)
   },
   @{
     name = "asset-inbox"
     url = New-RouteUrl $ReadOnlyRouteHashes.AssetInbox
     backendPath = "/projects/PRJ-128/asset-inbox"
     readySelector = ".asset-inbox-console"
-    failureSelector = ".read-model-state-error"
+    failureSelector = $failureConfig.ReadModelSelector
     readyExpectedEncoded = $commonReadyExpected
-    failureExpectedEncoded = $commonFailureExpected + @("%E5%8F%AA%E8%AF%BB%E6%A8%A1%E5%9E%8B%E4%B8%8D%E5%8F%AF%E7%94%A8")
+    failureExpectedEncoded = @($commonFailureExpected + $failureConfig.ReadModelExpectedEncoded)
   },
   @{
     name = "qc-retouch"
     url = New-RouteUrl $ReadOnlyRouteHashes.QcRetouch
     backendPath = "/projects/PRJ-128/qc-retouch-queue"
     readySelector = ".qc-retouch-console"
-    failureSelector = ".read-model-state-error"
+    failureSelector = $failureConfig.ReadModelSelector
     readyExpectedEncoded = $commonReadyExpected
-    failureExpectedEncoded = $commonFailureExpected + @("%E5%8F%AA%E8%AF%BB%E6%A8%A1%E5%9E%8B%E4%B8%8D%E5%8F%AF%E7%94%A8")
+    failureExpectedEncoded = @($commonFailureExpected + $failureConfig.ReadModelExpectedEncoded)
   },
   @{
     name = "review-gallery"
     url = New-RouteUrl $ReadOnlyRouteHashes.ReviewGallery
     backendPath = "/review-sessions/REV-441/gallery"
     readySelector = ".review-gallery-console"
-    failureSelector = ".read-model-state-error"
+    failureSelector = $failureConfig.ReadModelSelector
     readyExpectedEncoded = $commonReadyExpected
-    failureExpectedEncoded = $commonFailureExpected + @("%E5%8F%AA%E8%AF%BB%E6%A8%A1%E5%9E%8B%E4%B8%8D%E5%8F%AF%E7%94%A8")
+    failureExpectedEncoded = @($commonFailureExpected + $failureConfig.ReadModelExpectedEncoded)
   },
   @{
     name = "delivery-readiness"
     url = New-RouteUrl $ReadOnlyRouteHashes.DeliveryReadiness
     backendPath = "/deliveries/DEL-220/readiness"
     readySelector = ".delivery-readiness-console"
-    failureSelector = ".read-model-state-error"
+    failureSelector = $failureConfig.ReadModelSelector
     readyExpectedEncoded = $commonReadyExpected
-    failureExpectedEncoded = $commonFailureExpected + @("%E5%8F%AA%E8%AF%BB%E6%A8%A1%E5%9E%8B%E4%B8%8D%E5%8F%AF%E7%94%A8")
+    failureExpectedEncoded = @($commonFailureExpected + $failureConfig.ReadModelExpectedEncoded)
   }
 )
 
 Write-Host "== Photo Studio OS backend read-model smoke QA =="
 Write-Host "FrontendBaseUrl: $normalizedFrontendUrl"
 Write-Host "BackendBaseUrl: $BackendBaseUrl"
-Write-Host "Mode: $(if ($ExpectReadFailure) { 'expect read failure UI' } else { 'expect backend connected UI' })"
+Write-Host "Mode: $(if ($ExpectReadFailure) { "expect backend $ExpectedFailureState UI" } else { 'expect backend connected UI' })"
 Write-Host "Routes: $($routes.Count)"
 
 try {
@@ -397,17 +422,17 @@ try {
 
   $blockingConsoleErrors = @(
     $result.consoleErrors | Where-Object {
-      -not ($ExpectReadFailure -and $_ -like "Failed to load resource: net::*")
+      -not ($ExpectReadFailure -and $_ -like "Failed to load resource:*")
     }
   )
-  $expectedNetworkErrors = @(
+  $expectedResourceErrors = @(
     $result.consoleErrors | Where-Object {
-      $ExpectReadFailure -and $_ -like "Failed to load resource: net::*"
+      $ExpectReadFailure -and $_ -like "Failed to load resource:*"
     }
   )
 
-  if ($expectedNetworkErrors.Count -gt 0) {
-    Write-Host "[INFO] expected backend network errors observed: $($expectedNetworkErrors.Count)"
+  if ($expectedResourceErrors.Count -gt 0) {
+    Write-Host "[INFO] expected backend resource errors observed: $($expectedResourceErrors.Count)"
   }
 
   if ($blockingConsoleErrors.Count -gt 0) {

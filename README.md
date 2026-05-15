@@ -110,7 +110,7 @@ Backend read-model smoke helper:
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-smoke.ps1 -BackendBaseUrl http://127.0.0.1:8080
 ```
 
-Full local backend read smoke, with connected and failure paths:
+Full local backend read smoke, with connected, 403, 404, and failure paths:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-all.ps1
@@ -160,7 +160,8 @@ observes non-read request methods.
 The mock-backend wrapper starts a temporary localhost GET/OPTIONS JSON server,
 then reuses the same smoke helper to verify the backend-connected UI path.
 The aggregate backend smoke runs the connected-path mock backend smoke and the
-unreachable-backend failure smoke in sequence.
+local mock-backend 403 / 404 boundary smokes, then the unreachable-backend
+failure smoke in sequence.
 
 ## Validation Status
 

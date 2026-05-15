@@ -142,8 +142,12 @@ Assert-ContainsLiteral -Content $fetcherSource -Needle "createReadModelUrl(baseU
 Assert-ContainsLiteral -Content $fetcherSource -Needle '!("data" in envelope)' -Label "fetcher source must enforce data envelope checks"
 Assert-ContainsLiteral -Content $smokeSource -Needle "backendReadRequestCount" -Label "smoke script must assert backend read requests"
 Assert-ContainsLiteral -Content $smokeSource -Needle "non-read backend methods observed" -Label "smoke script must fail on backend non-read methods"
+Assert-ContainsLiteral -Content $smokeSource -Needle "ExpectedFailureState" -Label "smoke script must support explicit backend failure-state checks"
 Assert-ContainsLiteral -Content $mockSource -Needle "'access-control-allow-methods': 'GET,HEAD,OPTIONS'" -Label "mock backend must advertise read-only methods"
 Assert-ContainsLiteral -Content $mockSource -Needle "request.method !== 'GET' && request.method !== 'HEAD'" -Label "mock backend must reject non-read methods"
+Assert-ContainsLiteral -Content $mockSource -Needle "ResponseMode" -Label "mock backend must support backend boundary response modes"
+Assert-ContainsLiteral -Content $mockSource -Needle "forbidden_read_model" -Label "mock backend must support 403 forbidden response mode"
+Assert-ContainsLiteral -Content $mockSource -Needle "read_model_not_found" -Label "mock backend must support 404 invalid-id response mode"
 
 Write-Host "== Photo Studio OS backend read contract-map QA =="
 Write-Host "Read surfaces: $($contractMap.Count)"

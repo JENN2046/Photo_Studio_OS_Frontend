@@ -48,6 +48,28 @@ $matrices = @(
     )
   },
   @{
+    Name = "backend forbidden path with local mock backend"
+    Arguments = @(
+      "-ExecutionPolicy", "Bypass",
+      "-File", "scripts\qa-backend-read-smoke-mock.ps1",
+      "-BackendPort", [string]$MockBackendPort,
+      "-FrontendBaseUrl", $FrontendBaseUrl,
+      "-SessionName", "$SessionNamePrefix-forbidden",
+      "-ResponseMode", "forbidden"
+    )
+  },
+  @{
+    Name = "backend invalid-id path with local mock backend"
+    Arguments = @(
+      "-ExecutionPolicy", "Bypass",
+      "-File", "scripts\qa-backend-read-smoke-mock.ps1",
+      "-BackendPort", [string]$MockBackendPort,
+      "-FrontendBaseUrl", $FrontendBaseUrl,
+      "-SessionName", "$SessionNamePrefix-invalid-id",
+      "-ResponseMode", "invalid-id"
+    )
+  },
+  @{
     Name = "backend failure path with unreachable local backend"
     Arguments = @(
       "-ExecutionPolicy", "Bypass",

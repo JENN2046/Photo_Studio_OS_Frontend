@@ -8,6 +8,8 @@ param(
   [int]$BackendPort = 5181,
   [string]$FrontendBaseUrl = "http://127.0.0.1:5173",
   [string]$SessionName = "photo-studio-backend-read-smoke-mock",
+  [ValidateSet("ready", "forbidden", "invalid-id")]
+  [string]$ResponseMode = "ready",
   [switch]$KeepBrowser
 )
 
@@ -70,6 +72,7 @@ $mockServerCode = @"
 const http = require('node:http');
 
 const port = Number(process.env.BACKEND_READ_SMOKE_PORT || '$BackendPort');
+const responseMode = '$ResponseMode';
 
 const sku = {
   id: 'SKU-AUR-001',
@@ -320,6 +323,19 @@ const server = http.createServer((request, response) => {
   }
 
   const url = new URL(request.url, 'http://' + request.headers.host);
+
+  if (url.pathname !== '/health') {
+    if (responseMode === 'forbidden') {
+      writeJson(response, 403, { error: 'forbidden_read_model' });
+      return;
+    }
+
+    if (responseMode === 'invalid-id') {
+      writeJson(response, 404, { error: 'read_model_not_found' });
+      return;
+    }
+  }
+
   const body = dataByPath.get(url.pathname);
 
   if (!body) {
@@ -339,8 +355,9 @@ process.on('SIGTERM', () => server.close(() => process.exit(0)));
 
 Set-Content -LiteralPath $mockBackendScript -Value $mockServerCode -Encoding UTF8
 
-Write-Host "== Photo Studio OS backend read-model connected smoke with local mock backend =="
+Write-Host "== Photo Studio OS backend read-model smoke with local mock backend =="
 Write-Host "BackendBaseUrl: $backendBaseUrl"
+Write-Host "ResponseMode: $ResponseMode"
 
 try {
   $mockBackendProcess = Start-Process `
@@ -366,6 +383,12 @@ try {
 
   if ($KeepBrowser) {
     $arguments += "-KeepBrowser"
+  }
+
+  if ($ResponseMode -ne "ready") {
+    $arguments += "-ExpectReadFailure"
+    $arguments += "-ExpectedFailureState"
+    $arguments += $ResponseMode
   }
 
   powershell @arguments
