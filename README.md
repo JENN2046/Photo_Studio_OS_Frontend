@@ -202,7 +202,8 @@ invalid-id, and missing-id idle states for all four read-model pages at
 Command Center `黄金链路` entry clicks, read-model tab switching, local selection
 state, and disabled read-only action posture at `1440x960`, `1024x768`, and
 `390x844`. The auth-state matrix checks signed-out, expired, loading, error,
-forbidden, and signed-in auth gate states at `1024x768` and `390x844`.
+forbidden, signed-in, and role-derived full/read/summary/no-access states at
+`1024x768` and `390x844`.
 
 Baseline cockpit routes:
 
@@ -270,7 +271,7 @@ DEV-only auth state boundary rehearsals:
 - Add `authState=signed-in` with a page hash to confirm signed-in content renders.
 - Add DEV-only `authRole=<role>` with `authState=signed-in` to rehearse role-specific access without editing `.env`.
 - Run `scripts\qa-readonly-auth-states.ps1` to verify these states across Command
-  Center and Asset Inbox at tablet and mobile widths.
+  Center, Asset Inbox, and Delivery Readiness at tablet and mobile widths.
 - Set `VITE_BACKEND_USER_ROLE` env var (e.g. `photographer`, `retoucher`) to
   simulate a specific role in live (non-debug) mode.
 

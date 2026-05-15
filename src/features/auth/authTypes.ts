@@ -51,6 +51,13 @@ const READ: PageAccess = "read";
 const SUMMARY: PageAccess = "summary-only";
 const NONE: PageAccess = "none";
 
+export const pageAccessLabels: Record<PageAccess, string> = {
+  full: "完全",
+  read: "只读",
+  "summary-only": "摘要",
+  none: "无权"
+};
+
 export const pageRoleMatrix: Record<AppRoute, Record<Role, PageAccess>> = {
   "command-center": {
     admin: FULL,
@@ -147,6 +154,10 @@ export const pageRoleMatrix: Record<AppRoute, Record<Role, PageAccess>> = {
 export function getPageAccess(route: AppRoute, role: Role | null): PageAccess {
   if (!role) return NONE;
   return pageRoleMatrix[route]?.[role] ?? NONE;
+}
+
+export function getPageAccessLabel(access: PageAccess): string {
+  return pageAccessLabels[access];
 }
 
 export function getRequiredRoleLabel(route: AppRoute): string {

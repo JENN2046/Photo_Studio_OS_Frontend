@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { AuthGate } from "./features/auth/AuthGate";
 import type { AppRoute } from "./features/auth/authTypes";
-import { getPageAccess } from "./features/auth/authTypes";
+import { getPageAccess, getPageAccessLabel } from "./features/auth/authTypes";
 import { useAuthState } from "./features/auth/useAuthState";
 import { CommandCenter } from "./features/command-center/CommandCenter";
 import {
@@ -77,7 +77,7 @@ function useAppRoute(): ParsedAppRoute {
 
 export default function App() {
   const { route, params } = useAppRoute();
-  const { auth, runtime } = useAuthState(params);
+  const { auth, runtime: baseRuntime } = useAuthState(params);
   const access = getPageAccess(route, auth.role);
   const effectiveSession =
     auth.session === "signed-in" && access === "none"
@@ -85,6 +85,14 @@ export default function App() {
       : auth.session === "signed-in" && access !== "full"
         ? "insufficient-role"
       : auth.session;
+  const displayAccess =
+    effectiveSession === "signed-in" || effectiveSession === "insufficient-role"
+      ? access
+      : "none";
+  const runtime = {
+    ...baseRuntime,
+    permissionLabel: getPageAccessLabel(displayAccess)
+  };
 
   const children = () => {
     if (route === "asset-inbox") {

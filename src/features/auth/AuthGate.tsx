@@ -22,6 +22,7 @@ function authChips(runtime: AuthRuntimeView): RuntimeChip[] {
     { key: "auth-source", label: "认证源", value: runtime.sourceLabel, tone: runtime.source },
     { key: "session", label: "会话", value: runtime.sessionLabel },
     { key: "role", label: "角色", value: runtime.roleLabel },
+    { key: "access", label: "访问权限", value: runtime.permissionLabel },
     { key: "boundary", label: "写入边界", value: "mock-first / read-only", tone: "readonly" }
   ];
 }

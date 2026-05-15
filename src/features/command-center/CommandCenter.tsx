@@ -267,6 +267,11 @@ function CommandCenterRuntimeStrip({
       value: authRuntime.roleLabel
     },
     {
+      key: "auth-access",
+      label: "访问权限",
+      value: authRuntime.permissionLabel
+    },
+    {
       key: "boundary",
       label: "写入边界",
       value: runtime.boundaryLabel,

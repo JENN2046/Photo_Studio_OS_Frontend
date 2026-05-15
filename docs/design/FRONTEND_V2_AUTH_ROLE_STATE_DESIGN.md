@@ -235,6 +235,16 @@ When S3 is approved:
 7. Run lint, build, validate-local, browser QA.
 8. Do NOT connect to real auth provider until explicitly approved.
 
+## Current Frontend Status
+
+- Steps 1-6 are implemented as mock-first, display-only frontend readiness.
+- Runtime chips now expose role-derived access labels: `完全`, `只读`, `摘要`, and `无权`.
+- `scripts\qa-readonly-auth-states.ps1` covers signed-out, expired, loading,
+  error, forbidden, full access, read-only partial access, summary-only partial
+  access, and no-access role paths at tablet and mobile widths.
+- Real auth provider integration, token handling, and backend authorization
+  enforcement remain unimplemented and require separate approval.
+
 ## Reference
 
 - Roadmap: `docs/design/FRONTEND_V2_PRODUCTION_ROADMAP.md` — S3 Auth And Role Readiness

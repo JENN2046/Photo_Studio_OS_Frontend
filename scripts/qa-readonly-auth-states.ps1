@@ -123,7 +123,9 @@ $authCases = @(
     ExpectedChipEncoded = @(
       "%E8%AE%A4%E8%AF%81%E6%BA%90",
       "%E4%BC%9A%E8%AF%9D",
-      "%E8%A7%92%E8%89%B2"
+      "%E8%A7%92%E8%89%B2",
+      "%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90",
+      "%E6%97%A0%E6%9D%83"
     )
     ExpectContentHidden = $true
     ContentSelector = ".cockpit-command-center"
@@ -139,7 +141,9 @@ $authCases = @(
     ExpectedChipEncoded = @(
       "%E8%AE%A4%E8%AF%81%E6%BA%90",
       "%E4%BC%9A%E8%AF%9D",
-      "%E8%A7%92%E8%89%B2"
+      "%E8%A7%92%E8%89%B2",
+      "%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90",
+      "%E6%97%A0%E6%9D%83"
     )
     ExpectContentHidden = $true
     ContentSelector = ".cockpit-command-center"
@@ -155,7 +159,9 @@ $authCases = @(
     ExpectedChipEncoded = @(
       "%E8%AE%A4%E8%AF%81%E6%BA%90",
       "%E4%BC%9A%E8%AF%9D",
-      "%E8%A7%92%E8%89%B2"
+      "%E8%A7%92%E8%89%B2",
+      "%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90",
+      "%E6%97%A0%E6%9D%83"
     )
     ExpectContentHidden = $true
     ContentSelector = ".cockpit-command-center"
@@ -171,7 +177,9 @@ $authCases = @(
     ExpectedChipEncoded = @(
       "%E8%AE%A4%E8%AF%81%E6%BA%90",
       "%E4%BC%9A%E8%AF%9D",
-      "%E8%A7%92%E8%89%B2"
+      "%E8%A7%92%E8%89%B2",
+      "%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90",
+      "%E6%97%A0%E6%9D%83"
     )
     ExpectContentHidden = $true
     ContentSelector = ".cockpit-command-center"
@@ -189,11 +197,29 @@ $authCases = @(
     ExpectedChipEncoded = @(
       "%E8%AE%A4%E8%AF%81%E6%BA%90",
       "%E4%BC%9A%E8%AF%9D",
-      "%E8%A7%92%E8%89%B2"
+      "%E8%A7%92%E8%89%B2",
+      "%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90",
+      "%E6%97%A0%E6%9D%83"
     )
     ExpectContentHidden = $true
     ContentSelector = ".cockpit-command-center"
     ExpectNoticeSelector = ".read-model-state-forbidden"
+  },
+  @{
+    Name = "cc-photographer-summary"
+    Hash = "#?authState=signed-in&authRole=photographer"
+    ExpectedEncoded = @(
+      "%E6%AD%A4%E5%8C%BA%E5%9F%9F%E9%9C%80%E8%A6%81%E8%BF%90%E8%90%A5%E6%9D%83%E9%99%90",
+      "%E5%BD%93%E5%89%8D%E8%A7%92%E8%89%B2%EF%BC%9A%E6%91%84%E5%BD%B1%E5%B8%88"
+    )
+    ExpectedChipEncoded = @(
+      "%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90",
+      "%E6%91%98%E8%A6%81"
+    )
+    ExpectContentHidden = $false
+    ExpectContentVisible = $true
+    ContentSelector = ".cockpit-command-center"
+    ExpectNoticeSelector = ".insufficient-role-notice"
   },
   @{
     Name = "asset-inbox-signed-in"
@@ -205,7 +231,9 @@ $authCases = @(
     )
     ExpectedChipEncoded = @(
       "%E4%BC%9A%E8%AF%9D",
-      "%E8%A7%92%E8%89%B2"
+      "%E8%A7%92%E8%89%B2",
+      "%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90",
+      "%E5%AE%8C%E5%85%A8"
     )
     ExpectContentHidden = $false
     ExpectContentVisible = $true
@@ -224,7 +252,9 @@ $authCases = @(
     ExpectedChipEncoded = @(
       "%E8%AE%A4%E8%AF%81%E6%BA%90",
       "%E4%BC%9A%E8%AF%9D",
-      "%E8%A7%92%E8%89%B2"
+      "%E8%A7%92%E8%89%B2",
+      "%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90",
+      "%E6%97%A0%E6%9D%83"
     )
     ExpectContentHidden = $true
     ContentSelector = ".cockpit-command-center"
@@ -240,12 +270,30 @@ $authCases = @(
     )
     ExpectedChipEncoded = @(
       "%E4%BC%9A%E8%AF%9D",
-      "%E8%A7%92%E8%89%B2"
+      "%E8%A7%92%E8%89%B2",
+      "%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90",
+      "%E5%8F%AA%E8%AF%BB"
     )
     ExpectContentHidden = $false
     ExpectContentVisible = $true
     ContentSelector = ".asset-inbox-console"
     ExpectNoticeSelector = ".insufficient-role-notice"
+  },
+  @{
+    Name = "delivery-readiness-approver-full"
+    Hash = "#delivery-readiness?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220&authState=signed-in&authRole=delivery_approver"
+    ExpectedEncoded = @(
+      "%E4%BA%A4%E4%BB%98%E5%B0%B1%E7%BB%AA",
+      "%E4%BA%A4%E4%BB%98%E6%B8%85%E5%8D%95"
+    )
+    ExpectedChipEncoded = @(
+      "%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90",
+      "%E5%AE%8C%E5%85%A8"
+    )
+    ExpectContentHidden = $false
+    ExpectContentVisible = $true
+    ContentSelector = ".delivery-readiness-console"
+    ExpectNoticeSelector = ""
   }
 )
 
