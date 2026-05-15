@@ -30,6 +30,7 @@ auth/backend authorization still require approved local or staging environments.
 | Goal requirement | Artifact or command | Evidence status | Audit result |
 |---|---|---|---|
 | Keep mock-first default behavior. | `src\api\client.ts`, `scripts\validate-local.ps1`, `scripts\qa-readonly-all.ps1` | Local validation and browser QA cover mock-first route behavior. | Covered locally |
+| Preserve dependency boundary. | `scripts\qa-package-boundary.ps1`, `package.json`, `package-lock.json` | Static QA checks the approved Vite/React/TypeScript top-level package set remains unchanged. | Covered locally |
 | Enable backend reads only when configured. | `src\api\backendReadModels.ts`, `src\api\client.ts`, `scripts\qa-backend-read-all.ps1` | Backend-connected mock smoke and unreachable-backend failure smoke are automated. | Covered locally |
 | Keep backend read contract map aligned. | `scripts\qa-backend-read-contract-map.ps1` | Static QA checks all five fetchers, smoke routes, mock backend paths, and smoke-plan docs stay synchronized. | Covered locally |
 | Provide guarded local/staging backend signoff path. | `scripts\qa-backend-read-signoff.ps1` | Wrapper rejects production-like URLs and credentialed/non-local misuse before smoke runs. | Covered locally |
@@ -64,6 +65,7 @@ This command currently chains:
 - `npm run lint`
 - `npm run build`
 - `scripts\validate-local.ps1`
+- `scripts\qa-package-boundary.ps1`
 - `scripts\qa-internal-pilot-manifest.ps1`
 - `scripts\qa-internal-pilot-goal-audit.ps1`
 - `scripts\qa-backend-read-contract-map.ps1`

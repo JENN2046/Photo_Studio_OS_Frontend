@@ -53,6 +53,13 @@ Write-Host ""
 Write-Host "== Available npm scripts =="
 npm run
 
+Write-Host ""
+Write-Host "== package boundary QA =="
+powershell -ExecutionPolicy Bypass -File "scripts\qa-package-boundary.ps1"
+if ($LASTEXITCODE -ne 0) {
+  $failed = $true
+}
+
 function Test-NpmScript {
   param([string]$ScriptName)
   $pkg = Get-Content "package.json" -Raw | ConvertFrom-Json

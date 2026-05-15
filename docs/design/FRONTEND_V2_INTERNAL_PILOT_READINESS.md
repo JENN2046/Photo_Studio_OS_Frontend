@@ -29,6 +29,7 @@ auth are verified in an approved local or staging environment.
 | Area | Required for internal pilot | Current evidence | Status |
 |---|---|---|---|
 | Mock-first baseline | App runs with no backend URL and remains read-only. | `README.md`, `scripts\validate-local.ps1`, `scripts\qa-readonly-all.ps1` | Ready |
+| Package boundary | Dependency manifests stay limited to the approved Vite/React/TypeScript stack and no UI/chart/state/CSS framework is introduced. | `scripts\qa-package-boundary.ps1` | Frontend ready |
 | Command Center | Premium dark cockpit, three-gauge anchor, risk, projects, approvals, activity, inspections, and Golden Loop entries. | `src\features\command-center\CommandCenter.tsx`, route QA matrix | Ready |
 | Asset Inbox | Operator can see source posture, SKU / shot binding, selected asset detail, file context, and QC checklist. | `src\features\read-models\readModelWorkspaces.tsx`, `#asset-inbox` QA | Ready |
 | QC / Retouch | Operator can see queue, failure reasons, severity, owner, deadline, and read-only suggestions. | `src\features\read-models\readModelWorkspaces.tsx`, `#qc-retouch` QA | Ready |
@@ -75,6 +76,7 @@ Expanded command list:
 npm run lint
 npm run build
 powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1
+powershell -ExecutionPolicy Bypass -File scripts\qa-package-boundary.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-source-boundary.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-contract-map.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-auth-role-matrix.ps1

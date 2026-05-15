@@ -62,6 +62,7 @@ $sourceArtifacts = @(
 $qaArtifacts = @(
   @{ Path = "scripts\validate-local.ps1"; Label = "PowerShell local validation" },
   @{ Path = "scripts\validate-local.sh"; Label = "Bash local validation" },
+  @{ Path = "scripts\qa-package-boundary.ps1"; Label = "Package boundary QA" },
   @{ Path = "scripts\qa-readonly-source-boundary.ps1"; Label = "Read-only source boundary QA" },
   @{ Path = "scripts\qa-backend-read-contract-map.ps1"; Label = "Backend read contract-map QA" },
   @{ Path = "scripts\qa-auth-role-matrix.ps1"; Label = "Auth role matrix QA" },
@@ -97,12 +98,14 @@ foreach ($artifact in @($sourceArtifacts + $qaArtifacts + $docArtifacts)) {
 }
 
 Assert-FileContains -Path "scripts\validate-local.ps1" -Pattern "qa-readonly-source-boundary\.ps1" -Label "validate-local includes source boundary QA"
+Assert-FileContains -Path "scripts\validate-local.ps1" -Pattern "qa-package-boundary\.ps1" -Label "validate-local includes package boundary QA"
 Assert-FileContains -Path "scripts\validate-local.ps1" -Pattern "qa-backend-read-contract-map\.ps1" -Label "validate-local includes backend read contract-map QA"
 Assert-FileContains -Path "scripts\validate-local.ps1" -Pattern "qa-auth-role-matrix\.ps1" -Label "validate-local includes auth role matrix QA"
 Assert-FileContains -Path "scripts\validate-local.ps1" -Pattern "qa-auth-provider-preflight\.ps1" -Label "validate-local includes auth provider preflight QA"
 Assert-FileContains -Path "scripts\validate-local.ps1" -Pattern "qa-internal-pilot-goal-audit\.ps1" -Label "validate-local includes internal pilot goal audit QA"
 Assert-FileContains -Path "scripts\validate-local.ps1" -Pattern "qa-release-boundary-docs\.ps1" -Label "validate-local includes release-boundary docs QA"
 Assert-FileContains -Path "scripts\validate-local.sh" -Pattern "qa-readonly-source-boundary\.ps1" -Label "Bash validation includes source boundary QA"
+Assert-FileContains -Path "scripts\validate-local.sh" -Pattern "qa-package-boundary\.ps1" -Label "Bash validation includes package boundary QA"
 Assert-FileContains -Path "scripts\validate-local.sh" -Pattern "qa-backend-read-contract-map\.ps1" -Label "Bash validation includes backend read contract-map QA"
 Assert-FileContains -Path "scripts\validate-local.sh" -Pattern "qa-auth-role-matrix\.ps1" -Label "Bash validation includes auth role matrix QA"
 Assert-FileContains -Path "scripts\validate-local.sh" -Pattern "qa-auth-provider-preflight\.ps1" -Label "Bash validation includes auth provider preflight QA"

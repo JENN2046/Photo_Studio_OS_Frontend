@@ -49,7 +49,7 @@ Status:
 | R15 | Browser QA depends on a local dev server that is not running or uses wrong port. | Medium | Medium | Watching | Document `npm run dev` on `127.0.0.1:5173`; fail clearly when server is absent. |
 | R16 | Bash/WSL Node runtime is incompatible with Vite 7. | Medium | High | Watching | Prefer PowerShell validation unless Bash/WSL Node is `20.19+` or `22.12+`. |
 | R17 | Production release is treated as a continuation of local QA. | Critical | Medium | Watching | `FRONTEND_V2_INTERNAL_PILOT_READINESS.md` separates internal pilot readiness from production readiness; `scripts\qa-release-boundary-docs.ps1` guards release/signoff docs; release checklist still requires staging signoff, rollback plan, tag approval, and explicit deploy approval. |
-| R18 | New teammate changes package dependencies to solve UI gaps quickly. | High | Medium | Open | Dependency changes require explicit approval; current project has no UI/chart/state/CSS framework. |
+| R18 | New teammate changes package dependencies to solve UI gaps quickly. | High | Medium | Watching | Dependency changes require explicit approval; `scripts\qa-package-boundary.ps1` guards the current Vite/React/TypeScript top-level dependency set and no UI/chart/state/CSS framework. |
 | R19 | Backend smoke testing accidentally uses production endpoints. | Critical | Low | Watching | `scripts\qa-backend-read-smoke.ps1` refuses non-local URLs unless `-AllowNonLocalBackend` is explicitly used for approved staging; docs continue to forbid production endpoint smoke. |
 | R20 | Review/delivery client-facing pages blur internal vs external data boundary. | Critical | Medium | Blocked | Create explicit external-access contract before public pages; audit safe fields. |
 

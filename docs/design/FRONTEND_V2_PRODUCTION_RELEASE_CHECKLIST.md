@@ -28,6 +28,7 @@ npm ci
 npm run lint
 npm run build
 powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1
+powershell -ExecutionPolicy Bypass -File scripts\qa-package-boundary.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-source-boundary.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-contract-map.ps1
 powershell -ExecutionPolicy Bypass -File scripts\qa-auth-role-matrix.ps1
@@ -54,6 +55,7 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1
 | `npm run lint` passes | |
 | `npm run build` passes | |
 | `validate-local.ps1` passes (including secret scan) | |
+| `qa-package-boundary.ps1` passes minimal dependency boundary checks | |
 | `qa-readonly-source-boundary.ps1` passes | |
 | `qa-backend-read-contract-map.ps1` passes fetcher/smoke/mock/docs contract-map checks | |
 | `qa-auth-role-matrix.ps1` passes 7-role / 10-route static matrix checks | |

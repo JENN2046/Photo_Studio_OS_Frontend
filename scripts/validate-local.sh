@@ -54,6 +54,18 @@ fi
 
 echo "Node.js $node_version"
 
+run_powershell_script() {
+  local script_path="$1"
+  if command -v pwsh >/dev/null 2>&1; then
+    pwsh -ExecutionPolicy Bypass -File "$script_path"
+  elif command -v powershell >/dev/null 2>&1; then
+    powershell -ExecutionPolicy Bypass -File "$script_path"
+  else
+    echo "PowerShell is required for local QA scripts."
+    exit 1
+  fi
+}
+
 echo ""
 echo "== Git status =="
 git branch --show-current
@@ -63,6 +75,10 @@ git diff --stat || true
 echo ""
 echo "== Available npm scripts =="
 npm run
+
+echo ""
+echo "== package boundary QA =="
+run_powershell_script "scripts/qa-package-boundary.ps1"
 
 has_script() {
   node -e "const p=require('./package.json'); process.exit(p.scripts && p.scripts['$1'] ? 0 : 1)"
@@ -129,18 +145,6 @@ else
     echo "changed-file secret scan passed"
   fi
 fi
-
-run_powershell_script() {
-  local script_path="$1"
-  if command -v pwsh >/dev/null 2>&1; then
-    pwsh -ExecutionPolicy Bypass -File "$script_path"
-  elif command -v powershell >/dev/null 2>&1; then
-    powershell -ExecutionPolicy Bypass -File "$script_path"
-  else
-    echo "PowerShell is required for browser QA scripts."
-    exit 1
-  fi
-}
 
 echo ""
 echo "== read-only source boundary QA =="
