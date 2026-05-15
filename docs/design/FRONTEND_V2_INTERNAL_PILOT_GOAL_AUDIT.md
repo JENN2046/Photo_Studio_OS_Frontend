@@ -48,6 +48,7 @@ auth/backend authorization still require approved local or staging environments.
 | Keep release candidate docs current. | `docs\design\FRONTEND_V2_PRODUCTION_ROADMAP.md`, `FRONTEND_V2_INTERNAL_PILOT_READINESS.md`, `FRONTEND_V2_PRODUCTION_RELEASE_CHECKLIST.md`, `FRONTEND_V2_RISK_REGISTER.md`, `FRONTEND_V2_IMPLEMENTATION_HANDOFF.md` | Planning, risk, readiness, checklist, and handoff docs exist and point to current gates. | Covered locally |
 | Preserve final signoff evidence slot. | `docs\design\FRONTEND_V2_INTERNAL_PILOT_SIGNOFF_RECORD.md` | Blank signoff record exists for the eventual approved local/staging acceptance run. | Covered locally |
 | Keep evidence artifacts present. | `scripts\qa-internal-pilot-manifest.ps1` | Static manifest QA checks required source, QA, and documentation artifacts for the local internal-pilot goal. | Covered locally |
+| Keep pilot aggregate options guarded. | `scripts\qa-internal-pilot-readiness-guards.ps1` | Static and negative-path QA checks approved backend expected-state options stay exposed and reject mixed data/failure modes before long QA starts. | Covered locally |
 | Keep goal status honest. | `scripts\qa-internal-pilot-goal-audit.ps1` | Static audit QA checks this goal remains a local frontend-ready candidate until backend/auth signoff blockers are cleared. | Covered locally |
 | Keep release/signoff docs unapproved. | `scripts\qa-release-boundary-docs.ps1` | Static QA checks internal-pilot, signoff, release, risk, and review docs still separate local readiness from production release. | Covered locally |
 | Avoid remote side effects. | Git status and commit history | Local commits exist; push/tag/deploy are not authorized by this audit. | Covered locally |
@@ -74,6 +75,7 @@ This command currently chains:
 - `scripts\qa-backend-read-all.ps1`
 - optional approved backend signoff when `-ApprovedBackendBaseUrl` is provided
 - optional approved backend expected data/failure state passthrough when staging fixtures intentionally return empty / partial / stale / 403 / 404
+- `scripts\qa-internal-pilot-readiness-guards.ps1`
 - `scripts\qa-readonly-auth-live-roles.ps1`
 - `scripts\qa-readonly-auth-states.ps1`
 - `scripts\qa-readonly-all.ps1`

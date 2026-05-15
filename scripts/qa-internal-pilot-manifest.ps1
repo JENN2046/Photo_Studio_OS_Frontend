@@ -76,6 +76,7 @@ $qaArtifacts = @(
   @{ Path = "scripts\qa-readonly-auth-live-roles.ps1"; Label = "Live env role QA" },
   @{ Path = "scripts\qa-readonly-all.ps1"; Label = "Full read-only browser QA" },
   @{ Path = "scripts\qa-internal-pilot-readiness.ps1"; Label = "Internal pilot aggregate QA" },
+  @{ Path = "scripts\qa-internal-pilot-readiness-guards.ps1"; Label = "Internal pilot aggregate guard QA" },
   @{ Path = "scripts\qa-internal-pilot-goal-audit.ps1"; Label = "Internal pilot goal audit QA" },
   @{ Path = "scripts\qa-release-boundary-docs.ps1"; Label = "Release-boundary docs QA" }
 )
@@ -102,6 +103,7 @@ Assert-FileContains -Path "scripts\validate-local.ps1" -Pattern "qa-package-boun
 Assert-FileContains -Path "scripts\validate-local.ps1" -Pattern "qa-backend-read-contract-map\.ps1" -Label "validate-local includes backend read contract-map QA"
 Assert-FileContains -Path "scripts\validate-local.ps1" -Pattern "qa-auth-role-matrix\.ps1" -Label "validate-local includes auth role matrix QA"
 Assert-FileContains -Path "scripts\validate-local.ps1" -Pattern "qa-auth-provider-preflight\.ps1" -Label "validate-local includes auth provider preflight QA"
+Assert-FileContains -Path "scripts\validate-local.ps1" -Pattern "qa-internal-pilot-readiness-guards\.ps1" -Label "validate-local includes internal pilot readiness guard QA"
 Assert-FileContains -Path "scripts\validate-local.ps1" -Pattern "qa-internal-pilot-goal-audit\.ps1" -Label "validate-local includes internal pilot goal audit QA"
 Assert-FileContains -Path "scripts\validate-local.ps1" -Pattern "qa-release-boundary-docs\.ps1" -Label "validate-local includes release-boundary docs QA"
 Assert-FileContains -Path "scripts\validate-local.sh" -Pattern "qa-readonly-source-boundary\.ps1" -Label "Bash validation includes source boundary QA"
@@ -109,6 +111,7 @@ Assert-FileContains -Path "scripts\validate-local.sh" -Pattern "qa-package-bound
 Assert-FileContains -Path "scripts\validate-local.sh" -Pattern "qa-backend-read-contract-map\.ps1" -Label "Bash validation includes backend read contract-map QA"
 Assert-FileContains -Path "scripts\validate-local.sh" -Pattern "qa-auth-role-matrix\.ps1" -Label "Bash validation includes auth role matrix QA"
 Assert-FileContains -Path "scripts\validate-local.sh" -Pattern "qa-auth-provider-preflight\.ps1" -Label "Bash validation includes auth provider preflight QA"
+Assert-FileContains -Path "scripts\validate-local.sh" -Pattern "qa-internal-pilot-readiness-guards\.ps1" -Label "Bash validation includes internal pilot readiness guard QA"
 Assert-FileContains -Path "scripts\validate-local.sh" -Pattern "qa-internal-pilot-goal-audit\.ps1" -Label "Bash validation includes internal pilot goal audit QA"
 Assert-FileContains -Path "scripts\validate-local.sh" -Pattern "qa-release-boundary-docs\.ps1" -Label "Bash validation includes release-boundary docs QA"
 

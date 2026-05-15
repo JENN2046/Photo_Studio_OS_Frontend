@@ -259,6 +259,12 @@ Automated internal pilot evidence manifest QA:
 powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-manifest.ps1
 ```
 
+Automated internal pilot aggregate guard QA:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness-guards.ps1
+```
+
 Automated internal pilot goal audit QA:
 
 ```powershell
@@ -332,7 +338,9 @@ QA. The backend signoff guard QA also runs during local validation so unsafe
 backend URL shapes are rejected before any smoke can start. The internal pilot
 goal audit QA also runs during local validation so the repo keeps reporting
 `LOCAL_FRONTEND_READY_CANDIDATE` until real backend and auth signoff blockers
-are cleared. The release-boundary docs QA keeps signoff/release execution
+are cleared. The internal pilot readiness guard QA keeps aggregate backend
+expectation options explicit and rejects mixed expected-state modes before long
+browser/backend QA can start. The release-boundary docs QA keeps signoff/release execution
 checkboxes unapproved and blocks non-local non-example URLs in docs.
 
 Baseline cockpit routes:
