@@ -407,6 +407,14 @@ async function fetchReadModel<T>(
       0
     );
   }
+
+  if (!envelope || typeof envelope !== "object" || !("data" in envelope)) {
+    throw new ReadModelHttpError(
+      "Frontend v2 read-model response did not include a data envelope",
+      0
+    );
+  }
+
   return envelope.data;
 }
 

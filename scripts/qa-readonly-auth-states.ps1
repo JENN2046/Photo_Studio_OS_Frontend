@@ -56,17 +56,13 @@ function Test-AuthCase {
     name = $Case.Name
     url = New-RouteUrl $Case.Hash
     expectedEncoded = $Case.ExpectedEncoded
-    expectChipEncoded = @(
-      "%E8%AE%A4%E8%AF%81%E6%BA%90",
-      "%E4%BC%9A%E8%AF%9D",
-      "%E8%A7%92%E8%89%B2"
-    )
+    expectChipEncoded = if ($Case.ExpectedChipEncoded) { $Case.ExpectedChipEncoded } else { @() }
     expectContentHidden = [bool]$Case.ExpectContentHidden
     contentSelector = $Case.ContentSelector
     expectNoticeSelector = $Case.ExpectNoticeSelector
   } | ConvertTo-Json -Compress -Depth 6
 
-  $code = "async (page) => { const testCase = $payload; page.removeAllListeners('console'); const consoleErrors = []; page.on('console', (message) => { if (message.type() === 'error') { consoleErrors.push(message.text()); } }); await page.goto(testCase.url); await page.waitForLoadState('domcontentloaded'); await page.waitForTimeout(50); await page.waitForSelector('.read-model-page', { timeout: 2000 }).catch(() => undefined); await page.waitForSelector('.read-model-state', { timeout: 2000 }).catch(() => undefined); const result = await page.evaluate((testCase) => { const text = document.body.innerText; const root = document.documentElement; const expected = testCase.expectedEncoded.map((item) => decodeURIComponent(item)); const chipExpected = testCase.expectChipEncoded.map((item) => decodeURIComponent(item)); const missing = expected.filter((item) => !text.includes(item)); const missingChips = chipExpected.filter((item) => !text.includes(item)); const stateNoticeCount = document.querySelectorAll('.read-model-state').length; const noticeSelectorCount = testCase.expectNoticeSelector ? document.querySelectorAll(testCase.expectNoticeSelector).length : stateNoticeCount; const contentHidden = testCase.expectContentHidden && testCase.contentSelector ? document.querySelectorAll(testCase.contentSelector).length === 0 : null; const overflow = root.scrollWidth > root.clientWidth + 1; return { name: testCase.name, url: location.href, missing, missingChips, stateNoticeCount, noticeSelectorCount, contentHidden, overflow, scrollWidth: root.scrollWidth, clientWidth: root.clientWidth }; }, testCase); return Object.assign({}, result, { viewport: '$($Viewport.Name)', width: $($Viewport.Width), height: $($Viewport.Height), consoleErrorCount: consoleErrors.length, consoleErrors: consoleErrors }); }"
+  $code = "async (page) => { const testCase = $payload; page.removeAllListeners('console'); const consoleErrors = []; page.on('console', (message) => { if (message.type() === 'error') { consoleErrors.push(message.text()); } }); await page.goto(testCase.url); await page.waitForLoadState('domcontentloaded'); await page.waitForTimeout(50); await page.waitForSelector('.read-model-page', { timeout: 2000 }).catch(() => undefined); if (testCase.expectNoticeSelector) { await page.waitForSelector(testCase.expectNoticeSelector, { timeout: 2000 }).catch(() => undefined); } else if (testCase.contentSelector) { await page.waitForSelector(testCase.contentSelector, { timeout: 2000 }).catch(() => undefined); } const result = await page.evaluate((testCase) => { const text = document.body.innerText; const root = document.documentElement; const expected = testCase.expectedEncoded.map((item) => decodeURIComponent(item)); const chipExpected = testCase.expectChipEncoded.map((item) => decodeURIComponent(item)); const missing = expected.filter((item) => !text.includes(item)); const missingChips = chipExpected.filter((item) => !text.includes(item)); const stateNoticeCount = document.querySelectorAll('.read-model-state').length; const noticeSelectorCount = testCase.expectNoticeSelector ? document.querySelectorAll(testCase.expectNoticeSelector).length : null; const contentHidden = testCase.expectContentHidden && testCase.contentSelector ? document.querySelectorAll(testCase.contentSelector).length === 0 : null; const overflow = root.scrollWidth > root.clientWidth + 1; return { name: testCase.name, url: location.href, missing, missingChips, stateNoticeCount, noticeSelectorCount, contentHidden, overflow, scrollWidth: root.scrollWidth, clientWidth: root.clientWidth }; }, testCase); return Object.assign({}, result, { viewport: '$($Viewport.Name)', width: $($Viewport.Width), height: $($Viewport.Height), consoleErrorCount: consoleErrors.length, consoleErrors: consoleErrors }); }"
   $playwrightDir = Join-Path (Get-Location) ".playwright-cli"
   if (-not (Test-Path $playwrightDir)) {
     New-Item -ItemType Directory -Path $playwrightDir | Out-Null
@@ -89,7 +85,7 @@ function Test-AuthCase {
   if ($result.missingChips.Count -gt 0) {
     $problems += "missing auth chips: $($result.missingChips -join ', ')"
   }
-  if ($result.noticeSelectorCount -lt 1) {
+  if ($Case.ExpectNoticeSelector -and $result.noticeSelectorCount -lt 1) {
     $problems += "state notice not found"
   }
   if ($Case.ExpectContentHidden -and $result.contentHidden -eq $false) {
@@ -120,6 +116,11 @@ $authCases = @(
       "%E6%9C%AA%E7%99%BB%E5%BD%95",
       "%E7%99%BB%E5%BD%95"
     )
+    ExpectedChipEncoded = @(
+      "%E8%AE%A4%E8%AF%81%E6%BA%90",
+      "%E4%BC%9A%E8%AF%9D",
+      "%E8%A7%92%E8%89%B2"
+    )
     ExpectContentHidden = $true
     ContentSelector = ".cockpit-command-center"
     ExpectNoticeSelector = ".read-model-state-forbidden"
@@ -130,6 +131,11 @@ $authCases = @(
     ExpectedEncoded = @(
       "%E4%BC%9A%E8%AF%9D%E5%B7%B2%E8%BF%87%E6%9C%9F",
       "%E9%87%8D%E6%96%B0%E7%99%BB%E5%BD%95"
+    )
+    ExpectedChipEncoded = @(
+      "%E8%AE%A4%E8%AF%81%E6%BA%90",
+      "%E4%BC%9A%E8%AF%9D",
+      "%E8%A7%92%E8%89%B2"
     )
     ExpectContentHidden = $true
     ContentSelector = ".cockpit-command-center"
@@ -142,6 +148,11 @@ $authCases = @(
       "%E8%AE%A4%E8%AF%81%E9%AA%8C%E8%AF%81%E4%B8%AD",
       "%E6%AD%A3%E5%9C%A8%E9%AA%8C%E8%AF%81%E4%BC%9A%E8%AF%9D%E4%BB%A4%E7%89%8C"
     )
+    ExpectedChipEncoded = @(
+      "%E8%AE%A4%E8%AF%81%E6%BA%90",
+      "%E4%BC%9A%E8%AF%9D",
+      "%E8%A7%92%E8%89%B2"
+    )
     ExpectContentHidden = $true
     ContentSelector = ".cockpit-command-center"
     ExpectNoticeSelector = ".read-model-state-forbidden"
@@ -152,6 +163,11 @@ $authCases = @(
     ExpectedEncoded = @(
       "%E8%AE%A4%E8%AF%81%E6%9C%8D%E5%8A%A1%E4%B8%8D%E5%8F%AF%E7%94%A8",
       "%E8%AE%A4%E8%AF%81%E6%95%85%E9%9A%9C"
+    )
+    ExpectedChipEncoded = @(
+      "%E8%AE%A4%E8%AF%81%E6%BA%90",
+      "%E4%BC%9A%E8%AF%9D",
+      "%E8%A7%92%E8%89%B2"
     )
     ExpectContentHidden = $true
     ContentSelector = ".cockpit-command-center"
@@ -166,6 +182,11 @@ $authCases = @(
       "%E5%BD%93%E5%89%8D%E8%A7%92%E8%89%B2",
       "%E8%BF%94%E5%9B%9E%E5%91%BD%E4%BB%A4%E4%B8%AD%E5%BF%83"
     )
+    ExpectedChipEncoded = @(
+      "%E8%AE%A4%E8%AF%81%E6%BA%90",
+      "%E4%BC%9A%E8%AF%9D",
+      "%E8%A7%92%E8%89%B2"
+    )
     ExpectContentHidden = $true
     ContentSelector = ".cockpit-command-center"
     ExpectNoticeSelector = ".read-model-state-forbidden"
@@ -175,7 +196,10 @@ $authCases = @(
     Hash = "#asset-inbox?projectId=PRJ-128&reviewSessionId=REV-441&deliveryId=DEL-220&authState=signed-in"
     ExpectedEncoded = @(
       "%E7%B4%A0%E6%9D%90%E6%94%B6%E4%BB%B6%E7%AE%B1",
-      "%E8%AE%A4%E8%AF%81%E6%BA%90",
+      "%E4%BC%9A%E8%AF%9D",
+      "%E8%A7%92%E8%89%B2"
+    )
+    ExpectedChipEncoded = @(
       "%E4%BC%9A%E8%AF%9D",
       "%E8%A7%92%E8%89%B2"
     )

@@ -13,6 +13,7 @@ interface AuthGateProps {
   auth: AuthState;
   runtime: AuthRuntimeView;
   currentRoute: AppRoute;
+  pageAccess: PageAccess;
   children: ReactNode;
 }
 
@@ -189,6 +190,7 @@ export function AuthGate({
   auth,
   runtime,
   currentRoute,
+  pageAccess,
   children
 }: AuthGateProps) {
   switch (auth.session) {
@@ -209,8 +211,12 @@ export function AuthGate({
         />
       );
     case "insufficient-role":
+      if (pageAccess === "full") {
+        return <>{children}</>;
+      }
+
       return (
-        <InsufficientRoleOverlay access="read" role={auth.role}>
+        <InsufficientRoleOverlay access={pageAccess} role={auth.role}>
           {children}
         </InsufficientRoleOverlay>
       );

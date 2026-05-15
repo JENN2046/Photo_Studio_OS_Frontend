@@ -30,6 +30,10 @@ function getAuthDebugState(params: URLSearchParams): AuthDebugState {
   if (!import.meta.env.DEV) return "live";
 
   const debug = params.get("authState")?.trim();
+  if (debug === "signed-out") {
+    return "no-auth";
+  }
+
   const valid: SessionState[] = [
     "no-auth",
     "loading",

@@ -16,6 +16,14 @@ interface ParsedAppRoute {
   params: URLSearchParams;
 }
 
+const commandCenterSceneRoutes = new Set<AppRoute>([
+  "risk",
+  "projects",
+  "approvals",
+  "activity",
+  "inspections"
+]);
+
 const readModelRoutes = new Set<AppRoute>([
   "asset-inbox",
   "qc-retouch",
@@ -39,6 +47,10 @@ function parseAppRoute(): ParsedAppRoute {
   });
 
   if (readModelRoutes.has(hashRoute as AppRoute)) {
+    return { route: hashRoute as AppRoute, params };
+  }
+
+  if (commandCenterSceneRoutes.has(hashRoute as AppRoute)) {
     return { route: hashRoute as AppRoute, params };
   }
 
@@ -70,6 +82,8 @@ export default function App() {
   const effectiveSession =
     auth.session === "signed-in" && access === "none"
       ? "forbidden"
+      : auth.session === "signed-in" && access !== "full"
+        ? "insufficient-role"
       : auth.session;
 
   const children = () => {
@@ -92,6 +106,7 @@ export default function App() {
     <AuthGate
       auth={{ ...auth, session: effectiveSession }}
       currentRoute={route}
+      pageAccess={access}
       runtime={runtime}
     >
       {children()}
