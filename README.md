@@ -450,6 +450,45 @@ for partial access, not proof of backend authorization.
 These rehearsals are local UI states. They do not enable uploads, downloads,
 public links, auth, storage, backend writes, or production access.
 
+## Auth0 Local Bridge
+
+The frontend can enable a minimal Auth0 login bridge for approved local/staging
+auth smoke only. It stays disabled unless all three Vite env values are supplied
+outside the repo:
+
+```text
+VITE_AUTH0_DOMAIN=<tenant-domain>
+VITE_AUTH0_CLIENT_ID=<spa-client-id>
+VITE_AUTH0_AUDIENCE=https://photo-studio-os-api
+```
+
+When these values are absent, the app keeps the existing mock-first auth
+behavior. When present, the app uses Auth0 login, requests an access token for
+the configured audience, keeps the token in memory, and sends
+`Authorization: Bearer <token>` only on backend read-model requests after login.
+
+Do not commit real Auth0 values or tokens. Do not put access tokens in
+`localStorage`, `sessionStorage`, docs, screenshots, commits, or chat.
+
+First live-smoke role values are limited to the backend roles already accepted
+for T129:
+
+```text
+owner
+retoucher
+client_reviewer
+```
+
+The frontend maps those smoke roles for display as:
+
+```text
+owner -> admin
+retoucher -> retoucher
+client_reviewer -> client
+```
+
+Full frontend/backend role parity remains a follow-up contract task.
+
 DEV-only Command Center boundary rehearsals:
 
 - Add `commandCenterState=loading` to rehearse the Command Center loading state.

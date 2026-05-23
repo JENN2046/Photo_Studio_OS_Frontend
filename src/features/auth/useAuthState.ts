@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useAuthSession } from "./AuthSessionProvider";
 import { roleLabels, type AuthState, type Role, type SessionState } from "./authTypes";
 
 export type AuthDebugState = SessionState | "live";
@@ -118,10 +119,14 @@ function deriveSessionState(
 }
 
 export function useAuthState(params: URLSearchParams): {
+  accessToken: string | null;
   auth: AuthState;
   debugState: AuthDebugState;
+  login: () => void;
+  logout: () => void;
   runtime: AuthRuntimeView;
 } {
+  const session = useAuthSession();
   const debugState = getAuthDebugState(params);
   const debugRole = getRoleFromDebugParams(params);
   const envRole = getRoleFromEnv();
@@ -129,9 +134,53 @@ export function useAuthState(params: URLSearchParams): {
   const isDebug = debugState !== "live" || debugRole !== null;
   const isEnvRole = !debugRole && envRole !== null;
 
-  const auth = useMemo(
-    () => deriveSessionState(resolvedRole, debugState),
-    [resolvedRole, debugState]
+  const auth = useMemo<AuthState>(
+    () => {
+      if (debugState !== "live" || !session.isAuth0Configured) {
+        return deriveSessionState(resolvedRole, debugState);
+      }
+
+      if (session.isLoading) {
+        return {
+          session: "loading",
+          role: null,
+          message: "正在验证 Auth0 会话。"
+        };
+      }
+
+      if (session.errorMessage) {
+        return {
+          session: "error",
+          role: null,
+          message: session.errorMessage
+        };
+      }
+
+      if (!session.isAuthenticated) {
+        return {
+          session: "no-auth",
+          role: null,
+          message: "请登录以访问命令中心。"
+        };
+      }
+
+      return {
+        session: "signed-in",
+        role: session.role,
+        message: session.role
+          ? `Auth0 会话已验证。角色：${session.role}`
+          : "Auth0 会话已验证，但角色声明未映射。"
+      };
+    },
+    [
+      debugState,
+      resolvedRole,
+      session.errorMessage,
+      session.isAuth0Configured,
+      session.isAuthenticated,
+      session.isLoading,
+      session.role
+    ]
   );
 
   const sessionLabels: Record<string, string> = {
@@ -145,12 +194,17 @@ export function useAuthState(params: URLSearchParams): {
   };
 
   return {
+    accessToken: isDebug ? null : session.accessToken,
     auth,
     debugState,
+    login: isDebug ? () => undefined : session.login,
+    logout: isDebug ? () => undefined : session.logout,
     runtime: {
-      source: isDebug ? "mock" : "mock",
+      source: session.isAuth0Configured && !isDebug ? "backend" : "mock",
       sourceLabel: isDebug
         ? "DEV 调试认证"
+        : session.isAuth0Configured
+          ? "Auth0"
         : isEnvRole
           ? "环境角色认证"
           : "本地模拟认证",

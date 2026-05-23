@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ReadModelHttpError } from "../../api/backendReadModels";
-import { commandCenterClient } from "../../api/client";
+import { createCommandCenterClient } from "../../api/client";
 import type { CommandCenterSnapshot } from "../../api/types";
 
 export type CommandCenterSnapshotStatus =
@@ -179,7 +179,9 @@ function getFailureMessage(
     : "Unable to load command center snapshot";
 }
 
-export function useCommandCenterSnapshot(): CommandCenterSnapshotState {
+export function useCommandCenterSnapshot(
+  accessToken: string | null
+): CommandCenterSnapshotState {
   const [reloadToken, setReloadToken] = useState(0);
   const [state, setState] =
     useState<CommandCenterSnapshotDataState>(baseLoadingState);
@@ -239,7 +241,7 @@ export function useCommandCenterSnapshot(): CommandCenterSnapshotState {
       };
     }
 
-    commandCenterClient
+    createCommandCenterClient(accessToken)
       .getSnapshot()
       .then((snapshot) => {
         if (!isCurrent) {
@@ -274,7 +276,7 @@ export function useCommandCenterSnapshot(): CommandCenterSnapshotState {
     return () => {
       isCurrent = false;
     };
-  }, [reloadToken]);
+  }, [accessToken, reloadToken]);
 
   return {
     ...state,

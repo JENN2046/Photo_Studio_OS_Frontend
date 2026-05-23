@@ -577,6 +577,35 @@ a {
   outline-offset: 2px;
 }
 
+.auth-session-action {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 20;
+  min-height: 38px;
+  padding: 8px 12px;
+  border: 1px solid rgba(242, 247, 255, 0.2);
+  border-radius: 6px;
+  color: var(--color-text);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 100%),
+    rgba(9, 15, 23, 0.88);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.32);
+  cursor: pointer;
+}
+
+.auth-session-action:hover {
+  border-color: rgba(242, 247, 255, 0.34);
+}
+
+.auth-session-action:focus-visible {
+  outline: 2px solid rgba(159, 211, 223, 0.48);
+  outline-offset: 2px;
+}
+
 @keyframes status-sweep {
   to {
     transform: rotate(360deg);

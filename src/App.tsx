@@ -77,7 +77,13 @@ function useAppRoute(): ParsedAppRoute {
 
 export default function App() {
   const { route, params } = useAppRoute();
-  const { auth, runtime: baseRuntime } = useAuthState(params);
+  const {
+    accessToken,
+    auth,
+    login,
+    logout,
+    runtime: baseRuntime
+  } = useAuthState(params);
   const access = getPageAccess(route, auth.role);
   const effectiveSession =
     auth.session === "signed-in" && access === "none"
@@ -96,24 +102,54 @@ export default function App() {
 
   const children = () => {
     if (route === "asset-inbox") {
-      return <AssetInboxPage params={params} authRuntime={runtime} />;
+      return (
+        <AssetInboxPage
+          accessToken={accessToken}
+          params={params}
+          authRuntime={runtime}
+        />
+      );
     }
     if (route === "qc-retouch") {
-      return <QcRetouchQueuePage params={params} authRuntime={runtime} />;
+      return (
+        <QcRetouchQueuePage
+          accessToken={accessToken}
+          params={params}
+          authRuntime={runtime}
+        />
+      );
     }
     if (route === "review-gallery") {
-      return <ReviewGalleryPage params={params} authRuntime={runtime} />;
+      return (
+        <ReviewGalleryPage
+          accessToken={accessToken}
+          params={params}
+          authRuntime={runtime}
+        />
+      );
     }
     if (route === "delivery-readiness") {
-      return <DeliveryReadinessPage params={params} authRuntime={runtime} />;
+      return (
+        <DeliveryReadinessPage
+          accessToken={accessToken}
+          params={params}
+          authRuntime={runtime}
+        />
+      );
     }
-    return <CommandCenter authRuntime={runtime} />;
+    return <CommandCenter accessToken={accessToken} authRuntime={runtime} />;
   };
 
   return (
     <AuthGate
       auth={{ ...auth, session: effectiveSession }}
       currentRoute={route}
+      onLogin={runtime.source === "backend" ? login : undefined}
+      onLogout={
+        runtime.source === "backend" && auth.session === "signed-in"
+          ? logout
+          : undefined
+      }
       pageAccess={access}
       runtime={runtime}
     >

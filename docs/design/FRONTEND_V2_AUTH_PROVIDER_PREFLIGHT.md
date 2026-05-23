@@ -4,10 +4,11 @@ Date: 2026-05-15
 Repo: `A:\Photo_Studio_OS_Frontend`
 Related roadmap stage: `S3 Auth And Role Readiness`
 
-This preflight defines what must be known before the frontend integrates a real
-auth/session provider. It is a planning and review artifact only. It does not
-implement production auth, store credentials, edit `.env`, create sign-in
-routes, call external auth services, or replace backend authorization.
+This preflight defines what must be known before the frontend treats a real
+auth/session provider as signoff evidence. It is a planning and review artifact only
+for production readiness. The repo now contains a minimal Auth0 local/staging
+bridge, but it does not implement production auth, store credentials, edit
+`.env`, call production auth services, or replace backend authorization.
 
 ## Current Frontend Posture
 
@@ -16,6 +17,10 @@ production auth client.
 
 Implemented locally:
 
+- Minimal Auth0 bridge that activates only when `VITE_AUTH0_DOMAIN`,
+  `VITE_AUTH0_CLIENT_ID`, and `VITE_AUTH0_AUDIENCE` are supplied outside the
+  repo.
+- In-memory access-token use for backend read-model requests after login.
 - Mock-first auth state machine.
 - Role matrix for 7 roles across 10 routes.
 - Signed-out, expired, loading, error, forbidden, insufficient-role, and
@@ -32,7 +37,7 @@ Still external:
 
 - Auth provider ownership.
 - Session source and refresh model.
-- Role and permission claim contract.
+- Full role and permission claim parity beyond the first-smoke roles.
 - Backend authorization enforcement on every read-model endpoint.
 - Staging fixtures for signed-out, expired, forbidden, and partial-access paths.
 
@@ -53,8 +58,8 @@ Still external:
 
 Allowed frontend shape after explicit approval:
 
-- A read-only session adapter that derives display state from approved provider
-  data.
+- A read-only session adapter that derives display state from approved Auth0
+  provider data.
 - Runtime chips that show auth source, session state, role label, and access
   posture.
 - Route gates that hide or reduce UI according to the frontend role matrix.
@@ -66,7 +71,7 @@ Forbidden without separate approval:
 - Storing credentials in `localStorage` or `sessionStorage`.
 - Printing credential-bearing values in logs, screenshots, docs, or QA output.
 - Editing `.env` or committing provider config.
-- Implementing sign-in, sign-out, refresh, or account management flows.
+- Implementing account management flows or production refresh/session policy.
 - Treating frontend route gates as backend authorization.
 - Calling production auth endpoints from local QA.
 - Enabling upload, download, public review, public delivery, or business writes.

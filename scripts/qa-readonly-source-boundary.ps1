@@ -91,6 +91,18 @@ $failures = @()
 foreach ($rule in $rules) {
   $matches = Select-String -Path $sourceFiles -Pattern $rule.Pattern -AllMatches
   foreach ($match in $matches) {
+    $normalizedPath = $match.Path.Replace("\", "/")
+    $isApprovedAuthBridge =
+      $rule.Name -eq "auth-header" -and
+      (
+        $normalizedPath.EndsWith("/src/api/client.ts") -or
+        $normalizedPath.EndsWith("/src/features/read-models/useBackendReadModel.ts")
+      )
+
+    if ($isApprovedAuthBridge) {
+      continue
+    }
+
     $failures += [pscustomobject]@{
       Rule = $rule.Name
       Path = $match.Path

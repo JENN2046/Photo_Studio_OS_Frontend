@@ -56,6 +56,7 @@ import {
 import "./readModelPages.css";
 
 export interface ReadModelPageProps {
+  accessToken: string | null;
   params: URLSearchParams;
   authRuntime: AuthRuntimeView;
 }
@@ -564,7 +565,11 @@ function ReadModelStateNotice<T>({
   );
 }
 
-export function AssetInboxPage({ params, authRuntime }: ReadModelPageProps) {
+export function AssetInboxPage({
+  accessToken,
+  params,
+  authRuntime
+}: ReadModelPageProps) {
   const projectId = getParam(params, "projectId");
   const debugState = getReadModelDebugState(params);
   const mockData = selectDebugMock(projectId, debugState, {
@@ -573,6 +578,7 @@ export function AssetInboxPage({ params, authRuntime }: ReadModelPageProps) {
     normal: createMockAssetInbox
   });
   const baseState = useBackendReadModel({
+    accessToken,
     enabled: Boolean(projectId),
     idleMessage: "请先选择 projectId 加载素材收件箱。",
     load: ({ baseUrl, options }) =>
@@ -609,7 +615,11 @@ export function AssetInboxPage({ params, authRuntime }: ReadModelPageProps) {
   );
 }
 
-export function QcRetouchQueuePage({ params, authRuntime }: ReadModelPageProps) {
+export function QcRetouchQueuePage({
+  accessToken,
+  params,
+  authRuntime
+}: ReadModelPageProps) {
   const projectId = getParam(params, "projectId");
   const debugState = getReadModelDebugState(params);
   const mockData = selectDebugMock(projectId, debugState, {
@@ -618,6 +628,7 @@ export function QcRetouchQueuePage({ params, authRuntime }: ReadModelPageProps) 
     normal: createMockQcRetouchQueue
   });
   const baseState = useBackendReadModel({
+    accessToken,
     enabled: Boolean(projectId),
     idleMessage: "请先选择 projectId 加载质检 / 精修队列。",
     load: ({ baseUrl, options }) =>
@@ -654,7 +665,11 @@ export function QcRetouchQueuePage({ params, authRuntime }: ReadModelPageProps) 
   );
 }
 
-export function ReviewGalleryPage({ params, authRuntime }: ReadModelPageProps) {
+export function ReviewGalleryPage({
+  accessToken,
+  params,
+  authRuntime
+}: ReadModelPageProps) {
   const reviewSessionId = getParam(params, "reviewSessionId");
   const debugState = getReadModelDebugState(params);
   const mockData = selectDebugMock(reviewSessionId, debugState, {
@@ -663,6 +678,7 @@ export function ReviewGalleryPage({ params, authRuntime }: ReadModelPageProps) {
     normal: createMockReviewGallery
   });
   const baseState = useBackendReadModel({
+    accessToken,
     enabled: Boolean(reviewSessionId),
     idleMessage: "请先选择 reviewSessionId 加载审核画廊。",
     load: ({ baseUrl, options }) =>
@@ -702,7 +718,11 @@ export function ReviewGalleryPage({ params, authRuntime }: ReadModelPageProps) {
   );
 }
 
-export function DeliveryReadinessPage({ params, authRuntime }: ReadModelPageProps) {
+export function DeliveryReadinessPage({
+  accessToken,
+  params,
+  authRuntime
+}: ReadModelPageProps) {
   const deliveryId = getParam(params, "deliveryId");
   const debugState = getReadModelDebugState(params);
   const mockData = selectDebugMock(deliveryId, debugState, {
@@ -711,6 +731,7 @@ export function DeliveryReadinessPage({ params, authRuntime }: ReadModelPageProp
     normal: createMockDeliveryReadiness
   });
   const baseState = useBackendReadModel({
+    accessToken,
     enabled: Boolean(deliveryId),
     idleMessage: "请先选择 deliveryId 加载交付就绪。",
     load: ({ baseUrl, options }) =>

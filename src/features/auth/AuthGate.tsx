@@ -13,6 +13,8 @@ interface AuthGateProps {
   auth: AuthState;
   runtime: AuthRuntimeView;
   currentRoute: AppRoute;
+  onLogin?: () => void;
+  onLogout?: () => void;
   pageAccess: PageAccess;
   children: ReactNode;
 }
@@ -66,22 +68,44 @@ function AuthStatePage({
   );
 }
 
-function SignedOutGate({ runtime }: { runtime: AuthRuntimeView }) {
+function SignedOutGate({
+  onLogin,
+  runtime
+}: {
+  onLogin?: () => void;
+  runtime: AuthRuntimeView;
+}) {
   return (
     <AuthStatePage
       runtime={runtime}
       statusLabel="未登录"
-      subtitle="当前阶段：前端只读驾驶舱，不启用生产认证。"
+      subtitle={
+        runtime.source === "backend"
+          ? "请使用 Auth0 登录以访问只读驾驶舱。"
+          : "当前阶段：前端只读驾驶舱，不启用生产认证。"
+      }
       title="请登录以访问命令中心。"
     >
-      <button aria-disabled="true" className="status-action" disabled type="button">
+      <button
+        aria-disabled={onLogin ? undefined : "true"}
+        className="status-action"
+        disabled={!onLogin}
+        onClick={onLogin}
+        type="button"
+      >
         登录
       </button>
     </AuthStatePage>
   );
 }
 
-function ExpiredSessionGate({ runtime }: { runtime: AuthRuntimeView }) {
+function ExpiredSessionGate({
+  onLogin,
+  runtime
+}: {
+  onLogin?: () => void;
+  runtime: AuthRuntimeView;
+}) {
   return (
     <AuthStatePage
       runtime={runtime}
@@ -89,7 +113,13 @@ function ExpiredSessionGate({ runtime }: { runtime: AuthRuntimeView }) {
       subtitle="您的登录会话已过期。请重新认证以继续操作。"
       title="会话已过期"
     >
-      <button aria-disabled="true" className="status-action" disabled type="button">
+      <button
+        aria-disabled={onLogin ? undefined : "true"}
+        className="status-action"
+        disabled={!onLogin}
+        onClick={onLogin}
+        type="button"
+      >
         重新登录
       </button>
     </AuthStatePage>
@@ -188,16 +218,18 @@ export function AuthGate({
   auth,
   runtime,
   currentRoute,
+  onLogin,
+  onLogout,
   pageAccess,
   children
 }: AuthGateProps) {
   switch (auth.session) {
     case "no-auth":
-      return <SignedOutGate runtime={runtime} />;
+      return <SignedOutGate onLogin={onLogin} runtime={runtime} />;
     case "loading":
       return <AuthLoadingGate runtime={runtime} />;
     case "expired":
-      return <ExpiredSessionGate runtime={runtime} />;
+      return <ExpiredSessionGate onLogin={onLogin} runtime={runtime} />;
     case "error":
       return <AuthErrorGate runtime={runtime} />;
     case "forbidden":
@@ -210,16 +242,41 @@ export function AuthGate({
       );
     case "insufficient-role":
       if (pageAccess === "full") {
-        return <>{children}</>;
+        return (
+          <>
+            {children}
+            {onLogout ? (
+              <button className="auth-session-action" onClick={onLogout} type="button">
+                退出
+              </button>
+            ) : null}
+          </>
+        );
       }
 
       return (
-        <InsufficientRoleOverlay access={pageAccess} role={auth.role}>
-          {children}
-        </InsufficientRoleOverlay>
+        <>
+          <InsufficientRoleOverlay access={pageAccess} role={auth.role}>
+            {children}
+          </InsufficientRoleOverlay>
+          {onLogout ? (
+            <button className="auth-session-action" onClick={onLogout} type="button">
+              退出
+            </button>
+          ) : null}
+        </>
       );
     case "signed-in":
-      return <>{children}</>;
+      return (
+        <>
+          {children}
+          {onLogout ? (
+            <button className="auth-session-action" onClick={onLogout} type="button">
+              退出
+            </button>
+          ) : null}
+        </>
+      );
   }
 }
 

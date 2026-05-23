@@ -47,6 +47,7 @@ export interface BackendReadModelState<T> {
 }
 
 interface UseBackendReadModelOptions<T> {
+  accessToken?: string | null;
   enabled?: boolean;
   idleMessage: string;
   load: (runtime: BackendReadModelRuntime) => Promise<T>;
@@ -71,7 +72,23 @@ function createReadyDataState(): BackendReadModelDataState {
   };
 }
 
-function getBackendReadModelRuntime(): BackendReadModelRuntime | null {
+function createBackendHeaders(accessToken: string | null): HeadersInit {
+  if (accessToken) {
+    return {
+      authorization: `Bearer ${accessToken}`
+    };
+  }
+
+  return {
+    "x-user-role": import.meta.env.VITE_BACKEND_USER_ROLE ?? "operator",
+    "x-user-name":
+      import.meta.env.VITE_BACKEND_USER_NAME ?? "Frontend Operator"
+  };
+}
+
+function getBackendReadModelRuntime(
+  accessToken: string | null
+): BackendReadModelRuntime | null {
   const baseUrl = import.meta.env.VITE_BACKEND_API_BASE_URL?.trim();
 
   if (!baseUrl) {
@@ -81,11 +98,7 @@ function getBackendReadModelRuntime(): BackendReadModelRuntime | null {
   return {
     baseUrl,
     options: {
-      headers: {
-        "x-user-role": import.meta.env.VITE_BACKEND_USER_ROLE ?? "operator",
-        "x-user-name":
-          import.meta.env.VITE_BACKEND_USER_NAME ?? "Frontend Operator"
-      }
+      headers: createBackendHeaders(accessToken)
     }
   };
 }
@@ -124,6 +137,7 @@ function createRuntimeView({
 }
 
 export function useBackendReadModel<T>({
+  accessToken = null,
   enabled = true,
   idleMessage,
   load,
@@ -161,7 +175,7 @@ export function useBackendReadModel<T>({
       };
     }
 
-    const runtime = getBackendReadModelRuntime();
+    const runtime = getBackendReadModelRuntime(accessToken);
 
     if (!runtime) {
       if (mockData) {
@@ -285,7 +299,7 @@ export function useBackendReadModel<T>({
     return () => {
       isCurrent = false;
     };
-  }, [...deps, enabled, idleMessage, reloadToken, classifyData]);
+  }, [...deps, accessToken, enabled, idleMessage, reloadToken, classifyData]);
 
   return {
     ...state,

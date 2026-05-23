@@ -34,7 +34,23 @@ export class BackendCommandCenterClient implements CommandCenterReadClient {
   }
 }
 
-function createCommandCenterClient(): CommandCenterReadClient {
+function createBackendHeaders(accessToken: string | null): HeadersInit {
+  if (accessToken) {
+    return {
+      authorization: `Bearer ${accessToken}`
+    };
+  }
+
+  return {
+    "x-user-role": import.meta.env.VITE_BACKEND_USER_ROLE ?? "operator",
+    "x-user-name":
+      import.meta.env.VITE_BACKEND_USER_NAME ?? "Frontend Operator"
+  };
+}
+
+export function createCommandCenterClient(
+  accessToken: string | null = null
+): CommandCenterReadClient {
   const backendBaseUrl = import.meta.env.VITE_BACKEND_API_BASE_URL?.trim();
 
   if (!backendBaseUrl) {
@@ -43,13 +59,6 @@ function createCommandCenterClient(): CommandCenterReadClient {
 
   return new BackendCommandCenterClient({
     baseUrl: backendBaseUrl,
-    headers: {
-      "x-user-role": import.meta.env.VITE_BACKEND_USER_ROLE ?? "operator",
-      "x-user-name":
-        import.meta.env.VITE_BACKEND_USER_NAME ?? "Frontend Operator"
-    }
+    headers: createBackendHeaders(accessToken)
   });
 }
-
-export const commandCenterClient: CommandCenterReadClient =
-  createCommandCenterClient();

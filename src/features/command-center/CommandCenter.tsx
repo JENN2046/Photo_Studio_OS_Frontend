@@ -556,12 +556,14 @@ function CommandCenterStateSurface({
 }
 
 export function CommandCenter({
+  accessToken,
   authRuntime
 }: {
+  accessToken: string | null;
   authRuntime: AuthRuntimeView;
 }) {
   const { snapshot, status, errorMessage, debugState, canRetry, retry, runtime } =
-    useCommandCenterSnapshot();
+    useCommandCenterSnapshot(accessToken);
   const activeScene = useCommandCenterScene();
   useCommandCenterAnchorScroll(status);
 

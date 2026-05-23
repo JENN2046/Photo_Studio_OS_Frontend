@@ -89,6 +89,7 @@ $lockSummary = $lockRootJson | ConvertFrom-Json
 $lockRoot = $lockSummary.root
 
 $expectedDependencies = [ordered]@{
+  "@auth0/auth0-react" = "^2.17.0"
   "react" = "^19.0.0"
   "react-dom" = "^19.0.0"
 }
