@@ -9,8 +9,8 @@ Update this whenever work stops, pauses, blocks, or completes a meaningful batch
 ## Handoff Summary
 
 ```text
-Status: complete-candidate
-Result: Batch B/C is browser-validated locally. Batch A was committed as 07e0e08. Current work refreshes board facts and hardens the read-only QA matrix with Command Center Golden Loop entry-click checks plus 1024px middle viewport coverage.
+Status: LOCAL_FRONTEND_READY_CANDIDATE / EXTERNALLY_BLOCKED
+Result: Recent Route Phase 0-1 closeout passed locally on tracked HEAD 37af0d8 plus the current closeout diff. Residual frontend owner-role wording is normalized, `summary-only` is explicitly presentation-only, and the requested validation quartet is green.
 ```
 
 ---
@@ -42,23 +42,11 @@ main
 ## Worktree State
 
 ```text
-Branch main was clean after local commit 4cc1539.
-Branch main was clean after local commit ea67bc1.
-Branch main was clean after local commit d68fdcf.
-Branch main was clean after local commit ab11292.
-Branch main was clean after local commit 96ef6ad.
-Branch main was clean after local commit 6d33e17.
-Branch main was clean after local commit 32ab2f6.
-Branch main was clean after local commit e3bd271.
-Branch main was clean after local commit 60b74a1.
-Branch main was clean after local commit 1184d7d.
-Branch main was clean after local commit fc6b2a0.
-Branch main was clean after local commit 6605681.
-Branch main was clean after local commit 320b086.
-Branch main was clean after local commit 8c6b37d.
-Branch main was clean after local commit aad1371.
-Branch main was clean after local commit 07e0e08.
-Current batch intentionally edits Batch B/C docs/scripts/.agent_board after local commit 07e0e08.
+Branch: main
+Tracked HEAD: 37af0d8
+Current closeout batch intentionally edits 11 tracked files across .agent_board, auth docs, README.md, and src\features\auth\authTypes.ts.
+Protected untracked files remain: .claude/, .mcp.json, .omc/.
+No local dev server remains listening on 127.0.0.1:5173 after qa:readonly cleanup.
 ```
 
 ---
@@ -176,6 +164,13 @@ scripts/qa-readonly-interactions.ps1
 ## Validation
 
 ```text
+Current Recent Route Phase 0-1 closeout:
+- npm run lint passed.
+- npm run build passed.
+- powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1 passed after one narrow wording fix for static QA compatibility.
+- npm run qa:readonly passed after starting a temporary local Vite server on 127.0.0.1:5173.
+- The temporary local Vite server was stopped after QA completed.
+
 Previous P1 slice:
 - npm run lint: passed
 - npm run build: passed
@@ -373,9 +368,10 @@ Current Batch B/C QA hardening:
 
 ```text
 No npm test script is defined.
-No backend live integration request is planned for this mock-first UI batch.
-Full Bash helper validation awaits a compatible bash/WSL Node 20.19+ or 22.12+ environment and Rollup optional native package availability; the helper now reports that blocker before npm gates.
-No push is authorized for local commits after the last explicit push, including 07e0e08 and the current Batch B/C work, until the user explicitly asks for push.
+No staging/backend-platform signoff was run in this closeout batch.
+No real auth provider/session/role-claim/backend enforcement evidence was run in this closeout batch.
+Full Bash helper validation still awaits a compatible bash/WSL Node 20.19+ or 22.12+ environment and Rollup optional native package availability; the helper now reports that blocker before npm gates.
+No push/tag/deploy is authorized.
 ```
 
 ---
@@ -407,7 +403,9 @@ no
 ## Blockers
 
 ```text
-Full Bash validation helper execution is blocked by the current bash/WSL Node 18.19.1 toolchain and missing Rollup optional native package. PowerShell validation remains the validated local path; Bash now fails early with a readable preflight.
+External only:
+- staging/backend-platform signoff remains unverified
+- real auth provider/session/role-claim/backend enforcement evidence remains unverified
 ```
 
 ---
@@ -415,7 +413,7 @@ Full Bash validation helper execution is blocked by the current bash/WSL Node 18
 ## Human Decisions Needed
 
 ```text
-none for the next safe local frontend slice.
+Provide an approved staging backend URL and fixture expectations, or provide verified auth/backend enforcement evidence, or intentionally keep the frontend in local-ready / externally-blocked state.
 ```
 
 ---
@@ -423,7 +421,7 @@ none for the next safe local frontend slice.
 ## Next Safe Action
 
 ```text
-Next safe action: run final validation for the approved local backend signoff evidence update, then commit locally only if requested or guarded auto-commit conditions are met. Wait for explicit push approval.
+Next safe action: wait for approved staging/auth evidence intake or a new safe local-only frontend task. No further local closeout implementation is required.
 ```
 
 ---
@@ -434,10 +432,11 @@ Next safe action: run final validation for the approved local backend signoff ev
 你现在在 A:\Photo_Studio_OS_Frontend。
 
 读取 AGENTS.md 和 .agent_board/*。
-继续 A4-Sustained Local Frontend Autopilot。
-先验证当前 repo reality，再从 .agent_board/TASK_QUEUE.md 的 Batch B/C read-only QA matrix hardening 队列继续。
+确认当前状态是 LOCAL_FRONTEND_READY_CANDIDATE / EXTERNALLY_BLOCKED。
+先验证 repo reality，再检查是否已经提供 approved staging backend URL 或 verified auth/backend enforcement evidence。
+如果没有外部证据，就不要继续扩 scope；只接受新的安全本地前端任务。
 保持 mock-first/read-only，不碰 backend、root control repo、依赖、.env、deploy、生产服务、上传/下载/auth/storage/write actions。
-按当前持续推进节奏，小批次验证后可以本地 commit；push 只有用户明确说 push 才执行。
+push 只有用户明确说 push 才执行。
 用中文汇报。
 ```
 
@@ -461,7 +460,7 @@ Completed local evidence:
 - npm run qa:internal-pilot shortcut committed in 1e7e216.
 
 Remaining external blockers:
-- Staging/backend-owner acceptance is still needed if local-only backend read evidence is not enough for the pilot.
+- Staging/backend-platform acceptance is still needed if local-only backend read evidence is not enough for the pilot.
 - Real auth provider/session/role-claim and backend enforcement evidence is required before final internal-pilot signoff.
 
 Safe next action after this batch:
@@ -502,4 +501,41 @@ Not covered:
 Next safe action:
 - If an approved staging backend URL is provided, run npm run qa:internal-pilot through scripts\qa-internal-pilot-readiness.ps1 with -ApprovedBackendEnvironment staging and -ApprovedBackendBaseUrl.
 - If auth/backend enforcement evidence is provided, verify it before filling docs\design\FRONTEND_V2_INTERNAL_PILOT_SIGNOFF_RECORD.md.
+```
+
+---
+
+## HANDOFF-20260522-RECENT-ROUTE-CLOSEOUT
+
+```text
+Status: LOCAL_FRONTEND_READY_CANDIDATE / EXTERNALLY_BLOCKED
+Tracked HEAD: 37af0d8
+Current diff: 11 tracked closeout files plus protected untracked .claude/, .mcp.json, .omc/
+
+What changed:
+- Refreshed .agent_board current-state wording to LOCAL_FRONTEND_READY_CANDIDATE / EXTERNALLY_BLOCKED.
+- Normalized residual frontend owner-role wording to admin/operator language.
+- Clarified `summary-only` as a frontend presentation rehearsal posture, not backend authorization.
+- Preserved business responsibility fields named owner; they are product data, not role names.
+
+Validation:
+- npm run lint: passed
+- npm run build: passed
+- powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1: passed after one narrow wording fix
+- npm run qa:readonly: passed after starting a temporary local Vite server on 127.0.0.1:5173
+- Temporary Vite server was stopped after QA
+
+Still blocked externally:
+- approved staging/backend-platform read signoff
+- real auth provider/session/role-claim/backend enforcement evidence
+
+Safe next action:
+- Wait for approved staging/auth evidence, or accept a new safe local-only frontend task.
+
+Hard boundaries:
+- No backend edits
+- No root control repo edits
+- No dependency or `.env` changes
+- No push/tag/deploy
+- No auth implementation, upload/download, or production URL usage
 ```

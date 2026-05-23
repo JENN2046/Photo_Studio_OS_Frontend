@@ -42,7 +42,7 @@ Important context:
 Command:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment local -ApprovedBackendBaseUrl http://127.0.0.1:3001/api/v2/read -ApprovedBackendUserRole owner -ApprovedBackendUserName "Studio Owner" -ApprovedBackendAssetInboxExpectedReadModelState partial -ApprovedBackendQcRetouchExpectedReadModelState empty -ApprovedBackendDeliveryReadinessExpectedReadModelState empty
+powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment local -ApprovedBackendBaseUrl http://127.0.0.1:3001/api/v2/read -ApprovedBackendUserRole operator -ApprovedBackendUserName "Studio Operator" -ApprovedBackendAssetInboxExpectedReadModelState partial -ApprovedBackendQcRetouchExpectedReadModelState empty -ApprovedBackendDeliveryReadinessExpectedReadModelState empty
 ```
 
 Result:

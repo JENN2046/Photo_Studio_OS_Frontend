@@ -9,7 +9,7 @@ Codex should update this only when it cannot safely continue.
 ## Active Blockers
 
 ```text
-BLOCKER-20260515-01: Approved local/staging backend URL gate is locally satisfied; staging/backend-owner read signoff remains external.
+BLOCKER-20260515-01: Approved local/staging backend URL gate is locally satisfied; staging/backend-platform read signoff remains external.
 BLOCKER-20260515-02: Real auth provider/backend enforcement evidence is required before Studio Operator Internal Pilot Ready can be signed off.
 ```
 
@@ -18,11 +18,11 @@ BLOCKER-20260515-02: Real auth provider/backend enforcement evidence is required
 Status: partially resolved locally; active for staging/external signoff
 Detected during: Internal pilot goal audit
 Task: S2 Backend Read Integration signoff
-Reason: Local mock-backend smoke and guarded signoff scripts exist. The approved local backend base URL `http://127.0.0.1:3001/api/v2/read` passed signoff on 2026-05-15, but staging/backend-owner signoff is still external.
+Reason: Local mock-backend smoke and guarded signoff scripts exist. The approved local backend base URL `http://127.0.0.1:3001/api/v2/read` passed signoff on 2026-05-15, but staging/backend-platform signoff is still external.
 Hard stop gate: Do not guess backend URLs, edit `.env`, use production endpoints, or include credentials in commands.
 Files involved: `scripts\qa-backend-read-signoff.ps1`, `scripts\qa-internal-pilot-readiness.ps1`, `docs\design\FRONTEND_V2_INTERNAL_PILOT_GOAL_AUDIT.md`
 Validation state: local mock-backend read smoke is covered; approved local backend read signoff passed; staging backend read signoff is not run.
-Why Codex stopped: staging/backend-owner signoff still requires an approved staging URL or owner evidence.
+Why Codex stopped: staging/backend-platform signoff still requires an approved staging URL or external evidence owner confirmation.
 Required human decision: provide approved staging backend fixtures, or explicitly accept local backend evidence for the internal pilot.
 Safe next action: run `scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment staging -ApprovedBackendBaseUrl <approved-staging-url>` after the staging URL is provided.
 Rollback or cleanup path: local backend validation processes were stopped; no frontend repo cleanup needed.

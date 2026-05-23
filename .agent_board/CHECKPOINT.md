@@ -9,11 +9,11 @@ Codex should update this after each meaningful batch of local frontend work.
 ## Latest Checkpoint
 
 ```text
-Status: complete-candidate
-Updated: 2026-05-07 19:42 +0800
+Status: LOCAL_FRONTEND_READY_CANDIDATE / EXTERNALLY_BLOCKED
+Updated: 2026-05-22 16:35 +0800
 Repo: Photo_Studio_OS_Frontend
 Mode: A4-Sustained Local Frontend Autopilot
-Mission: P3.6/P3.7 Read-only QA Matrix Hardening Batch
+Mission: Recent Route Phase 0-1 Closeout
 ```
 
 ---
@@ -25,10 +25,10 @@ Fill from actual command output.
 ```text
 Workspace: A:\Photo_Studio_OS_Frontend
 Branch: main
-Worktree: intentionally editing Batch B/C docs/scripts/.agent_board after local 07e0e08
-Diff stat: QA fixture/scripts, README.md, FRONTEND_V2_GAP_MAP.md, and .agent_board
+Worktree: closeout edits across .agent_board, auth docs, README.md, and src\features\auth\authTypes.ts on tracked HEAD 37af0d8; untracked .claude/, .mcp.json, and .omc/ remain protected
+Diff stat: 11 tracked files changed for closeout wording and board refresh
 Package manager: npm with package-lock.json
-Available scripts: dev, build, lint, preview
+Available scripts: dev, build, lint, preview, qa:readonly, qa:internal-pilot
 ```
 
 Recommended commands:
@@ -392,7 +392,7 @@ bash scripts/validate-local.sh cannot complete full validation in the current ba
 ## Remaining Safe Tasks
 
 ```text
-Next safe local P3 slice can continue after committing Batch B/C.
+No additional local closeout task is required. Next safe work is approved staging/auth evidence intake or a user-directed frontend-only slice.
 ```
 
 ---
@@ -400,7 +400,9 @@ Next safe local P3 slice can continue after committing Batch B/C.
 ## Blockers
 
 ```text
-none
+External only:
+- staging/backend-platform read signoff remains unverified
+- real auth provider/session/role-claim/backend enforcement evidence remains unverified
 ```
 
 ---
@@ -408,12 +410,11 @@ none
 ## Remaining Risks
 
 ```text
-No known uncommitted user-owned changes at the start of this run.
-Live backend toggle still requires configuring VITE_BACKEND_API_BASE_URL and running the backend stack.
-The QA script uses transient npx @playwright/cli execution and does not change dependency manifests.
-The boundary-state QA script uses transient npx @playwright/cli execution and does not change dependency manifests.
-The centralized QA fixture is local only and does not alter backend contracts or production IDs.
-The Bash validation helper source is updated, but full Bash execution is environment-blocked until bash/WSL Node matches Vite's required version range.
+No known user-owned tracked changes were overwritten; only protected untracked .claude/, .mcp.json, and .omc/ remain.
+Local closeout validation is green, but staging/backend-platform signoff and real auth/backend enforcement evidence remain external.
+qa:readonly requires a temporary local dev server; the closeout run started Vite on 127.0.0.1:5173 and stopped it afterward.
+The QA scripts use transient npx @playwright/cli execution and do not change dependency manifests.
+The Bash helper remains environment-limited in bash/WSL Node 18.19.1, but the PowerShell validation path passed.
 ```
 
 ---
@@ -421,7 +422,7 @@ The Bash validation helper source is updated, but full Bash execution is environ
 ## Next Safe Task
 
 ```text
-Run final validation; commit Batch B/C locally if checks are green, then stop at remote push boundary.
+Wait for an approved staging backend URL or verified auth/backend enforcement evidence. Otherwise no further local closeout step is needed.
 ```
 
 ---
@@ -433,7 +434,7 @@ Read AGENTS.md.
 Read .agent_board/TASK_QUEUE.md.
 Read this CHECKPOINT.md.
 Verify repository reality.
-Continue from Next Safe Task if no hard stop gate is present.
+Treat the frontend as LOCAL_FRONTEND_READY_CANDIDATE / EXTERNALLY_BLOCKED and continue only from the next external-evidence intake or a new safe local-only task.
 ```
 
 ---
@@ -522,6 +523,56 @@ Remote actions: none
 Next safe task:
 - Commit this docs-only evidence refresh if diff/secret checks remain green, then continue local-only gap audit.
 Resume note:
+- Push/tag/deploy remain unauthorized.
+- Protect untracked .claude/, .mcp.json, and .omc/.
+```
+
+---
+
+## CHECKPOINT-20260522-RECENT-ROUTE-CLOSEOUT
+
+```text
+Status: COMPLETED_VALIDATED
+Completed task queue items:
+- Refreshed .agent_board closeout state to LOCAL_FRONTEND_READY_CANDIDATE / EXTERNALLY_BLOCKED.
+- Normalized residual frontend owner-role references to current admin/operator wording.
+- Clarified `summary-only` as a frontend presentation rehearsal posture, not backend authorization.
+- Preserved business-field `owner` labels for read-only responsibility data instead of renaming product content.
+- Re-ran the requested local validation quartet on the current closeout diff.
+
+Changed files:
+- .agent_board/BLOCKERS.md
+- .agent_board/CHECKPOINT.md
+- .agent_board/HANDOFF.md
+- .agent_board/RUN_STATE.md
+- .agent_board/TASK_QUEUE.md
+- .agent_board/VALIDATION_LOG.md
+- README.md
+- docs\design\FRONTEND_V2_AUTH_BACKEND_ENFORCEMENT_SIGNOFF.md
+- docs\design\FRONTEND_V2_AUTH_ROLE_STATE_DESIGN.md
+- docs\design\FRONTEND_V2_GAP_MAP.md
+- docs\design\FRONTEND_V2_INTERNAL_PILOT_LOCAL_VALIDATION_LOG.md
+- src\features\auth\authTypes.ts
+
+Validation run:
+- npm run lint: passed
+- npm run build: passed
+- powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1: passed after one narrow wording fix for static QA compatibility
+- npm run qa:readonly: passed after starting a temporary local Vite server on 127.0.0.1:5173
+
+Validation not run:
+- No npm test script is defined.
+- No staging/backend-platform signoff was run.
+- No real auth provider/session/role-claim/backend enforcement evidence was run.
+
+Stop gate reached: yes
+Reason:
+- The remaining work is external evidence intake, not safe local implementation.
+Remote actions: none
+Next safe task:
+- Wait for an approved staging backend URL or verified auth/backend enforcement evidence.
+Resume note:
+- Vite dev server used for qa:readonly was stopped after the run.
 - Push/tag/deploy remain unauthorized.
 - Protect untracked .claude/, .mcp.json, and .omc/.
 ```

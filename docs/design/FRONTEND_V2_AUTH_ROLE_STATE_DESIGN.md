@@ -19,7 +19,7 @@ This document defines the role matrix, session state machine, page-role visibili
 
 | Role | Identifier | Description | Primary surfaces |
 |---|---|---|---|
-| Admin / Owner | `admin` | Full read access to all read-only surfaces. Future: manage users, configure studio. | All |
+| Admin | `admin` | Full read access to all read-only surfaces. Future: manage users, configure studio. | All |
 | Studio Operator | `operator` | Day-to-day production oversight. Owns project execution, risk, approvals. | Command Center, all read-model pages |
 | Photographer | `photographer` | Capture One export, asset intake, shot requirement binding. | Asset Inbox, limited Command Center |
 | Retoucher | `retoucher` | Retouch task queue, revision tracking, reference assets. | QC / Retouch, Asset Inbox |
@@ -85,6 +85,7 @@ Key:
 - `Full` — All visible content, selection, and navigation.
 - `Read` — View content; write actions remain disabled (read-only posture).
 - `Summary-only` — Gauge cluster and summary cards only; no detail drill-down.
+  This is a frontend presentation rehearsal state, not backend authorization.
 - `-` — Page not accessible; navigation entry hidden or disabled.
 
 ## Auth State UI Components
@@ -209,7 +210,7 @@ URL hash → identify page
       → role forbidden: render forbidden state
 ```
 
-Frontend enforcement is presentation-only. Backend must independently enforce permissions on every read/write endpoint.
+Frontend enforcement is presentation-only. Backend must independently enforce permissions on every read/write endpoint. Any `summary-only` surface is still a backend-enforced access decision, not a frontend-side authorization grant.
 
 ## Stop Gates
 

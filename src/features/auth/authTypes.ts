@@ -44,6 +44,8 @@ export type AppRoute =
   | "review-gallery"
   | "delivery-readiness";
 
+// `summary-only` is a frontend presentation rehearsal posture for partial
+// visibility. It never stands in for server-side permission checks.
 export type PageAccess = "full" | "read" | "summary-only" | "none";
 
 const FULL: PageAccess = "full";

@@ -1027,9 +1027,9 @@ Notes:
 
 Task: Run approved local backend read signoff and aggregate internal-pilot QA against the real local backend.
 Commands run:
-- powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName local -BackendBaseUrl http://127.0.0.1:3001/api/v2/read -BackendUserRole owner -BackendUserName "Studio Owner" -AssetInboxExpectedReadModelState partial -QcRetouchExpectedReadModelState empty -DeliveryReadinessExpectedReadModelState empty
+- powershell -ExecutionPolicy Bypass -File scripts\qa-backend-read-signoff.ps1 -EnvironmentName local -BackendBaseUrl http://127.0.0.1:3001/api/v2/read -BackendUserRole operator -BackendUserName "Studio Operator" -AssetInboxExpectedReadModelState partial -QcRetouchExpectedReadModelState empty -DeliveryReadinessExpectedReadModelState empty
 - powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-all.ps1 -BaseUrl http://127.0.0.1:5173
-- powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment local -ApprovedBackendBaseUrl http://127.0.0.1:3001/api/v2/read -ApprovedBackendUserRole owner -ApprovedBackendUserName "Studio Owner" -ApprovedBackendAssetInboxExpectedReadModelState partial -ApprovedBackendQcRetouchExpectedReadModelState empty -ApprovedBackendDeliveryReadinessExpectedReadModelState empty
+- powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1 -ApprovedBackendEnvironment local -ApprovedBackendBaseUrl http://127.0.0.1:3001/api/v2/read -ApprovedBackendUserRole operator -ApprovedBackendUserName "Studio Operator" -ApprovedBackendAssetInboxExpectedReadModelState partial -ApprovedBackendQcRetouchExpectedReadModelState empty -ApprovedBackendDeliveryReadinessExpectedReadModelState empty
 Result: passed
 Failures:
 - First aggregate attempt timed out at the outer shell timeout while qa-readonly-all.ps1 was near completion; no QA failure was observed.
@@ -1073,4 +1073,35 @@ Not validated:
 - Staging fixtures.
 Notes:
 - This batch is docs/static QA only. It does not implement auth or call external services.
+```
+
+```text
+## VALIDATION-20260522-1635
+
+Task: Recent Route Phase 0-1 closeout.
+Commands run:
+- npm run lint
+- npm run build
+- powershell -ExecutionPolicy Bypass -File scripts\validate-local.ps1
+- npm run qa:readonly
+Result: passed after one narrow wording fix and one local dev-server preflight.
+Failures:
+- First scripts\validate-local.ps1 run failed because the new explanatory wording tripped read-only source/auth static QA patterns.
+- First npm run qa:readonly run failed because no local frontend server was reachable at http://127.0.0.1:5173.
+Fix attempted:
+- Reworded the new auth/access clarification so it preserves the existing static QA boundary phrases without matching source-level auth-header scans.
+- Started a temporary local Vite server with npm run dev on 127.0.0.1:5173 for qa:readonly and stopped it after the run.
+Re-run result:
+- scripts\validate-local.ps1 passed.
+- npm run qa:readonly passed route, boundary-state, interaction, and auth-state matrices.
+Not validated:
+- No npm test script is defined.
+- No staging/backend-platform signoff was run.
+- Real auth provider/session/role-claim/backend enforcement evidence remains external.
+Notes:
+- Closeout keeps the frontend at LOCAL_FRONTEND_READY_CANDIDATE / EXTERNALLY_BLOCKED.
+- `summary-only` is now documented as a frontend presentation rehearsal posture, not backend authorization.
+- Residual frontend owner-role wording was normalized to the current admin/operator language; business-field owner labels were preserved.
+- A final post-handoff scripts\validate-local.ps1 rerun also passed after CHECKPOINT/HANDOFF refresh.
+- No backend code, root control repo, dependency, `.env`, push, tag, deploy, upload/download, or production URL changes were made.
 ```

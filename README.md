@@ -444,7 +444,8 @@ DEV-only auth state boundary rehearsals:
 
 The default role is `operator` (full access). Auth gates are display-only; they
 do not implement production authentication, store tokens, or replace backend
-authorization.
+authorization. The `summary-only` posture is a frontend presentation rehearsal
+for partial access, not proof of backend authorization.
 
 These rehearsals are local UI states. They do not enable uploads, downloads,
 public links, auth, storage, backend writes, or production access.

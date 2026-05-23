@@ -13,5 +13,8 @@ Thumbs.db
 *.tsbuildinfo
 .vscode/
 .idea/
+.claude/
+.omc/
+.mcp.json
 *.swp
 *.swo

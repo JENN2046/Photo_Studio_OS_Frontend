@@ -50,7 +50,7 @@ Forbidden evidence:
 
 | Frontend role | Identifier | Required backend/platform evidence |
 |---|---|---|
-| Admin / Owner | `admin` | Maps from approved owner/admin claim; read access to all read-model endpoints is backend-enforced. |
+| Admin | `admin` | Maps from approved admin or privileged internal claim; read access to all read-model endpoints is backend-enforced. |
 | Studio Operator | `operator` | Maps from approved operator claim; read access to all internal read-model endpoints is backend-enforced. |
 | Photographer | `photographer` | Maps from approved photographer claim; Asset Inbox access and restricted internal surfaces are backend-enforced. |
 | Retoucher | `retoucher` | Maps from approved retoucher claim; QC / Retouch and allowed Asset Inbox access are backend-enforced. |
@@ -101,8 +101,9 @@ Before any signoff row can be marked complete:
 2. No secret or credential-bearing value may be copied into this repo.
 3. Backend enforcement must be described as backend-owned.
 4. Frontend route gates must remain presentation-only.
-5. The signoff record decision must remain `Not signed off` until every required owner has approved.
-6. Push, tag, deploy, release, production auth, upload, download, public review, public delivery, storage, and business writes remain out of scope.
+5. Any `summary-only` posture must be treated as a frontend rehearsal of partial visibility, never as backend authorization proof.
+6. The signoff record decision must remain `Not signed off` until every required owner has approved.
+7. Push, tag, deploy, release, production auth, upload, download, public review, public delivery, storage, and business writes remain out of scope.
 
 ## Stop Conditions
 
