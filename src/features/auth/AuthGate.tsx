@@ -139,7 +139,15 @@ function AuthLoadingGate({ runtime }: { runtime: AuthRuntimeView }) {
   );
 }
 
-function AuthErrorGate({ runtime }: { runtime: AuthRuntimeView }) {
+function AuthErrorGate({
+  message,
+  onLogin,
+  runtime
+}: {
+  message?: string;
+  onLogin?: () => void;
+  runtime: AuthRuntimeView;
+}) {
   return (
     <AuthStatePage
       runtime={runtime}
@@ -147,7 +155,21 @@ function AuthErrorGate({ runtime }: { runtime: AuthRuntimeView }) {
       subtitle="认证服务暂时不可用。请在几分钟后重试。"
       title="认证服务不可用"
     >
-      {null}
+      {message ? (
+        <div className="status-message-bar">
+          <span className="status-message-label">错误详情</span>
+          <strong>{message}</strong>
+        </div>
+      ) : null}
+      <button
+        aria-disabled={onLogin ? undefined : "true"}
+        className="status-action"
+        disabled={!onLogin}
+        onClick={onLogin}
+        type="button"
+      >
+        重试登录
+      </button>
     </AuthStatePage>
   );
 }
@@ -231,7 +253,13 @@ export function AuthGate({
     case "expired":
       return <ExpiredSessionGate onLogin={onLogin} runtime={runtime} />;
     case "error":
-      return <AuthErrorGate runtime={runtime} />;
+      return (
+        <AuthErrorGate
+          message={auth.message}
+          onLogin={onLogin}
+          runtime={runtime}
+        />
+      );
     case "forbidden":
       return (
         <ForbiddenGate

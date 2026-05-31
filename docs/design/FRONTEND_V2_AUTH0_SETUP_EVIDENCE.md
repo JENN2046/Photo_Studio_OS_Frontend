@@ -1,6 +1,6 @@
 # Frontend v2 Auth0 Setup Evidence
 
-Date: 2026-05-23
+Date: 2026-06-01
 Repo: `A:\Photo_Studio_OS_Frontend`
 Related task: `T129-003 Auth0 Tenant And App Setup Checklist`
 
@@ -14,9 +14,30 @@ values.
 | Field | Status |
 |---|---|
 | Auth0 setup evidence decision | Provided |
-| Live frontend login verified | Not verified |
-| Backend Auth0 smoke verified | Not verified |
+| Live frontend login verified | Verified locally 2026-06-01 |
+| Backend Auth0 smoke verified | Verified locally 2026-06-01 |
 | Raw token recorded | No |
+
+## Local Live Smoke Result
+
+Local Auth0 smoke was completed on 2026-06-01 with sanitized evidence only.
+
+| Field | Evidence |
+|---|---|
+| Environment | local |
+| Frontend origin | `http://127.0.0.1:5173` |
+| Backend base URL | `http://127.0.0.1:3001/api/v1` |
+| API audience | `https://photo-studio-os-api` |
+| User-delegated API access | Granted to `Photo Studio OS Frontend` |
+| Raw token recorded | No |
+| Token cleanup | `TOKEN_CLEARED` |
+| Auth source | `auth0` |
+| Provider | `auth0` |
+| Role claim | `owner` |
+| RBAC probe: reviews:read | expected `200`, actual `200`, decision `allowed`, passed `true` |
+| RBAC probe: projects:write | expected `200`, actual `200`, decision `allowed`, passed `true` |
+| Smoke exit status | `0` |
+| Result | `AUTH0_LIVE_SMOKE_PASSED` |
 
 ## Non-Secret Values To Record
 
@@ -63,9 +84,10 @@ retoucher
 client_reviewer
 ```
 
-## Evidence To Bring Back
+## Evidence Recorded
 
-When the Auth0 dashboard setup is complete, update only the table above with:
+The Auth0 dashboard setup is complete for local smoke. The recorded non-secret
+evidence is:
 
 ```text
 tenant domain: present or sanitized domain value
@@ -94,10 +116,11 @@ credential-bearing screenshots
 
 ## Next Gate
 
-T129-005 can start only after:
+The next gate is not production readiness. Before staging or production auth
+signoff, the project still needs:
 
-- this evidence is updated with the non-secret setup status;
-- the frontend runs with approved local Auth0 env values supplied outside the
-  repo;
-- a real frontend login session can produce a temporary access token for the
-  current shell process only.
+- an approved non-production staging Backend URL;
+- a staging Auth0 smoke with no raw token recorded;
+- backend-owned role enforcement evidence for read-model endpoints in staging;
+- explicit production auth, deploy, and release approval before any production
+  use.

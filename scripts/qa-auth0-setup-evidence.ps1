@@ -1,8 +1,6 @@
 # Photo Studio OS Auth0 setup evidence QA.
 # Safe local static check only. This script verifies that the Auth0 setup
-# evidence sheet exists, remains sanitized, and does not claim live smoke before
-# external setup evidence is recorded without claiming live frontend/backend
-# smoke before those checks run.
+# evidence sheet exists, records local live smoke status, and remains sanitized.
 
 $ErrorActionPreference = "Stop"
 
@@ -57,8 +55,8 @@ function Assert-FileNotContains {
 $evidencePath = "docs\design\FRONTEND_V2_AUTH0_SETUP_EVIDENCE.md"
 
 Assert-FileContains -Path $evidencePath -Pattern "Auth0 setup evidence decision\s*\|\s*Provided" -Label "setup evidence decision is recorded"
-Assert-FileContains -Path $evidencePath -Pattern "Live frontend login verified\s*\|\s*Not verified" -Label "live frontend login remains unverified"
-Assert-FileContains -Path $evidencePath -Pattern "Backend Auth0 smoke verified\s*\|\s*Not verified" -Label "backend Auth0 smoke remains unverified"
+Assert-FileContains -Path $evidencePath -Pattern "Live frontend login verified\s*\|\s*Verified locally 2026-06-01" -Label "live frontend login local verification is recorded"
+Assert-FileContains -Path $evidencePath -Pattern "Backend Auth0 smoke verified\s*\|\s*Verified locally 2026-06-01" -Label "backend Auth0 smoke local verification is recorded"
 Assert-FileContains -Path $evidencePath -Pattern "Raw token recorded\s*\|\s*No" -Label "raw token not recorded"
 Assert-FileContains -Path $evidencePath -Pattern "dev-2n3z8xing6eekyok\.us\.auth0\.com" -Label "Auth0 tenant domain is recorded"
 Assert-FileContains -Path $evidencePath -Pattern "1rU1X0nHkjrvpg043fS5GasaSpQBt8C9" -Label "SPA client ID is recorded"
@@ -69,8 +67,13 @@ Assert-FileContains -Path $evidencePath -Pattern "https://photo-studio-os/role" 
 Assert-FileContains -Path $evidencePath -Pattern "owner" -Label "owner smoke role is documented"
 Assert-FileContains -Path $evidencePath -Pattern "retoucher" -Label "retoucher smoke role is documented"
 Assert-FileContains -Path $evidencePath -Pattern "client_reviewer" -Label "client reviewer smoke role is documented"
+Assert-FileContains -Path $evidencePath -Pattern "AUTH0_LIVE_SMOKE_PASSED" -Label "Auth0 live smoke passed status is recorded"
+Assert-FileContains -Path $evidencePath -Pattern "TOKEN_CLEARED" -Label "temporary token cleanup is recorded"
+Assert-FileContains -Path $evidencePath -Pattern 'reviews:read.+expected `200`, actual `200`, decision `allowed`, passed `true`' -Label "reviews read RBAC evidence is recorded"
+Assert-FileContains -Path $evidencePath -Pattern 'projects:write.+expected `200`, actual `200`, decision `allowed`, passed `true`' -Label "projects write RBAC evidence is recorded"
+Assert-FileContains -Path $evidencePath -Pattern 'Smoke exit status\s*\|\s*`0`' -Label "smoke command exit status is recorded"
 
-$sensitivePattern = "(?i)(AUTH0_ACCESS_TOKEN\s*=|Bearer\s+eyJ|client_secret\s*[:=]|AUTH0_CLIENT_SECRET\s*=|password\s*[:=]\s*['""][^'""]{6,}|eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)"
+$sensitivePattern = '(?i)(AUTH0_ACCESS_TOKEN\s*=|Bearer\s+eyJ|client_secret\s*[:=]|AUTH0_CLIENT_SECRET\s*=|password\s*[:=]\s*[''"][^''"]{6,}|eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)'
 Assert-FileNotContains -Path $evidencePath -Pattern $sensitivePattern -Label "credential-bearing Auth0 evidence"
 
 Write-Host "== Photo Studio OS Auth0 setup evidence QA =="
