@@ -127,7 +127,7 @@ $docFiles = @(
   git ls-files "README.md" "docs/**/*.md"
 ) | Where-Object { $_ -and (Test-Path -LiteralPath $_ -PathType Leaf) }
 
-$nonLocalUrlPattern = "https?://(?!(127\.0\.0\.1|localhost|example\.com|photo-studio-os-api)([:/]|$))"
+$nonLocalUrlPattern = 'https?://(?!(127\.0\.0\.1|localhost|example\.com|photo-studio-os-api|photo-studio-os)(?=$|[^A-Za-z0-9.-]))'
 $urlMatches = @()
 if ($docFiles.Count -gt 0) {
   $urlMatches = @(Select-String -Path $docFiles -Pattern $nonLocalUrlPattern)

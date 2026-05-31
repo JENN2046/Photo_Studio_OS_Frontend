@@ -98,8 +98,11 @@ foreach ($rule in $rules) {
         $normalizedPath.EndsWith("/src/api/client.ts") -or
         $normalizedPath.EndsWith("/src/features/read-models/useBackendReadModel.ts")
       )
+    $isApprovedAuthClaimNamespace =
+      $rule.Name -eq "external-http-url" -and
+      $match.Line -match "https://photo-studio-os/(organization_id|role)"
 
-    if ($isApprovedAuthBridge) {
+    if ($isApprovedAuthBridge -or $isApprovedAuthClaimNamespace) {
       continue
     }
 
