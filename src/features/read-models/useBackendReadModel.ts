@@ -89,9 +89,11 @@ function createBackendHeaders(accessToken: string | null): HeadersInit {
 function getBackendReadModelRuntime(
   accessToken: string | null
 ): BackendReadModelRuntime | null {
-  const baseUrl = import.meta.env.VITE_BACKEND_API_BASE_URL?.trim();
+  const baseUrl = import.meta.env.VITE_BACKEND_API_BASE_URL?.trim() ?? "";
 
-  if (!baseUrl) {
+  // 同源部署：空串也返回 runtime（baseUrl 为空串，请求走同源相对路径）
+  // 仅当环境变量显式设置为 "mock" 时才返回 null（走 mock/missing-config）
+  if (baseUrl === "mock") {
     return null;
   }
 
