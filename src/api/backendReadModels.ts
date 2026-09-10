@@ -1,3 +1,4 @@
+import { resolveBackendRuntime } from "./backendRuntime";
 import type {
   ApprovalType,
   CommandCenterSnapshot,
@@ -426,6 +427,8 @@ function createReadModelUrl(
   path: string,
   query: object
 ): string {
+  const runtime = resolveBackendRuntime(baseUrl);
+  if (runtime.source === "mock") throw new Error("显式模拟模式不发起后端读取。");
   const searchParams = new URLSearchParams();
 
   Object.entries(query).forEach(([key, value]) => {
@@ -435,7 +438,7 @@ function createReadModelUrl(
   });
 
   const queryString = searchParams.toString();
-  return `${baseUrl.replace(/\/$/, "")}${path}${
+  return `${runtime.baseUrl.replace(/\/$/, "")}${path}${
     queryString ? `?${queryString}` : ""
   }`;
 }

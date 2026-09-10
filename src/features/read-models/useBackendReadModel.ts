@@ -1,3 +1,4 @@
+import { resolveBackendRuntime } from "../../api/backendRuntime";
 import { useEffect, useState, type DependencyList } from "react";
 import type { BackendReadModelRequestOptions } from "../../api/backendReadModels";
 import { ReadModelHttpError } from "../../api/backendReadModels";
@@ -89,16 +90,14 @@ function createBackendHeaders(accessToken: string | null): HeadersInit {
 function getBackendReadModelRuntime(
   accessToken: string | null
 ): BackendReadModelRuntime | null {
-  const baseUrl = import.meta.env.VITE_BACKEND_API_BASE_URL?.trim() ?? "";
+  const runtime = resolveBackendRuntime(import.meta.env.VITE_BACKEND_API_BASE_URL);
 
-  // 同源部署：空串也返回 runtime（baseUrl 为空串，请求走同源相对路径）
-  // 仅当环境变量显式设置为 "mock" 时才返回 null（走 mock/missing-config）
-  if (baseUrl === "mock") {
+  if (runtime.source === "mock") {
     return null;
   }
 
   return {
-    baseUrl,
+    baseUrl: runtime.baseUrl,
     options: {
       headers: createBackendHeaders(accessToken)
     }
@@ -190,7 +189,7 @@ export function useBackendReadModel<T>({
           runtime: createRuntimeView({
             source: "mock",
             sourceLabel: "本地模拟",
-            transportLabel: "后端未配置"
+            transportLabel: "显式模拟模式"
           }),
           retry
         });
@@ -203,13 +202,13 @@ export function useBackendReadModel<T>({
       setState({
         data: null,
         status: "missing-config",
-        message: "未配置 VITE_BACKEND_API_BASE_URL。",
+        message: "显式模拟模式未提供此视图的模拟数据。",
         errorMessage: null,
         canRetry: false,
         runtime: createRuntimeView({
           source: "missing-config",
-          sourceLabel: "未配置",
-          transportLabel: "VITE_BACKEND_API_BASE_URL 缺失"
+          sourceLabel: "模拟数据缺失",
+          transportLabel: "显式模拟模式"
         }),
         retry
       });

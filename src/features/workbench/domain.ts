@@ -1,3 +1,4 @@
+import { resolveBackendRuntime } from "../../api/backendRuntime";
 import type { Collections, SpecField, Reference } from "./types";
 
 export const FIELD_KEYS = ["intent", "identity", "structure", "material", "color", "composition", "lighting", "styling", "scene", "camera", "textPolicy", "acceptanceCriteria"] as const;
@@ -7,9 +8,10 @@ export const SCORE_KEYS = ["subject_fidelity", "composition", "lighting", "mater
 export const FAILURE_CODES = ["SUBJECT_DRIFT", "MATERIAL_PLASTICITY", "COMPOSITION_IMBALANCE", "DETAIL_OR_ANATOMY_ARTIFACT", "COMMERCIAL_UNFITNESS"] as const;
 export const COLLECTION_NAMES = ["recipes", "evaluations", "scratchpads", "explorationAttempts", "candidates", "grants", "operations", "localMediaRecipes", "mediaResults"] as const;
 export function isUuid(value: string): boolean { return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value); }
-export function apiBaseFromReadBase(value: string, pageOrigin: string): string {
-  if (!value.trim()) throw new Error("尚未配置后端读取地址。");
-  const base = new URL(value, pageOrigin);
+export function apiBaseFromReadBase(value: string | undefined, pageOrigin: string): string {
+  const runtime = resolveBackendRuntime(value);
+  if (runtime.source === "mock") throw new Error("显式模拟模式不提供真实工作台读写。");
+  const base = new URL(runtime.baseUrl, pageOrigin);
   if (!/^https?:$/.test(base.protocol) || base.username || base.password || base.search || base.hash) throw new Error("后端地址格式无效。");
   if (!/^\/api\/v2\/read\/?$/.test(base.pathname)) throw new Error("后端读取地址须以 /api/v2/read 结尾。");
   return `${base.origin}/api/v1`;

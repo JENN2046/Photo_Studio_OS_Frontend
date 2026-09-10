@@ -88,3 +88,20 @@ Live dashboard gauges render backend values with the existing SVG dial and visib
 readout. Missing readiness displays “未提供” with no needle or status dot. Baked numeric
 reference textures are reserved for explicitly marked mock presentation and are never
 rendered or requested by the live dashboard. SVG definitions use unique React instance IDs.
+
+## Same-origin runtime reconciliation
+
+An omitted, empty, or whitespace-only `VITE_BACKEND_API_BASE_URL` selects the
+same-origin backend: read models use `/api/v2/read` and workbench commands use
+`/api/v1`. Only the explicit value `mock` selects synthetic reads; it never creates
+a workbench transport, even with an otherwise valid token and role. An explicit
+`/api/v2/read` or absolute HTTP(S) read URL remains supported. The workbench rejects
+unexpected paths, credentials, query strings and fragments; its page origin is
+passed to the resolver rather than read at module initialization.
+
+The same runtime classifier drives read-client selection and dashboard source labels,
+so successful same-origin reads use dynamic live gauges and backend errors cannot
+be labeled or rendered as mock. This address resolution does not grant identity or
+permissions: real workbench commands still require the existing Bearer, authenticated
+runtime and owner posture, with the backend enforcing authorization. Historic docs
+that describe an unset API address as mock-default do not apply to this behavior.

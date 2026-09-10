@@ -13,12 +13,18 @@ cards. Reuse the existing authentication boundary; mock or DEV roles never grant
 live write authority. Ordinary scoped implementation, dependencies, and local
 validation may proceed in an isolated checkout without overwriting existing work.
 
-This repository's remote is public. S6 authorization covers local implementation,
-validation, and reviewable local delivery; public push or PR publication requires
-the owner's specific authorization. Do not copy private project links, local
-private paths, full private governance documents, credentials, or unrelated
-history into a prospective public diff. No production deployment or real-provider
-activation is authorized by this scope note.
+This repository's remote is public. Jenn's durable
+[Frontend Development Git Delivery Envelope R1](docs/governance/PHOTO_STUDIO_FRONTEND_DEVELOPMENT_GIT_DELIVERY_ENVELOPE_R1.md)
+now authorizes bounded development pushes, PRs, review/CI repairs and eligible
+development-main merges without per-operation approval. It supersedes the older
+public-push and remote-operation micro-gates below for this admitted scope.
+Verify remote/base/head identity, scoped diff, validation and review before
+delivery. Preserve unrelated original-workspace changes. Do not copy private
+project links, local private paths, full private governance documents, credentials
+or unrelated history into the public diff. Production deployment, public product
+release and real-provider activation remain outside this authority. After S6
+delivery, close Linux engineering delivery and enter Windows 11 acceptance under
+the envelope's explicit environment gate.
 
 Version: Final v1.0. Focus: sustained local autopilot, explicit task decomposition, no-churn control, checkpoint handoff, and Command Center Alpha completion criteria.
 

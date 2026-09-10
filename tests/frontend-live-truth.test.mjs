@@ -210,3 +210,20 @@ test('only explicit mock gauge presentation renders baked numeric textures; defa
   const mock=renderToStaticMarkup(React.createElement(GaugeCluster,{studio:snapshot.studio,coverage:snapshot.coverage,qc:snapshot.qc,presentation:'mock'}));
   assert.equal((mock.match(/class="gauge-reference-image"/g)||[]).length,3);
 });
+
+test('one runtime classifier makes only explicit mock synthetic; omitted and blank base remain backend', () => {
+  const {resolveBackendRuntime}=load('src/api/backendRuntime.ts');
+  for(const value of [undefined,'','  '])assert.deepEqual(resolveBackendRuntime(value),{source:'backend',baseUrl:'/api/v2/read'});
+  for(const value of ['mock',' mock '])assert.deepEqual(resolveBackendRuntime(value),{source:'mock',baseUrl:null});
+  assert.deepEqual(resolveBackendRuntime('https://studio.invalid/api/v2/read/'),{source:'backend',baseUrl:'https://studio.invalid/api/v2/read/'});
+});
+test('actual read fetch uses same-origin API prefix, preserves explicit base, and rejects mock before requests', async () => {
+  const {fetchCommandCenterV2Snapshot}=load('src/api/backendReadModels.ts');
+  const originalFetch=globalThis.fetch;const urls=[];
+  try {
+    globalThis.fetch=async url=>{urls.push(url);return new Response(JSON.stringify({data:fixture()}),{status:200});};
+    for(const value of [undefined,'','  ']) {const result=await fetchCommandCenterV2Snapshot(value);assert.equal(result.coverage.skuCoveragePercent,67);assert.equal(urls.at(-1),'/api/v2/read/command-center/v2');}
+    for(const value of ['/api/v2/read','https://studio.invalid/api/v2/read/']){await fetchCommandCenterV2Snapshot(value);assert.equal(urls.at(-1),value.replace(/\/$/,'')+'/command-center/v2');}
+    const before=urls.length;await assert.rejects(fetchCommandCenterV2Snapshot('mock'),/模拟/);assert.equal(urls.length,before);
+  } finally {globalThis.fetch=originalFetch;}
+});

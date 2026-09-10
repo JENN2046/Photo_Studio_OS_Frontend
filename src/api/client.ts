@@ -1,3 +1,4 @@
+import { resolveBackendRuntime } from "./backendRuntime";
 import { commandCenterMock } from "../mocks/commandCenter.mock";
 import { fetchCommandCenterV2Snapshot } from "./backendReadModels";
 import type { CommandCenterSnapshot } from "./types";
@@ -51,16 +52,14 @@ function createBackendHeaders(accessToken: string | null): HeadersInit {
 export function createCommandCenterClient(
   accessToken: string | null = null
 ): CommandCenterReadClient {
-  const backendBaseUrl = import.meta.env.VITE_BACKEND_API_BASE_URL?.trim() ?? "";
+  const runtime = resolveBackendRuntime(import.meta.env.VITE_BACKEND_API_BASE_URL);
 
-  // 同源部署：空串也走 BackendCommandCenterClient（baseUrl 为空串，请求走同源相对路径）
-  // 仅当环境变量显式设置为 "mock" 时才走 MockCommandCenterClient
-  if (backendBaseUrl === "mock") {
+  if (runtime.source === "mock") {
     return new MockCommandCenterClient();
   }
 
   return new BackendCommandCenterClient({
-    baseUrl: backendBaseUrl,
+    baseUrl: runtime.baseUrl,
     headers: createBackendHeaders(accessToken)
   });
 }

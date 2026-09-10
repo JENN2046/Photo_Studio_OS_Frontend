@@ -40,7 +40,7 @@ test('writes require a real session posture, token and owner role; mock/debug ro
 test('read-base resolver preserves origin and only accepts the documented path without credentials/query', () => {
   assert.equal(domain.apiBaseFromReadBase(readBase, 'http://localhost'), 'http://127.0.0.1:31417/api/v1');
   assert.equal(domain.apiBaseFromReadBase('/api/v2/read/', 'https://studio.invalid'), 'https://studio.invalid/api/v1');
-  for (const value of ['', '/api/v1', '/unrelated', 'file:///api/v2/read', 'https://user:pass@studio.invalid/api/v2/read', '/api/v2/read?role=owner', '/api/v2/read#owner']) assert.throws(() => domain.apiBaseFromReadBase(value, 'https://studio.invalid'));
+  for (const value of ['mock', '/api/v1', '/unrelated', 'file:///api/v2/read', 'https://user:pass@studio.invalid/api/v2/read', '/api/v2/read?role=owner', '/api/v2/read#owner']) assert.throws(() => domain.apiBaseFromReadBase(value, 'https://studio.invalid'));
 });
 test('command client supplies Bearer only, forbids redirects and does not use cookies/dev-role headers', async () => {
   const calls = []; const client = createWorkbenchClient(readBase, 'http://localhost', fixtureToken, true, async (...args) => { calls.push(args); return envelope({id}); });
@@ -137,4 +137,22 @@ test('field control uses label span without including dropdown option text in it
   const html = renderToStaticMarkup(React.createElement(Field,{label:'Project'},React.createElement('select',{},React.createElement('option',{},'Select project'))));
   const labelId = html.match(/<span id="([^"]+)">Project<\/span>/)?.[1];
   assert.ok(labelId); assert.ok(html.includes(`aria-labelledby="${labelId}"`));
+});
+
+test('blank or undefined configuration uses the same-origin command API without widening write authority', async () => {
+  for(const value of [undefined,'','  ']) {
+    assert.equal(domain.apiBaseFromReadBase(value,'https://studio.invalid'),'https://studio.invalid/api/v1');
+    const calls=[];const client=createWorkbenchClient(value,'https://studio.invalid',fixtureToken,true,async (...args)=>{calls.push(args);return envelope({id});});
+    await client.post('/projects',{});assert.equal(calls[0][0],'https://studio.invalid/api/v1/projects');
+    assert.equal(calls[0][1].headers.Authorization,`Bearer ${fixtureToken}`);assert.equal(calls[0][1].credentials,'omit');
+    let deniedCalls=0;const denied=async()=>{deniedCalls++;return envelope({});};
+    await assert.rejects(createWorkbenchClient(value,'https://studio.invalid',null,true,denied).post('/projects',{}),e=>e.status===401);
+    await assert.rejects(createWorkbenchClient(value,'https://studio.invalid',fixtureToken,false,denied).post('/projects',{}),e=>e.status===403);
+    assert.equal(deniedCalls,0);
+  }
+});
+test('explicit mock never creates a real workbench transport even with a token and write posture', () => {
+  let calls=0;const fetcher=async()=>{calls++;return envelope({});};
+  for(const value of ['mock',' mock '])assert.throws(()=>createWorkbenchClient(value,'https://studio.invalid',fixtureToken,true,fetcher),/模拟/);
+  assert.equal(calls,0);
 });

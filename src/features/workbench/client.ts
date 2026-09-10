@@ -6,7 +6,7 @@ export class WorkbenchError extends Error {
   }
 }
 export interface WorkbenchClient { get<T>(path: string, signal?: AbortSignal): Promise<T>; post<T>(path: string, body: unknown): Promise<T>; media(path: string, signal: AbortSignal): Promise<Blob> }
-export function createWorkbenchClient(readBase: string, origin: string, token: string | null, writeAllowed: boolean, fetcher: typeof fetch = fetch, onUnauthorized: () => void = () => undefined): WorkbenchClient {
+export function createWorkbenchClient(readBase: string | undefined, origin: string, token: string | null, writeAllowed: boolean, fetcher: typeof fetch = fetch, onUnauthorized: () => void = () => undefined): WorkbenchClient {
   const base = apiBaseFromReadBase(readBase, origin);
   const headers = () => {
     if (!token?.trim()) throw new WorkbenchError(401);

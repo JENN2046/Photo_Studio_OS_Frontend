@@ -4,7 +4,18 @@ The locally implemented R1 Creative Workbench is available at `#creative-workben
 It reuses the existing Bearer session and preserves the Command Center composition.
 See [S6 workflow and validation boundaries](docs/design/CREATIVE_WORKBENCH_S6.md).
 The older read-only Alpha description below remains historical context; demo roles
-do not grant workbench write authority. Public publication is not part of local S6 delivery.
+do not grant workbench write authority. The current
+[development Git delivery envelope](docs/governance/PHOTO_STUDIO_FRONTEND_DEVELOPMENT_GIT_DELIVERY_ENVELOPE_R1.md)
+authorizes scoped pushes, PR review/repair and eligible development-main merges.
+Production deployment and public product release remain unauthorized.
+
+Current API selection: an empty or absent `VITE_BACKEND_API_BASE_URL` uses the
+page origin with `/api/v2/read` for read models and `/api/v1` for the Workbench.
+Only the explicit value `mock` selects simulated read models and disables the
+Workbench API client. An explicit read-base URL retains its configured origin;
+Workbench URLs must use the documented `/api/v2/read` path. Backend errors never
+silently select mock data. No token or authenticated role is inferred from this
+URL selection.
 
 Frontend cockpit for Photo Studio OS.
 
@@ -515,7 +526,10 @@ The frontend alpha may define read-only interfaces and consume mock adapters.
 It must not add `POST`, `PATCH`, `DELETE`, upload, download, auth token, storage
 provider, external review, or external delivery flows.
 
-Mock mode is the default. Optional backend read-model smoke testing is documented
+The original Alpha was mock-first. Current selection follows the S6 API rules
+at the top of this document: explicit `mock` for simulation, otherwise backend.
+Optional backend read-model smoke testing is documented
 in `docs/design/COMMAND_CENTER_READONLY_API_CONTRACT_NOTE.md` and
-`docs/design/FRONTEND_V2_BACKEND_READ_SMOKE_PLAN.md`, and only activates when
-`VITE_BACKEND_API_BASE_URL` is deliberately configured outside this repo.
+`docs/design/FRONTEND_V2_BACKEND_READ_SMOKE_PLAN.md`. Configure only an admitted
+development API or an exact-owned validation fixture; this does not authorize
+production access.

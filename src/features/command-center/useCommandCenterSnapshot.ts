@@ -1,3 +1,4 @@
+import { resolveBackendRuntime } from "../../api/backendRuntime";
 import { useEffect, useState } from "react";
 import { ReadModelHttpError } from "../../api/backendReadModels";
 import { createCommandCenterClient } from "../../api/client";
@@ -52,7 +53,7 @@ const baseLoadingState: CommandCenterSnapshotDataState = {
 };
 
 function hasBackendRuntime(): boolean {
-  return Boolean(import.meta.env.VITE_BACKEND_API_BASE_URL?.trim());
+  return resolveBackendRuntime(import.meta.env.VITE_BACKEND_API_BASE_URL).source === "backend";
 }
 
 function createRuntimeView({
@@ -114,7 +115,7 @@ function createLiveRuntimeView(
   return createRuntimeView({
     source: status === "loading" ? "initializing" : "mock",
     sourceLabel: status === "loading" ? "初始化" : "本地模拟",
-    transportLabel: status === "loading" ? "准备模拟快照" : "后端未配置"
+    transportLabel: status === "loading" ? "准备模拟快照" : "显式模拟模式"
   });
 }
 
