@@ -1,3 +1,4 @@
+import { useId } from "react";
 import type {
   CoverageSnapshot,
   QcSnapshot,
@@ -5,6 +6,7 @@ import type {
 } from "../../api/types";
 
 interface GaugeClusterProps {
+  presentation?: "mock" | "live";
   studio: StudioSnapshot;
   coverage: CoverageSnapshot;
   qc: QcSnapshot;
@@ -74,13 +76,6 @@ function getGaugeArc(radius: number, startAngle: number, endAngle: number) {
   ].join(" ");
 }
 
-function getGaugeDomId(label: string) {
-  return label
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-}
-
 function getGaugeReferenceImage(label: string, emphasis: "primary" | "secondary") {
   if (emphasis === "primary") {
     return "/reference/gauge-center.png";
@@ -96,15 +91,18 @@ function Gauge({
   value,
   caption,
   meta,
-  emphasis = "secondary"
+  emphasis = "secondary",
+  presentation
 }: {
   label: string;
-  value: number;
+  value: number | null;
   caption: string;
   meta: string;
   emphasis?: "primary" | "secondary";
+  presentation: "mock" | "live";
 }) {
-  const clampedValue = Math.max(0, Math.min(value, 100));
+  const hasValue = value !== null && Number.isFinite(value);
+  const clampedValue = hasValue ? Math.max(0, Math.min(value, 100)) : 0;
   const needleAngle =
     GAUGE_START_ANGLE + (clampedValue / 100) * GAUGE_SWEEP_ANGLE;
   const needleEnd = getGaugePoint(GAUGE_CENTER, GAUGE_PIVOT_Y, 82, needleAngle);
@@ -114,8 +112,8 @@ function Gauge({
     18,
     needleAngle + 180
   );
-  const displayValue = `${Number.isInteger(clampedValue) ? clampedValue : clampedValue.toFixed(1)}%`;
-  const gaugeDomId = getGaugeDomId(label);
+  const displayValue = hasValue ? `${Number.isInteger(clampedValue) ? clampedValue : clampedValue.toFixed(1)}%` : "未提供";
+  const gaugeDomId = `gauge-${useId().replace(/[^A-Za-z0-9_-]/g, "")}`;
   const faceGradientId = `${gaugeDomId}-face-depth`;
   const grainFilterId = `${gaugeDomId}-face-grain`;
   const glassGradientId = `${gaugeDomId}-glass-sheen`;
@@ -124,16 +122,16 @@ function Gauge({
   const referenceImage = getGaugeReferenceImage(label, emphasis);
 
   return (
-    <article className={`gauge gauge-${emphasis} gauge-reference-texture`}>
+    <article className={`gauge gauge-${emphasis} ${presentation === "mock" ? "gauge-reference-texture" : "gauge-live-data"}`} data-presentation={presentation}>
       <div className="gauge-dial">
-        <img
+        {presentation === "mock" && <img
           alt=""
           aria-hidden="true"
           className="gauge-reference-image"
           draggable={false}
           src={referenceImage}
-        />
-        {emphasis === "primary" ? (
+        />}
+        {emphasis === "primary" && hasValue ? (
           <span className="gauge-live-dot" aria-hidden="true" />
         ) : null}
         <div className="gauge-numbers" aria-hidden="true">
@@ -151,8 +149,8 @@ function Gauge({
           <strong>{displayValue}</strong>
           {emphasis === "primary" ? (
             <em>
-              正常
-              <i aria-hidden="true" />
+              {hasValue ? "快照值" : "无指标"}
+              {hasValue && <i aria-hidden="true" />}
             </em>
           ) : null}
         </div>
@@ -275,6 +273,7 @@ function Gauge({
           </g>
           <line
             className="gauge-needle-tail"
+            visibility={hasValue ? "visible" : "hidden"}
             x1={GAUGE_CENTER}
             y1={GAUGE_PIVOT_Y}
             x2={needleTail.x}
@@ -282,6 +281,7 @@ function Gauge({
           />
           <line
             className="gauge-needle"
+            visibility={hasValue ? "visible" : "hidden"}
             x1={GAUGE_CENTER}
             y1={GAUGE_PIVOT_Y}
             x2={needleEnd.x}
@@ -311,7 +311,7 @@ function Gauge({
   );
 }
 
-export function GaugeCluster({ studio, coverage, qc }: GaugeClusterProps) {
+export function GaugeCluster({ studio, coverage, qc, presentation = "live" }: GaugeClusterProps) {
   return (
     <section className="gauge-cluster" aria-labelledby="gauge-cluster-title">
       <h1 className="sr-only" id="gauge-cluster-title">
@@ -319,19 +319,22 @@ export function GaugeCluster({ studio, coverage, qc }: GaugeClusterProps) {
       </h1>
       <div className="gauges" aria-label="工作室运营仪表">
         <Gauge
+          presentation={presentation}
           label="SKU 覆盖率"
           value={coverage.skuCoveragePercent}
           caption={`${coverage.completedSkus} / ${coverage.totalSkus}`}
           meta="已映射 SKU"
         />
         <Gauge
-          caption="项目进度"
+          presentation={presentation}
+          caption={studio.readinessPercent === null ? "后端未提供就绪度" : presentation === "mock" ? "模拟就绪度" : "快照就绪度"}
           emphasis="primary"
           label="工作室就绪度"
-          meta={`进行到第 ${studio.activeProjectCount} / 5 阶段`}
+          meta={studio.activeProjectCount === null ? "请在工作台核对生产状态" : `${studio.activeProjectCount} 个活跃项目${presentation === "mock" ? "（模拟）" : ""}`}
           value={studio.readinessPercent}
         />
         <Gauge
+          presentation={presentation}
           label="质检健康度"
           value={qc.qcHealthPercent}
           caption={`${qc.passed} / ${qc.passed + qc.flagged}`}

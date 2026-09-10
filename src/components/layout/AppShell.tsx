@@ -2,9 +2,14 @@ import { useEffect, useState, type ReactNode } from "react";
 
 interface AppShellProps {
   children: ReactNode;
+  studioName?: string;
+  snapshotAt?: string;
+  sourceLabel?: string;
+  riskSignalCount?: number;
 }
 
 const commandSurfaces = [
+  { id: "creative-workbench", href: "#creative-workbench", label: "创作工作台", icon: "target" },
   { id: "risk", href: "#risk", label: "风险雷达", icon: "grid" },
   { id: "projects", href: "#projects", label: "项目执行", icon: "target" },
   { id: "approvals", href: "#approvals", label: "审批队列", icon: "brief" },
@@ -48,7 +53,7 @@ function useRouteHash() {
   return routeHash;
 }
 
-export function AppShell({ children }: AppShellProps) {
+export function AppShell({ children, studioName, snapshotAt, sourceLabel, riskSignalCount }: AppShellProps) {
   const routeHash = useRouteHash();
   const activeSurfaceHref = commandSurfaces.some(
     (surface) => surface.href === routeHash
@@ -85,17 +90,17 @@ export function AppShell({ children }: AppShellProps) {
             </a>
           ))}
         </nav>
-        <a className="rail-alert" href="#risk" aria-label="风险提醒">
+        <a className="rail-alert" href="#risk" aria-label={riskSignalCount === undefined ? "风险项数量未提供" : `风险信号 ${riskSignalCount} 项`}>
           <span aria-hidden="true" className="rail-icon rail-icon-bell" />
-          <strong>3</strong>
+          <strong>{riskSignalCount ?? "—"}</strong>
         </a>
       </aside>
       <div className="command-workspace">
         <header className="topbar">
-          <div className="topbar-status" aria-label="只读运行状态">
-            <span>布鲁克林影棚 A</span>
-            <span>2026-05-05</span>
-            <span>09:30</span>
+          <div className="topbar-status" aria-label="工作区与快照来源">
+            <span>{studioName ?? "Photo Studio"}</span>
+            <span>{sourceLabel ?? "工作区"}</span>
+            <span>{snapshotAt ? `快照 ${snapshotAt}` : "快照时间未提供"}</span>
             <i aria-hidden="true" />
           </div>
         </header>

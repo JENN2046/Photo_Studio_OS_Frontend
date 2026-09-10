@@ -1,5 +1,11 @@
 # Photo Studio OS Frontend
 
+The locally implemented R1 Creative Workbench is available at `#creative-workbench`.
+It reuses the existing Bearer session and preserves the Command Center composition.
+See [S6 workflow and validation boundaries](docs/design/CREATIVE_WORKBENCH_S6.md).
+The older read-only Alpha description below remains historical context; demo roles
+do not grant workbench write authority. Public publication is not part of local S6 delivery.
+
 Frontend cockpit for Photo Studio OS.
 
 This repository is for the Command Center read-only frontend alpha.

@@ -2,6 +2,24 @@
 
 Project-level instructions for Codex working inside `Photo_Studio_OS_Frontend`.
 
+## Current admitted S6 scope
+
+The current owner instruction authorizes the R1 Creative Workbench implementation,
+including authenticated backend reads, creative commands, verified candidate
+upload/media, owner review/promotion, and bounded execution controls. The older
+Alpha-only mission below is historical for these admitted S6 changes. Preserve
+the frozen three-gauge Command Center, right Risk/Approval rail, and lower three
+cards. Reuse the existing authentication boundary; mock or DEV roles never grant
+live write authority. Ordinary scoped implementation, dependencies, and local
+validation may proceed in an isolated checkout without overwriting existing work.
+
+This repository's remote is public. S6 authorization covers local implementation,
+validation, and reviewable local delivery; public push or PR publication requires
+the owner's specific authorization. Do not copy private project links, local
+private paths, full private governance documents, credentials, or unrelated
+history into a prospective public diff. No production deployment or real-provider
+activation is authorized by this scope note.
+
 Version: Final v1.0. Focus: sustained local autopilot, explicit task decomposition, no-churn control, checkpoint handoff, and Command Center Alpha completion criteria.
 
 This file narrows the global Codex behavior for this specific frontend repository and raises local autonomy for the read-only frontend Alpha. It does not weaken global hard stop gates. If this file conflicts with actual repository files, current command output, or the user's latest instruction, repository reality and the latest instruction win inside safety boundaries.

@@ -6,7 +6,7 @@ export type WorkflowStatus =
   | "delivery"
   | "complete";
 
-export type RiskLevel = "low" | "medium" | "high";
+export type RiskLevel = "low" | "medium" | "high" | "unknown";
 
 export type ApprovalState = "waiting" | "blocked" | "cleared";
 
@@ -19,8 +19,8 @@ export interface StudioSnapshot {
   locationLabel: string;
   modeLabel: string;
   operator: string;
-  readinessPercent: number;
-  activeProjectCount: number;
+  readinessPercent: number | null;
+  activeProjectCount: number | null;
 }
 
 export interface CoverageSnapshot {
@@ -48,50 +48,51 @@ export interface WorkflowStageSummary {
 export interface ProjectSummary {
   id: string;
   name: string;
-  client: string;
-  owner: string;
+  client: string | null;
+  owner: string | null;
   status: WorkflowStatus;
-  dueDate: string;
-  skuCount: number;
-  assetCount: number;
-  reviewCount: number;
-  deliveryCount: number;
-  riskLevel: RiskLevel;
-  completionPercent: number;
+  sourceStatus?: string;
+  dueDate: string | null;
+  skuCount: number | null;
+  assetCount: number | null;
+  reviewCount: number | null;
+  deliveryCount: number | null;
+  riskLevel: RiskLevel | null;
+  completionPercent: number | null;
 }
 
 export interface SkuSummary {
   id: string;
-  projectId: string;
+  projectId: string | null;
   label: string;
   productLine: string;
   status: WorkflowStatus;
-  heroAssetId: string;
-  assetCount: number;
-  reviewState: ApprovalState;
+  heroAssetId: string | null;
+  assetCount: number | null;
+  reviewState: ApprovalState | null;
 }
 
 export interface AssetSummary {
   id: string;
-  skuId: string;
+  skuId: string | null;
   fileName: string;
-  usage: "hero" | "gallery" | "detail" | "lifestyle";
-  inspectionScore: number;
+  usage: "hero" | "gallery" | "detail" | "lifestyle" | null;
+  inspectionScore: number | null;
   status: WorkflowStatus;
 }
 
 export interface ReviewSessionSummary {
   id: string;
-  projectId: string;
+  projectId: string | null;
   label: string;
   state: ApprovalState;
-  reviewer: string;
+  reviewer: string | null;
   pendingItems: number;
 }
 
 export interface DeliveryPackageSummary {
   id: string;
-  projectId: string;
+  projectId: string | null;
   label: string;
   status: "draft" | "ready" | "sentinel";
   assetCount: number;
@@ -101,9 +102,10 @@ export interface ApprovalQueueItem {
   id: string;
   type: ApprovalType;
   title: string;
-  projectId: string;
+  projectId: string | null;
   state: ApprovalState;
-  ageHours: number;
+  ageHours: number | null;
+  priority?: string;
 }
 
 export interface RiskPulseItem {

@@ -68,7 +68,9 @@ function createRuntimeView({
     source,
     sourceLabel,
     transportLabel,
-    boundaryLabel: "mock-first / read-only"
+    boundaryLabel: source === "backend" || source === "backend-error"
+      ? "后端快照 / 本面板只读"
+      : "模拟数据 / 本面板只读"
   };
 }
 
