@@ -11,7 +11,7 @@ export function ExecutionPanel({client, prefix, unitId, recipeId, localRecipes, 
   const [planId, setPlanId] = useState(""); const [grantId, setGrantId] = useState(""); const [operationId, setOperationId] = useState("");
   const [grant, setGrant] = useState<Grant | null>(null); const [operation, setOperation] = useState<Operation | null>(null); const [control, setControl] = useState<LocalControl | null>(null);
   const historyEpoch = useRef(0);
-  const historyRequests = useRef<{ entries?: object; events?: object }>({});
+  const historyRequests = useRef<{ entries?: {abort: AbortController}; events?: {abort: AbortController} }>({});
   const historyContext = useRef({client, prefix, unitId, grantId, operationId, refresh});
   if (historyContext.current.client !== client || historyContext.current.prefix !== prefix || historyContext.current.unitId !== unitId || historyContext.current.grantId !== grantId || historyContext.current.operationId !== operationId || historyContext.current.refresh !== refresh) historyContext.current = {client, prefix, unitId, grantId, operationId, refresh};
   const historyScope = historyContext.current;
@@ -37,7 +37,7 @@ export function ExecutionPanel({client, prefix, unitId, recipeId, localRecipes, 
     return () => abort.abort();
   }, [client, prefix, grantId, operationId, refresh, tick, detailsKey]);
   useEffect(() => { setOperation(null); setGrant(null); setReconcileId(""); setTaskRef(""); setStopConfirmation(null); }, [grantId, operationId]);
-  useEffect(() => { historyEpoch.current += 1; historyRequests.current = {}; setEntries(null); setEvents(null); setHistoryError(""); historyReadyScope.current = historyScope; }, [historyScope]);
+  useEffect(() => { historyEpoch.current += 1; historyRequests.current = {}; setEntries(null); setEvents(null); setHistoryError(""); historyReadyScope.current = historyScope; return () => { Object.values(historyRequests.current).forEach(request => request?.abort.abort()); }; }, [historyScope]);
   useEffect(() => {
     const timer = window.setInterval(() => { if (!document.hidden && (operation?.attempts?.some(attempt => !attempt.settledAt) || control?.pool.busy)) setTick(value => value + 1); }, 4000);
     return () => window.clearInterval(timer);
@@ -54,12 +54,14 @@ export function ExecutionPanel({client, prefix, unitId, recipeId, localRecipes, 
   const requestHistory = async (kind: "entries" | "events", more: boolean) => {
     if (historyContext.current !== historyScope || historyReadyScope.current !== historyScope) return;
     if (more && historyRequests.current[kind]) return;
-    const request = {}; historyRequests.current[kind] = request;
+    historyRequests.current[kind]?.abort.abort(); const request = {abort: new AbortController()}; historyRequests.current[kind] = request;
+    let timedOut = false; let timer: ReturnType<typeof setTimeout>; let onAbort: () => void;
+    const deadline = new Promise<never>((_, reject) => { onAbort = () => reject(new DOMException("历史读取已取消。", "AbortError")); request.abort.signal.addEventListener("abort", onAbort, {once: true}); timer = setTimeout(() => { timedOut = true; reject(new Error("历史读取超时，请重新读取。")); request.abort.abort(); }, 30000); });
     setHistoryError(""); const epoch = historyEpoch.current; const prior = kind === "entries" ? entries : events;
     const path = kind === "entries" ? `${prefix}/execution-grants/${grantId}/budget-entries` : `${prefix}/execution-operations/${operationId}/events`;
-    try { const next = await client.get<Page<BudgetEntry & ExecutionEvent>>(`${path}?limit=25${more && prior?.nextCursor ? `&cursor=${encodeURIComponent(prior.nextCursor)}` : ""}`); if (historyContext.current !== historyScope || epoch !== historyEpoch.current || historyRequests.current[kind] !== request) return; const merged = {...next, items: more ? [...(prior?.items ?? []), ...next.items] : next.items}; if (kind === "entries") setEntries(merged as Page<BudgetEntry>); else setEvents(merged as Page<ExecutionEvent>); }
-    catch (error) { if (historyContext.current === historyScope && epoch === historyEpoch.current && historyRequests.current[kind] === request) setHistoryError(error instanceof Error ? error.message : "历史读取失败。"); }
-    finally { if (historyContext.current === historyScope && historyRequests.current[kind] === request) delete historyRequests.current[kind]; }
+    try { const next = await Promise.race([client.get<Page<BudgetEntry & ExecutionEvent>>(`${path}?limit=25${more && prior?.nextCursor ? `&cursor=${encodeURIComponent(prior.nextCursor)}` : ""}`, request.abort.signal), deadline]); if (request.abort.signal.aborted || historyContext.current !== historyScope || epoch !== historyEpoch.current || historyRequests.current[kind] !== request) return; const merged = {...next, items: more ? [...(prior?.items ?? []), ...next.items] : next.items}; if (kind === "entries") setEntries(merged as Page<BudgetEntry>); else setEvents(merged as Page<ExecutionEvent>); }
+    catch (error) { if ((!request.abort.signal.aborted || timedOut) && historyContext.current === historyScope && epoch === historyEpoch.current && historyRequests.current[kind] === request) setHistoryError(error instanceof Error ? error.message : "历史读取失败。"); }
+    finally { clearTimeout(timer!); request.abort.signal.removeEventListener("abort", onAbort!); request.abort.abort(); if (historyContext.current === historyScope && historyRequests.current[kind] === request) delete historyRequests.current[kind]; }
   };
   return <Panel title="执行授权、预算与本地 Worker">
     <p>每次执行须先明确授权、创建操作并预留预算。关闭页面或请求超时不代表 Worker 已停止。</p>

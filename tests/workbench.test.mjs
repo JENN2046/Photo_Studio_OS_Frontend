@@ -311,3 +311,57 @@ test('an old client timeout frees shared admission for a new client without retr
   await assert.rejects(active,error=>error.name==='TimeoutError');assert.equal(await (await pending).text(),'fresh');
   assert.equal(oldSignal.aborted,true);assert.equal(oldCalls,1);assert.equal(newCalls,1);
 });
+
+test('POST timeout bounds a noncooperative fetch and ignores its late unauthorized response without retrying', async t => {
+  t.mock.timers.enable({apis:['setTimeout']});
+  let resolveFetch,requestSignal,calls=0,unauthorized=0,settled=false;
+  const client=createWorkbenchClient(readBase,'http://localhost',fixtureToken,true,async (_url,options)=>{
+    calls++;requestSignal=options.signal;return new Promise(resolve=>{resolveFetch=resolve;});
+  },()=>unauthorized++);
+  const pending=client.post('/projects',{});pending.then(()=>{settled=true;},()=>{settled=true;});
+  t.mock.timers.tick(29999);await mediaFlush();assert.equal(settled,false);assert.equal(requestSignal.aborted,false);
+  t.mock.timers.tick(1);await assert.rejects(pending,error=>error instanceof WorkbenchError&&error.status===0&&error.uncertain);
+  assert.equal(requestSignal.aborted,true);assert.equal(calls,1);
+  resolveFetch(new Response('late failure',{status:401}));await mediaFlush();assert.equal(unauthorized,0);assert.equal(calls,1);
+});
+test('the POST deadline covers 201 response-body consumption using the original request budget', async t => {
+  t.mock.timers.enable({apis:['setTimeout']});
+  let resolveFetch,resolveBody,requestSignal,calls=0,jsonCalls=0,published=false;
+  const client=createWorkbenchClient(readBase,'http://localhost',fixtureToken,true,async (_url,options)=>{
+    calls++;requestSignal=options.signal;return new Promise(resolve=>{resolveFetch=resolve;});
+  });
+  const form=new FormData();form.append('file',new Blob(['synthetic']), 'fixture.png');
+  const pending=client.post('/projects/candidates',form);pending.then(()=>{published=true;},()=>{});
+  t.mock.timers.tick(20000);resolveFetch({status:201,ok:true,json(){jsonCalls++;return new Promise(resolve=>{resolveBody=resolve;});}});
+  await mediaFlush();assert.equal(jsonCalls,1);t.mock.timers.tick(9999);await mediaFlush();assert.equal(requestSignal.aborted,false);
+  t.mock.timers.tick(1);await assert.rejects(pending,error=>error instanceof WorkbenchError&&error.uncertain);
+  assert.equal(requestSignal.aborted,true);resolveBody({data:{id}});await mediaFlush();assert.equal(published,false);assert.equal(calls,1);
+});
+test('a cooperative POST abort error still reports an uncertain outcome and suppresses raw transport details', async t => {
+  t.mock.timers.enable({apis:['setTimeout']});let calls=0;
+  const client=createWorkbenchClient(readBase,'http://localhost',fixtureToken,true,async (_url,options)=>{
+    calls++;return new Promise((_,reject)=>options.signal.addEventListener('abort',()=>reject(new Error('raw fixture transport details')),{once:true}));
+  });
+  const pending=client.post('/projects',{});pending.catch(()=>{});t.mock.timers.tick(30000);
+  await assert.rejects(pending,error=>error instanceof WorkbenchError&&error.uncertain&&!error.message.includes('raw fixture'));assert.equal(calls,1);
+});
+test('completed POST success and known 403 or 409 clear their timers and preserve deterministic outcomes', async t => {
+  t.mock.timers.enable({apis:['setTimeout']});const signals=[];
+  for(const status of [201,403,409]){
+    const client=createWorkbenchClient(readBase,'http://localhost',fixtureToken,true,async (_url,options)=>{
+      signals.push(options.signal);return {status,ok:status===201,json(){assert.equal(status,201,'error response does not need a body to classify');return Promise.resolve({data:{id}});}};
+    });
+    if(status===201)assert.deepEqual(await client.post('/projects',{}),{id});
+    else await assert.rejects(client.post('/projects',{}),error=>error.status===status&&!error.uncertain);
+  }
+  t.mock.timers.tick(60000);await mediaFlush();assert.ok(signals.every(signal=>!signal.aborted));
+});
+test('GET keeps its caller AbortSignal and does not acquire the POST deadline', async t => {
+  t.mock.timers.enable({apis:['setTimeout']});const abort=new AbortController();let received,settled=false;
+  const client=createWorkbenchClient(readBase,'http://localhost',fixtureToken,true,async (_url,options)=>{
+    received=options.signal;return new Promise((_,reject)=>options.signal.addEventListener('abort',()=>reject(new DOMException('caller canceled','AbortError')),{once:true}));
+  });
+  const pending=client.get('/projects',abort.signal);pending.then(()=>{settled=true;},()=>{settled=true;});
+  t.mock.timers.tick(60000);await mediaFlush();assert.equal(received,abort.signal);assert.equal(settled,false);assert.equal(abort.signal.aborted,false);
+  abort.abort();await assert.rejects(pending,error=>error.name==='AbortError'&&!(error instanceof WorkbenchError));
+});
