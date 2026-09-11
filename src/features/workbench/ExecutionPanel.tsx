@@ -36,7 +36,7 @@ export function ExecutionPanel({client, prefix, unitId, recipeId, localRecipes, 
     return () => window.clearInterval(timer);
   }, [operation, control]);
   const currentPlan = localRecipes.find(item => item.id === planId);
-  const effectiveRecipeId = currentPlan?.recipeId ?? recipeId;
+  const effectiveRecipeId = planId ? currentPlan?.recipeId ?? "" : recipeId;
   const selectedAttempt = operation?.attempts?.find(item => item.id === reconcileId);
   const isLocal = selectedAttempt?.capabilityId === "local.image.resize.v1";
   const requiresTaskRef = ["attach_known_task", "confirmed_succeeded", "confirmed_failed"].includes(outcome);
@@ -50,7 +50,8 @@ export function ExecutionPanel({client, prefix, unitId, recipeId, localRecipes, 
     <p>每次执行须先明确授权、创建操作并预留预算。关闭页面或请求超时不代表 Worker 已停止。</p>
     <details><summary>创建执行授权</summary><form onSubmit={event => { event.preventDefault(); if (!effectiveRecipeId) return; void run("创建执行授权", async () => { const result = await client.post<Grant>(`${prefix}/production-units/${unitId}/execution-grants`, {recipeId: effectiveRecipeId, ...(currentPlan ? {localMediaRecipeId: currentPlan.id} : {}), startsAt: new Date(startsAt).toISOString(), expiresAt: new Date(expiresAt).toISOString(), maxAttempts, maxAttemptCredits, maxTotalCredits, maxConcurrentAttempts: 1, maxWallClockMs: wallClock, maxAdapterCallsPerAttempt: currentPlan ? 1 : 3}); setGrantId(result.id); }); }}><fieldset disabled={disabled}>
       <Field label="执行能力"><select value={planId} onChange={event => { setPlanId(event.target.value); if (event.target.value) { setMaxAttemptCredits(1); setWallClock(current => Math.min(current, 30000)); } }}><option value="">synthetic.execute · 纯合成验证</option>{localRecipes.map(plan => <option value={plan.id} key={plan.id}>local.image.resize.v1 · {plan.width}×{plan.height} · {plan.id.slice(0, 8)}</option>)}</select></Field>
-      <p>精确 Recipe <Id value={currentPlan?.recipeId ?? recipeId} />{currentPlan && <> · 输入快照 <Id value={currentPlan.inputSnapshotDigest} /></>}</p>
+      {planId && !currentPlan && <p role="status">所选本地配方不在当前已加载记录中，请加载对应记录或重新选择执行能力。</p>}
+      <p>精确 Recipe <Id value={effectiveRecipeId} />{currentPlan && <> · 输入快照 <Id value={currentPlan.inputSnapshotDigest} /></>}</p>
       <div className="wb-row"><Field label="授权开始时间"><input required type="datetime-local" value={startsAt} onChange={event => setStartsAt(event.target.value)} /></Field><Field label="授权结束时间"><input required type="datetime-local" value={expiresAt} min={startsAt} onChange={event => setExpiresAt(event.target.value)} /></Field></div>
       <div className="wb-row"><Field label="最大尝试次数"><input type="number" required min={1} max={100} value={maxAttempts} onChange={event => setMaxAttempts(Number(event.target.value))} /></Field><Field label="单次预算上限"><input type="number" required min={1} max={currentPlan ? 1 : 1000000000} value={maxAttemptCredits} onChange={event => setMaxAttemptCredits(Number(event.target.value))} /></Field><Field label="总预算上限"><input type="number" required min={1} max={1000000000} value={maxTotalCredits} onChange={event => setMaxTotalCredits(Number(event.target.value))} /></Field><Field label="执行时限 ms"><input type="number" required min={1} max={currentPlan ? 30000 : 86400000} value={wallClock} onChange={event => setWallClock(Number(event.target.value))} /></Field></div>
       <p>并发上限 1；每次最多 {currentPlan ? 1 : 3} 次适配器调用。计量单位：{currentPlan ? "local_compute_unit" : "synthetic_credit"}，不是货币。</p><button type="submit" disabled={!effectiveRecipeId}>明确创建授权</button>

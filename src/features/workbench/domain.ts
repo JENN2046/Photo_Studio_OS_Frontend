@@ -69,13 +69,16 @@ export function createScopedWriteGate() {
   let scope: object | null = null, generation = 0, revision = 0;
   let recovery: "refresh_required" | "committed_refresh" | "unknown" | null = "refresh_required";
   let pending: { scope: object; label: string } | null = null;
+  let controlPending: { scope: object; label: string } | null = null;
   return {
-    activate(next: object) { if (scope !== next) { scope = next; generation += 1; revision += 1; pending = null; recovery = "refresh_required"; } },
+    activate(next: object) { if (scope !== next) { scope = next; generation += 1; revision += 1; pending = null; controlPending = null; recovery = "refresh_required"; } },
     capture() { return scope!; },
     isCurrent(value: object) { return scope === value; },
-    snapshot() { return { generation, pending: pending?.label ?? "", recovery }; },
-    begin(value: object, label: string) { if (scope !== value || pending || recovery) return null; pending = { scope: value, label }; return pending; },
-    committed(ticket: { scope: object; label: string }) { if (scope === ticket.scope && pending === ticket) { recovery = "committed_refresh"; revision += 1; } },
+    snapshot() { return { generation, pending: pending?.label ?? "", controlPending: controlPending?.label ?? "", recovery }; },
+    begin(value: object, label: string) { if (scope !== value || pending || controlPending || recovery) return null; pending = { scope: value, label }; return pending; },
+    beginControl(value: object, label: string, mode: string) { if (scope !== value || controlPending || !["RUNNING", "PAUSED", "DRAINING"].includes(mode) || (mode === "RUNNING" && (pending || recovery))) return null; controlPending = { scope: value, label }; return controlPending; },
+    finishControl(ticket: { scope: object; label: string }) { if (scope !== ticket.scope || controlPending !== ticket) return false; controlPending = null; return true; },
+    committed(ticket: { scope: object; label: string }) { if (scope === ticket.scope && pending === ticket) { if (recovery !== "unknown") recovery = "committed_refresh"; revision += 1; } },
     unknown(value: object) { if (scope === value) { recovery = "unknown"; revision += 1; } },
     requireRefresh(value: object) { if (scope === value) { if (!recovery) recovery = "refresh_required"; revision += 1; } },
     finish(ticket: { scope: object; label: string }) { if (scope !== ticket.scope || pending !== ticket) return false; pending = null; return true; },

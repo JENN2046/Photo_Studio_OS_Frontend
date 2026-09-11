@@ -3,7 +3,7 @@ import { AppShell } from "../../components/layout/AppShell";
 import type { Role } from "../auth/authTypes";
 import type { AuthRuntimeView } from "../auth/useAuthState";
 import { WorkbenchError, createWorkbenchClient } from "./client";
-import { canWrite, isUuid, mergeCollections, SCORE_KEYS, FAILURE_CODES, evaluationScores, validateImage, canControlWorker, completeCommand, createScopedWriteGate } from "./domain";
+import { canWrite, isUuid, mergeCollections, SCORE_KEYS, FAILURE_CODES, evaluationScores, validateImage, completeCommand, createScopedWriteGate } from "./domain";
 import type { Asset, Candidate, CollectionName, Collections, Deliverable, Evaluation, ExplorationAttempt, LocalRecipe, Page, Production, Project, Recipe, RunAction, Scratchpad, Sku, SpecVersion, Unit, WorkbenchSnapshot } from "./types";
 import { Field, Id, Panel } from "./parts";
 import { SpecEditor } from "./SpecEditor";
@@ -16,22 +16,24 @@ const collectionLabels: Record<CollectionName, string> = { recipes: "Recipe", ev
 export function CreativeWorkbench({accessToken, role, authRuntime, params}: {accessToken: string | null; role: Role | null; authRuntime: AuthRuntimeView; params: URLSearchParams}) {
   const [projectId, setProjectId] = useState(() => isUuid(params.get("projectId") ?? "") ? params.get("projectId")! : "");
   const [unitId, setUnitId] = useState(() => isUuid(params.get("unitId") ?? "") ? params.get("unitId")! : "");
-  const [projects, setProjects] = useState<Project[]>([]); const [projectPage, setProjectPage] = useState(1); const [projectTotal, setProjectTotal] = useState(0);
+  const [projects, setProjects] = useState<Project[]>([]); const [projectPage, setProjectPage] = useState(0); const [projectTotal, setProjectTotal] = useState(0);
   const [production, setProduction] = useState<Production | null>(null); const [assets, setAssets] = useState<Asset[]>([]); const [skus, setSkus] = useState<Sku[]>([]);
   const [collections, setCollections] = useState<Collections>({}); const [spec, setSpec] = useState<SpecVersion | null>(null);
   const [recipeId, setRecipeId] = useState(""); const [recipe, setRecipe] = useState<Recipe | null>(null); const [scratchpadId, setScratchpadId] = useState(""); const [attemptId, setAttemptId] = useState(""); const [candidateId, setCandidateId] = useState("");
   const [refresh, setRefresh] = useState(0); const [projectLoading, setProjectLoading] = useState(false); const [unitLoading, setUnitLoading] = useState(false); const loading = projectLoading || unitLoading; const [error, setError] = useState(""); const [notice, setNotice] = useState("");
-  const controlLock = useRef<object | null>(null); const loadingRead = useRef<object | null>(null);
+  const loadingRead = useRef<object | null>(null);
   const gate = useRef(createScopedWriteGate()); const [, renderGate] = useState(0);
   const identity = useMemo(() => ({}), [accessToken, role, authRuntime.source]); const identityRef = useRef(identity); identityRef.current = identity;
   const scope = useMemo(() => ({}), [identity, projectId, unitId]); gate.current.activate(scope);
-  const {pending, recovery, generation} = gate.current.snapshot(); const uncertain = recovery === "unknown"; const stale = recovery !== null;
+  const {pending, controlPending, recovery, generation} = gate.current.snapshot(); const uncertain = recovery === "unknown"; const stale = recovery !== null;
   const [sessionFailed, setSessionFailed] = useState(false); const pageReads = useRef(new Map<CollectionName, object>()); const collectionRead = useRef<{ scope: object; revision: number } | null>(null);
   const [deliverableId, setDeliverableId] = useState(""); const [name, setName] = useState(""); const [intent, setIntent] = useState(""); const [unitName, setUnitName] = useState(""); const [subjectKind, setSubjectKind] = useState("subject"); const [subject, setSubject] = useState("");
   const [scratchTitle, setScratchTitle] = useState(""); const [file, setFile] = useState<File | null>(null); const uploadRef = useRef<HTMLInputElement>(null);
   const [width, setWidth] = useState(1024); const [height, setHeight] = useState(1024);
   const [failures, setFailures] = useState<string[]>([]); const [corrections, setCorrections] = useState("");
   const [evaluationAsset, setEvaluationAsset] = useState(""); const [scores, setScores] = useState<Record<string, string>>(Object.fromEntries(SCORE_KEYS.map(key => [key, ""]))); const [evaluation, setEvaluation] = useState<Evaluation | null>(null);
+  const [projectListLoading, setProjectListLoading] = useState(false); const [projectListError, setProjectListError] = useState(false);
+  const projectListOwner = useRef<{ page: number } | null>(null); const projectListRequest = useRef<{ abort: AbortController } | null>(null);
   const writeAllowed = canWrite(accessToken, authRuntime.source, role) && !sessionFailed;
   const clientState = useMemo(() => {
     try {
@@ -45,15 +47,31 @@ export function CreativeWorkbench({accessToken, role, authRuntime, params}: {acc
   const prefix = `/projects/${projectId}`;
   const units = production?.deliverables.flatMap(item => item.productionUnits) ?? [];
   const unit = units.find(item => item.id === unitId);
-  const busy = !writeAllowed || Boolean(pending) || stale || loading;
+  const busy = !writeAllowed || Boolean(pending) || Boolean(controlPending) || stale || loading;
   const readFailure = useCallback((error: unknown) => { if (error instanceof WorkbenchError && error.status === 401) setSessionFailed(true); setError(error instanceof Error ? error.message : "读取失败。"); }, []);
 
-  useEffect(() => { setSessionFailed(false); setProduction(null); setCollections({}); setProjects([]); setProjectPage(1); setSpec(null); setRecipe(null); setAssets([]); setSkus([]); }, [accessToken]);
+  const loadProjectPage = useCallback(async (owner: { page: number }) => {
+    if (!client || !accessToken || sessionFailed || identityRef.current !== identity || projectListOwner.current !== owner || projectListRequest.current) return;
+    const request = { abort: new AbortController() }; const pageNumber = owner.page + 1;
+    projectListRequest.current = request; setProjectListLoading(true); setProjectListError(false);
+    const isCurrent = () => !request.abort.signal.aborted && identityRef.current === identity && projectListOwner.current === owner && projectListRequest.current === request;
+    try {
+      const page = await client.get<Page<Project>>(`/projects?page=${pageNumber}&limit=50`, request.abort.signal);
+      if (!isCurrent()) return;
+      setProjects(previous => pageNumber === 1 ? page.items : [...new Map([...previous, ...page.items].map(item => [item.id, item])).values()]);
+      owner.page = pageNumber; setProjectPage(pageNumber); setProjectTotal(page.total);
+    } catch (error) { if (isCurrent()) { setProjectListError(true); readFailure(error); } }
+    finally { if (projectListRequest.current === request) { projectListRequest.current = null; setProjectListLoading(false); } }
+  }, [client, accessToken, sessionFailed, identity, readFailure]);
+  useEffect(() => { setSessionFailed(false); setProduction(null); setCollections({}); setSpec(null); setRecipe(null); setAssets([]); setSkus([]); }, [accessToken]);
   useEffect(() => {
-    const abort = new AbortController(); if (!client || !accessToken || sessionFailed) return;
-    void client.get<Page<Project>>(`/projects?page=${projectPage}&limit=50`, abort.signal).then(page => { if (abort.signal.aborted) return; setProjects(previous => projectPage === 1 ? page.items : [...new Map([...previous, ...page.items].map(item => [item.id, item])).values()]); setProjectTotal(page.total); }).catch(error => { if (!abort.signal.aborted) readFailure(error); });
-    return () => abort.abort();
-  }, [client, accessToken, projectPage, sessionFailed, readFailure]);
+    const owner = { page: 0 }; projectListOwner.current = owner;
+    setProjects([]); setProjectPage(0); setProjectTotal(0); setProjectListLoading(false); setProjectListError(false);
+    void loadProjectPage(owner);
+    return () => {
+      if (projectListOwner.current === owner) { projectListOwner.current = null; projectListRequest.current?.abort.abort(); projectListRequest.current = null; }
+    };
+  }, [loadProjectPage]);
   useEffect(() => {
     setProduction(null); setCollections({}); setSpec(null); setRecipe(null); setRecipeId(""); setScratchpadId(""); setAttemptId(""); setCandidateId(""); setAssets([]); setSkus([]); setDeliverableId("");
   }, [client, projectId]);
@@ -103,7 +121,7 @@ export function CreativeWorkbench({accessToken, role, authRuntime, params}: {acc
     }
   }, [client, projectId, prefix, unitId, accessToken, scope]);
   useEffect(() => {
-    const abort = new AbortController(); controlLock.current = null; loadingRead.current = null; pageReads.current.clear(); setNotice(""); setError(""); setProjectLoading(false); setUnitLoading(false);
+    const abort = new AbortController(); loadingRead.current = null; pageReads.current.clear(); setNotice(""); setError(""); setProjectLoading(false); setUnitLoading(false);
     void reload(false, abort.signal).catch(error => { if (!abort.signal.aborted && gate.current.isCurrent(scope)) readFailure(error); });
     return () => abort.abort();
   }, [scope, reload, readFailure]);
@@ -122,11 +140,11 @@ export function CreativeWorkbench({accessToken, role, authRuntime, params}: {acc
     } finally { if (gate.current.finish(ticket)) renderGate(value => value + 1); }
   }, [writeAllowed, scope, reload, readFailure]);
   const runControl: RunAction = useCallback(async (label, action, safeControlMode) => {
-    if (!gate.current.isCurrent(scope) || !canControlWorker(writeAllowed, gate.current.snapshot().recovery !== null, safeControlMode ?? "") || controlLock.current) return false;
-    const ticket = {}; controlLock.current = ticket;
+    if (!writeAllowed) return false; const ticket = gate.current.beginControl(scope, label, safeControlMode ?? ""); if (!ticket) return false;
+    renderGate(value => value + 1);
     try { await action(); if (gate.current.isCurrent(scope)) { setNotice(`${label}已提交，等待 Worker 停止证据。`); setRefresh(value => value + 1); } return true; }
     catch (error) { if (gate.current.isCurrent(scope)) { if (error instanceof WorkbenchError && error.uncertain) gate.current.unknown(scope); else if (error instanceof WorkbenchError && error.status === 409) gate.current.requireRefresh(scope); readFailure(error); renderGate(value => value + 1); } return false; }
-    finally { if (controlLock.current === ticket) controlLock.current = null; }
+    finally { if (gate.current.finishControl(ticket)) renderGate(value => value + 1); }
   }, [writeAllowed, scope, readFailure]);
   async function loadMore(name: CollectionName) {
     if (!client || pageReads.current.has(name)) return; const page = collections[name]; if (!page?.hasMore || !page.nextCursor) return;
@@ -144,8 +162,8 @@ export function CreativeWorkbench({accessToken, role, authRuntime, params}: {acc
 
   if (!client || !accessToken || sessionFailed) return <AppShell><main className="creative-workbench"><Panel title="创作工作台"><p role="status">{clientState.error || (sessionFailed ? "会话已失效，请使用现有登录入口重新登录。" : "真实工作台需要已有的 Bearer 会话。模拟角色只用于只读演示，不能执行创作写入。")}</p><a href="#">返回命令中心</a></Panel></main></AppShell>;
   return <AppShell><main className="creative-workbench"><header className="wb-heading"><div><p className="eyebrow">PHOTO STUDIO / CREATIVE WORKBENCH</p><h1>创作工作台</h1><p>从规格到候选，再到有凭据的正式素材。</p></div><a href="#">返回命令中心</a></header>
-    <div className="wb-status" aria-live="polite"><span>{writeAllowed ? "Owner 创作会话" : "只读会话"}</span>{pending && <strong>{pending}提交中…</strong>}{loading && <span>正在读取…</span>}{notice && <p>{notice}</p>}{error && <p role="alert">{error}</p>}{uncertain && <div><p>上一操作结果不确定。先刷新并检查记录；不会自动重复提交。</p><button disabled={Boolean(pending)} onClick={() => void reload(true).then(unlocked => { if (unlocked && gate.current.isCurrent(scope)) setNotice("已完成持久记录刷新与人工核对；新的操作须再次明确提交。"); }).catch(error => { if (gate.current.isCurrent(scope)) readFailure(error); })}>我已核对持久记录</button></div>}{recovery === "refresh_required" && projectId && <p>当前范围待刷新；普通写入保持锁定。</p>}{recovery === "committed_refresh" && <p>操作已提交，等待当前范围刷新成功；普通写入已锁定。</p>}<button disabled={Boolean(pending) || !projectId} onClick={() => void reload().catch(error => { if (gate.current.isCurrent(scope)) readFailure(error); })}>刷新持久记录</button></div>
-    <Panel title="项目与生产单元"><div className="wb-row"><Field label="项目"><select value={projectId} disabled={Boolean(pending)} onChange={event => { setProjectId(event.target.value); setUnitId(""); }}><option value="">选择项目</option>{projectId && !projects.some(item => item.id === projectId) && <option value={projectId}>{projectId}</option>}{projects.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></Field><Field label="生产单元"><select value={unitId} disabled={Boolean(pending) || !production} onChange={event => setUnitId(event.target.value)}><option value="">选择生产单元</option>{units.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></Field></div>{projects.length < projectTotal && <button onClick={() => setProjectPage(page => page + 1)}>加载更多项目</button>}
+    <div className="wb-status" aria-live="polite"><span>{writeAllowed ? "Owner 创作会话" : "只读会话"}</span>{pending && <strong>{pending}提交中…</strong>}{controlPending && <strong>{controlPending}提交中…</strong>}{loading && <span>正在读取…</span>}{notice && <p>{notice}</p>}{error && <p role="alert">{error}</p>}{uncertain && <div><p>上一操作结果不确定。先刷新并检查记录；不会自动重复提交。</p><button disabled={Boolean(pending)} onClick={() => void reload(true).then(unlocked => { if (unlocked && gate.current.isCurrent(scope)) setNotice("已完成持久记录刷新与人工核对；新的操作须再次明确提交。"); }).catch(error => { if (gate.current.isCurrent(scope)) readFailure(error); })}>我已核对持久记录</button></div>}{recovery === "refresh_required" && projectId && <p>当前范围待刷新；普通写入保持锁定。</p>}{recovery === "committed_refresh" && <p>操作已提交，等待当前范围刷新成功；普通写入已锁定。</p>}<button disabled={Boolean(pending) || !projectId} onClick={() => void reload().catch(error => { if (gate.current.isCurrent(scope)) readFailure(error); })}>刷新持久记录</button></div>
+    <Panel title="项目与生产单元"><div className="wb-row"><Field label="项目"><select value={projectId} disabled={Boolean(pending || controlPending)} onChange={event => { if (gate.current.snapshot().pending || gate.current.snapshot().controlPending) return; setProjectId(event.target.value); setUnitId(""); }}><option value="">选择项目</option>{projectId && !projects.some(item => item.id === projectId) && <option value={projectId}>{projectId}</option>}{projects.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></Field><Field label="生产单元"><select value={unitId} disabled={Boolean(pending || controlPending) || !production} onChange={event => { if (gate.current.snapshot().pending || gate.current.snapshot().controlPending) return; setUnitId(event.target.value); }}><option value="">选择生产单元</option>{units.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></Field></div>{(projects.length < projectTotal || projectListError) && <button disabled={projectListLoading} title={`加载第 ${projectPage + 1} 页项目`} onClick={() => { const owner = projectListOwner.current; if (owner) void loadProjectPage(owner); }}>{projectListError ? "重试加载项目" : "加载更多项目"}</button>}
       {production && <details><summary>建立交付项与生产单元</summary><div className="wb-columns"><form onSubmit={event => { event.preventDefault(); void run("创建交付项", async () => { const result = await client.post<Deliverable>(`${prefix}/deliverables`, {name, intent, outputKind: "image"}); setDeliverableId(result.id); setName(""); }); }}><fieldset disabled={busy}><Field label="交付项名称"><input required maxLength={160} value={name} onChange={event => setName(event.target.value)} /></Field><Field label="交付意图"><textarea maxLength={5000} value={intent} onChange={event => setIntent(event.target.value)} /></Field><button type="submit">创建交付项</button></fieldset></form>
       <form onSubmit={event => { event.preventDefault(); void run("创建生产单元", async () => { const result = await client.post<Unit>(`${prefix}/deliverables/${deliverableId}/production-units`, {name: unitName, kind: "image", subjects: [{kind: subjectKind, ...(subjectKind === "sku" ? {skuId: subject} : {subjectKey: subject}), role: "subject"}]}); setProduction(current => current ? {...current, deliverables: current.deliverables.map(item => item.id === deliverableId ? {...item, productionUnits: [...item.productionUnits.filter(unit => unit.id !== result.id), result]} : item)} : current); setUnitId(result.id); setUnitName(""); }); }}><fieldset disabled={busy}><Field label="所属交付项"><select required value={deliverableId} onChange={event => setDeliverableId(event.target.value)}><option value="">选择交付项</option>{production.deliverables.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></Field><Field label="生产单元名称"><input required maxLength={160} value={unitName} onChange={event => setUnitName(event.target.value)} /></Field><Field label="主体种类"><select value={subjectKind} onChange={event => { setSubjectKind(event.target.value); setSubject(""); }}><option value="subject">独立主体</option><option value="sku">项目 SKU</option></select></Field><Field label="主体标识">{subjectKind === "sku" ? <select required value={subject} onChange={event => setSubject(event.target.value)}><option value="">选择 SKU</option>{skus.map(item => <option value={item.id} key={item.id}>{item.code} · {item.name}</option>)}</select> : <input required pattern="[A-Za-z0-9][A-Za-z0-9._-]{0,119}" maxLength={120} value={subject} onChange={event => setSubject(event.target.value)} />}</Field><button type="submit">创建生产单元</button></fieldset></form></div></details>}
     </Panel>
@@ -166,7 +184,7 @@ export function CreativeWorkbench({accessToken, role, authRuntime, params}: {acc
       {collections.localMediaRecipes?.items.map(item => <p key={item.id}>{item.width}×{item.height} · <Id value={item.id} /> · 输入快照 <Id value={item.inputSnapshotDigest} /></p>)}
       <h3>已提交媒体结果</h3>{collections.mediaResults?.items.map(item => <p key={item.id}>结果 <Id value={item.id} /> <button onClick={() => setCandidateId(item.candidateId)}>查看输出候选</button></p>)}
     </Panel><Panel title="正式素材评估记录"><p>这里记录人工提供的评分，由既定策略计算决定；不是自动视觉巡检，也不证明素材由所选 Recipe 生成。</p><form onSubmit={event => { event.preventDefault(); void run("记录素材评估", async () => { const result = await client.post<Evaluation>(`${prefix}/workflow-recipes/${recipeId}/evaluations`, {assetId: evaluationAsset, policyVersion: "visual_quality.v1", scores: evaluationScores(scores), failureCodes: failures, correctionStrategies: corrections.split("\n").map(line => line.trim()).filter(Boolean)}); setEvaluation(result); }); }}><fieldset disabled={busy || !recipeId}><Field label="评估正式素材"><select required value={evaluationAsset} onChange={event => setEvaluationAsset(event.target.value)}><option value="">选择正式素材</option>{assets.map(item => <option key={item.id} value={item.id}>{item.originalFilename ?? item.id}</option>)}</select></Field>{SCORE_KEYS.map(key => <Field key={key} label={`${key} 分数（0–5 整数）`}><input required type="number" min={0} max={5} step={1} value={scores[key]} onChange={event => setScores(current => ({...current, [key]: event.target.value}))} /></Field>)}<Field label="已观察到的问题"><select multiple value={failures} onChange={event => setFailures(Array.from(event.target.selectedOptions).map(option => option.value))}>{FAILURE_CODES.map(code => <option key={code}>{code}</option>)}</select></Field><Field label="修正建议（每行一条，最多32条）"><textarea maxLength={16000} value={corrections} onChange={event => setCorrections(event.target.value)} /></Field><button type="submit">提交所填评分</button></fieldset></form>{evaluation && <p>计算决定：{evaluation.decision} · <Id value={evaluation.id} /></p>}{collections.evaluations?.items.map(item => <p key={item.id}>{item.decision} · <Id value={item.id} /></p>)}</Panel></div>
-    <ExecutionPanel key={generation} client={client} prefix={prefix} unitId={unit.id} recipeId={recipeId} localRecipes={collections.localMediaRecipes?.items ?? []} grants={collections.grants?.items ?? []} operations={collections.operations?.items ?? []} disabled={busy} controlDisabled={!writeAllowed} controlUncertain={stale} run={run} runControl={runControl} refresh={refresh} />
+    <ExecutionPanel key={generation} client={client} prefix={prefix} unitId={unit.id} recipeId={recipeId} localRecipes={collections.localMediaRecipes?.items ?? []} grants={collections.grants?.items ?? []} operations={collections.operations?.items ?? []} disabled={busy} controlDisabled={!writeAllowed || Boolean(controlPending)} controlUncertain={stale || Boolean(pending)} run={run} runControl={runControl} refresh={refresh} />
     <Panel title="持久集合与分页"><div className="wb-collections">{(Object.keys(collectionLabels) as CollectionName[]).map(name => { const page = collections[name]; return <div key={name}><strong>{collectionLabels[name]}</strong><span>{page ? `${page.items.length} / ${page.total}` : "未提供"}</span>{page?.hasMore && <button onClick={() => void loadMore(name)}>加载更多{collectionLabels[name]}</button>}</div>; })}</div></Panel>
     </>}
   </main></AppShell>;

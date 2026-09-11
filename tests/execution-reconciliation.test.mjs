@@ -125,7 +125,7 @@ function workbenchFixture({effectsEnabled=false}={}) {
   const state=[],refs=[],memos=[],effects=[],effectQueue=[];let cursor=0,refCursor=0,memoCursor=0,effectCursor=0;
   const projectId='00000000-0000-4000-8000-000000000011',unitId='00000000-0000-4000-8000-000000000012';
   const production={projectId,deliverables:[{id:'delivery',name:'fixture',productionUnits:[{id:unitId,name:'unit',creativeSpec:null,subjects:[]}]}]};
-  const hooks={useEffect(fn,deps){if(!effectsEnabled)return;const i=effectCursor++,old=effects[i];if(!old||deps.some((d,j)=>d!==old.deps[j])){effects[i]={deps,cleanup:old?.cleanup};effectQueue.push(()=>{effects[i].cleanup?.();effects[i].cleanup=fn();});}},useState(initial){const i=cursor++;if(!(i in state))state[i]=i===5?production:typeof initial==='function'?initial():initial;return [state[i],value=>{state[i]=typeof value==='function'?value(state[i]):value;}];},useRef(initial){const i=refCursor++;return refs[i]??=( {current:initial});},useMemo(fn,deps){const i=memoCursor++,old=memos[i];if(!old||deps.some((d,j)=>d!==old.deps[j]))memos[i]={value:fn(),deps};return memos[i].value;},useCallback(fn,deps){return hooks.useMemo(()=>fn,deps);}};
+  const hooks={useEffect(fn,deps){if(!effectsEnabled)return;const i=effectCursor++,old=effects[i];if(!old||deps.some((d,j)=>d!==old.deps[j])){effects[i]={deps,cleanup:old?.cleanup};effectQueue.push(()=>{effects[i].cleanup?.();effects[i].cleanup=fn();});}},useState(initial){const i=cursor++;if(!(i in state))state[i]=typeof initial==='function'?initial():initial;return [state[i],value=>{state[i]=typeof value==='function'?value(state[i]):value;}];},useRef(initial){const i=refCursor++;return refs[i]??=( {current:initial});},useMemo(fn,deps){const i=memoCursor++,old=memos[i];if(!old||deps.some((d,j)=>d!==old.deps[j]))memos[i]={value:fn(),deps};return memos[i].value;},useCallback(fn,deps){return hooks.useMemo(()=>fn,deps);}};
   class WorkbenchError extends Error {constructor(status,uncertain=false){super('fixture failure');this.status=status;this.uncertain=uncertain;}}
   const calls=[];let failReads=false,getHandler=null,postHandler=async()=>({id:'fixture-created'});
   const transport={async get(path,signal){calls.push({method:'GET',path,signal});if(failReads)throw new WorkbenchError(503);if(getHandler){const override=getHandler(path);if(override!==undefined)return override;}if(path.endsWith('/production'))return production;if(path.endsWith('/workbench'))return {schemaVersion:'creative_workbench.v1',projectId,productionUnitId:unitId,collections:{}};return {items:[],total:0,limit:100};},async post(path,body){calls.push({method:'POST',path,body});return postHandler(path,body);}};
@@ -327,4 +327,69 @@ test('UNKNOWN can read more from a freshly published snapshot without unlocking 
   await clickCandidatePage(ui);assert.equal(pages,0); // Pre-conflict snapshot is stale.
   await ui.click('刷新持久记录');assert.equal(ui.panel().disabled,true);
   await clickCandidatePage(ui);assert.equal(pages,1);assert.deepEqual(candidateItems(ui).map(x=>x.id),[first,second]);assert.equal(ui.panel().disabled,true);
+});
+
+test('ordinary pending blocks RUNNING while one emergency stop can overlap without clearing either ticket',async()=>{
+  const ui=workbenchFixture();await ui.click('刷新持久记录');const ordinary=deferred(),stop=deferred();
+  ui.setPostHandler(path=>path==='/allocate'?ordinary.promise:stop.promise);
+  let panel=ui.panel();const work=panel.run('ordinary in flight',()=>panel.client.post('/allocate',{}));
+  panel=ui.panel();assert.equal(panel.controlUncertain,true);assert.equal(panel.controlDisabled,false);
+  assert.equal(await panel.runControl('start',()=>panel.client.post('/start',{}),'RUNNING'),false);
+  const stopping=panel.runControl('emergency pause',()=>panel.client.post('/pause',{}),'PAUSED');
+  assert.equal(ui.panel().disabled,true);assert.equal(ui.panel().controlDisabled,true);
+  assert.equal(await ui.panel().runControl('duplicate stop',()=>panel.client.post('/drain',{}),'DRAINING'),false);
+  ordinary.resolve({id:'allocated'});assert.equal(await work,true);
+  assert.equal(ui.panel().disabled,true);assert.equal(await ui.panel().run('duplicate ordinary',()=>panel.client.post('/allocate',{})),false);
+  stop.resolve({id:'paused'});assert.equal(await stopping,true);assert.equal(ui.panel().disabled,false);
+  assert.deepEqual(ui.calls.filter(c=>c.method==='POST').map(c=>c.path),['/allocate','/pause']);
+});
+for(const mode of ['RUNNING','PAUSED','DRAINING']) {
+  test(`${mode} control in flight blocks ordinary writes and duplicate controls in the actual parent handlers`,async()=>{
+    const ui=workbenchFixture();await ui.click('刷新持久记录');const pending=deferred();ui.setPostHandler(()=>pending.promise);
+    const panel=ui.panel();const control=panel.runControl('control in flight',()=>panel.client.post('/control',{}),mode);
+    assert.equal(ui.panel().disabled,true);assert.equal(ui.panel().controlDisabled,true);
+    for(const label of ['项目','生产单元']) {
+      const select=ui.nodes(ui.render(),n=>n.props?.label===label)[0].props.children;const previous=select.props.value;
+      assert.equal(select.props.disabled,true);select.props.onChange({target:{value:'00000000-0000-4000-8000-000000000099'}});
+      assert.equal(ui.nodes(ui.render(),n=>n.props?.label===label)[0].props.children.props.value,previous);
+    }
+    assert.equal(await panel.run('ordinary',()=>panel.client.post('/allocate',{})),false);
+    assert.equal(await panel.runControl('duplicate',()=>panel.client.post('/other-control',{}),'PAUSED'),false);
+    assert.equal(ui.calls.filter(c=>c.method==='POST').length,1);
+    pending.resolve({id:'controlled'});assert.equal(await control,true);assert.equal(ui.panel().disabled,false);
+  });
+}
+test('an emergency stop UNKNOWN remains UNKNOWN when overlapping ordinary work commits; stop 409 cannot downgrade it',async()=>{
+  const ui=workbenchFixture();await ui.click('刷新持久记录');const pending=deferred();
+  ui.setPostHandler(path=>path==='/allocate'?pending.promise:Promise.reject(new ui.WorkbenchError(0,true)));
+  let panel=ui.panel();const ordinary=panel.run('ordinary',()=>panel.client.post('/allocate',{}));
+  assert.equal(await panel.runControl('uncertain stop',()=>panel.client.post('/pause',{}),'PAUSED'),false);
+  pending.resolve({id:'allocated'});assert.equal(await ordinary,true);assert.equal(ui.panel().disabled,true);
+  assert.equal(await ui.panel().runControl('start',()=>panel.client.post('/start',{}),'RUNNING'),false);
+  ui.setPostHandler(async()=>{throw new ui.WorkbenchError(409);});panel=ui.panel();
+  assert.equal(await panel.runControl('conflicted stop',()=>panel.client.post('/drain',{}),'DRAINING'),false);
+  await ui.click('刷新持久记录');assert.equal(ui.panel().disabled,true);
+  assert.equal(await ui.panel().run('duplicate ordinary',()=>panel.client.post('/allocate',{})),false);
+  await ui.click('我已核对持久记录');assert.equal(ui.panel().disabled,false);
+  assert.equal(ui.calls.filter(c=>c.path==='/allocate').length,1);
+});
+test('an old identity control completion cannot clear the newer control ticket or permit ordinary writes',async()=>{
+  const ui=workbenchFixture();await ui.click('刷新持久记录');const old=deferred(),fresh=deferred();let calls=0;
+  ui.setPostHandler(()=>++calls===1?old.promise:fresh.promise);
+  let panel=ui.panel();const prior=panel.runControl('old control',()=>panel.client.post('/old-control',{}),'PAUSED');
+  ui.props.accessToken='synthetic-next-identity';ui.render();await ui.click('刷新持久记录');
+  panel=ui.panel();const current=panel.runControl('new control',()=>panel.client.post('/new-control',{}),'PAUSED');
+  old.resolve({id:'old'});assert.equal(await prior,false);assert.equal(ui.panel().disabled,true);assert.equal(ui.panel().controlDisabled,true);
+  assert.equal(await ui.panel().run('ordinary',()=>panel.client.post('/allocate',{})),false);
+  assert.equal(await ui.panel().runControl('duplicate',()=>panel.client.post('/duplicate',{}),'PAUSED'),false);
+  fresh.resolve({id:'fresh'});assert.equal(await current,true);assert.equal(ui.panel().disabled,false);assert.equal(calls,2);
+});
+test('a selected local plan missing after reload cannot silently become a synthetic grant',async()=>{
+  const plan={id:'local-plan',recipeId:'local-recipe',inputSnapshotDigest:'synthetic-digest',width:20,height:20};
+  const ui=fixture({recipeId:'independent-synthetic-recipe',localRecipes:[plan]});ui.change('执行能力',plan.id);
+  ui.props.localRecipes=[];
+  assert.equal(ui.nodes(ui.formWithButton('明确创建授权'),n=>n.type==='button')[0].props.disabled,true);
+  await ui.submit('明确创建授权');assert.equal(ui.calls.length,0);
+  ui.change('执行能力','');assert.equal(ui.nodes(ui.formWithButton('明确创建授权'),n=>n.type==='button')[0].props.disabled,false);
+  await ui.submit('明确创建授权');assert.equal(ui.calls[0].payload.recipeId,'independent-synthetic-recipe');assert.equal('localMediaRecipeId' in ui.calls[0].payload,false);
 });
