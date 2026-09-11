@@ -21,12 +21,12 @@ export function CreativeWorkbench({accessToken, role, authRuntime, params}: {acc
   const [collections, setCollections] = useState<Collections>({}); const [spec, setSpec] = useState<SpecVersion | null>(null);
   const [recipeId, setRecipeId] = useState(""); const [recipe, setRecipe] = useState<Recipe | null>(null); const [scratchpadId, setScratchpadId] = useState(""); const [attemptId, setAttemptId] = useState(""); const [candidateId, setCandidateId] = useState("");
   const [refresh, setRefresh] = useState(0); const [projectLoading, setProjectLoading] = useState(false); const [unitLoading, setUnitLoading] = useState(false); const loading = projectLoading || unitLoading; const [error, setError] = useState(""); const [notice, setNotice] = useState("");
-  const controlLock = useRef<object | null>(null);
+  const controlLock = useRef<object | null>(null); const loadingRead = useRef<object | null>(null);
   const gate = useRef(createScopedWriteGate()); const [, renderGate] = useState(0);
   const identity = useMemo(() => ({}), [accessToken, role, authRuntime.source]); const identityRef = useRef(identity); identityRef.current = identity;
   const scope = useMemo(() => ({}), [identity, projectId, unitId]); gate.current.activate(scope);
   const {pending, recovery, generation} = gate.current.snapshot(); const uncertain = recovery === "unknown"; const stale = recovery !== null;
-  const [sessionFailed, setSessionFailed] = useState(false); const scopeEpoch = useRef(0);
+  const [sessionFailed, setSessionFailed] = useState(false); const pageReads = useRef(new Map<CollectionName, object>()); const collectionRead = useRef<{ scope: object; revision: number } | null>(null);
   const [deliverableId, setDeliverableId] = useState(""); const [name, setName] = useState(""); const [intent, setIntent] = useState(""); const [unitName, setUnitName] = useState(""); const [subjectKind, setSubjectKind] = useState("subject"); const [subject, setSubject] = useState("");
   const [scratchTitle, setScratchTitle] = useState(""); const [file, setFile] = useState<File | null>(null); const uploadRef = useRef<HTMLInputElement>(null);
   const [width, setWidth] = useState(1024); const [height, setHeight] = useState(1024);
@@ -48,26 +48,18 @@ export function CreativeWorkbench({accessToken, role, authRuntime, params}: {acc
   const busy = !writeAllowed || Boolean(pending) || stale || loading;
   const readFailure = useCallback((error: unknown) => { if (error instanceof WorkbenchError && error.status === 401) setSessionFailed(true); setError(error instanceof Error ? error.message : "读取失败。"); }, []);
 
-  useEffect(() => { scopeEpoch.current += 1; setSessionFailed(false); setProduction(null); setCollections({}); setProjects([]); setProjectPage(1); setSpec(null); setRecipe(null); setAssets([]); setSkus([]); }, [accessToken]);
+  useEffect(() => { setSessionFailed(false); setProduction(null); setCollections({}); setProjects([]); setProjectPage(1); setSpec(null); setRecipe(null); setAssets([]); setSkus([]); }, [accessToken]);
   useEffect(() => {
     const abort = new AbortController(); if (!client || !accessToken || sessionFailed) return;
-    void client.get<Page<Project>>(`/projects?page=${projectPage}&limit=50`, abort.signal).then(page => { setProjects(previous => projectPage === 1 ? page.items : [...new Map([...previous, ...page.items].map(item => [item.id, item])).values()]); setProjectTotal(page.total); }).catch(error => { if (!abort.signal.aborted) readFailure(error); });
+    void client.get<Page<Project>>(`/projects?page=${projectPage}&limit=50`, abort.signal).then(page => { if (abort.signal.aborted) return; setProjects(previous => projectPage === 1 ? page.items : [...new Map([...previous, ...page.items].map(item => [item.id, item])).values()]); setProjectTotal(page.total); }).catch(error => { if (!abort.signal.aborted) readFailure(error); });
     return () => abort.abort();
   }, [client, accessToken, projectPage, sessionFailed, readFailure]);
   useEffect(() => {
-    const abort = new AbortController(); scopeEpoch.current += 1; setProduction(null); setCollections({}); setSpec(null); setRecipe(null); setRecipeId(""); setScratchpadId(""); setAttemptId(""); setCandidateId(""); setAssets([]); setSkus([]); setDeliverableId("");
-    setProjectLoading(false); if (!client || !projectId || !accessToken) return;
-    setProjectLoading(true); setError("");
-    void Promise.all([client.get<Production>(`${prefix}/production`, abort.signal), client.get<Page<Asset>>(`${prefix}/assets?limit=100`, abort.signal), client.get<Page<Sku>>(`${prefix}/skus?limit=100`, abort.signal)]).then(([production, assets, skus]) => { if (abort.signal.aborted) return; setProduction(production); setAssets(assets.items); setSkus(skus.items); if (assets.total > assets.items.length || skus.total > skus.items.length) setNotice("参考素材 / SKU 当前显示前 100 项；其余记录尚未加载。"); }).catch(error => { if (!abort.signal.aborted) readFailure(error); }).finally(() => { if (!abort.signal.aborted) setProjectLoading(false); });
-    return () => abort.abort();
-  }, [client, projectId, prefix, accessToken, readFailure]);
+    setProduction(null); setCollections({}); setSpec(null); setRecipe(null); setRecipeId(""); setScratchpadId(""); setAttemptId(""); setCandidateId(""); setAssets([]); setSkus([]); setDeliverableId("");
+  }, [client, projectId]);
   useEffect(() => {
-    const abort = new AbortController(); scopeEpoch.current += 1; setCollections({}); setSpec(null); setRecipeId(""); setRecipe(null); setScratchpadId(""); setAttemptId(""); setCandidateId(""); setEvaluation(null);
-    setUnitLoading(false); if (!client || !unitId || !projectId || !accessToken) return;
-    setUnitLoading(true); setError("");
-    void client.get<WorkbenchSnapshot>(`${prefix}/production-units/${unitId}/workbench`, abort.signal).then(snapshot => { if (snapshot.schemaVersion !== "creative_workbench.v1" || snapshot.projectId !== projectId || snapshot.productionUnitId !== unitId) throw new Error("工作台响应范围不匹配。"); if (!abort.signal.aborted) setCollections(mergeCollections({}, snapshot.collections)); }).catch(error => { if (!abort.signal.aborted) readFailure(error); }).finally(() => { if (!abort.signal.aborted) setUnitLoading(false); });
-    return () => abort.abort();
-  }, [client, projectId, prefix, unitId, accessToken, readFailure]);
+    setCollections({}); setSpec(null); setRecipeId(""); setRecipe(null); setScratchpadId(""); setAttemptId(""); setCandidateId(""); setEvaluation(null);
+  }, [client, projectId, unitId]);
   useEffect(() => {
     const abort = new AbortController(); setSpec(null);
     if (!client || !unit?.creativeSpec) return;
@@ -84,22 +76,36 @@ export function CreativeWorkbench({accessToken, role, authRuntime, params}: {acc
     window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}#creative-workbench${query.size ? `?${query}` : ""}`);
   }, [projectId, unitId]);
 
-  const reload = useCallback(async (confirmedUnknown = false) => {
-    if (!client || !projectId || !gate.current.isCurrent(scope)) return false;
-    const readTicket = gate.current.beginRead(scope); if (!readTicket) return false; renderGate(value => value + 1);
-    const fresh = await client.get<Production>(`${prefix}/production`);
-    const snapshot = unitId ? await client.get<WorkbenchSnapshot>(`${prefix}/production-units/${unitId}/workbench`) : null;
-    const refreshedAssets = await client.get<Page<Asset>>(`${prefix}/assets?limit=100`);
-    if (!gate.current.isReadCurrent(readTicket)) return false;
-    if (fresh.projectId !== projectId || (snapshot && (snapshot.schemaVersion !== "creative_workbench.v1" || snapshot.projectId !== projectId || snapshot.productionUnitId !== unitId))) throw new Error("刷新响应范围不匹配。");
-    const nextCollections = snapshot ? mergeCollections({}, snapshot.collections) : null;
-    setProduction(fresh); setAssets(refreshedAssets.items); if (nextCollections) setCollections(nextCollections); setRefresh(value => value + 1);
-    const unlocked = gate.current.acceptRead(readTicket, confirmedUnknown); renderGate(value => value + 1);
-    if (unlocked) setError(""); return unlocked;
-  }, [client, projectId, prefix, unitId, scope]);
+  const reload = useCallback(async (confirmedUnknown = false, signal?: AbortSignal) => {
+    if (!client || !projectId || !accessToken || signal?.aborted || !gate.current.isCurrent(scope)) return false;
+    const readTicket = gate.current.beginRead(scope); if (!readTicket) return false;
+    loadingRead.current = readTicket; renderGate(value => value + 1); setProjectLoading(true); setUnitLoading(Boolean(unitId)); pageReads.current.clear();
+    try {
+      const [fresh, snapshot, refreshedAssets, refreshedSkus] = await Promise.all([
+        client.get<Production>(`${prefix}/production`, signal),
+        unitId ? client.get<WorkbenchSnapshot>(`${prefix}/production-units/${unitId}/workbench`, signal) : Promise.resolve(null),
+        client.get<Page<Asset>>(`${prefix}/assets?limit=100`, signal),
+        client.get<Page<Sku>>(`${prefix}/skus?limit=100`, signal)
+      ]);
+      if (signal?.aborted || !gate.current.isReadCurrent(readTicket)) return false;
+      if (fresh.projectId !== projectId || (snapshot && (snapshot.schemaVersion !== "creative_workbench.v1" || snapshot.projectId !== projectId || snapshot.productionUnitId !== unitId))) throw new Error("刷新响应范围不匹配。");
+      const nextCollections = snapshot ? mergeCollections({}, snapshot.collections) : {};
+      setProduction(fresh); setAssets(refreshedAssets.items); setSkus(refreshedSkus.items);
+      collectionRead.current = readTicket; setCollections(nextCollections); setRefresh(value => value + 1);
+      if (refreshedAssets.total > refreshedAssets.items.length || refreshedSkus.total > refreshedSkus.items.length) setNotice("参考素材 / SKU 当前显示前 100 项；其余记录尚未加载。");
+      const unlocked = gate.current.acceptRead(readTicket, confirmedUnknown); renderGate(value => value + 1);
+      if (unlocked) setError(""); return unlocked;
+    } catch (error) {
+      if (signal?.aborted || !gate.current.isReadCurrent(readTicket)) return false;
+      throw error;
+    } finally {
+      if (loadingRead.current === readTicket) { loadingRead.current = null; setProjectLoading(false); setUnitLoading(false); }
+    }
+  }, [client, projectId, prefix, unitId, accessToken, scope]);
   useEffect(() => {
-    controlLock.current = null; setNotice(""); setError("");
-    void reload().catch(error => { if (gate.current.isCurrent(scope)) readFailure(error); });
+    const abort = new AbortController(); controlLock.current = null; loadingRead.current = null; pageReads.current.clear(); setNotice(""); setError(""); setProjectLoading(false); setUnitLoading(false);
+    void reload(false, abort.signal).catch(error => { if (!abort.signal.aborted && gate.current.isCurrent(scope)) readFailure(error); });
+    return () => abort.abort();
   }, [scope, reload, readFailure]);
   const run: RunAction = useCallback(async (label, action) => {
     if (!writeAllowed) return false; const ticket = gate.current.begin(scope, label); if (!ticket) return false;
@@ -108,6 +114,7 @@ export function CreativeWorkbench({accessToken, role, authRuntime, params}: {acc
       const result = await completeCommand(async () => { await action(); gate.current.committed(ticket); if (gate.current.isCurrent(scope)) renderGate(value => value + 1); }, async () => { if (gate.current.isCurrent(scope)) { setNotice(`${label}已提交。`); await reload(); } });
       if (result.error !== undefined && gate.current.isCurrent(scope)) {
         if (result.error instanceof WorkbenchError && result.error.uncertain && !result.committed) gate.current.unknown(scope);
+        else if (result.error instanceof WorkbenchError && result.error.status === 409) gate.current.requireRefresh(scope);
         readFailure(result.error);
         if (result.committed) setNotice(`${label}已提交，但刷新失败。普通写入保持锁定，请刷新查看结果。`);
       }
@@ -118,13 +125,21 @@ export function CreativeWorkbench({accessToken, role, authRuntime, params}: {acc
     if (!gate.current.isCurrent(scope) || !canControlWorker(writeAllowed, gate.current.snapshot().recovery !== null, safeControlMode ?? "") || controlLock.current) return false;
     const ticket = {}; controlLock.current = ticket;
     try { await action(); if (gate.current.isCurrent(scope)) { setNotice(`${label}已提交，等待 Worker 停止证据。`); setRefresh(value => value + 1); } return true; }
-    catch (error) { if (gate.current.isCurrent(scope)) { if (error instanceof WorkbenchError && error.uncertain) gate.current.unknown(scope); readFailure(error); renderGate(value => value + 1); } return false; }
+    catch (error) { if (gate.current.isCurrent(scope)) { if (error instanceof WorkbenchError && error.uncertain) gate.current.unknown(scope); else if (error instanceof WorkbenchError && error.status === 409) gate.current.requireRefresh(scope); readFailure(error); renderGate(value => value + 1); } return false; }
     finally { if (controlLock.current === ticket) controlLock.current = null; }
   }, [writeAllowed, scope, readFailure]);
   async function loadMore(name: CollectionName) {
-    if (!client) return; const page = collections[name]; if (!page?.hasMore || !page.nextCursor) return;
-    const epoch = scopeEpoch.current;
-    try { const snapshot = await client.get<WorkbenchSnapshot>(`${prefix}/production-units/${unitId}/workbench?collection=${name}&limit=25&cursor=${encodeURIComponent(page.nextCursor)}`); if (epoch === scopeEpoch.current) setCollections(current => mergeCollections(current, snapshot.collections, true)); } catch (error) { if (epoch === scopeEpoch.current) readFailure(error); }
+    if (!client || pageReads.current.has(name)) return; const page = collections[name]; if (!page?.hasMore || !page.nextCursor) return;
+    const readTicket = collectionRead.current; if (!readTicket || !gate.current.isReadCurrent(readTicket)) return;
+    const request = {}; pageReads.current.set(name, request);
+    try {
+      const snapshot = await client.get<WorkbenchSnapshot>(`${prefix}/production-units/${unitId}/workbench?collection=${name}&limit=25&cursor=${encodeURIComponent(page.nextCursor)}`);
+      if (!gate.current.isReadCurrent(readTicket) || pageReads.current.get(name) !== request) return;
+      if (snapshot.schemaVersion !== "creative_workbench.v1" || snapshot.projectId !== projectId || snapshot.productionUnitId !== unitId) throw new Error("分页响应范围不匹配。");
+      setCollections(current => current[name]?.nextCursor === page.nextCursor ? mergeCollections(current, snapshot.collections, true) : current);
+    } catch (error) {
+      if (gate.current.isReadCurrent(readTicket) && pageReads.current.get(name) === request) readFailure(error);
+    } finally { if (pageReads.current.get(name) === request) pageReads.current.delete(name); }
   }
 
   if (!client || !accessToken || sessionFailed) return <AppShell><main className="creative-workbench"><Panel title="创作工作台"><p role="status">{clientState.error || (sessionFailed ? "会话已失效，请使用现有登录入口重新登录。" : "真实工作台需要已有的 Bearer 会话。模拟角色只用于只读演示，不能执行创作写入。")}</p><a href="#">返回命令中心</a></Panel></main></AppShell>;
@@ -151,7 +166,7 @@ export function CreativeWorkbench({accessToken, role, authRuntime, params}: {acc
       {collections.localMediaRecipes?.items.map(item => <p key={item.id}>{item.width}×{item.height} · <Id value={item.id} /> · 输入快照 <Id value={item.inputSnapshotDigest} /></p>)}
       <h3>已提交媒体结果</h3>{collections.mediaResults?.items.map(item => <p key={item.id}>结果 <Id value={item.id} /> <button onClick={() => setCandidateId(item.candidateId)}>查看输出候选</button></p>)}
     </Panel><Panel title="正式素材评估记录"><p>这里记录人工提供的评分，由既定策略计算决定；不是自动视觉巡检，也不证明素材由所选 Recipe 生成。</p><form onSubmit={event => { event.preventDefault(); void run("记录素材评估", async () => { const result = await client.post<Evaluation>(`${prefix}/workflow-recipes/${recipeId}/evaluations`, {assetId: evaluationAsset, policyVersion: "visual_quality.v1", scores: evaluationScores(scores), failureCodes: failures, correctionStrategies: corrections.split("\n").map(line => line.trim()).filter(Boolean)}); setEvaluation(result); }); }}><fieldset disabled={busy || !recipeId}><Field label="评估正式素材"><select required value={evaluationAsset} onChange={event => setEvaluationAsset(event.target.value)}><option value="">选择正式素材</option>{assets.map(item => <option key={item.id} value={item.id}>{item.originalFilename ?? item.id}</option>)}</select></Field>{SCORE_KEYS.map(key => <Field key={key} label={`${key} 分数（0–5 整数）`}><input required type="number" min={0} max={5} step={1} value={scores[key]} onChange={event => setScores(current => ({...current, [key]: event.target.value}))} /></Field>)}<Field label="已观察到的问题"><select multiple value={failures} onChange={event => setFailures(Array.from(event.target.selectedOptions).map(option => option.value))}>{FAILURE_CODES.map(code => <option key={code}>{code}</option>)}</select></Field><Field label="修正建议（每行一条，最多32条）"><textarea maxLength={16000} value={corrections} onChange={event => setCorrections(event.target.value)} /></Field><button type="submit">提交所填评分</button></fieldset></form>{evaluation && <p>计算决定：{evaluation.decision} · <Id value={evaluation.id} /></p>}{collections.evaluations?.items.map(item => <p key={item.id}>{item.decision} · <Id value={item.id} /></p>)}</Panel></div>
-    <ExecutionPanel key={generation} client={client} prefix={prefix} unitId={unit.id} recipeId={recipeId} localRecipes={collections.localMediaRecipes?.items ?? []} grants={collections.grants?.items ?? []} operations={collections.operations?.items ?? []} disabled={busy} controlDisabled={!writeAllowed || loading} controlUncertain={stale} run={run} runControl={runControl} refresh={refresh} />
+    <ExecutionPanel key={generation} client={client} prefix={prefix} unitId={unit.id} recipeId={recipeId} localRecipes={collections.localMediaRecipes?.items ?? []} grants={collections.grants?.items ?? []} operations={collections.operations?.items ?? []} disabled={busy} controlDisabled={!writeAllowed} controlUncertain={stale} run={run} runControl={runControl} refresh={refresh} />
     <Panel title="持久集合与分页"><div className="wb-collections">{(Object.keys(collectionLabels) as CollectionName[]).map(name => { const page = collections[name]; return <div key={name}><strong>{collectionLabels[name]}</strong><span>{page ? `${page.items.length} / ${page.total}` : "未提供"}</span>{page?.hasMore && <button onClick={() => void loadMore(name)}>加载更多{collectionLabels[name]}</button>}</div>; })}</div></Panel>
     </>}
   </main></AppShell>;

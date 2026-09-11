@@ -121,24 +121,24 @@ function pureModule(relative) {
 const realDomain=pureModule('../src/features/workbench/domain.ts');
 const deferred=()=>{let resolve,reject;const promise=new Promise((a,b)=>{resolve=a;reject=b;});return {promise,resolve,reject};};
 async function flush(){for(let i=0;i<20;i++)await Promise.resolve();}
-function workbenchFixture() {
-  const state=[],refs=[],memos=[];let cursor=0,refCursor=0,memoCursor=0;
+function workbenchFixture({effectsEnabled=false}={}) {
+  const state=[],refs=[],memos=[],effects=[],effectQueue=[];let cursor=0,refCursor=0,memoCursor=0,effectCursor=0;
   const projectId='00000000-0000-4000-8000-000000000011',unitId='00000000-0000-4000-8000-000000000012';
   const production={projectId,deliverables:[{id:'delivery',name:'fixture',productionUnits:[{id:unitId,name:'unit',creativeSpec:null,subjects:[]}]}]};
-  const hooks={useEffect(){},useState(initial){const i=cursor++;if(!(i in state))state[i]=i===5?production:typeof initial==='function'?initial():initial;return [state[i],value=>{state[i]=typeof value==='function'?value(state[i]):value;}];},useRef(initial){const i=refCursor++;return refs[i]??=( {current:initial});},useMemo(fn,deps){const i=memoCursor++,old=memos[i];if(!old||deps.some((d,j)=>d!==old.deps[j]))memos[i]={value:fn(),deps};return memos[i].value;},useCallback(fn){return fn;}};
+  const hooks={useEffect(fn,deps){if(!effectsEnabled)return;const i=effectCursor++,old=effects[i];if(!old||deps.some((d,j)=>d!==old.deps[j])){effects[i]={deps,cleanup:old?.cleanup};effectQueue.push(()=>{effects[i].cleanup?.();effects[i].cleanup=fn();});}},useState(initial){const i=cursor++;if(!(i in state))state[i]=i===5?production:typeof initial==='function'?initial():initial;return [state[i],value=>{state[i]=typeof value==='function'?value(state[i]):value;}];},useRef(initial){const i=refCursor++;return refs[i]??=( {current:initial});},useMemo(fn,deps){const i=memoCursor++,old=memos[i];if(!old||deps.some((d,j)=>d!==old.deps[j]))memos[i]={value:fn(),deps};return memos[i].value;},useCallback(fn,deps){return hooks.useMemo(()=>fn,deps);}};
   class WorkbenchError extends Error {constructor(status,uncertain=false){super('fixture failure');this.status=status;this.uncertain=uncertain;}}
   const calls=[];let failReads=false,getHandler=null,postHandler=async()=>({id:'fixture-created'});
-  const transport={async get(path){calls.push({method:'GET',path});if(failReads)throw new WorkbenchError(503);if(getHandler){const override=getHandler(path);if(override!==undefined)return override;}if(path.endsWith('/production'))return production;if(path.endsWith('/workbench'))return {schemaVersion:'creative_workbench.v1',projectId,productionUnitId:unitId,collections:{}};return {items:[],total:0,limit:100};},async post(path,body){calls.push({method:'POST',path,body});return postHandler(path,body);}};
+  const transport={async get(path,signal){calls.push({method:'GET',path,signal});if(failReads)throw new WorkbenchError(503);if(getHandler){const override=getHandler(path);if(override!==undefined)return override;}if(path.endsWith('/production'))return production;if(path.endsWith('/workbench'))return {schemaVersion:'creative_workbench.v1',projectId,productionUnitId:unitId,collections:{}};return {items:[],total:0,limit:100};},async post(path,body){calls.push({method:'POST',path,body});return postHandler(path,body);}};
   const source=readFileSync(new URL('../src/features/workbench/CreativeWorkbench.tsx',import.meta.url),'utf8').replace(/import\.meta\.env\.VITE_BACKEND_API_BASE_URL/g,'""');
   const code=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX}}).outputText;
   const module={exports:{}};
-  new Function('require','module','exports','window','fetch',code)(name=>name==='react'?hooks:name==='./domain'?realDomain:name==='./client'?{WorkbenchError,createWorkbenchClient:()=>transport}:name.endsWith('.css')?{}:name==='react/jsx-runtime'?require(name):name==='./parts'?{Field:'Field',Panel:'Panel',Id:'Id'}:name.endsWith('/AppShell')?{AppShell:'AppShell'}:name==='./ExecutionPanel'?{ExecutionPanel:'ExecutionPanel'}:name==='./CandidatePanel'?{CandidatePanel:'CandidatePanel'}:name==='./SpecEditor'?{SpecEditor:'SpecEditor'}:require(name),module,module.exports,{location:{origin:'https://fixture.invalid'}},()=>{throw Error('NO_NETWORK');});
+  new Function('require','module','exports','window','fetch',code)(name=>name==='react'?hooks:name==='./domain'?realDomain:name==='./client'?{WorkbenchError,createWorkbenchClient:()=>transport}:name.endsWith('.css')?{}:name==='react/jsx-runtime'?require(name):name==='./parts'?{Field:'Field',Panel:'Panel',Id:'Id'}:name.endsWith('/AppShell')?{AppShell:'AppShell'}:name==='./ExecutionPanel'?{ExecutionPanel:'ExecutionPanel'}:name==='./CandidatePanel'?{CandidatePanel:'CandidatePanel'}:name==='./SpecEditor'?{SpecEditor:'SpecEditor'}:require(name),module,module.exports,{location:{origin:'https://fixture.invalid',pathname:'/',search:''},history:{replaceState(){}}},()=>{throw Error('NO_NETWORK');});
   const props={accessToken:'synthetic-first-session',role:'admin',authRuntime:{source:'backend'},params:new URLSearchParams({projectId,unitId})};
-  const render=()=>{cursor=0;refCursor=0;memoCursor=0;return module.exports.CreativeWorkbench(props);};
+  const render=()=>{cursor=0;refCursor=0;memoCursor=0;effectCursor=0;return module.exports.CreativeWorkbench(props);};
   function nodes(node,predicate){if(!node||typeof node!=='object')return [];if(Array.isArray(node))return node.flatMap(n=>nodes(n,predicate));return [...(predicate(node)?[node]:[]),...nodes(node.props?.children,predicate)];}
   const panel=()=>nodes(render(),n=>n.type==='ExecutionPanel')[0].props;
   const click=async label=>{const button=nodes(render(),n=>n.type==='button'&&n.props.children===label)[0];assert.ok(button);button.props.onClick();await flush();};
-  return {calls,props,panel,click,render,nodes,WorkbenchError,production,setGetHandler(value){getHandler=value;},setReadFailure(value){failReads=value;},setPostHandler(value){postHandler=value;}};
+  return {calls,props,panel,click,render,nodes,WorkbenchError,production,async commitEffects(){render();for(let round=0;effectQueue.length;round++){assert.ok(round<10,"effects settle");const pending=effectQueue.splice(0);pending.forEach(fn=>fn());await flush();render();}},setGetHandler(value){getHandler=value;},setReadFailure(value){failReads=value;},setPostHandler(value){postHandler=value;}};
 }
 
 test('actual workbench run holds committed writes through refresh failure and accepts only a fresh scoped read',async()=>{
@@ -227,3 +227,104 @@ for(const earlierConfirmed of [false,true]) {
     assert.equal(ui.calls.filter(c=>c.path==='/allocate').length,1);
   });
 }
+
+const collectionPage=(items,hasMore=false,nextCursor=null)=>({items,total:items.length,limit:25,hasMore,nextCursor});
+function workbenchSnapshot(ui,collections={}) {return {schemaVersion:'creative_workbench.v1',projectId:ui.production.projectId,productionUnitId:ui.production.deliverables[0].productionUnits[0].id,collections};}
+for(const delayedPart of ['project_sku','unit_collection']) {
+  test(`real initial effects cannot publish late ${delayedPart} over the latest complete refresh`,async()=>{
+    const ui=workbenchFixture({effectsEnabled:true}),earlier=deferred();let productionReads=0,skuReads=0,unitReads=0;
+    const oldCandidate={id:'00000000-0000-4000-8000-000000000021',status:'old'},newCandidate={id:'00000000-0000-4000-8000-000000000021',status:'new'};
+    ui.setGetHandler(path=>{
+      if(path.endsWith('/production'))return productionNamed(ui,++productionReads===1?'earlier-read':'latest-read');
+      if(path.includes('/skus?'))return ++skuReads===1&&delayedPart==='project_sku'?earlier.promise:collectionPage([{id:'sku-new',code:'NEW',name:'fresh-sku'}]);
+      if(path.endsWith('/workbench'))return ++unitReads===1&&delayedPart==='unit_collection'?earlier.promise:workbenchSnapshot(ui,{candidates:collectionPage([newCandidate])});
+    });
+    await ui.commitEffects();assert.ok(ui.calls.some(c=>c.signal),'actual effect issued an abortable request');
+    await ui.click('刷新持久记录');const refresh=ui.panel().refresh;
+    earlier.resolve(delayedPart==='project_sku'?collectionPage([{id:'sku-old',code:'OLD',name:'stale-sku'}]):workbenchSnapshot(ui,{candidates:collectionPage([oldCandidate])}));
+    await flush();await ui.commitEffects();assertLatestRefresh(ui,refresh,false);
+    const candidatePanel=ui.nodes(ui.render(),n=>n.type==='CandidatePanel')[0];assert.equal(candidatePanel.props.candidates[0].status,'new');
+    const subject=ui.nodes(ui.render(),n=>n.props?.label==='主体种类')[0].props.children;subject.props.onChange({target:{value:'sku'}});
+    const choices=ui.nodes(ui.render(),n=>n.type==='option').flatMap(n=>n.props.children).join(' ');
+    assert.ok(choices.includes('fresh-sku'));assert.ok(!choices.includes('stale-sku'));
+  });
+}
+test('ordinary POST 409 holds writes until production, collections, assets and SKU all refresh successfully',async()=>{
+  const ui=workbenchFixture();await ui.click('刷新持久记录');ui.setPostHandler(async()=>{throw new ui.WorkbenchError(409);});
+  const panel=ui.panel();assert.equal(await panel.run('CAS conflict',()=>panel.client.post('/allocate',{})),false);
+  assert.equal(ui.panel().disabled,true);assert.equal(await ui.panel().run('repeat',()=>panel.client.post('/allocate',{})),false);
+  ui.setGetHandler(path=>{if(path.includes('/skus?'))throw new ui.WorkbenchError(503);});
+  await ui.click('刷新持久记录');assert.equal(ui.panel().disabled,true);
+  ui.setGetHandler(null);await ui.click('刷新持久记录');assert.equal(ui.panel().disabled,false);
+  assert.equal(ui.calls.filter(c=>c.path==='/allocate').length,1);
+});
+test('control 409 requires a fresh scope but preserves safe stop and never downgrades UNKNOWN',async()=>{
+  const ui=workbenchFixture();await ui.click('刷新持久记录');ui.setPostHandler(async()=>{throw new ui.WorkbenchError(409);});
+  let panel=ui.panel();await panel.runControl('pause conflict',()=>panel.client.post('/pause',{}),'PAUSED');assert.equal(ui.panel().disabled,true);
+  ui.setPostHandler(async()=>({id:'stopped'}));panel=ui.panel();assert.equal(await panel.runControl('drain',()=>panel.client.post('/drain',{}),'DRAINING'),true);assert.equal(ui.panel().disabled,true);
+  await ui.click('刷新持久记录');assert.equal(ui.panel().disabled,false);
+  ui.setPostHandler(async()=>{throw new ui.WorkbenchError(0,true);});panel=ui.panel();await panel.run('unknown',()=>panel.client.post('/allocate',{}));
+  ui.setPostHandler(async()=>{throw new ui.WorkbenchError(409);});panel=ui.panel();await panel.runControl('pause conflict',()=>panel.client.post('/pause',{}),'PAUSED');
+  await ui.click('刷新持久记录');assert.equal(ui.panel().disabled,true);await ui.click('我已核对持久记录');assert.equal(ui.panel().disabled,false);
+});
+test('a superseded refresh rejection cannot replace the latest successful UI with an error',async()=>{
+  const ui=workbenchFixture();await ui.click('刷新持久记录');const earlier=deferred();let reads=0;
+  ui.setGetHandler(path=>path.endsWith('/production')?(++reads===1?earlier.promise:productionNamed(ui,'latest-read')):undefined);
+  await ui.click('刷新持久记录');await ui.click('刷新持久记录');const refresh=ui.panel().refresh;
+  earlier.reject(new Error('stale-read-error'));await flush();assertLatestRefresh(ui,refresh,false);
+  assert.equal(ui.nodes(ui.render(),n=>n.props?.role==='alert').length,0);
+});
+
+async function clickCandidatePage(ui) {
+  const button=ui.nodes(ui.render(),n=>n.type==='button'&&Array.isArray(n.props.children)&&n.props.children.join('')==='加载更多候选')[0];
+  assert.ok(button);button.props.onClick();await flush();
+}
+function candidateItems(ui){return ui.nodes(ui.render(),n=>n.type==='CandidatePanel')[0].props.candidates;}
+for(const outcome of ['success','failure']) {
+  test(`stale pagination ${outcome} after a fresh scope read cannot overwrite data or errors`,async()=>{
+    const ui=workbenchFixture(),earlier=deferred();const id='00000000-0000-4000-8000-000000000021';let pageCalls=0,fullReads=0;
+    ui.setGetHandler(path=>{
+      if(path.includes('?collection=')){pageCalls++;return earlier.promise;}
+      if(path.endsWith('/workbench'))return workbenchSnapshot(ui,{candidates:collectionPage([{id,status:++fullReads===1?'before':'fresh'}],true,'cursor-a')});
+    });
+    await ui.click('刷新持久记录');await clickCandidatePage(ui);await clickCandidatePage(ui);assert.equal(pageCalls,1);
+    await ui.click('刷新持久记录');assert.equal(candidateItems(ui)[0].status,'fresh');
+    if(outcome==='success')earlier.resolve(workbenchSnapshot(ui,{candidates:collectionPage([{id,status:'stale'}],false)}));
+    else earlier.reject(new Error('stale-page-error'));
+    await flush();assert.equal(candidateItems(ui)[0].status,'fresh');assert.equal(ui.nodes(ui.render(),n=>n.props?.role==='alert').length,0);
+    assert.equal(ui.panel().disabled,false);
+  });
+}
+test('pagination rejects a mismatched scope and accepts a subsequent correctly scoped page',async()=>{
+  const ui=workbenchFixture();const first='00000000-0000-4000-8000-000000000021',second='00000000-0000-4000-8000-000000000022';let pages=0;
+  ui.setGetHandler(path=>{
+    if(path.includes('?collection=')){const snapshot=workbenchSnapshot(ui,{candidates:collectionPage([{id:second,status:'page2'}])});return ++pages===1?{...snapshot,productionUnitId:'wrong-unit'}:snapshot;}
+    if(path.endsWith('/workbench'))return workbenchSnapshot(ui,{candidates:collectionPage([{id:first,status:'page1'}],true,'cursor-a')});
+  });
+  await ui.click('刷新持久记录');await clickCandidatePage(ui);assert.deepEqual(candidateItems(ui).map(x=>x.id),[first]);
+  assert.equal(ui.nodes(ui.render(),n=>n.props?.role==='alert').length,1);
+  await clickCandidatePage(ui);assert.deepEqual(candidateItems(ui).map(x=>x.id),[first,second]);assert.equal(ui.panel().disabled,false);
+});
+test('safe stop stays available during full refresh and a conflict cannot strand its loading marker',async()=>{
+  const ui=workbenchFixture();await ui.click('刷新持久记录');const pending=deferred();
+  ui.setGetHandler(path=>path.endsWith('/production')?pending.promise:undefined);await ui.click('刷新持久记录');
+  assert.equal(ui.panel().controlDisabled,false);assert.equal(ui.panel().controlUncertain,true);
+  ui.setPostHandler(async()=>{throw new ui.WorkbenchError(409);});let panel=ui.panel();
+  await panel.runControl('pause',()=>panel.client.post('/pause',{}),'PAUSED');
+  pending.resolve(ui.production);await flush();
+  assert.equal(ui.nodes(ui.render(),n=>n.type==='span'&&n.props.children==='正在读取…').length,0);assert.equal(ui.panel().disabled,true);
+  ui.setPostHandler(async()=>({id:'drained'}));panel=ui.panel();assert.equal(await panel.runControl('drain',()=>panel.client.post('/drain',{}),'DRAINING'),true);
+  assert.equal(ui.panel().disabled,true);ui.setGetHandler(null);await ui.click('刷新持久记录');assert.equal(ui.panel().disabled,false);
+});
+
+test('UNKNOWN can read more from a freshly published snapshot without unlocking writes',async()=>{
+  const ui=workbenchFixture();const first='00000000-0000-4000-8000-000000000021',second='00000000-0000-4000-8000-000000000022';let pages=0;
+  ui.setGetHandler(path=>{
+    if(path.includes('?collection=')){pages++;return workbenchSnapshot(ui,{candidates:collectionPage([{id:second,status:'older-persisted'}])});}
+    if(path.endsWith('/workbench'))return workbenchSnapshot(ui,{candidates:collectionPage([{id:first,status:'persisted'}],true,'cursor-a')});
+  });
+  await ui.click('刷新持久记录');ui.setPostHandler(async()=>{throw new ui.WorkbenchError(0,true);});const panel=ui.panel();await panel.run('unknown',()=>panel.client.post('/allocate',{}));
+  await clickCandidatePage(ui);assert.equal(pages,0); // Pre-conflict snapshot is stale.
+  await ui.click('刷新持久记录');assert.equal(ui.panel().disabled,true);
+  await clickCandidatePage(ui);assert.equal(pages,1);assert.deepEqual(candidateItems(ui).map(x=>x.id),[first,second]);assert.equal(ui.panel().disabled,true);
+});
