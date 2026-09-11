@@ -10,7 +10,8 @@ const uuid=n=>`00000000-0000-4000-8000-${String(n).padStart(12,'0')}`;
 function pureModule(url){const module={exports:{}};const code=ts.transpileModule(readFileSync(url,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;new Function('require','module','exports',code)(name=>name.startsWith('.')?pureModule(new URL(name+'.ts',url)):require(name),module,module.exports);return module.exports;}
 const domain=pureModule(new URL('../src/features/workbench/domain.ts',import.meta.url));
 const resources=(kind,page=1)=>({page,limit:100,total:101,items:Array.from({length:page===1?100:1},(_,i)=>{const n=(page-1)*100+i+1;return kind==='assets'?{id:uuid(1000+n),originalFilename:`asset-${n}.png`}:{id:uuid(2000+n),skuCode:`SKU-${n}`,productName:`Product ${n}`};})});
-function fixture(){
+function fixture({fakeTimers=false}={}){
+  const timers=new Map();let timerId=0;
   const states=[],refs=[],memos=[],effects=[],queue=[];let s=0,r=0,m=0,e=0;
   const hooks={useState(initial){const i=s++;if(!(i in states))states[i]=typeof initial==='function'?initial():initial;return [states[i],value=>{states[i]=typeof value==='function'?value(states[i]):value;}];},useRef(initial){return refs[r++]??={current:initial};},useMemo(fn,deps){const i=m++,old=memos[i];if(!old||deps.some((d,j)=>d!==old.deps[j]))memos[i]={deps,value:fn()};return memos[i].value;},useCallback(fn,deps){return hooks.useMemo(()=>fn,deps);},useEffect(fn,deps){const i=e++,old=effects[i];if(!old||deps.some((d,j)=>d!==old.deps[j])){effects[i]={deps,cleanup:old?.cleanup};queue.push(()=>{effects[i].cleanup?.();effects[i].cleanup=fn();});}}};
   const projectId=uuid(1),unitId=uuid(2);const version={id:uuid(3),specId:uuid(4),versionNumber:1,fields:{intent:{value:'fixed',provenance:'human_explicit',mutability:'locked'}},references:[{assetId:uuid(1101),role:'product_truth',provenance:'human_explicit',mutability:'locked'}]};
@@ -20,12 +21,12 @@ function fixture(){
   const transport={async get(path,signal){calls.push({method:'GET',path,signal});const override=getHandler?.(path,signal);if(override!==undefined)return override;if(path.includes('/assets?'))return resources('assets');if(path.includes('/skus?'))return resources('skus');if(path.endsWith('/production'))return production;if(path.endsWith('/workbench'))return {schemaVersion:'creative_workbench.v1',projectId,productionUnitId:unitId,collections:{}};if(path.includes('/creative-specs/'))return version;return {items:[],page:1,limit:50,total:0};},async post(path,body){calls.push({method:'POST',path,body});return postHandler();}};
   const module={exports:{}};const source=readFileSync(new URL('../src/features/workbench/CreativeWorkbench.tsx',import.meta.url),'utf8').replace(/import\.meta\.env\.VITE_BACKEND_API_BASE_URL/g,'""');const code=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX}}).outputText;
   const imports=name=>name==='react'?hooks:name==='./domain'?domain:name==='./client'?{WorkbenchError,createWorkbenchClient:()=>transport}:name==='react/jsx-runtime'?require(name):name.endsWith('.css')?{}:name==='./parts'?{Field:'Field',Panel:'Panel',Id:'Id'}:name.endsWith('/AppShell')?{AppShell:'AppShell'}:{[name.split('/').at(-1)]:name.split('/').at(-1)};
-  new Function('require','module','exports','window','fetch',code)(imports,module,module.exports,{location:{origin:'https://fixture.invalid',pathname:'/',search:''},history:{replaceState(){}}},()=>{throw Error('NO_NETWORK');});
+  new Function('require','module','exports','window','fetch','setTimeout','clearTimeout',code)(imports,module,module.exports,{location:{origin:'https://fixture.invalid',pathname:'/',search:''},history:{replaceState(){}}},()=>{throw Error('NO_NETWORK');},fakeTimers?(callback,ms)=>{timers.set(++timerId,{callback,ms});return timerId;}:setTimeout,fakeTimers?id=>timers.delete(id):clearTimeout);
   const props={accessToken:'synthetic-a',role:'admin',authRuntime:{source:'backend'},params:new URLSearchParams({projectId,unitId})};
   const render=()=>{s=0;r=0;m=0;e=0;return module.exports.CreativeWorkbench(props);};
   function nodes(node,pred){if(!node||typeof node!=='object')return [];if(Array.isArray(node))return node.flatMap(n=>nodes(n,pred));return [...(pred(node)?[node]:[]),...nodes(node.props?.children,pred)];}
   const button=label=>nodes(render(),n=>n.type==='button'&&n.props.children===label)[0];
-  return {calls,props,version,render,nodes,button,WorkbenchError,setGet(fn){getHandler=fn;},setPost(fn){postHandler=fn;},panel(){return nodes(render(),n=>n.type==='ExecutionPanel')[0].props;},spec(){return nodes(render(),n=>n.type==='SpecEditor')[0].props;},field(label){return nodes(render(),n=>n.props?.label===label)[0].props.children;},async settle(){render();for(let i=0;queue.length;i++){assert.ok(i<15,'effects settle');queue.splice(0).forEach(fn=>fn());await flush();render();}},async click(label){assert.ok(button(label),label);button(label).props.onClick();await flush();}};
+  return {timers,calls,props,version,render,nodes,button,WorkbenchError,setGet(fn){getHandler=fn;},setPost(fn){postHandler=fn;},panel(){return nodes(render(),n=>n.type==='ExecutionPanel')[0].props;},spec(){return nodes(render(),n=>n.type==='SpecEditor')[0].props;},field(label){return nodes(render(),n=>n.props?.label===label)[0].props.children;},async settle(){render();for(let i=0;queue.length;i++){assert.ok(i<15,'effects settle');queue.splice(0).forEach(fn=>fn());await flush();render();}},async click(label){assert.ok(button(label),label);button(label).props.onClick();await flush();}};
 }
 
 test('both resources load page two once per class and expose the 101st real item without changing locked references',async()=>{
@@ -67,4 +68,31 @@ test('identity changes abort old resource pages and a fresh UNKNOWN snapshot can
 test('a wrong numbered response is rejected without advancing the retry page',async()=>{
   const ui=fixture();await ui.settle();ui.setGet(path=>path.includes('assets?page=2')?{...resources('assets',2),page:3}:undefined);await ui.click('加载更多正式素材');assert.equal(ui.spec().assets.length,100);assert.ok(ui.button('重试加载正式素材'));
   ui.setGet(path=>path.includes('assets?page=2')?resources('assets',2):undefined);await ui.click('重试加载正式素材');assert.equal(ui.spec().assets.length,101);
+});
+
+for(const confirmed of [false,true])test(`superseded ${confirmed?'confirmed':'ordinary'} refresh cancels all four GETs even for captured repeated clicks`,async()=>{
+  const ui=fixture();await ui.settle();if(confirmed){ui.setPost(async()=>{throw new ui.WorkbenchError(0,true);});const p=ui.panel();await p.run('uncertain',()=>p.client.post('/write',{}));}
+  const pending=[];ui.setGet((path,signal)=>{const d=deferred();pending.push({...d,signal});return d.promise;});
+  const label=confirmed?'我已核对持久记录':'刷新持久记录',click=ui.button(label).props.onClick;
+  click();click();click();await flush();assert.equal(pending.length,12);assert.ok(pending.slice(0,8).every(r=>r.signal.aborted));assert.ok(pending.slice(8).every(r=>!r.signal.aborted));assert.equal(new Set(pending.slice(8).map(r=>r.signal)).size,1);assert.equal(ui.button(label).props.disabled,true);
+  ui.setGet(null);click();await flush();assert.ok(pending.every(r=>r.signal.aborted));assert.equal(ui.panel().disabled,false);
+  for(const r of pending)r.reject(Error('superseded-error'));await flush();assert.equal(ui.nodes(ui.render(),n=>n.props?.role==='alert').length,0);
+});
+test('one failed refresh GET aborts siblings and an explicit retry restores fresh state',async()=>{
+  const ui=fixture();await ui.settle();const signals=[];ui.setGet((path,signal)=>{signals.push(signal);return path.endsWith('/production')?Promise.reject(Error('read failure')):new Promise(()=>{});});await ui.click('刷新持久记录');
+  assert.equal(signals.length,4);assert.ok(signals.every(signal=>signal.aborted));assert.equal(ui.button('刷新持久记录').props.disabled,false);assert.equal(ui.panel().disabled,true);
+  ui.setGet(null);await ui.click('刷新持久记录');assert.equal(ui.panel().disabled,false);
+});
+test('refresh timeout cancels all reads and permits an explicit retry without accepting UNKNOWN',async()=>{
+  const ui=fixture({fakeTimers:true});await ui.settle();ui.setPost(async()=>{throw new ui.WorkbenchError(0,true);});const p=ui.panel();await p.run('uncertain',()=>p.client.post('/write',{}));
+  const signals=[];ui.setGet((path,signal)=>{signals.push(signal);return new Promise(()=>{});});await ui.click('我已核对持久记录');assert.equal(ui.timers.size,1);const timer=[...ui.timers.values()][0];assert.equal(timer.ms,30000);timer.callback();await flush();
+  assert.ok(signals.every(signal=>signal.aborted));assert.equal(ui.timers.size,0);assert.equal(ui.button('我已核对持久记录').props.disabled,false);assert.equal(ui.panel().disabled,true);assert.ok(ui.nodes(ui.render(),n=>n.props?.role==='alert').some(n=>n.props.children.includes('超时')));
+  ui.setGet(null);await ui.click('刷新持久记录');assert.equal(ui.panel().disabled,true);await ui.click('我已核对持久记录');assert.equal(ui.panel().disabled,false);
+});
+for(const count of [0,32,33])test(`evaluation validates ${count} nonempty correction lines before entering the write gate`,async()=>{
+  const ui=fixture();await ui.settle();ui.field('Workflow Recipe').props.onChange({target:{value:uuid(8)}});ui.field('评估正式素材').props.onChange({target:{value:uuid(1001)}});
+  for(const key of domain.SCORE_KEYS)ui.field(`${key} 分数（0–5 整数）`).props.onChange({target:{value:'3'}});
+  ui.field('修正建议（每行一条，最多32条）').props.onChange({target:{value:Array.from({length:count},(_,i)=>`  suggestion-${i}  `).join('\n\n')+'\n  \n'}});
+  const form=ui.nodes(ui.render(),n=>n.type==='form'&&ui.nodes(n,c=>c.type==='button'&&c.props.children==='提交所填评分').length)[0];form.props.onSubmit({preventDefault(){}});await flush();
+  const posts=ui.calls.filter(c=>c.method==='POST');assert.equal(posts.length,count>32?0:1);if(count<=32)assert.deepEqual(posts[0].body.correctionStrategies,Array.from({length:count},(_,i)=>`suggestion-${i}`));else{assert.ok(ui.nodes(ui.render(),n=>n.props?.role==='alert').some(n=>n.props.children.includes('最多32条')));assert.equal(ui.panel().disabled,false);}
 });
