@@ -10,7 +10,9 @@ import type { AuthRuntimeView } from "../auth/useAuthState";
 import { createReadModelHref } from "../read-models/readModelRoutes";
 import {
   getCommandCenterApprovalDetail,
-  getCommandCenterRiskDetail
+  getCommandCenterRiskDetail,
+  statusLabels,
+  approvalLabels
 } from "./commandCenterViewModel";
 import {
   useCommandCenterSnapshot,
@@ -77,20 +79,20 @@ function getDebugStateLabel(debugState: CommandCenterDebugState) {
   return labels[debugState];
 }
 
-function getDebugModeLabel(debugState: CommandCenterDebugState) {
+function getDebugModeLabel(debugState: CommandCenterDebugState, runtime: CommandCenterRuntimeView) {
   return debugState === "live"
-    ? "模拟适配器"
+    ? runtime.sourceLabel
     : `内部调试 / ${getDebugStateLabel(debugState)}`;
 }
 
-function getDebugClientLabel(debugState: CommandCenterDebugState) {
-  return debugState === "live" ? "模拟适配器" : "调试覆盖";
+function getDebugClientLabel(debugState: CommandCenterDebugState, runtime: CommandCenterRuntimeView) {
+  return debugState === "live" ? runtime.sourceLabel : "调试覆盖";
 }
 
 function getCommandCenterStatusLabel(status: CommandCenterSnapshotStatus) {
   const labels = {
     loading: "读取中",
-    ready: "已就绪",
+    ready: "快照已读取",
     error: "读取失败",
     forbidden: "权限不足",
     "invalid-id": "ID 无效"
@@ -99,7 +101,8 @@ function getCommandCenterStatusLabel(status: CommandCenterSnapshotStatus) {
   return labels[status];
 }
 
-function formatCommandDate(value: string) {
+function formatCommandDate(value: string | null) {
+  if (value === null) return "未提供";
   const [year, month, day] = value.split("-");
   const monthNumber = Number(month);
   const dayNumber = Number(day);
@@ -111,38 +114,20 @@ function formatCommandDate(value: string) {
   return `${monthNumber}月${dayNumber}日`;
 }
 
-function formatQueueDue(ageHours: number) {
+function formatQueueDue(ageHours: number | null) {
+  if (ageHours === null) return "等待时间未提供";
   const totalMinutes = Math.round(ageHours * 60);
 
   if (totalMinutes < 60) {
-    return `预计 · ${totalMinutes}分钟`;
+    return `已等待 · ${totalMinutes}分钟`;
   }
 
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
 
   return minutes > 0
-    ? `预计 · ${hours}小时 ${minutes}分钟`
-    : `预计 · ${hours}小时`;
-}
-
-function getProjectPhaseLabel(projectId: string) {
-  const labels: Record<string, string> = {
-    "PRJ-128": "3 / 5",
-    "PRJ-129": "2 / 4",
-    "PRJ-130": "1 / 4",
-    "PRJ-131": "1 / 3"
-  };
-
-  return labels[projectId] ?? "1 / 3";
-}
-
-function getApprovalSeverity(state: "waiting" | "blocked" | "cleared") {
-  if (state === "blocked") {
-    return "高";
-  }
-
-  return state === "waiting" ? "中" : "低";
+    ? `已等待 · ${hours}小时 ${minutes}分钟`
+    : `已等待 · ${hours}小时`;
 }
 
 function getRecoveryStateLabel(
@@ -347,7 +332,7 @@ function CommandCenterStateSurface({
         ? "请求的命令中心快照不可用，命令舱不做推断补齐。"
         : "快照尚未稳定。命令舱保持只读安全状态。";
   const lanes = isLoading ? loadingStatusLanes : errorStatusLanes;
-  const modeLabel = getDebugModeLabel(debugState);
+  const modeLabel = getDebugModeLabel(debugState, runtime);
   const actionLabel = canRetry
     ? isLoading
       ? "待机"
@@ -374,7 +359,7 @@ function CommandCenterStateSurface({
   const overrideTitle = debugState === "live" ? "客户端路径" : "调试闩锁";
   const overrideDetail =
     debugState === "live"
-      ? "模拟适配器在线。"
+      ? `${runtime.sourceLabel} · ${runtime.transportLabel}`
       : `内部调试覆盖 / ${getDebugStateLabel(debugState)}`;
   const recoveryState = getRecoveryStateLabel(debugState, canRetry);
 
@@ -417,7 +402,7 @@ function CommandCenterStateSurface({
                 <div className="status-note-stack">
                   <article>
                     <strong>只读封存</strong>
-                    <span>写入路径保持禁用。</span>
+                    <span>本仪表面板保持只读。</span>
                   </article>
                   <article>
                     <strong>无推断补齐</strong>
@@ -494,7 +479,7 @@ function CommandCenterStateSurface({
                   </article>
                   <article>
                     <span>客户端</span>
-                    <strong>{getDebugClientLabel(debugState)}</strong>
+                    <strong>{getDebugClientLabel(debugState, runtime)}</strong>
                   </article>
                   <article>
                     <span>动作</span>
@@ -538,7 +523,7 @@ function CommandCenterStateSurface({
                 </div>
                 <div className="status-note-stack">
                   <article>
-                    <strong>写入已锁</strong>
+                    <strong>仪表只读</strong>
                     <span>状态仅保留在前端边界。</span>
                   </article>
                   <article>
@@ -598,9 +583,12 @@ export function CommandCenter({
     );
   }
 
-  const primaryProjectId = snapshot.projects[0]?.id;
-  const primaryReviewSessionId = snapshot.reviews[0]?.id;
-  const primaryDeliveryId = snapshot.deliveries[0]?.id;
+  const isBackend = runtime.source === "backend";
+  const isMock = runtime.source === "mock";
+  // v2 display IDs are not v1 entity UUIDs. Live navigation starts at the chooser.
+  const primaryProjectId = isBackend ? undefined : snapshot.projects[0]?.id;
+  const primaryReviewSessionId = isBackend ? undefined : snapshot.reviews[0]?.id;
+  const primaryDeliveryId = isBackend ? undefined : snapshot.deliveries[0]?.id;
   const assetInboxHref = createReadModelHref("asset-inbox", {
     projectId: primaryProjectId,
     reviewSessionId: primaryReviewSessionId,
@@ -634,7 +622,7 @@ export function CommandCenter({
   ] as const;
 
   return (
-    <AppShell>
+    <AppShell studioName={snapshot.studio.name} snapshotAt={snapshot.generatedAt} sourceLabel={runtime.sourceLabel} riskSignalCount={snapshot.riskPulse.length}>
       <main className="command-center cockpit-command-center">
         <section
           className="cockpit-frame"
@@ -643,6 +631,7 @@ export function CommandCenter({
         >
           <div className="cockpit-main">
             <GaugeCluster
+              presentation={isMock ? "mock" : "live"}
               coverage={snapshot.coverage}
               qc={snapshot.qc}
               studio={snapshot.studio}
@@ -665,7 +654,7 @@ export function CommandCenter({
                   <p className="eyebrow" id="projects-title">
                     项目执行
                   </p>
-                  <a href={assetInboxHref}>素材收件箱</a>
+                  <a href="#creative-workbench">创作工作台</a>
                 </div>
                 <section
                   className="production-route-strip"
@@ -685,7 +674,7 @@ export function CommandCenter({
                     aria-label="只读生产链路页面"
                   >
                     {productionRoutes.map((route) => (
-                      <a href={route.href} key={route.label}>
+                      <a href={isBackend ? "#creative-workbench" : route.href} key={route.label}>
                         {route.label}
                       </a>
                     ))}
@@ -711,17 +700,17 @@ export function CommandCenter({
                           size="table"
                         />
                         <span className="cell-stack">
-                          <strong>{project.name}</strong>
-                          <small>{project.client}</small>
+                          <strong><a href="#creative-workbench">{project.name}</a></strong>
+                          <small>{project.client ?? "客户未提供"}</small>
                         </span>
                       </span>
                       <span className="progress-cell" role="cell">
-                        <span>{project.completionPercent}%</span>
+                        <span>{project.completionPercent === null ? "未提供" : `${project.completionPercent}%`}</span>
                         <span className="progress-meter" aria-hidden="true">
-                          <i style={{ width: `${project.completionPercent}%` }} />
+                          <i style={{ width: project.completionPercent === null ? "0" : `${project.completionPercent}%` }} />
                         </span>
                       </span>
-                      <span role="cell">{getProjectPhaseLabel(project.id)}</span>
+                      <span role="cell">{project.sourceStatus ?? statusLabels[project.status]}</span>
                       <span role="cell">{formatCommandDate(project.dueDate)}</span>
                     </div>
                   ))}
@@ -761,13 +750,16 @@ export function CommandCenter({
               >
                 <div className="panel-heading">
                   <p className="eyebrow" id="ai-title">
-                    Agent 巡检
+                    Agent 巡检{isMock ? "（模拟）" : ""}
                   </p>
                   <a className="panel-heading-action" href="#inspections">
                     查看全部
                   </a>
                 </div>
                 <div className="inspection-feed">
+                  {snapshot.aiInspectionFeed.length === 0 ? (
+                    <p>当前快照未提供视觉评价。请在创作工作台查看已录入的评价与证据类型。</p>
+                  ) : null}
                   {snapshot.aiInspectionFeed.map((event) => (
                     <article key={event.id}>
                       <AssetThumb
@@ -810,7 +802,9 @@ export function CommandCenter({
               </div>
               <div className="risk-detail-list" aria-label="风险只读详情">
                 {snapshot.riskPulse.map((risk) => {
-                  const detail = getCommandCenterRiskDetail(risk);
+                  const detail = isBackend
+                    ? { impact: risk.label, owner: "未提供", action: "在创作工作台核对来源。" }
+                    : getCommandCenterRiskDetail(risk);
 
                   return (
                     <article
@@ -836,7 +830,7 @@ export function CommandCenter({
                   );
                 })}
               </div>
-              <a className="panel-link" href={qcRetouchHref}>
+              <a className="panel-link" href={isBackend ? "#creative-workbench" : qcRetouchHref}>
                 打开质检 / 精修
               </a>
             </section>
@@ -863,9 +857,9 @@ export function CommandCenter({
                     />
                     <div>
                       <strong>{item.title}</strong>
-                      <span>{item.projectId}</span>
+                      <span>{item.projectId ?? "项目关联未提供"}</span>
                       <small className={`queue-severity queue-severity-${item.state}`}>
-                        {getApprovalSeverity(item.state)}
+                        {item.priority ? `优先级 ${item.priority}` : approvalLabels[item.state]}
                       </small>
                     </div>
                     <small className={`state state-${item.state}`}>
@@ -876,7 +870,9 @@ export function CommandCenter({
               </div>
               <div className="approval-detail-list" aria-label="审批只读详情">
                 {snapshot.approvalQueue.map((item) => {
-                  const detail = getCommandCenterApprovalDetail(item);
+                  const detail = isBackend
+                    ? { typeLabel: "待处理项", stateLabel: "待核对", impact: item.title, nextStep: "在创作工作台核对项目与原始状态。" }
+                    : getCommandCenterApprovalDetail(item);
 
                   return (
                     <article
@@ -895,19 +891,19 @@ export function CommandCenter({
                   );
                 })}
               </div>
-              <a className="panel-link" href={reviewGalleryHref}>
+              <a className="panel-link" href={isBackend ? "#creative-workbench" : reviewGalleryHref}>
                 打开审核画廊
               </a>
             </section>
 
             <div className="side-status-grid" aria-label="只读侧栏状态">
-              <a className="side-status-card side-status-alert" href={qcRetouchHref}>
+              <a className="side-status-card side-status-alert" href={isBackend ? "#creative-workbench" : qcRetouchHref}>
                 <strong>巡检预警</strong>
-                <span>{snapshot.aiInspectionFeed.length} 项</span>
+                <span>{isBackend ? "未提供" : `${snapshot.aiInspectionFeed.length} 项（模拟）`}</span>
               </a>
-              <a className="side-status-card" href={deliveryReadinessHref}>
+              <a className="side-status-card" href={isBackend ? "#creative-workbench" : deliveryReadinessHref}>
                 <strong>交付包</strong>
-                <span>交付准备</span>
+                <span>{snapshot.deliveries.length} 个预览交付包</span>
               </a>
             </div>
           </aside>

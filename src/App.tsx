@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { AuthGate } from "./features/auth/AuthGate";
 import type { AppRoute } from "./features/auth/authTypes";
 import { getPageAccess, getPageAccessLabel } from "./features/auth/authTypes";
@@ -10,6 +10,8 @@ import {
   QcRetouchQueuePage,
   ReviewGalleryPage
 } from "./features/read-models/ReadModelPages";
+
+const CreativeWorkbench = lazy(() => import("./features/workbench/CreativeWorkbench").then(module => ({default: module.CreativeWorkbench})));
 
 interface ParsedAppRoute {
   route: AppRoute;
@@ -25,6 +27,7 @@ const commandCenterSceneRoutes = new Set<AppRoute>([
 ]);
 
 const readModelRoutes = new Set<AppRoute>([
+  "creative-workbench",
   "asset-inbox",
   "qc-retouch",
   "review-gallery",
@@ -101,6 +104,9 @@ export default function App() {
   };
 
   const children = () => {
+    if (route === "creative-workbench") {
+      return <Suspense fallback={<p role="status">正在载入创作工作台…</p>}><CreativeWorkbench accessToken={accessToken} role={auth.role} authRuntime={runtime} params={params} /></Suspense>;
+    }
     if (route === "asset-inbox") {
       return (
         <AssetInboxPage

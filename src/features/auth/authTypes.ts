@@ -33,6 +33,7 @@ export interface AuthState {
 }
 
 export type AppRoute =
+  | "creative-workbench"
   | "command-center"
   | "risk"
   | "projects"
@@ -61,6 +62,15 @@ export const pageAccessLabels: Record<PageAccess, string> = {
 };
 
 export const pageRoleMatrix: Record<AppRoute, Record<Role, PageAccess>> = {
+  "creative-workbench": {
+    admin: FULL,
+    operator: READ,
+    photographer: NONE,
+    retoucher: NONE,
+    qc_reviewer: NONE,
+    client: NONE,
+    delivery_approver: NONE
+  },
   "command-center": {
     admin: FULL,
     operator: FULL,

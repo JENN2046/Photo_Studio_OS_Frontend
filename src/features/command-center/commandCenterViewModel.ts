@@ -22,7 +22,8 @@ export const statusLabels: Record<WorkflowStatus, string> = {
 export const riskLabels: Record<RiskLevel, string> = {
   low: "低风险",
   medium: "需关注",
-  high: "高风险"
+  high: "高风险",
+  unknown: "等级未提供"
 };
 
 export const approvalLabels: Record<ApprovalState, string> = {
@@ -52,7 +53,7 @@ export const stageStateLabels: Record<WorkflowStageState, string> = {
 };
 
 export interface CommandCenterViewModel {
-  assetTotal: number;
+  assetTotal: number | null;
   pendingApprovals: number;
   activeReviewItems: number;
   deliveryAssets: number;
@@ -92,6 +93,11 @@ const riskDetailsById: Record<string, CommandCenterRiskDetail> = {
 };
 
 const fallbackRiskDetails: Record<RiskLevel, CommandCenterRiskDetail> = {
+  unknown: {
+    impact: "风险等级未提供。",
+    owner: "未提供",
+    action: "核对风险来源。"
+  },
   high: {
     impact: "高风险信号可能影响审核或交付节奏。",
     owner: "运营值班",
@@ -113,10 +119,9 @@ export function createCommandCenterViewModel(
   snapshot: CommandCenterSnapshot
 ): CommandCenterViewModel {
   return {
-    assetTotal: snapshot.projects.reduce(
-      (total, project) => total + project.assetCount,
-      0
-    ),
+    assetTotal: snapshot.projects.some((project) => project.assetCount === null)
+      ? null
+      : snapshot.projects.reduce((total, project) => total + (project.assetCount ?? 0), 0),
     pendingApprovals: snapshot.approvalQueue.filter(
       (item) => item.state !== "cleared"
     ).length,

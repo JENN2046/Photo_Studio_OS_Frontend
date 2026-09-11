@@ -1,5 +1,5 @@
+import { resolveBackendRuntime } from "./backendRuntime";
 import type {
-  ApprovalState,
   ApprovalType,
   CommandCenterSnapshot,
   DeliveryPackageSummary,
@@ -427,6 +427,8 @@ function createReadModelUrl(
   path: string,
   query: object
 ): string {
+  const runtime = resolveBackendRuntime(baseUrl);
+  if (runtime.source === "mock") throw new Error("显式模拟模式不发起后端读取。");
   const searchParams = new URLSearchParams();
 
   Object.entries(query).forEach(([key, value]) => {
@@ -436,20 +438,12 @@ function createReadModelUrl(
   });
 
   const queryString = searchParams.toString();
-  return `${baseUrl.replace(/\/$/, "")}${path}${
+  return `${runtime.baseUrl.replace(/\/$/, "")}${path}${
     queryString ? `?${queryString}` : ""
   }`;
 }
 
-function mapCommandCenterV2(source: BackendCommandCenterV2): CommandCenterSnapshot {
-  const firstAssetId = source.previews.assets[0]?.id ?? "backend-v2";
-  const readinessPercent = Math.round(
-    (source.coverage.skuCoveragePercent * 0.45 +
-      source.qc.qcHealthPercent * 0.45 +
-      (source.approvalQueue.length === 0 ? 10 : 0)) *
-      10
-  ) / 10;
-
+export function mapCommandCenterV2(source: BackendCommandCenterV2): CommandCenterSnapshot {
   return {
     generatedAt: source.generatedAt,
     studio: {
@@ -457,8 +451,8 @@ function mapCommandCenterV2(source: BackendCommandCenterV2): CommandCenterSnapsh
       locationLabel: source.studio.timezone,
       modeLabel: source.studio.mode === "read_only" ? "只读后端 v2" : source.studio.mode,
       operator: source.studio.organizationId,
-      readinessPercent,
-      activeProjectCount: source.previews.projects.length
+      readinessPercent: null,
+      activeProjectCount: null
     },
     coverage: {
       skuCoveragePercent: source.coverage.skuCoveragePercent,
@@ -482,46 +476,47 @@ function mapCommandCenterV2(source: BackendCommandCenterV2): CommandCenterSnapsh
     projects: source.previews.projects.map((project) => ({
       id: project.id,
       name: project.name,
-      client: "后端项目",
-      owner: source.studio.name,
+      client: null,
+      owner: null,
       status: workflowStatus(project.status),
-      dueDate: "待设置",
-      skuCount: source.coverage.totalSkus,
-      assetCount: source.previews.assets.length,
-      reviewCount: source.previews.reviews.length,
-      deliveryCount: source.previews.deliveries.length,
-      riskLevel: source.riskPulse.length > 0 ? "medium" : "low",
-      completionPercent: Math.round(source.coverage.skuCoveragePercent)
+      sourceStatus: project.status,
+      dueDate: null,
+      skuCount: null,
+      assetCount: null,
+      reviewCount: null,
+      deliveryCount: null,
+      riskLevel: null,
+      completionPercent: null
     })),
     skus: source.previews.skus.map((sku) => ({
       id: sku.id,
-      projectId: source.previews.projects[0]?.id ?? "",
+      projectId: null,
       label: sku.name,
       productLine: sku.code,
       status: workflowStatus(sku.status),
-      heroAssetId: firstAssetId,
-      assetCount: source.previews.assets.length,
-      reviewState: approvalStateFromWorkflow(sku.status)
+      heroAssetId: null,
+      assetCount: null,
+      reviewState: null
     })),
     assets: source.previews.assets.map((asset) => ({
       id: asset.id,
-      skuId: source.previews.skus[0]?.id ?? "",
+      skuId: null,
       fileName: asset.originalFilename ?? asset.id,
-      usage: "hero",
-      inspectionScore: inspectionScore(asset.status),
+      usage: null,
+      inspectionScore: null,
       status: workflowStatus(asset.status)
     })),
     reviews: source.previews.reviews.map((review) => ({
       id: review.id,
-      projectId: source.previews.projects[0]?.id ?? "",
+      projectId: null,
       label: review.title,
       state: review.pendingCount > 0 ? "waiting" : "cleared",
-      reviewer: "客户审核",
+      reviewer: null,
       pendingItems: review.pendingCount
     })),
     deliveries: source.previews.deliveries.map((delivery) => ({
       id: delivery.id,
-      projectId: source.previews.projects[0]?.id ?? "",
+      projectId: null,
       label: `交付包 ${delivery.id.slice(0, 8)}`,
       status: deliveryStatus(delivery.status),
       assetCount: delivery.itemCount
@@ -530,9 +525,10 @@ function mapCommandCenterV2(source: BackendCommandCenterV2): CommandCenterSnapsh
       id: item.id,
       type: approvalTypeByKind[item.kind] ?? "review",
       title: item.subtitle,
-      projectId: item.href,
-      state: item.priority === "high" ? "blocked" : "waiting",
-      ageHours: 0
+      projectId: null,
+      state: "waiting",
+      priority: item.priority,
+      ageHours: null
     })),
     riskPulse: source.riskPulse.map((risk) => ({
       id: risk.id,
@@ -543,15 +539,11 @@ function mapCommandCenterV2(source: BackendCommandCenterV2): CommandCenterSnapsh
     activityTimeline: source.activityTimeline.map((event) => ({
       id: event.id,
       at: formatActivityTime(event.at),
-      actor: event.actorName ?? event.entityType,
+      actor: event.actorName ?? "未提供",
       summary: event.summary
     })),
-    aiInspectionFeed: source.riskPulse.map((risk) => ({
-      id: `agent-${risk.id}`,
-      assetId: risk.href,
-      score: risk.severity === "high" ? 72 : risk.severity === "medium" ? 84 : 94,
-      finding: risk.consequence
-    }))
+    // The v2 snapshot contains no visual evaluation evidence.
+    aiInspectionFeed: []
   };
 }
 
@@ -581,25 +573,14 @@ function workflowStageState(value: string): WorkflowStageState {
 function riskLevel(value: string): RiskLevel {
   if (value === "high" || value === "critical") return "high";
   if (value === "medium") return "medium";
-  return "low";
-}
-
-function approvalStateFromWorkflow(value: string): ApprovalState {
-  if (value.includes("failed") || value.includes("revision")) return "blocked";
-  if (value.includes("pending") || value.includes("review")) return "waiting";
-  return "cleared";
+  if (value === "low") return "low";
+  return "unknown";
 }
 
 function deliveryStatus(value: string): DeliveryPackageSummary["status"] {
   if (value === "ready" || value === "delivered") return "ready";
   if (value === "preparing") return "draft";
   return "sentinel";
-}
-
-function inspectionScore(value: string): number {
-  if (value.includes("failed")) return 72;
-  if (value.includes("pending") || value.includes("retouch")) return 84;
-  return 94;
 }
 
 function formatActivityTime(value: string): string {
