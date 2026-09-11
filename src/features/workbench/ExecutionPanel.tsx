@@ -12,6 +12,10 @@ export function ExecutionPanel({client, prefix, unitId, recipeId, localRecipes, 
   const [grant, setGrant] = useState<Grant | null>(null); const [operation, setOperation] = useState<Operation | null>(null); const [control, setControl] = useState<LocalControl | null>(null);
   const historyEpoch = useRef(0);
   const historyRequests = useRef<{ entries?: object; events?: object }>({});
+  const historyContext = useRef({client, prefix, unitId, grantId, operationId, refresh});
+  if (historyContext.current.client !== client || historyContext.current.prefix !== prefix || historyContext.current.unitId !== unitId || historyContext.current.grantId !== grantId || historyContext.current.operationId !== operationId || historyContext.current.refresh !== refresh) historyContext.current = {client, prefix, unitId, grantId, operationId, refresh};
+  const historyScope = historyContext.current;
+  const historyReadyScope = useRef(historyScope); const historyReady = historyReadyScope.current === historyScope;
   const [readError, setReadError] = useState(""); const [tick, setTick] = useState(0);
   const [startsAt, setStartsAt] = useState(() => dateInput(new Date())); const [expiresAt, setExpiresAt] = useState(() => dateInput(new Date(Date.now() + 3600000)));
   const [maxAttempts, setMaxAttempts] = useState(3); const [maxAttemptCredits, setMaxAttemptCredits] = useState(1); const [maxTotalCredits, setMaxTotalCredits] = useState(3); const [wallClock, setWallClock] = useState(30000); const [reservation, setReservation] = useState(1);
@@ -32,7 +36,8 @@ export function ExecutionPanel({client, prefix, unitId, recipeId, localRecipes, 
     ]).then(([nextGrant, nextOperation, nextControl]) => { if (!abort.signal.aborted) { setGrant(nextGrant); setOperation(nextOperation); setControl(nextControl); setDetailsReadKey(detailsKey); } }).catch(error => { if (!abort.signal.aborted) setReadError(error.message); });
     return () => abort.abort();
   }, [client, prefix, grantId, operationId, refresh, tick, detailsKey]);
-  useEffect(() => { historyEpoch.current += 1; setOperation(null); setGrant(null); setEntries(null); setEvents(null); setHistoryError(""); setReconcileId(""); setTaskRef(""); setStopConfirmation(null); }, [grantId, operationId]);
+  useEffect(() => { setOperation(null); setGrant(null); setReconcileId(""); setTaskRef(""); setStopConfirmation(null); }, [grantId, operationId]);
+  useEffect(() => { historyEpoch.current += 1; historyRequests.current = {}; setEntries(null); setEvents(null); setHistoryError(""); historyReadyScope.current = historyScope; }, [historyScope]);
   useEffect(() => {
     const timer = window.setInterval(() => { if (!document.hidden && (operation?.attempts?.some(attempt => !attempt.settledAt) || control?.pool.busy)) setTick(value => value + 1); }, 4000);
     return () => window.clearInterval(timer);
@@ -47,13 +52,14 @@ export function ExecutionPanel({client, prefix, unitId, recipeId, localRecipes, 
   const confirmedStopped = !detailDisabled && Boolean(stopConfirmation && stopContext && (Object.keys(stopContext) as Array<keyof StopConfirmation>).every(key => stopConfirmation[key] === stopContext[key]));
   const requiresTaskRef = ["attach_known_task", "confirmed_succeeded", "confirmed_failed"].includes(outcome);
   const requestHistory = async (kind: "entries" | "events", more: boolean) => {
+    if (historyContext.current !== historyScope || historyReadyScope.current !== historyScope) return;
     if (more && historyRequests.current[kind]) return;
     const request = {}; historyRequests.current[kind] = request;
     setHistoryError(""); const epoch = historyEpoch.current; const prior = kind === "entries" ? entries : events;
     const path = kind === "entries" ? `${prefix}/execution-grants/${grantId}/budget-entries` : `${prefix}/execution-operations/${operationId}/events`;
-    try { const next = await client.get<Page<BudgetEntry & ExecutionEvent>>(`${path}?limit=25${more && prior?.nextCursor ? `&cursor=${encodeURIComponent(prior.nextCursor)}` : ""}`); if (epoch !== historyEpoch.current || historyRequests.current[kind] !== request) return; const merged = {...next, items: more ? [...(prior?.items ?? []), ...next.items] : next.items}; if (kind === "entries") setEntries(merged as Page<BudgetEntry>); else setEvents(merged as Page<ExecutionEvent>); }
-    catch (error) { if (epoch === historyEpoch.current && historyRequests.current[kind] === request) setHistoryError(error instanceof Error ? error.message : "历史读取失败。"); }
-    finally { if (historyRequests.current[kind] === request) delete historyRequests.current[kind]; }
+    try { const next = await client.get<Page<BudgetEntry & ExecutionEvent>>(`${path}?limit=25${more && prior?.nextCursor ? `&cursor=${encodeURIComponent(prior.nextCursor)}` : ""}`); if (historyContext.current !== historyScope || epoch !== historyEpoch.current || historyRequests.current[kind] !== request) return; const merged = {...next, items: more ? [...(prior?.items ?? []), ...next.items] : next.items}; if (kind === "entries") setEntries(merged as Page<BudgetEntry>); else setEvents(merged as Page<ExecutionEvent>); }
+    catch (error) { if (historyContext.current === historyScope && epoch === historyEpoch.current && historyRequests.current[kind] === request) setHistoryError(error instanceof Error ? error.message : "历史读取失败。"); }
+    finally { if (historyContext.current === historyScope && historyRequests.current[kind] === request) delete historyRequests.current[kind]; }
   };
   return <Panel title="执行授权、预算与本地 Worker">
     <p>每次执行须先明确授权、创建操作并预留预算。关闭页面或请求超时不代表 Worker 已停止。</p>
@@ -76,7 +82,7 @@ export function ExecutionPanel({client, prefix, unitId, recipeId, localRecipes, 
         {!attempt.settledAt && <button disabled={detailDisabled} onClick={() => void run("恢复执行记录", async () => { await client.post(`${prefix}/execution-attempts/${attempt.id}/recover`, {}); })}>核对过期状态</button>}
       </article>)}<button onClick={() => void requestHistory("events", false)}>读取执行事件</button>
     </div>}
-    <div className="wb-history">{entries && <><h3>预算流水 · 已加载 {entries.items.length} / {entries.total}</h3>{entries.items.map(item => <p key={item.id}>{item.phase} · 预留 {formatCredits(item.reservationCredits)} · 消耗 {formatCredits(item.consumedCredits)} · 释放 {formatCredits(item.releasedCredits)} · <Id value={item.id} /></p>)}{entries.hasMore && <button onClick={() => void requestHistory("entries", true)}>加载更多预算流水</button>}</>}{events && <><h3>执行事件 · 已加载 {events.items.length} / {events.total}</h3>{events.items.map(item => <p key={item.id}>{item.eventType ?? item.kind} · {item.outcome ?? ""} · <Id value={item.id} /></p>)}{events.hasMore && <button onClick={() => void requestHistory("events", true)}>加载更多执行事件</button>}</>}{historyError && <p role="alert">{historyError}</p>}</div>
+    <div className="wb-history">{historyReady && entries && <><h3>预算流水 · 已加载 {entries.items.length} / {entries.total}</h3>{entries.items.map(item => <p key={item.id}>{item.phase} · 预留 {formatCredits(item.reservationCredits)} · 消耗 {formatCredits(item.consumedCredits)} · 释放 {formatCredits(item.releasedCredits)} · <Id value={item.id} /></p>)}{entries.hasMore && <button onClick={() => void requestHistory("entries", true)}>加载更多预算流水</button>}</>}{historyReady && events && <><h3>执行事件 · 已加载 {events.items.length} / {events.total}</h3>{events.items.map(item => <p key={item.id}>{item.eventType ?? item.kind} · {item.outcome ?? ""} · <Id value={item.id} /></p>)}{events.hasMore && <button onClick={() => void requestHistory("events", true)}>加载更多执行事件</button>}</>}{historyReady && historyError && <p role="alert">{historyError}</p>}</div>
     {control && <div className="wb-control"><h3>本地 Worker 控制</h3><p>模式 {control.mode} · 修订 {control.revision} · 容量 {control.pool.busy ? "占用" : "空闲"} · {control.pool.phase}{control.pool.stopRequested ? " · 已请求停止，等待停止证据" : ""}</p><p>暂停和排空发出停止请求；只有真实停止后才能释放容量。手动运行不代表系统感知用户活动。</p>
       <form onSubmit={event => { event.preventDefault(); if (controlDisabled || controlPending || (controlMode === "RUNNING" && startControlBlocked)) return; setControlPending(true); void runControl("更改本地控制", async () => { await client.post(`${prefix}/local-worker/control`, {expectedRevision: control.revision, mode: controlMode, reason}); }, controlMode).finally(() => setControlPending(false)); }}><fieldset disabled={controlDisabled || controlPending}><Field label="控制模式"><select value={controlMode} onChange={event => setControlMode(event.target.value)}><option value="PAUSED">暂停</option><option value="DRAINING">排空并停止</option><option value="RUNNING">允许手动运行</option></select></Field><Field label="执行控制理由"><textarea required maxLength={500} value={reason} onChange={event => setReason(event.target.value)} /></Field><button type="submit" disabled={startControlBlocked && controlMode === "RUNNING"}>提交控制变更</button></fieldset></form>
     </div>}
