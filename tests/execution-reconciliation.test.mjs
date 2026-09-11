@@ -187,3 +187,43 @@ test('stale read receipts cannot unlock a later committed or newly selected scop
   assert.equal(ui.panel().refresh,refreshed);assert.equal(ui.panel().disabled,false);
   assert.equal(ui.calls.filter(c=>c.path==='/allocate').length,1);
  });
+
+function productionNamed(ui, name) {
+  return {...ui.production,deliverables:[{...ui.production.deliverables[0],name}]};
+}
+function assertLatestRefresh(ui, refresh, locked) {
+  const labels=ui.nodes(ui.render(),n=>n.type==='option').map(n=>n.props.children);
+  assert.ok(labels.includes('latest-read'));assert.ok(!labels.includes('earlier-read'));
+  assert.equal(ui.panel().refresh,refresh);assert.equal(ui.panel().disabled,locked);
+}
+test('concurrent same-scope refreshes without a POST publish only the newest read',async()=>{
+  const ui=workbenchFixture();await ui.click('刷新持久记录');
+  const earlier=deferred();let reads=0;
+  ui.setGetHandler(path=>path.endsWith('/production')?(++reads===1?earlier.promise:productionNamed(ui,'latest-read')):undefined);
+  await ui.click('刷新持久记录');await ui.click('刷新持久记录');
+  const refresh=ui.panel().refresh;assertLatestRefresh(ui,refresh,false);
+  earlier.resolve(productionNamed(ui,'earlier-read'));await flush();
+  assertLatestRefresh(ui,refresh,false);assert.equal(ui.calls.filter(c=>c.method==='POST').length,0);
+});
+for(const earlierConfirmed of [false,true]) {
+  test(`UNKNOWN concurrent reads reject the older ${earlierConfirmed?'confirmed':'ordinary'} ticket for publishing and unlocking`,async()=>{
+    const ui=workbenchFixture();await ui.click('刷新持久记录');
+    ui.setPostHandler(async()=>{throw new ui.WorkbenchError(0,true);});
+    const panel=ui.panel();await panel.run('未知提交',()=>panel.client.post('/allocate',{}));
+    assert.equal(ui.panel().disabled,true);
+    const earlier=deferred();let reads=0;
+    ui.setGetHandler(path=>path.endsWith('/production')?(++reads===1?earlier.promise:productionNamed(ui,'latest-read')):undefined);
+    const ordinary='刷新持久记录',confirmed='我已核对持久记录';
+    await ui.click(earlierConfirmed?confirmed:ordinary);
+    await ui.click(earlierConfirmed?ordinary:confirmed);
+    const refresh=ui.panel().refresh;assertLatestRefresh(ui,refresh,earlierConfirmed);
+    earlier.resolve(productionNamed(ui,'earlier-read'));await flush();
+    assertLatestRefresh(ui,refresh,earlierConfirmed);
+    if(earlierConfirmed) {
+      // A fresh ordinary read can display data, but stale confirmation cannot unlock it.
+      assert.equal(await ui.panel().run('重复提交',()=>panel.client.post('/allocate',{})),false);
+      await ui.click(confirmed);assert.equal(ui.panel().disabled,false);
+    }
+    assert.equal(ui.calls.filter(c=>c.path==='/allocate').length,1);
+  });
+}

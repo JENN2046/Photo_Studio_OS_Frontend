@@ -78,7 +78,7 @@ export function createScopedWriteGate() {
     committed(ticket: { scope: object; label: string }) { if (scope === ticket.scope && pending === ticket) { recovery = "committed_refresh"; revision += 1; } },
     unknown(value: object) { if (scope === value) { recovery = "unknown"; revision += 1; } },
     finish(ticket: { scope: object; label: string }) { if (scope !== ticket.scope || pending !== ticket) return false; pending = null; return true; },
-    beginRead(value: object) { if (scope !== value) return null; if (!recovery) { recovery = "refresh_required"; revision += 1; } return { scope: value, revision }; },
+    beginRead(value: object) { if (scope !== value) return null; if (!recovery) recovery = "refresh_required"; revision += 1; return { scope: value, revision }; },
     isReadCurrent(ticket: { scope: object; revision: number }) { return scope === ticket.scope && revision === ticket.revision; },
     acceptRead(ticket: { scope: object; revision: number }, confirmedUnknown = false) { if (scope !== ticket.scope || revision !== ticket.revision) return false; if (recovery === "unknown" && !confirmedUnknown) return false; recovery = null; return true; }
   };

@@ -6,6 +6,24 @@ export class WorkbenchError extends Error {
   }
 }
 export interface WorkbenchClient { get<T>(path: string, signal?: AbortSignal): Promise<T>; post<T>(path: string, body: unknown): Promise<T>; media(path: string, signal: AbortSignal): Promise<Blob> }
+// One scheduler per loaded application module, shared across client replacement
+// and origins. Only admission is shared: each job owns its read closure, token,
+// callback and result. A cancelled active job still occupies this same slot.
+type MediaJob = { read: () => Promise<Blob>; signal: AbortSignal;
+  resolve: (blob: Blob) => void; reject: (error: unknown) => void; onAbort: () => void };
+const mediaQueue: MediaJob[] = []; let mediaActive = false;
+const abortError = () => new DOMException("媒体读取已取消。", "AbortError");
+function drainMedia() {
+  if (mediaActive) return;
+  const job = mediaQueue.shift(); if (!job) return;
+  job.signal.removeEventListener("abort", job.onAbort);
+  if (job.signal.aborted) { job.reject(abortError()); drainMedia(); return; }
+  mediaActive = true;
+  void job.read().then(
+    blob => job.signal.aborted ? job.reject(abortError()) : job.resolve(blob),
+    error => job.reject(job.signal.aborted ? abortError() : error)
+  ).finally(() => { mediaActive = false; drainMedia(); });
+}
 export function createWorkbenchClient(readBase: string | undefined, origin: string, token: string | null, writeAllowed: boolean, fetcher: typeof fetch = fetch, onUnauthorized: () => void = () => undefined): WorkbenchClient {
   const base = apiBaseFromReadBase(readBase, origin);
   const headers = () => {
@@ -48,13 +66,6 @@ export function createWorkbenchClient(readBase: string | undefined, origin: stri
     if (!envelope || typeof envelope !== "object" || !("data" in envelope)) throw new WorkbenchError(0, method === "POST");
     return (envelope as {data: T}).data;
   }
-  // Per-client read admission only; POST and Core's own capacity are unchanged.
-  // Cancelled queued jobs never fetch. A cancelled active subscriber waits for
-  // bounded body consumption, preventing immediate remounts from piling up GETs.
-  type MediaJob = { target: string; requestHeaders: HeadersInit; signal: AbortSignal;
-    resolve: (blob: Blob) => void; reject: (error: unknown) => void; onAbort: () => void };
-  const mediaQueue: MediaJob[] = []; let mediaActive = false;
-  const abortError = () => new DOMException("媒体读取已取消。", "AbortError");
   async function readMedia(target: string, requestHeaders: HeadersInit): Promise<Blob> {
     const controller = new AbortController();
     const timeoutError = new DOMException("媒体读取超时，请刷新后核对。", "TimeoutError");
@@ -82,17 +93,6 @@ export function createWorkbenchClient(readBase: string | undefined, origin: stri
     try { return await Promise.race([consume(), timeout]); }
     finally { clearTimeout(timer!); }
   }
-  function drainMedia() {
-    if (mediaActive) return;
-    const job = mediaQueue.shift(); if (!job) return;
-    job.signal.removeEventListener("abort", job.onAbort);
-    if (job.signal.aborted) { job.reject(abortError()); drainMedia(); return; }
-    mediaActive = true;
-    void readMedia(job.target, job.requestHeaders).then(
-      blob => job.signal.aborted ? job.reject(abortError()) : job.resolve(blob),
-      error => job.reject(job.signal.aborted ? abortError() : error)
-    ).finally(() => { mediaActive = false; drainMedia(); });
-  }
   return {
     get: <T>(path: string, signal?: AbortSignal) => request<T>(path, "GET", undefined, signal),
     post: <T>(path: string, body: unknown) => request<T>(path, "POST", body),
@@ -101,7 +101,7 @@ export function createWorkbenchClient(readBase: string | undefined, origin: stri
       const target = url(path), requestHeaders = headers();
       if (mediaActive && mediaQueue.length >= 4) return Promise.reject(new WorkbenchError(429));
       return new Promise<Blob>((resolve, reject) => {
-        const job: MediaJob = { target, requestHeaders, signal, resolve, reject, onAbort: () => {
+        const job: MediaJob = { read: () => readMedia(target, requestHeaders), signal, resolve, reject, onAbort: () => {
           const index = mediaQueue.indexOf(job);
           if (index >= 0) { mediaQueue.splice(index, 1); signal.removeEventListener("abort", job.onAbort); reject(abortError()); }
         } };

@@ -258,3 +258,56 @@ test('media deadline aborts stalled fetch or body and releases the queue without
     if(stage==='body')assert.equal(canceled,true);
   }
 });
+
+test('a canceled old client read holds shared admission across new tokens and base origins', async () => {
+  const old = mediaQueueFixture(), abort = new AbortController();
+  const active = old.client.media('/projects/old', abort.signal); active.catch(() => {});
+  const calls = []; const next = createWorkbenchClient('https://next.invalid/api/v2/read', 'https://page.invalid', 'synthetic-next-token', false,
+    async (url, options) => { calls.push({url,options}); return new Response('new-only', {headers:{'content-type':'image/png'}}); });
+  await mediaFlush(); abort.abort();
+  const pending = next.media('/projects/next', new AbortController().signal); await mediaFlush();
+  assert.equal(calls.length, 0); assert.equal(old.calls[0].options.signal.aborted, false);
+  old.streams[0].finish(); await assert.rejects(active, error => error.name === 'AbortError');
+  assert.equal(await (await pending).text(), 'new-only'); assert.equal(calls.length, 1);
+  assert.equal(calls[0].url, 'https://next.invalid/api/v1/projects/next');
+  assert.equal(calls[0].options.headers.Authorization, 'Bearer synthetic-next-token');
+  assert.equal(old.calls[0].options.headers.Authorization, `Bearer ${fixtureToken}`);
+});
+test('shared media slots never share client credentials, unauthorized callbacks or blobs', async () => {
+  const calls = [], unauthorized = [];
+  const make = (name, status) => createWorkbenchClient(`https://${name}.invalid/api/v2/read`, 'https://page.invalid', `synthetic-${name}`, false,
+    async (url, options) => { calls.push({name,url,headers:options.headers}); return new Response(name, {status,headers:{'content-type':'image/png'}}); }, () => unauthorized.push(name));
+  const denied = make('denied',401).media('/projects/media',new AbortController().signal); denied.catch(() => {});
+  const first = make('first',200).media('/projects/media',new AbortController().signal);
+  const second = make('second',200).media('/projects/media',new AbortController().signal);
+  await assert.rejects(denied, error => error.status === 401);
+  const a = await first, b = await second; assert.notEqual(a,b); assert.equal(await a.text(),'first'); assert.equal(await b.text(),'second');
+  assert.deepEqual(unauthorized,['denied']); assert.deepEqual(calls.map(call => call.name),['denied','first','second']);
+  for (const call of calls) { assert.equal(call.headers.Authorization,`Bearer synthetic-${call.name}`); assert.ok(call.url.startsWith(`https://${call.name}.invalid/api/v1/`)); }
+});
+test('new client instances share the four-job queue cap and queued cancellation frees one shared place', async () => {
+  const old = mediaQueueFixture(), active = old.client.media('/projects/active',new AbortController().signal);
+  let fetched = 0;
+  const make = () => createWorkbenchClient(readBase,'http://localhost',fixtureToken,false,async () => { fetched++; return new Response('png',{headers:{'content-type':'image/png'}}); });
+  const controllers = Array.from({length:4},() => new AbortController());
+  const pending = controllers.map(c => { const p = make().media('/projects/queued',c.signal); p.catch(() => {}); return p; });
+  await assert.rejects(make().media('/projects/excess',new AbortController().signal),error => error.status === 429); assert.equal(fetched,0);
+  controllers[0].abort(); await assert.rejects(pending[0],error => error.name === 'AbortError');
+  const replacement = make().media('/projects/replacement',new AbortController().signal);
+  for (const controller of controllers.slice(1)) controller.abort();
+  for (const p of pending.slice(1)) await assert.rejects(p,error => error.name === 'AbortError');
+  old.streams[0].finish(); await active; assert.equal((await replacement).size,3); assert.equal(fetched,1);
+});
+test('an old client timeout frees shared admission for a new client without retrying either request', async t => {
+  t.mock.timers.enable({apis:['setTimeout']});
+  let oldCalls=0,newCalls=0,oldSignal;
+  const old=createWorkbenchClient(readBase,'http://localhost','synthetic-old',false,async (_url,options)=>{
+    oldCalls++;oldSignal=options.signal;return new Promise((_,reject)=>options.signal.addEventListener('abort',()=>reject(new DOMException('fixture aborted','AbortError')),{once:true}));
+  });
+  const fresh=createWorkbenchClient('https://fresh.invalid/api/v2/read','https://page.invalid','synthetic-fresh',false,async ()=>{newCalls++;return new Response('fresh',{headers:{'content-type':'image/png'}});});
+  const active=old.media('/projects/stalled',new AbortController().signal);active.catch(()=>{});
+  const pending=fresh.media('/projects/fresh',new AbortController().signal);await mediaFlush();
+  assert.equal(oldCalls,1);assert.equal(newCalls,0);t.mock.timers.tick(30000);
+  await assert.rejects(active,error=>error.name==='TimeoutError');assert.equal(await (await pending).text(),'fresh');
+  assert.equal(oldSignal.aborted,true);assert.equal(oldCalls,1);assert.equal(newCalls,1);
+});
