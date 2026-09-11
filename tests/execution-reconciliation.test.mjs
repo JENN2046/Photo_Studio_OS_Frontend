@@ -38,7 +38,10 @@ function fixture({local = false, uncertain = false, recipeId = "recipe-fixture",
   function formWithButton(text) { return nodes(render(), node => node.type === 'form' && nodes(node, child => child.type === 'button' && child.props.children === text).length)[0]; }
   async function submit(text) { const form = formWithButton(text); assert.ok(form); form.props.onSubmit({preventDefault() {}}); await Promise.all(pending); }
   change('待对账尝试', attemptId);
-  return {calls, change, field, render, nodes, submit, formWithButton, props};
+  return {calls, change, field, render, nodes, submit, formWithButton, props,
+    fetched({nextControl=state[6],nextOperation=state[5],nextReadError=state[7]}={}) { state[6]=nextControl; state[5]=nextOperation; state[7]=nextReadError; state[26]=[props.prefix,state[2],state[3],props.refresh,state[8]].join('|'); },
+    get control(){return state[6];},get operation(){return state[5];}
+  };
 }
 
 for (const outcome of ['attach_known_task', 'confirmed_succeeded', 'confirmed_failed']) {
@@ -392,4 +395,35 @@ test('a selected local plan missing after reload cannot silently become a synthe
   await ui.submit('明确创建授权');assert.equal(ui.calls.length,0);
   ui.change('执行能力','');assert.equal(ui.nodes(ui.formWithButton('明确创建授权'),n=>n.type==='button')[0].props.disabled,false);
   await ui.submit('明确创建授权');assert.equal(ui.calls[0].payload.recipeId,'independent-synthetic-recipe');assert.equal('localMediaRecipeId' in ui.calls[0].payload,false);
+});
+
+function stoppedCheckbox(ui){return ui.nodes(ui.render(),n=>n.type==='input'&&n.props.type==='checkbox')[0];}
+for(const change of ['epoch','attempt_revision','attempt_fence','pool_attempt','scope','client','unit','operation','attempt_selection']) {
+  test(`local stopped confirmation cannot migrate to a changed ${change} before effects run`,async()=>{
+    const ui=fixture({local:true});ui.change('收敛操作理由','Owner verified the exact stopped worker');
+    stoppedCheckbox(ui).props.onChange({target:{checked:true}});assert.equal(stoppedCheckbox(ui).props.checked,true);
+    if(change==='epoch')ui.fetched({nextControl:{...ui.control,pool:{...ui.control.pool,poolEpoch:10}}});
+    if(change==='attempt_revision'||change==='attempt_fence')ui.fetched({nextOperation:{...ui.operation,attempts:ui.operation.attempts.map(a=>a.id===attemptId?{...a,[change==='attempt_revision'?'revision':'fence']:a[change==='attempt_revision'?'revision':'fence']+1}:a)}});
+    if(change==='pool_attempt')ui.fetched({nextControl:{...ui.control,pool:{...ui.control.pool,attemptId:'different-worker'}}});
+    if(change==='scope'){ui.props.prefix='/projects/next-project';ui.fetched();}
+    if(change==='unit')ui.props.unitId='next-unit';
+    if(change==='client')ui.props.client={...ui.props.client};
+    if(change==='operation')ui.fetched({nextOperation:{...ui.operation,id:'new-operation'}});
+    if(change==='attempt_selection')ui.change('待对账尝试','other-attempt');
+    assert.equal(stoppedCheckbox(ui).props.checked,false);
+    await ui.submit('提交 Owner 对账声明');assert.equal(ui.calls.length,0);
+    stoppedCheckbox(ui).props.onChange({target:{checked:true}});await ui.submit('提交 Owner 对账声明');
+    assert.equal(ui.calls.length,1);assert.equal(ui.calls[0].payload.poolEpoch,ui.control.pool.poolEpoch);
+    assert.equal(ui.calls[0].payload.expectedRevision,ui.operation.attempts[0].revision);
+    if(change==='attempt_selection')assert.ok(ui.calls[0].path.endsWith('/other-attempt/reconcile-local-stopped'));
+  });
+}
+test('local stopped confirmation accepts epoch zero and rejects stale or failed detail reads in the actual submit handler',async()=>{
+  const ui=fixture({local:true});ui.change('收敛操作理由','Verified stopped before first pool allocation');
+  ui.fetched({nextControl:{...ui.control,pool:{...ui.control.pool,poolEpoch:0}}});
+  stoppedCheckbox(ui).props.onChange({target:{checked:true}});assert.equal(stoppedCheckbox(ui).props.checked,true);
+  ui.props.refresh++;await ui.submit('提交 Owner 对账声明');assert.equal(ui.calls.length,0);
+  ui.fetched({nextReadError:'read unavailable'});await ui.submit('提交 Owner 对账声明');assert.equal(ui.calls.length,0);
+  ui.fetched({nextReadError:''});stoppedCheckbox(ui).props.onChange({target:{checked:true}});
+  await ui.submit('提交 Owner 对账声明');assert.equal(ui.calls.length,1);assert.equal(ui.calls[0].payload.poolEpoch,0);
 });

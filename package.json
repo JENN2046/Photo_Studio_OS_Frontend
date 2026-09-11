@@ -10,7 +10,7 @@
     "preview": "vite preview --host 127.0.0.1 --port 4173",
     "qa:readonly": "powershell -ExecutionPolicy Bypass -File scripts\\qa-readonly-all.ps1",
     "qa:internal-pilot": "powershell -ExecutionPolicy Bypass -File scripts\\qa-internal-pilot-readiness.ps1",
-    "test:s6": "node --test tests/workbench.test.mjs tests/frontend-live-truth.test.mjs tests/execution-reconciliation.test.mjs tests/project-pagination.test.mjs"
+    "test:s6": "node --test tests/workbench.test.mjs tests/frontend-live-truth.test.mjs tests/execution-reconciliation.test.mjs tests/project-pagination.test.mjs tests/resource-pagination.test.mjs tests/history-pagination.test.mjs"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.17.0",

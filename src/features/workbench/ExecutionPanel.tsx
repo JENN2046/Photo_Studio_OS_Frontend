@@ -5,16 +5,18 @@ import type { BudgetEntry, ExecutionEvent, Grant, LocalControl, LocalRecipe, Ope
 import { Field, Id, Panel } from "./parts";
 
 function dateInput(value: Date) { return new Date(value.getTime() - value.getTimezoneOffset() * 60000).toISOString().slice(0, 16); }
+type StopConfirmation = { client: WorkbenchClient; prefix: string; unitId: string; operationId: string; attemptId: string; attemptRevision: number; attemptFence: number; poolEpoch: number; poolAttemptId?: string; poolProjectId?: string };
 export function ExecutionPanel({client, prefix, unitId, recipeId, localRecipes, grants, operations, disabled, controlDisabled, controlUncertain, run, runControl, refresh}: {client: WorkbenchClient; prefix: string; unitId: string; recipeId: string; localRecipes: LocalRecipe[]; grants: Grant[]; operations: Operation[]; disabled: boolean; controlDisabled: boolean; controlUncertain: boolean; run: RunAction; runControl: RunAction; refresh: number}) {
   const [controlPending, setControlPending] = useState(false);
   const [planId, setPlanId] = useState(""); const [grantId, setGrantId] = useState(""); const [operationId, setOperationId] = useState("");
   const [grant, setGrant] = useState<Grant | null>(null); const [operation, setOperation] = useState<Operation | null>(null); const [control, setControl] = useState<LocalControl | null>(null);
   const historyEpoch = useRef(0);
+  const historyRequests = useRef<{ entries?: object; events?: object }>({});
   const [readError, setReadError] = useState(""); const [tick, setTick] = useState(0);
   const [startsAt, setStartsAt] = useState(() => dateInput(new Date())); const [expiresAt, setExpiresAt] = useState(() => dateInput(new Date(Date.now() + 3600000)));
   const [maxAttempts, setMaxAttempts] = useState(3); const [maxAttemptCredits, setMaxAttemptCredits] = useState(1); const [maxTotalCredits, setMaxTotalCredits] = useState(3); const [wallClock, setWallClock] = useState(30000); const [reservation, setReservation] = useState(1);
   const [reason, setReason] = useState(""); const [controlMode, setControlMode] = useState("PAUSED");
-  const [reconcileId, setReconcileId] = useState(""); const [outcome, setOutcome] = useState("confirmed_not_created"); const [taskRef, setTaskRef] = useState(""); const [actualCredits, setActualCredits] = useState(0); const [confirmedStopped, setConfirmedStopped] = useState(false);
+  const [reconcileId, setReconcileId] = useState(""); const [outcome, setOutcome] = useState("confirmed_not_created"); const [taskRef, setTaskRef] = useState(""); const [actualCredits, setActualCredits] = useState(0); const [stopConfirmation, setStopConfirmation] = useState<StopConfirmation | null>(null);
   const [entries, setEntries] = useState<Page<BudgetEntry> | null>(null); const [events, setEvents] = useState<Page<ExecutionEvent> | null>(null);
   const [historyError, setHistoryError] = useState("");
   const [detailsReadKey, setDetailsReadKey] = useState("");
@@ -30,7 +32,7 @@ export function ExecutionPanel({client, prefix, unitId, recipeId, localRecipes, 
     ]).then(([nextGrant, nextOperation, nextControl]) => { if (!abort.signal.aborted) { setGrant(nextGrant); setOperation(nextOperation); setControl(nextControl); setDetailsReadKey(detailsKey); } }).catch(error => { if (!abort.signal.aborted) setReadError(error.message); });
     return () => abort.abort();
   }, [client, prefix, grantId, operationId, refresh, tick, detailsKey]);
-  useEffect(() => { historyEpoch.current += 1; setOperation(null); setGrant(null); setEntries(null); setEvents(null); setHistoryError(""); setReconcileId(""); setTaskRef(""); setConfirmedStopped(false); }, [grantId, operationId]);
+  useEffect(() => { historyEpoch.current += 1; setOperation(null); setGrant(null); setEntries(null); setEvents(null); setHistoryError(""); setReconcileId(""); setTaskRef(""); setStopConfirmation(null); }, [grantId, operationId]);
   useEffect(() => {
     const timer = window.setInterval(() => { if (!document.hidden && (operation?.attempts?.some(attempt => !attempt.settledAt) || control?.pool.busy)) setTick(value => value + 1); }, 4000);
     return () => window.clearInterval(timer);
@@ -39,12 +41,19 @@ export function ExecutionPanel({client, prefix, unitId, recipeId, localRecipes, 
   const effectiveRecipeId = planId ? currentPlan?.recipeId ?? "" : recipeId;
   const selectedAttempt = operation?.attempts?.find(item => item.id === reconcileId);
   const isLocal = selectedAttempt?.capabilityId === "local.image.resize.v1";
+  const poolEpoch = control?.pool.poolEpoch;
+  const stopContext: StopConfirmation | null = isLocal && selectedAttempt && operation && typeof poolEpoch === "number" && Number.isSafeInteger(poolEpoch) && poolEpoch >= 0
+    ? {client, prefix, unitId, operationId: operation.id, attemptId: selectedAttempt.id, attemptRevision: selectedAttempt.revision, attemptFence: selectedAttempt.fence, poolEpoch, poolAttemptId: control?.pool.attemptId, poolProjectId: control?.pool.projectId} : null;
+  const confirmedStopped = !detailDisabled && Boolean(stopConfirmation && stopContext && (Object.keys(stopContext) as Array<keyof StopConfirmation>).every(key => stopConfirmation[key] === stopContext[key]));
   const requiresTaskRef = ["attach_known_task", "confirmed_succeeded", "confirmed_failed"].includes(outcome);
   const requestHistory = async (kind: "entries" | "events", more: boolean) => {
+    if (more && historyRequests.current[kind]) return;
+    const request = {}; historyRequests.current[kind] = request;
     setHistoryError(""); const epoch = historyEpoch.current; const prior = kind === "entries" ? entries : events;
     const path = kind === "entries" ? `${prefix}/execution-grants/${grantId}/budget-entries` : `${prefix}/execution-operations/${operationId}/events`;
-    try { const next = await client.get<Page<BudgetEntry & ExecutionEvent>>(`${path}?limit=25${more && prior?.nextCursor ? `&cursor=${encodeURIComponent(prior.nextCursor)}` : ""}`); if (epoch !== historyEpoch.current) return; const merged = {...next, items: more ? [...(prior?.items ?? []), ...next.items] : next.items}; if (kind === "entries") setEntries(merged as Page<BudgetEntry>); else setEvents(merged as Page<ExecutionEvent>); }
-    catch (error) { if (epoch === historyEpoch.current) setHistoryError(error instanceof Error ? error.message : "历史读取失败。"); }
+    try { const next = await client.get<Page<BudgetEntry & ExecutionEvent>>(`${path}?limit=25${more && prior?.nextCursor ? `&cursor=${encodeURIComponent(prior.nextCursor)}` : ""}`); if (epoch !== historyEpoch.current || historyRequests.current[kind] !== request) return; const merged = {...next, items: more ? [...(prior?.items ?? []), ...next.items] : next.items}; if (kind === "entries") setEntries(merged as Page<BudgetEntry>); else setEvents(merged as Page<ExecutionEvent>); }
+    catch (error) { if (epoch === historyEpoch.current && historyRequests.current[kind] === request) setHistoryError(error instanceof Error ? error.message : "历史读取失败。"); }
+    finally { if (historyRequests.current[kind] === request) delete historyRequests.current[kind]; }
   };
   return <Panel title="执行授权、预算与本地 Worker">
     <p>每次执行须先明确授权、创建操作并预留预算。关闭页面或请求超时不代表 Worker 已停止。</p>
@@ -73,10 +82,10 @@ export function ExecutionPanel({client, prefix, unitId, recipeId, localRecipes, 
     </div>}
     <details><summary>撤销、放弃与 Owner 对账</summary><p>放弃不会消除未解决义务。Owner 声明是人工证明，不是独立 Provider 回执。</p><Field label="收敛操作理由"><textarea required maxLength={500} value={reason} onChange={event => setReason(event.target.value)} /></Field>
       <div className="wb-row"><button disabled={detailDisabled || !grant || !reason.trim()} onClick={() => void run("撤销授权", async () => { await client.post(`${prefix}/execution-grants/${grantId}/revoke`, {reason}); })}>撤销所选授权</button><button disabled={detailDisabled || !operation || !reason.trim()} onClick={() => void run("放弃操作", async () => { await client.post(`${prefix}/execution-operations/${operationId}/abandon`, {reason}); })}>放弃所选操作</button></div>
-      <Field label="待对账尝试"><select value={reconcileId} onChange={event => { setReconcileId(event.target.value); setTaskRef(""); setConfirmedStopped(false); }}><option value="">选择尝试</option>{operation?.attempts?.filter(item => !item.settledAt).map(item => <option key={item.id} value={item.id}>尝试 {item.sequence} · {item.id.slice(0, 8)}</option>)}</select></Field>
-      {selectedAttempt && <form onSubmit={event => { event.preventDefault(); void run("Owner 执行对账", async () => { const eventKey = createIntentKey(); if (isLocal) { if (!confirmedStopped || control?.pool.poolEpoch === undefined) throw new Error("必须明确核实 Worker 已停止，并重新读取精确 pool epoch。"); await client.post(`${prefix}/execution-attempts/${selectedAttempt.id}/reconcile-local-stopped`, {poolEpoch: control.pool.poolEpoch, expectedRevision: selectedAttempt.revision, eventKey, confirmWorkerStopped: true, reason}); } else { await client.post(`${prefix}/execution-operations/${operationId}/attempts/${selectedAttempt.id}/reconcile`, {eventKey, expectedRevision: selectedAttempt.revision, outcome, reason, ...(requiresTaskRef ? {taskRef} : {}), ...(["confirmed_succeeded", "confirmed_failed"].includes(outcome) ? {actualCredits} : {})}); } }); }}><fieldset disabled={detailDisabled}>
-        {isLocal ? <label className="wb-check"><input type="checkbox" required checked={confirmedStopped} onChange={event => setConfirmedStopped(event.target.checked)} />我已独立核实此 Worker 确实停止（租约过期不能证明停止）</label> : <><Field label="对账结果"><select value={outcome} onChange={event => setOutcome(event.target.value)}><option value="confirmed_not_created">确认未创建</option><option value="attach_known_task">关联已知合成任务</option><option value="confirmed_succeeded">确认成功</option><option value="confirmed_failed">确认失败</option><option value="abandon">放弃并保留义务</option></select></Field>{requiresTaskRef && <Field label="已核实的合成任务引用"><input required pattern="synthetic:[0-9a-f-]{36}" value={taskRef} onChange={event => setTaskRef(event.target.value)} /></Field>}{["confirmed_succeeded", "confirmed_failed"].includes(outcome) && <Field label="核实的实际消耗"><input required type="number" min={0} max={1000000000} value={actualCredits} onChange={event => setActualCredits(Number(event.target.value))} /></Field>}</>}
-        <button disabled={!reason.trim()} type="submit">提交 Owner 对账声明</button>
+      <Field label="待对账尝试"><select value={reconcileId} onChange={event => { setReconcileId(event.target.value); setTaskRef(""); setStopConfirmation(null); }}><option value="">选择尝试</option>{operation?.attempts?.filter(item => !item.settledAt).map(item => <option key={item.id} value={item.id}>尝试 {item.sequence} · {item.id.slice(0, 8)}</option>)}</select></Field>
+      {selectedAttempt && <form onSubmit={event => { event.preventDefault(); if (detailDisabled || (isLocal && !confirmedStopped)) return; void run("Owner 执行对账", async () => { const eventKey = createIntentKey(); if (isLocal) { if (!confirmedStopped || !stopConfirmation) throw new Error("必须明确核实 Worker 已停止，并重新读取精确 pool epoch。"); await client.post(`${prefix}/execution-attempts/${selectedAttempt.id}/reconcile-local-stopped`, {poolEpoch: stopConfirmation.poolEpoch, expectedRevision: stopConfirmation.attemptRevision, eventKey, confirmWorkerStopped: true, reason}); } else { await client.post(`${prefix}/execution-operations/${operationId}/attempts/${selectedAttempt.id}/reconcile`, {eventKey, expectedRevision: selectedAttempt.revision, outcome, reason, ...(requiresTaskRef ? {taskRef} : {}), ...(["confirmed_succeeded", "confirmed_failed"].includes(outcome) ? {actualCredits} : {})}); } }); }}><fieldset disabled={detailDisabled}>
+        {isLocal ? <label className="wb-check"><input type="checkbox" required checked={confirmedStopped} onChange={event => setStopConfirmation(event.target.checked && !detailDisabled ? stopContext : null)} />我已独立核实此 Worker 确实停止（租约过期不能证明停止）</label> : <><Field label="对账结果"><select value={outcome} onChange={event => setOutcome(event.target.value)}><option value="confirmed_not_created">确认未创建</option><option value="attach_known_task">关联已知合成任务</option><option value="confirmed_succeeded">确认成功</option><option value="confirmed_failed">确认失败</option><option value="abandon">放弃并保留义务</option></select></Field>{requiresTaskRef && <Field label="已核实的合成任务引用"><input required pattern="synthetic:[0-9a-f-]{36}" value={taskRef} onChange={event => setTaskRef(event.target.value)} /></Field>}{["confirmed_succeeded", "confirmed_failed"].includes(outcome) && <Field label="核实的实际消耗"><input required type="number" min={0} max={1000000000} value={actualCredits} onChange={event => setActualCredits(Number(event.target.value))} /></Field>}</>}
+        <button disabled={!reason.trim() || (isLocal && !confirmedStopped)} type="submit">提交 Owner 对账声明</button>
       </fieldset></form>}
     </details>
   </Panel>;
