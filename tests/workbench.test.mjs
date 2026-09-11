@@ -75,10 +75,34 @@ test('known conflict/auth and invalid input statuses preserve failure class with
     await assert.rejects(client.post('/projects', {}), error => error.status === status && !error.uncertain && !error.message.includes('private'));
   }
 });
-test('request paths cannot replace origin or traverse directories', async () => {
+test('pathname validation rejects raw and encoded escapes before any GET, POST or media request', async () => {
   let calls = 0; const client = createWorkbenchClient(readBase, 'http://localhost', fixtureToken, true, async () => { calls++; return envelope({}); });
-  for (const path of ['https://other.invalid/', '//other.invalid', '/../other', '/x\\y', '/x\ny']) await assert.rejects(client.get(path));
+  const badPaths = ['https://other.invalid/', '//other.invalid', '///other.invalid', '/../other', '/./projects',
+    '/projects/../other', '/projects/..', '/projects/.', '/x\\y', '/x\ny', '/x\ty', '/x\u0000y',
+    '/%2e%2e/other', '/.%2E/other', '/%2e./other', '/%2E/projects', '/%252e%252e/other',
+    '/x%2fy', '/%2f%2fother.invalid', '/x%5Cy', '/x%255cy', '/x%3fy', '/x%23y', '/x%00y',
+    '/projects/%', '/projects/%zz', '/projects#fragment', '/projects?cursor=value#fragment'];
+  for (const path of badPaths) {
+    await assert.rejects(client.get(path), error => error instanceof WorkbenchError && error.status === 400 && !error.uncertain);
+    await assert.rejects(client.post(path, {}), error => error instanceof WorkbenchError && error.status === 400 && !error.uncertain);
+    await assert.rejects(client.media(path, new AbortController().signal), error => error instanceof WorkbenchError && error.status === 400);
+  }
   assert.equal(calls, 0);
+});
+test('opaque query cursors retain dots and encoded delimiters byte-for-byte under the fixed API base', async () => {
+  const calls = []; const client = createWorkbenchClient(readBase, 'http://localhost', fixtureToken, false, async (...args) => { calls.push(args); return envelope({items: []}); });
+  for (const cursor of ['head..tail', '../next', '//other.invalid/a', 'a\\b#?%2e%2e', 'space + unicode 日本語']) {
+    const query = `?collection=candidates&limit=25&cursor=${encodeURIComponent(cursor)}`;
+    const path = `/projects/${id}/production-units/${id2}/workbench${query}`;
+    assert.deepEqual(await client.get(path), {items: []});
+    assert.equal(calls.at(-1)[0], `http://127.0.0.1:31417/api/v1${path}`);
+    const parsed = new URL(calls.at(-1)[0]);
+    assert.equal(parsed.origin, 'http://127.0.0.1:31417'); assert.ok(parsed.pathname.startsWith('/api/v1/'));
+    assert.equal(parsed.searchParams.get('cursor'), cursor);
+  }
+  // Dots inside an ordinary pathname segment are not a parent-directory segment.
+  await client.get('/projects/version..label?cursor=left..right');
+  assert.equal(calls.at(-1)[0], 'http://127.0.0.1:31417/api/v1/projects/version..label?cursor=left..right');
 });
 test('media reader allows only bounded PNG/JPEG and cancels overflow stream', async () => {
   const signal = new AbortController().signal;
@@ -155,4 +179,82 @@ test('explicit mock never creates a real workbench transport even with a token a
   let calls=0;const fetcher=async()=>{calls++;return envelope({});};
   for(const value of ['mock',' mock '])assert.throws(()=>createWorkbenchClient(value,'https://studio.invalid',fixtureToken,true,fetcher),/模拟/);
   assert.equal(calls,0);
+});
+
+const mediaFlush = async () => { for (let i = 0; i < 30; i++) await Promise.resolve(); };
+function mediaQueueFixture() {
+  const calls = []; const streams = [];
+  const client = createWorkbenchClient(readBase, 'http://localhost', fixtureToken, true, async (url, options) => {
+    calls.push({url, options}); if (options.method === 'POST') return envelope({id});
+    let controller; const record = {canceled:false};
+    const stream = new ReadableStream({start(value) {controller = value;}, cancel() {record.canceled = true;}});
+    record.finish = () => { controller.enqueue(new Uint8Array([1,2,3])); controller.close(); };
+    streams.push(record); return new Response(stream, {headers:{'content-type':'image/png'}});
+  });
+  return {client, calls, streams};
+}
+test('three simultaneous media reads are FIFO serial through complete body consumption; POST is unaffected', async () => {
+  const f = mediaQueueFixture(), signal = new AbortController().signal;
+  const reads = [1,2,3].map(n => f.client.media(`/projects/media${n}`, signal));
+  await mediaFlush(); assert.equal(f.calls.length, 1);
+  assert.deepEqual(await f.client.post('/projects', {}), {id}); assert.equal(f.calls.length, 2);
+  f.streams[0].finish(); assert.equal((await reads[0]).size, 3); await mediaFlush();
+  assert.equal(f.calls.filter(c => c.options.method !== 'POST').length, 2);
+  assert.ok(f.calls.at(-1).url.endsWith('/media2')); f.streams[1].finish(); await reads[1]; await mediaFlush();
+  assert.ok(f.calls.at(-1).url.endsWith('/media3')); f.streams[2].finish(); await reads[2];
+});
+test('queued media abort removes its job immediately without fetching or delaying the next live job', async () => {
+  const f = mediaQueueFixture(), active = f.client.media('/projects/active', new AbortController().signal);
+  const canceled = new AbortController(), next = new AbortController();
+  const queued = f.client.media('/projects/canceled', canceled.signal); queued.catch(() => {});
+  const final = f.client.media('/projects/final', next.signal);
+  canceled.abort(); await assert.rejects(queued, error => error.name === 'AbortError'); assert.equal(f.calls.length, 1);
+  f.streams[0].finish(); await active; await mediaFlush();
+  assert.equal(f.calls.length, 2); assert.ok(f.calls[1].url.endsWith('/final')); f.streams[1].finish(); await final;
+});
+test('in-flight subscriber abort does not release the read slot before bounded body completion', async () => {
+  const f = mediaQueueFixture(), canceled = new AbortController();
+  const active = f.client.media('/projects/active', canceled.signal); active.catch(() => {});
+  const queued = f.client.media('/projects/next', new AbortController().signal); let settled = false;
+  active.finally(() => { settled = true; }).catch(() => {});
+  await mediaFlush(); canceled.abort(); await mediaFlush();
+  assert.equal(settled, false); assert.equal(f.calls.length, 1); assert.equal(f.calls[0].options.signal.aborted, false);
+  f.streams[0].finish(); await assert.rejects(active, error => error.name === 'AbortError'); await mediaFlush();
+  assert.equal(f.calls.length, 2); f.streams[1].finish(); await queued;
+});
+test('media waiting queue admits at most four jobs and abort frees queued capacity', async () => {
+  const f = mediaQueueFixture(), active = f.client.media('/projects/active', new AbortController().signal);
+  const controllers = Array.from({length:4}, () => new AbortController());
+  const pending = controllers.map((c,i) => { const p = f.client.media(`/projects/wait${i}`, c.signal); p.catch(() => {}); return p; });
+  await assert.rejects(f.client.media('/projects/excess', new AbortController().signal), error => error.status === 429);
+  assert.equal(f.calls.length, 1);
+  controllers[0].abort(); await assert.rejects(pending[0], error => error.name === 'AbortError');
+  const replacementController = new AbortController(), replacement = f.client.media('/projects/replacement', replacementController.signal); replacement.catch(() => {});
+  for (const c of controllers.slice(1)) c.abort(); replacementController.abort();
+  for (const p of [...pending.slice(1),replacement]) await assert.rejects(p, error => error.name === 'AbortError');
+  f.streams[0].finish(); await active; await mediaFlush(); assert.equal(f.calls.length, 1);
+});
+test('media errors release admission without retrying the failed request', async () => {
+  for (const response of [new Response('busy',{status:503}), new Response('<svg/>',{headers:{'content-type':'image/svg+xml'}})]) {
+    const paths=[]; const client=createWorkbenchClient(readBase,'http://localhost',fixtureToken,false,async url=>{paths.push(url);return paths.length===1?response:new Response('png',{headers:{'content-type':'image/png'}});});
+    const first=client.media('/projects/first',new AbortController().signal),next=client.media('/projects/next',new AbortController().signal);
+    await assert.rejects(first); assert.equal((await next).size,3); assert.equal(paths.length,2); assert.ok(paths[1].endsWith('/next'));
+  }
+});
+test('media deadline aborts stalled fetch or body and releases the queue without an automatic retry', async t => {
+  t.mock.timers.enable({apis:['setTimeout']});
+  for (const stage of ['fetch','body']) {
+    const calls=[];let canceled=false;
+    const client=createWorkbenchClient(readBase,'http://localhost',fixtureToken,false,async (url,options)=>{
+      calls.push({url,options});if(calls.length>1)return new Response('png',{headers:{'content-type':'image/png'}});
+      if(stage==='fetch')return new Promise((_,reject)=>options.signal.addEventListener('abort',()=>reject(new DOMException('fixture abort','AbortError')),{once:true}));
+      return new Response(new ReadableStream({cancel(){canceled=true;}}),{headers:{'content-type':'image/png'}});
+    });
+    const first=client.media('/projects/stalled',new AbortController().signal);first.catch(()=>{});
+    const next=client.media('/projects/next',new AbortController().signal);await mediaFlush();
+    t.mock.timers.tick(29999);await mediaFlush();assert.equal(calls.length,1);
+    t.mock.timers.tick(1);await assert.rejects(first,error=>error.name==='TimeoutError');
+    assert.equal((await next).size,3);assert.equal(calls.length,2);assert.equal(calls[0].options.signal.aborted,true);
+    if(stage==='body')assert.equal(canceled,true);
+  }
 });

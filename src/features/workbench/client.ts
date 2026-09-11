@@ -13,16 +13,30 @@ export function createWorkbenchClient(readBase: string | undefined, origin: stri
     return { Authorization: `Bearer ${token}` };
   };
   function url(path: string) {
-    if (!path.startsWith("/") || path.startsWith("//") || path.includes("..") || path.includes("\\") || /[\r\n]/.test(path)) throw new Error("请求路径无效。");
-    return `${base}${path}`;
+    if (typeof path !== "string" || !path.startsWith("/") || path.startsWith("//")
+      || path.includes("#") || /[\u0000-\u0020\u007f]/.test(path)) throw new WorkbenchError(400);
+    // Query values are opaque (including encoded cursors containing '..').
+    // Only path segments participate in traversal checks; never decode or
+    // reserialize the query that will be sent to Core.
+    const pathname = path.split("?", 1)[0];
+    for (const segment of pathname.split("/")) {
+      let decoded: string;
+      try { decoded = decodeURIComponent(segment); } catch { throw new WorkbenchError(400); }
+      if (decoded === "." || decoded === ".." || /[\\/?#%\u0000-\u0020\u007f]/.test(decoded)) throw new WorkbenchError(400);
+    }
+    const target = `${base}${path}`;
+    const parsed = new URL(target);
+    if (parsed.origin !== new URL(base).origin || !parsed.pathname.startsWith("/api/v1/")) throw new WorkbenchError(400);
+    return target;
   }
   async function request<T>(path: string, method: "GET" | "POST", body?: unknown, signal?: AbortSignal): Promise<T> {
     if (method === "POST" && !writeAllowed) throw new WorkbenchError(403);
     const requestHeaders = headers();
+    const target = url(path);
     const multipart = typeof FormData !== "undefined" && body instanceof FormData;
     let response: Response;
     try {
-      response = await fetcher(url(path), { method, headers: { ...requestHeaders, ...(method === "POST" && !multipart ? { "Content-Type": "application/json" } : {}) }, ...(method === "POST" ? { body: multipart ? body as FormData : JSON.stringify(body) } : {}), signal, cache: "no-store", redirect: "error", credentials: "omit" });
+      response = await fetcher(target, { method, headers: { ...requestHeaders, ...(method === "POST" && !multipart ? { "Content-Type": "application/json" } : {}) }, ...(method === "POST" ? { body: multipart ? body as FormData : JSON.stringify(body) } : {}), signal, cache: "no-store", redirect: "error", credentials: "omit" });
     } catch (error) {
       if (signal?.aborted) throw error;
       throw new WorkbenchError(0, method === "POST");
@@ -34,22 +48,66 @@ export function createWorkbenchClient(readBase: string | undefined, origin: stri
     if (!envelope || typeof envelope !== "object" || !("data" in envelope)) throw new WorkbenchError(0, method === "POST");
     return (envelope as {data: T}).data;
   }
-  return {
-    get: <T>(path: string, signal?: AbortSignal) => request<T>(path, "GET", undefined, signal),
-    post: <T>(path: string, body: unknown) => request<T>(path, "POST", body),
-    async media(path, signal) {
-      const response = await fetcher(url(path), { headers: headers(), signal, cache: "no-store", redirect: "error", credentials: "omit" });
+  // Per-client read admission only; POST and Core's own capacity are unchanged.
+  // Cancelled queued jobs never fetch. A cancelled active subscriber waits for
+  // bounded body consumption, preventing immediate remounts from piling up GETs.
+  type MediaJob = { target: string; requestHeaders: HeadersInit; signal: AbortSignal;
+    resolve: (blob: Blob) => void; reject: (error: unknown) => void; onAbort: () => void };
+  const mediaQueue: MediaJob[] = []; let mediaActive = false;
+  const abortError = () => new DOMException("媒体读取已取消。", "AbortError");
+  async function readMedia(target: string, requestHeaders: HeadersInit): Promise<Blob> {
+    const controller = new AbortController();
+    const timeoutError = new DOMException("媒体读取超时，请刷新后核对。", "TimeoutError");
+    let reader: ReadableStreamDefaultReader<Uint8Array<ArrayBuffer>> | undefined;
+    let timer: ReturnType<typeof setTimeout>;
+    const timeout = new Promise<never>((_, reject) => { timer = setTimeout(() => {
+      controller.abort(); void reader?.cancel().catch(() => undefined); reject(timeoutError);
+    }, 30000); });
+    const consume = async () => {
+      const response = await fetcher(target, { headers: requestHeaders, signal: controller.signal, cache: "no-store", redirect: "error", credentials: "omit" });
+      if (controller.signal.aborted) throw timeoutError;
       if (response.status === 401) onUnauthorized();
-      if (!response.ok) throw new WorkbenchError(response.status);
-      if (!["image/png", "image/jpeg"].includes(response.headers.get("content-type")?.split(";")[0] ?? "")) throw new Error("媒体响应格式不受支持。");
-      const reader = response.body?.getReader();
+      if (!response.ok) { await response.body?.cancel(); throw new WorkbenchError(response.status); }
+      if (!["image/png", "image/jpeg"].includes(response.headers.get("content-type")?.split(";")[0] ?? "")) { await response.body?.cancel(); throw new Error("媒体响应格式不受支持。"); }
+      reader = response.body?.getReader();
       if (!reader) throw new Error("媒体响应为空。");
       const chunks: Uint8Array<ArrayBuffer>[] = []; let size = 0;
       try { while (true) { const {done,value} = await reader.read(); if (done) break; size += value.byteLength; if (size > 8388608) throw new Error("媒体响应超过大小限制。"); chunks.push(new Uint8Array(value)); } }
       catch (error) { await reader.cancel(); throw error; }
       finally { reader.releaseLock(); }
+      if (controller.signal.aborted) throw timeoutError;
       if (!size) throw new Error("媒体响应为空。");
       return new Blob(chunks, { type: response.headers.get("content-type")!.split(";")[0] });
+    };
+    try { return await Promise.race([consume(), timeout]); }
+    finally { clearTimeout(timer!); }
+  }
+  function drainMedia() {
+    if (mediaActive) return;
+    const job = mediaQueue.shift(); if (!job) return;
+    job.signal.removeEventListener("abort", job.onAbort);
+    if (job.signal.aborted) { job.reject(abortError()); drainMedia(); return; }
+    mediaActive = true;
+    void readMedia(job.target, job.requestHeaders).then(
+      blob => job.signal.aborted ? job.reject(abortError()) : job.resolve(blob),
+      error => job.reject(job.signal.aborted ? abortError() : error)
+    ).finally(() => { mediaActive = false; drainMedia(); });
+  }
+  return {
+    get: <T>(path: string, signal?: AbortSignal) => request<T>(path, "GET", undefined, signal),
+    post: <T>(path: string, body: unknown) => request<T>(path, "POST", body),
+    async media(path, signal) {
+      if (signal.aborted) return Promise.reject(abortError());
+      const target = url(path), requestHeaders = headers();
+      if (mediaActive && mediaQueue.length >= 4) return Promise.reject(new WorkbenchError(429));
+      return new Promise<Blob>((resolve, reject) => {
+        const job: MediaJob = { target, requestHeaders, signal, resolve, reject, onAbort: () => {
+          const index = mediaQueue.indexOf(job);
+          if (index >= 0) { mediaQueue.splice(index, 1); signal.removeEventListener("abort", job.onAbort); reject(abortError()); }
+        } };
+        signal.addEventListener("abort", job.onAbort, { once: true });
+        mediaQueue.push(job); drainMedia();
+      });
     }
   };
 }

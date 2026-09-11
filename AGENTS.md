@@ -26,6 +26,13 @@ release and real-provider activation remain outside this authority. After S6
 delivery, close Linux engineering delivery and enter Windows 11 acceptance under
 the envelope's explicit environment gate.
 
+Before push as well as merge, inspect commit check-runs and their owning GitHub
+Apps for both current main and the delivery branch. Empty Actions, repository
+hooks, GitHub Pages or deployment lists do not prove that Git cannot auto-deploy:
+an installed Pages App may publish through commit checks alone. A project name
+containing "staging" is not sufficient deployment authority. Resolve any actual
+deployment side effect against the admitted environment before the next mutation.
+
 Version: Final v1.0. Focus: sustained local autopilot, explicit task decomposition, no-churn control, checkpoint handoff, and Command Center Alpha completion criteria.
 
 This file narrows the global Codex behavior for this specific frontend repository and raises local autonomy for the read-only frontend Alpha. It does not weaken global hard stop gates. If this file conflicts with actual repository files, current command output, or the user's latest instruction, repository reality and the latest instruction win inside safety boundaries.
