@@ -14,7 +14,7 @@ function pureModule(url) {
   return module.exports;
 }
 const domain=pureModule(new URL('../src/features/workbench/domain.ts',import.meta.url));
-function fixture() {
+function fixture({actualClient=false}={}) {
   const states=[],refs=[],memos=[],effects=[],queued=[];let s=0,r=0,m=0,e=0;
   const hooks={
     useState(initial){const i=s++;if(!(i in states))states[i]=typeof initial==='function'?initial():initial;return [states[i],value=>{states[i]=typeof value==='function'?value(states[i]):value;}];},
@@ -24,7 +24,8 @@ function fixture() {
     useEffect(fn,deps){const i=e++,prior=effects[i];if(!prior||deps.some((d,j)=>d!==prior.deps[j])){effects[i]={deps,cleanup:prior?.cleanup};queued.push(()=>{effects[i].cleanup?.();effects[i].cleanup=fn();});}}
   };
   const calls=[];
-  const createWorkbenchClient=(_base,_origin,token)=>({get(path,signal){const pending=deferred();calls.push({token,path,signal,...pending});return pending.promise;},post(){throw Error('NO_POST');}});
+  const realClient=actualClient?pureModule(new URL('../src/features/workbench/client.ts',import.meta.url)):null;
+  const createWorkbenchClient=(_base,_origin,token)=>actualClient?realClient.createWorkbenchClient(_base,_origin,token,true,async (target,options)=>{const pending=deferred();const u=new URL(target);calls.push({token,path:u.pathname.replace('/api/v1','')+u.search,signal:options.signal,...pending,resolve:value=>pending.resolve({status:200,ok:true,json:async()=>({data:value})})});return pending.promise;}):({get(path,signal){const pending=deferred();calls.push({token,path,signal,...pending});return pending.promise;},post(){throw Error('NO_POST');}});
   const module={exports:{}};
   const source=readFileSync(new URL('../src/features/workbench/CreativeWorkbench.tsx',import.meta.url),'utf8').replace(/import\.meta\.env\.VITE_BACKEND_API_BASE_URL/g,'""');
   const code=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX}}).outputText;
@@ -79,3 +80,10 @@ for(const oldOutcome of ['resolve','reject']) {
     newer.resolve(page('new-second',2));await flush();await ui.effects();assert.ok(ui.names().includes('new-second'));assert.equal(ui.button(),undefined);
   });
 }
+
+test('initial project timeout through the actual client exposes page-one retry and ignores late success',async t=>{
+  t.mock.timers.enable({apis:['setTimeout']});const ui=fixture({actualClient:true});await ui.effects();assert.equal(ui.calls.length,1);assert.equal(ui.button(),undefined);
+  t.mock.timers.tick(30000);await flush();await ui.effects();assert.equal(ui.calls[0].signal.aborted,true);assert.equal(ui.button().props.children,'重试加载项目');assert.equal(ui.button().props.disabled,false);
+  ui.button().props.onClick();await ui.effects();assert.deepEqual(ui.calls.map(pageNumber),[1,1]);ui.calls[1].resolve(page('current-project',1));await flush();await ui.effects();assert.ok(ui.names().includes('current-project'));
+  ui.calls[0].resolve(page('expired-project'));await flush();await ui.effects();assert.ok(!ui.names().includes('expired-project'));
+});

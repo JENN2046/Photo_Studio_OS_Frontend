@@ -356,12 +356,46 @@ test('completed POST success and known 403 or 409 clear their timers and preserv
   }
   t.mock.timers.tick(60000);await mediaFlush();assert.ok(signals.every(signal=>!signal.aborted));
 });
-test('GET keeps its caller AbortSignal and does not acquire the POST deadline', async t => {
-  t.mock.timers.enable({apis:['setTimeout']});const abort=new AbortController();let received,settled=false;
-  const client=createWorkbenchClient(readBase,'http://localhost',fixtureToken,true,async (_url,options)=>{
-    received=options.signal;return new Promise((_,reject)=>options.signal.addEventListener('abort',()=>reject(new DOMException('caller canceled','AbortError')),{once:true}));
-  });
-  const pending=client.get('/projects',abort.signal);pending.then(()=>{settled=true;},()=>{settled=true;});
-  t.mock.timers.tick(60000);await mediaFlush();assert.equal(received,abort.signal);assert.equal(settled,false);assert.equal(abort.signal.aborted,false);
-  abort.abort();await assert.rejects(pending,error=>error.name==='AbortError'&&!(error instanceof WorkbenchError));
+test('caller cancellation immediately ends a noncooperative GET fetch or body and suppresses late results', async t => {
+  t.mock.timers.enable({apis:['setTimeout']});
+  for(const stage of ['fetch','body']){
+    const abort=new AbortController();let received,resolveLate,published=false,unauthorized=0;
+    const client=createWorkbenchClient(readBase,'http://localhost',fixtureToken,true,async (_url,options)=>{
+      received=options.signal;if(stage==='fetch')return new Promise(resolve=>{resolveLate=resolve;});
+      return {status:200,ok:true,json:()=>new Promise(resolve=>{resolveLate=resolve;})};
+    },()=>unauthorized++);
+    const pending=client.get('/projects',abort.signal);pending.then(()=>{published=true;},()=>{});await mediaFlush();
+    abort.abort();await assert.rejects(pending,error=>error.name==='AbortError'&&!(error instanceof WorkbenchError));assert.equal(received.aborted,true);
+    resolveLate(stage==='fetch'?new Response('late',{status:401}):{data:{id}});await mediaFlush();assert.equal(published,false);assert.equal(unauthorized,0);
+  }
+});
+test('GET fetch timeout is a bounded definite read failure even for a noncooperative transport and late 401', async t => {
+  t.mock.timers.enable({apis:['setTimeout']});let resolveLate,received,calls=0,unauthorized=0,settled=false;
+  const client=createWorkbenchClient(readBase,'http://localhost',fixtureToken,true,async (_url,options)=>{calls++;received=options.signal;return new Promise(resolve=>{resolveLate=resolve;});},()=>unauthorized++);
+  const pending=client.get('/projects');pending.then(()=>{settled=true;},()=>{settled=true;});
+  t.mock.timers.tick(29999);await mediaFlush();assert.equal(settled,false);t.mock.timers.tick(1);
+  await assert.rejects(pending,error=>error instanceof WorkbenchError&&error.status===0&&!error.uncertain);assert.equal(received.aborted,true);
+  resolveLate(new Response('late',{status:401}));await mediaFlush();assert.equal(unauthorized,0);assert.equal(calls,1);
+});
+test('GET JSON consumption shares the original 30-second deadline and discards late body success', async t => {
+  t.mock.timers.enable({apis:['setTimeout']});let resolveFetch,resolveBody,received,published=false;
+  const client=createWorkbenchClient(readBase,'http://localhost',fixtureToken,true,async (_url,options)=>{received=options.signal;return new Promise(resolve=>{resolveFetch=resolve;});});
+  const pending=client.get('/projects');pending.then(()=>{published=true;},()=>{});
+  t.mock.timers.tick(20000);resolveFetch({status:200,ok:true,json:()=>new Promise(resolve=>{resolveBody=resolve;})});await mediaFlush();
+  t.mock.timers.tick(10000);await assert.rejects(pending,error=>error instanceof WorkbenchError&&!error.uncertain);assert.equal(received.aborted,true);
+  resolveBody({data:{id}});await mediaFlush();assert.equal(published,false);
+});
+test('GET pre-cancellation sends no request; every terminal path removes the caller listener and clears its timer', async t => {
+  t.mock.timers.enable({apis:['setTimeout']});let calls=0;
+  const already=new AbortController();already.abort();
+  await assert.rejects(createWorkbenchClient(readBase,'http://localhost',fixtureToken,true,async()=>{calls++;return envelope({id});}).get('/projects',already.signal),error=>error.name==='AbortError');assert.equal(calls,0);
+  for(const outcome of ['success','http','timeout','cancel']){
+    const abort=new AbortController();const added=t.mock.method(abort.signal,'addEventListener'),removed=t.mock.method(abort.signal,'removeEventListener');let received;
+    const client=createWorkbenchClient(readBase,'http://localhost',fixtureToken,true,async (_url,options)=>{received=options.signal;if(outcome==='success')return envelope({id});if(outcome==='http')return new Response('forbidden',{status:403});return new Promise(()=>{});});
+    const pending=client.get('/projects',abort.signal);pending.catch(()=>{});
+    if(outcome==='timeout')t.mock.timers.tick(30000);if(outcome==='cancel')abort.abort();
+    if(outcome==='success')assert.deepEqual(await pending,{id});else await assert.rejects(pending);
+    assert.equal(added.mock.callCount(),1);assert.equal(removed.mock.callCount(),1);assert.equal(added.mock.calls[0].arguments[1],removed.mock.calls[0].arguments[1]);
+    t.mock.timers.tick(60000);await mediaFlush();if(['success','http'].includes(outcome))assert.equal(received.aborted,false);
+  }
 });

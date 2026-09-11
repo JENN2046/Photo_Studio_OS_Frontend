@@ -23,23 +23,23 @@ export function ExecutionPanel({client, prefix, unitId, recipeId, localRecipes, 
   const [reconcileId, setReconcileId] = useState(""); const [outcome, setOutcome] = useState("confirmed_not_created"); const [taskRef, setTaskRef] = useState(""); const [actualCredits, setActualCredits] = useState(0); const [stopConfirmation, setStopConfirmation] = useState<StopConfirmation | null>(null);
   const [entries, setEntries] = useState<Page<BudgetEntry> | null>(null); const [events, setEvents] = useState<Page<ExecutionEvent> | null>(null);
   const [historyError, setHistoryError] = useState("");
-  const [detailsReadKey, setDetailsReadKey] = useState("");
+  const [detailsReadKey, setDetailsReadKey] = useState(""); const detailsRequest = useRef<object | null>(null);
   const detailsKey = [prefix, grantId, operationId, refresh, tick].join("|");
   const detailDisabled = disabled || detailsReadKey !== detailsKey || Boolean(readError);
   const startControlBlocked = controlUncertain || detailsReadKey !== detailsKey || Boolean(readError);
   useEffect(() => {
-    const abort = new AbortController(); setReadError(""); setGrant(null); setOperation(null);
+    const abort = new AbortController(); const request = {}; detailsRequest.current = request; setReadError(""); setGrant(null); setOperation(null);
     void Promise.all([
       grantId ? client.get<Grant>(`${prefix}/execution-grants/${grantId}/ledger`, abort.signal) : Promise.resolve(null),
       operationId ? client.get<Operation>(`${prefix}/execution-operations/${operationId}`, abort.signal) : Promise.resolve(null),
       client.get<LocalControl>(`${prefix}/local-worker/control`, abort.signal)
-    ]).then(([nextGrant, nextOperation, nextControl]) => { if (!abort.signal.aborted) { setGrant(nextGrant); setOperation(nextOperation); setControl(nextControl); setDetailsReadKey(detailsKey); } }).catch(error => { if (!abort.signal.aborted) setReadError(error.message); });
+    ]).then(([nextGrant, nextOperation, nextControl]) => { if (!abort.signal.aborted) { setGrant(nextGrant); setOperation(nextOperation); setControl(nextControl); setDetailsReadKey(detailsKey); } }).catch(error => { if (!abort.signal.aborted) setReadError(error.message); }).finally(() => { if (detailsRequest.current === request) detailsRequest.current = null; });
     return () => abort.abort();
   }, [client, prefix, grantId, operationId, refresh, tick, detailsKey]);
   useEffect(() => { setOperation(null); setGrant(null); setReconcileId(""); setTaskRef(""); setStopConfirmation(null); }, [grantId, operationId]);
   useEffect(() => { historyEpoch.current += 1; historyRequests.current = {}; setEntries(null); setEvents(null); setHistoryError(""); historyReadyScope.current = historyScope; return () => { Object.values(historyRequests.current).forEach(request => request?.abort.abort()); }; }, [historyScope]);
   useEffect(() => {
-    const timer = window.setInterval(() => { if (!document.hidden && (operation?.attempts?.some(attempt => !attempt.settledAt) || control?.pool.busy)) setTick(value => value + 1); }, 4000);
+    const timer = window.setInterval(() => { if (!document.hidden && !detailsRequest.current && (operation?.attempts?.some(attempt => !attempt.settledAt) || control?.pool.busy)) setTick(value => value + 1); }, 4000);
     return () => window.clearInterval(timer);
   }, [operation, control]);
   const currentPlan = localRecipes.find(item => item.id === planId);
@@ -75,7 +75,7 @@ export function ExecutionPanel({client, prefix, unitId, recipeId, localRecipes, 
     </fieldset></form></details>
     <div className="wb-row"><Field label="执行授权"><select value={grantId} onChange={event => { setGrantId(event.target.value); setOperationId(""); }}><option value="">选择授权</option>{grants.map(item => <option value={item.id} key={item.id}>{item.capabilityId} · {item.id.slice(0, 8)}{item.revokedAt ? " · 已撤销" : ""}</option>)}</select></Field>
     <Field label="执行操作"><select value={operationId} onChange={event => { setOperationId(event.target.value); const selected = operations.find(item => item.id === event.target.value); if (selected) setGrantId(selected.grantId); }}><option value="">选择操作</option>{operations.map(item => <option value={item.id} key={item.id}>{item.effectiveState ?? item.state} · {item.id.slice(0, 8)}</option>)}</select></Field></div>
-    {readError && <p role="alert">{readError}</p>}
+    {readError && <div><p role="alert">{readError}</p><button onClick={() => setTick(value => value + 1)}>重试读取执行详情</button></div>}
     {grant && <div className="wb-budget"><h3>授权预算 · {grant.costUnit}</h3><p>总额 {formatCredits(grant.maxTotalCredits)} · 已预留 {formatCredits(grant.reservedCredits)} · 已消耗 {formatCredits(grant.consumedCredits)}</p><p>到期 {grant.expiresAt} · {grant.revokedAt ? "已撤销" : "未撤销"}</p><button disabled={detailDisabled || Boolean(grant.revokedAt)} onClick={() => void run("创建执行操作", async () => { const result = await client.post<Operation>(`${prefix}/execution-operations`, {grantId: grant.id, requestKey: createIntentKey()}); setOperationId(result.id); })}>创建操作</button><button onClick={() => void requestHistory("entries", false)}>读取预算流水</button></div>}
     {operation && <div className="wb-operation"><h3>{operation.effectiveState ?? operation.state}</h3><Id value={operation.id} />{(operation.effectiveQuarantined || operation.reconciliationDue) && <p role="alert">需要对账，新的执行受到隔离限制。不要重新提交已有任务。</p>}
       <form onSubmit={event => { event.preventDefault(); void run("预留执行预算", async () => { await client.post(`${prefix}/execution-operations/${operation.id}/attempts`, {reservationCredits: reservation, requestKey: createIntentKey()}); }); }}><fieldset disabled={detailDisabled || operation.effectiveQuarantined}><Field label="本次预留预算"><input type="number" required min={1} max={1000000000} value={reservation} onChange={event => setReservation(Number(event.target.value))} /></Field><button type="submit">分配一次尝试</button></fieldset></form>

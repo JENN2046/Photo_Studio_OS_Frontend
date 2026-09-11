@@ -52,15 +52,16 @@ export function createWorkbenchClient(readBase: string | undefined, origin: stri
     const requestHeaders = headers();
     const target = url(path);
     const multipart = typeof FormData !== "undefined" && body instanceof FormData;
-    const controller = method === "POST" ? new AbortController() : null;
+    if (signal?.aborted) throw signal.reason;
+    const controller = new AbortController();
     const expiresAt = Date.now() + 30000;
-    const checkDeadline = () => { if (controller && (controller.signal.aborted || Date.now() >= expiresAt)) throw new WorkbenchError(0, true); };
+    const checkDeadline = () => { if (signal?.aborted) throw signal.reason; if (controller.signal.aborted || Date.now() >= expiresAt) throw new WorkbenchError(0, method === "POST"); };
     const consume = async () => {
       let response: Response;
       try {
-        response = await fetcher(target, { method, headers: { ...requestHeaders, ...(method === "POST" && !multipart ? { "Content-Type": "application/json" } : {}) }, ...(method === "POST" ? { body: multipart ? body as FormData : JSON.stringify(body) } : {}), signal: controller?.signal ?? signal, cache: "no-store", redirect: "error", credentials: "omit" });
-      } catch (error) {
-        if (!controller && signal?.aborted) throw error;
+        response = await fetcher(target, { method, headers: { ...requestHeaders, ...(method === "POST" && !multipart ? { "Content-Type": "application/json" } : {}) }, ...(method === "POST" ? { body: multipart ? body as FormData : JSON.stringify(body) } : {}), signal: controller.signal, cache: "no-store", redirect: "error", credentials: "omit" });
+      } catch {
+        if (signal?.aborted) throw signal.reason;
         throw new WorkbenchError(0, method === "POST");
       }
       checkDeadline();
@@ -72,13 +73,17 @@ export function createWorkbenchClient(readBase: string | undefined, origin: stri
       if (!envelope || typeof envelope !== "object" || !("data" in envelope)) throw new WorkbenchError(0, method === "POST");
       return (envelope as {data: T}).data;
     };
-    if (!controller) return consume();
     // Expiry bounds the caller's wait, not Core execution. Even after 201 headers,
-    // an incomplete body is UNKNOWN and must never cause an automatic retry.
+    // an incomplete POST body is UNKNOWN. GET expiry remains a read failure.
     let timer: ReturnType<typeof setTimeout>;
-    const timeout = new Promise<never>((_, reject) => { timer = setTimeout(() => { controller.abort(); reject(new WorkbenchError(0, true)); }, 30000); });
-    try { return await Promise.race([consume(), timeout]); }
-    finally { clearTimeout(timer!); }
+    let onAbort: () => void;
+    const interrupted = new Promise<never>((_, reject) => {
+      onAbort = () => { controller.abort(signal?.reason); reject(signal?.reason); };
+      signal?.addEventListener("abort", onAbort, { once: true });
+      timer = setTimeout(() => { controller.abort(); reject(new WorkbenchError(0, method === "POST")); }, 30000);
+    });
+    try { return await Promise.race([consume(), interrupted]); }
+    finally { clearTimeout(timer!); signal?.removeEventListener("abort", onAbort!); }
   }
   async function readMedia(target: string, requestHeaders: HeadersInit): Promise<Blob> {
     const controller = new AbortController();
