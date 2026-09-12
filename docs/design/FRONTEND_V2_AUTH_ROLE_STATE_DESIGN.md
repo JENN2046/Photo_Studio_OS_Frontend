@@ -70,6 +70,7 @@ This document defines the role matrix, session state machine, page-role visibili
 
 | Surface | Admin | Operator | Photographer | Retoucher | QC Reviewer | Client | Delivery Approver |
 |---|---|---|---|---|---|---|---|
+| Creative Workbench `#creative-workbench` | Full | Read | - | - | - | - | - |
 | Command Center `#` | Full | Full | Summary-only | Summary-only | Summary-only | - | Summary-only |
 | Risk `#risk` | Full | Full | Read | Read | Read | - | Read |
 | Projects `#projects` | Full | Full | Read | Read | Read | - | Read |

@@ -69,7 +69,7 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-internal-pilot-readiness.ps1
 | `qa-package-boundary.ps1` passes minimal dependency boundary checks | |
 | `qa-readonly-source-boundary.ps1` passes | |
 | `qa-backend-read-contract-map.ps1` passes fetcher/smoke/mock/docs contract-map checks | |
-| `qa-auth-role-matrix.ps1` passes 7-role / 10-route static matrix checks | |
+| `qa-auth-role-matrix.ps1` passes 7-role / 11-route static matrix checks | |
 | `qa-auth-provider-preflight.ps1` passes provider/session/role-claim preflight checks | |
 | `qa-internal-pilot-manifest.ps1` passes source/script/doc evidence checks | |
 | `qa-internal-pilot-readiness-guards.ps1` passes aggregate expected-state option checks | |
