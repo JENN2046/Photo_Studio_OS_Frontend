@@ -227,7 +227,7 @@ powershell -ExecutionPolicy Bypass -File scripts\qa-readonly-auth-live-roles.ps1
 | No sign-in page | |
 | No production auth URLs in source or config | |
 | `认证源`, `会话`, `角色`, and `访问权限` chips are visible on Command Center and read-model pages | |
-| `qa-auth-role-matrix.ps1` passes 70 role-route matrix cell checks | |
+| `qa-auth-role-matrix.ps1` passes 77 role-route matrix cell checks | |
 | `qa-readonly-auth-live-roles.ps1` passes without `.env` changes | |
 
 ### No Secrets
