@@ -22,7 +22,7 @@ Implemented locally:
   repo.
 - In-memory access-token use for backend read-model requests after login.
 - Mock-first auth state machine.
-- Role matrix for 7 roles across 10 routes.
+- Role matrix for 7 roles across 11 routes.
 - Signed-out, expired, loading, error, forbidden, insufficient-role, and
   signed-in UI states.
 - `VITE_BACKEND_USER_ROLE` local role rehearsal without `.env` edits.

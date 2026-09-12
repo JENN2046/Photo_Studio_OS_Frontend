@@ -171,7 +171,7 @@ Stop gates:
 Status: Frontend implementation complete as of 2026-05-08. Backend auth provider pending.
 
 Implementation:
-- `src/features/auth/authTypes.ts` — Role matrix (7 roles × 10 routes), PageAccess enum, SessionState union
+- `src/features/auth/authTypes.ts` — Role matrix (7 roles × 11 routes), PageAccess enum, SessionState union
 - `src/features/auth/useAuthState.ts` — mock-first auth hook with `?authState=` DEV debug rehearsal
 - `src/features/auth/AuthGate.tsx` — SignedOut, Expired, AuthLoading, AuthError, Forbidden, InsufficientRole gate components
 - Wired into `App.tsx` — effective session derivation from role matrix

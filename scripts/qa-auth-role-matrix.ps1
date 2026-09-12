@@ -112,6 +112,7 @@ $expectedRoles = @(
 )
 
 $expectedRoutes = @(
+  "creative-workbench",
   "command-center",
   "risk",
   "projects",
@@ -142,6 +143,7 @@ $expectedAccessLabels = @{
 }
 
 $expectedMatrix = [ordered]@{
+  "creative-workbench" = @{ admin = "FULL"; operator = "READ"; photographer = "NONE"; retoucher = "NONE"; qc_reviewer = "NONE"; client = "NONE"; delivery_approver = "NONE" }
   "command-center" = @{ admin = "FULL"; operator = "FULL"; photographer = "SUMMARY"; retoucher = "SUMMARY"; qc_reviewer = "SUMMARY"; client = "NONE"; delivery_approver = "SUMMARY" }
   risk = @{ admin = "FULL"; operator = "FULL"; photographer = "READ"; retoucher = "READ"; qc_reviewer = "READ"; client = "NONE"; delivery_approver = "READ" }
   projects = @{ admin = "FULL"; operator = "FULL"; photographer = "READ"; retoucher = "READ"; qc_reviewer = "READ"; client = "NONE"; delivery_approver = "READ" }
